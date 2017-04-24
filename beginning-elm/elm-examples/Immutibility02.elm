@@ -20,7 +20,7 @@ scores =
 doubleScores scores =
     List.map (\x -> x * multiplier) scores
 
-s
+
 scoresLessThan320 scores =
     List.filter isLessThan320 scores
 
