@@ -99,8 +99,18 @@ extractDigits number =
 
 
 stringToInt string =
+    -- Strips leading '0's
     String.toInt string
-        |> Result.withDefault -s1
+        |> Result.withDefault -1
+
+
+digits number =
+    if number == 0 then
+        -- Start with empty List
+        []
+    else
+        -- Recursion continues adding item to list
+        digits (number // 10) ++ [ number % 10 ]
 
 
 arrayToTuple array =
