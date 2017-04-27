@@ -1,6 +1,7 @@
 module SimpleFunctions exposing (..)
 
 import Bitwise
+import Array
 
 
 andGate a b =
@@ -59,8 +60,16 @@ fullAdder a b carryIn =
         }
 
 
-rippleCarryAdder ( a3, a2, a1, a0 ) ( b3, b2, b1, b0 ) carryIn =
+rippleCarryAdder a b carryIn =
     let
+        -- Extract digits
+        ( a3, a2, a1, a0 ) =
+            extractDigits a
+
+        ( b3, b2, b1, b0 ) =
+            extractDigits b
+
+        -- Compute sum and carry-out
         firstResult =
             fullAdder a0 b0 carryIn
 
@@ -79,3 +88,37 @@ rippleCarryAdder ( a3, a2, a1, a0 ) ( b3, b2, b1, b0 ) carryIn =
         , sum1 = secondResult.sum
         , sum0 = firstResult.sum
         }
+
+
+extractDigits number =
+    toString number
+        |> String.split ""
+        |> List.map stringToInt
+        |> Array.fromList
+        |> arrayToTuple
+
+
+stringToInt string =
+    String.toInt string
+        |> Result.withDefault -s1
+
+
+arrayToTuple array =
+    let
+        firstElement =
+            Array.get 0 array
+                |> Maybe.withDefault -1
+
+        secondElement =
+            Array.get 1 array
+                |> Maybe.withDefault -1
+
+        thirdElement =
+            Array.get 2 array
+                |> Maybe.withDefault -1
+
+        fourthElement =
+            Array.get 3 array
+                |> Maybe.withDefault -1
+    in
+        ( firstElement, secondElement, thirdElement, fourthElement )
