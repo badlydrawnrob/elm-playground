@@ -90,27 +90,24 @@ rippleCarryAdder a b carryIn =
         }
 
 
-extractDigits number =
-    toString number
-        |> String.split ""
-        |> List.map stringToInt
-        |> Array.fromList
-        |> arrayToTuple
-
-
-stringToInt string =
-    -- Strips leading '0's
-    String.toInt string
-        |> Result.withDefault -1
-
-
 digits number =
-    if number == 0 then
-        -- Start with empty List
-        []
-    else
-        -- Recursion continues adding item to list
-        digits (number // 10) ++ [ number % 10 ]
+    let
+        digits n =
+            if n == 0 then
+                []
+            else
+                (n % 10) :: digits (n // 10)
+    in
+        digits number
+            |> List.reverse
+
+
+padZeros total list =
+    let
+        numberOfZeros =
+            total - (List.length list)
+    in
+        (List.repeat numberOfZeros 0) ++ list
 
 
 arrayToTuple array =
@@ -132,3 +129,17 @@ arrayToTuple array =
                 |> Maybe.withDefault -1
     in
         ( firstElement, secondElement, thirdElement, fourthElement )
+
+
+extractDigits number =
+    digits number
+        |> padZeros 4
+        |> Array.fromList
+        |> arrayToTuple
+
+
+
+-- stringToInt string =
+--     -- Strips leading '0's
+--     String.toInt string
+--         |> Result.withDefault -1
