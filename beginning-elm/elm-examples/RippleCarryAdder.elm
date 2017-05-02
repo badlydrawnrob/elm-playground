@@ -1,4 +1,4 @@
-module SimpleFunctions exposing (..)
+module RippleCarryAdder exposing (..)
 
 import Bitwise
 import Array
@@ -82,12 +82,10 @@ rippleCarryAdder a b carryIn =
         finalResult =
             fullAdder a3 b3 thirdResult.carry
     in
-        { carry = finalResult.carry
-        , sum3 = finalResult.sum
-        , sum2 = thirdResult.sum
-        , sum1 = secondResult.sum
-        , sum0 = firstResult.sum
-        }
+        [ finalResult, thirdResult, secondResult, firstResult ]
+            |> List.map .sum
+            |> (::) finalResult.carry
+            |> numberFromDigits
 
 
 digits number =
@@ -136,6 +134,10 @@ extractDigits number =
         |> padZeros 4
         |> Array.fromList
         |> arrayToTuple
+
+
+numberFromDigits digitsList =
+    List.foldl (\digit number -> digit + 10 * number) 0 digitsList
 
 
 
