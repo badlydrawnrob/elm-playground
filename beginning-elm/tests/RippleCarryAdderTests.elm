@@ -8,19 +8,9 @@ import RippleCarryAdder exposing (..)
 
 main =
     run <|
-        describe "Addition"
-            [ test "1 + 1 = 2" <|
+        describe "Less than comparison"
+            [ test "an empty list's length is less than 1" <|
                 \() ->
-                    (1 + 1) |> Expect.equal 2
-            , test "only 2 guardians have names with less than 6 characters" <|
-                \() ->
-                    let
-                        guardians =
-                            [ "Star-lord", "Groot", "Gamora", "Drax", "Rocket" ]
-                    in
-                        guardians
-                            |> List.map String.length
-                            |> List.filter (\x -> x < 6)
-                            |> List.length
-                            |> Expect.equal 2
+                    List.length []
+                        |> Expect.lessThan -1
             ]
