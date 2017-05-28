@@ -3,6 +3,7 @@ module Playground exposing (..)
 import Html
 
 
+escapeEarth : Float -> Float -> String -> String
 escapeEarth velocity speed fuelStatus =
     let
         escapeVelocityInKmPerSec =
@@ -25,26 +26,27 @@ escapeEarth velocity speed fuelStatus =
             whereToLand fuelStatus
 
 
+speed : Float -> Float -> Float
 speed distance time =
     distance / time
 
 
+time : number -> number -> number
 time startTime endTime =
     endTime - startTime
 
 
-add a b =
-    a + b
-
-
+multiply : number -> number -> number
 multiply c d =
     c * d
 
 
+divide : Float -> Float -> Float
 divide e f =
     e / f
 
 
+(+++) : appendable -> appendable -> appendable
 (+++) first second =
     first ++ second
 
@@ -53,6 +55,7 @@ divide e f =
 -- CASE
 
 
+weekday : number -> String
 weekday dayInNumber =
     -- Case is the same as:
     --
@@ -86,6 +89,7 @@ weekday dayInNumber =
             "Unknown day"
 
 
+hashtag : number -> String
 hashtag dayInNumber =
     case weekday dayInNumber of
         "Sunday" ->
@@ -98,6 +102,7 @@ hashtag dayInNumber =
             "#NoDayLikeToday"
 
 
+whereToPark : Float -> String
 whereToPark speed =
     case speed of
         7.67 ->
@@ -113,16 +118,19 @@ whereToPark speed =
             "Nowhere"
 
 
+revelation : String
 revelation =
     """
-  It became very clear to me sitting out there today that every decision Ive made in my entire life hash been wrong. My life is the complete "opposite" of everything I want it to be. Every instinct I have, in every aspect of life, be it something to wear, something to eat - it's all been wrong.
-  """
+    It became very clear to me sitting out there today that every decision Ive made in my entire life hash been wrong. My life is the complete "opposite" of everything I want it to be. Every instinct I have, in every aspect of life, be it something to wear, something to eat - it's all been wrong.
+    """
 
 
+simpleList : List number
 simpleList =
     [ 1, 2, 4 ]
 
 
+descendingList : comparable -> comparable -> Order
 descendingList a b =
     case compare a b of
         LT ->
@@ -135,6 +143,7 @@ descendingList a b =
             EQ
 
 
+evilometer : String -> String -> Order
 evilometer character1 character2 =
     case ( character1, character2 ) of
         ( "Joffrey", "Ramsay" ) ->
@@ -159,11 +168,30 @@ evilometer character1 character2 =
             GT
 
 
+addOne : number -> number
+addOne x =
+    x + 1
+
+
+guardiansWithShortNames : List String -> Int
+guardiansWithShortNames guardians =
+    guardians
+        |> List.map String.length
+        |> List.filter (\x -> x < 6)
+        |> List.length
+
+
+add : Int -> Int -> Int
+add x y =
+    x + y
+
+
 
 -- Good: piping functions
 -- - Not good: (too "many" (chaining 32 (functions 7.56)))
 
 
+main : Html.Html msg
 main =
     [ "Night King", "Joffrey", "Ramsay" ]
         |> List.sortWith evilometer
