@@ -1,6 +1,6 @@
 module FuzzTests exposing (allTests)
 
-import Test exposing (Test, describe, test, fuzz)
+import Test exposing (Test, describe, test, fuzz, fuzz2)
 import Expect
 import Fuzz exposing (..)
 
@@ -8,7 +8,7 @@ import Fuzz exposing (..)
 allTests : Test
 allTests =
     describe "Example Fuzz Tests"
-        [ addOneTests ]
+        [ addOneTests, addTests ]
 
 
 addOneTests : Test
@@ -20,6 +20,21 @@ addOneTests =
         ]
 
 
+addTests : Test
+addTests =
+    describe "add"
+        [ fuzz2 int int "adds two given integers" <|
+            \num1 num2 ->
+                add num1 num2
+                    |> Expect.equal (num1 + num2)
+        ]
+
+
 addOne : Int -> Int
 addOne x =
     1 + x
+
+
+add : Int -> Int -> Int
+add x y =
+    x + y
