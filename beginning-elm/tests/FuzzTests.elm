@@ -1,5 +1,6 @@
 module FuzzTests exposing (allTests)
 
+import Random exposing (minInt, maxInt)
 import Test exposing (Test, describe, test, fuzz, fuzz2, fuzzWith)
 import Expect
 import Fuzz exposing (..)
@@ -14,7 +15,7 @@ allTests =
 addOneTests : Test
 addOneTests =
     describe "addOne"
-        [ fuzzWith { runs = 200 } int "adds 1 to any integer" <|
+        [ fuzz (intRange minInt maxInt) "adds 1 to any integer" <|
             \num ->
                 addOne num |> Expect.equal (num + 1)
         ]
