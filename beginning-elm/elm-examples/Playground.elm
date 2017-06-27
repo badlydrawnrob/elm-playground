@@ -1,6 +1,8 @@
 module Playground exposing (..)
 
 import Html
+import Regex
+import MyList exposing (..)
 
 
 escapeEarth : Float -> Float -> String -> String
@@ -186,6 +188,71 @@ add x y =
     x + y
 
 
+signUp : String -> String -> Result String String
+signUp email age =
+    case String.toInt age of
+        Err message ->
+            Err message
+
+        Ok age ->
+            let
+                emailPattern =
+                    Regex.regex "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"
+
+                isValidEmail =
+                    Regex.contains emailPattern email
+            in
+                if age < 13 then
+                    Err "You need to be at least 13 years old to sign up"
+                else if isValidEmail then
+                    Ok "Your account has been created successfully"
+                else
+                    Err "You entered an invalid email"
+
+
+type alias Character =
+    { name : String
+    , age : Maybe Int
+    }
+
+
+sansa : Character
+sansa =
+    { name = "Sansa"
+    , age = Just 19
+    }
+
+
+arya : Character
+arya =
+    { name = "Arya"
+    , age = Nothing
+    }
+
+
+getAdultAge : Character -> Maybe Int
+getAdultAge character =
+    case character.age of
+        Nothing ->
+            Nothing
+
+        Just age ->
+            if age >= 18 then
+                Just age
+            else
+                Nothing
+
+
+list1 : MyList a
+list1 =
+    Empty
+
+
+list2 : MyList number
+list2 =
+    Node 9 Empty
+
+
 
 -- Good: piping functions
 -- - Not good: (too "many" (chaining 32 (functions 7.56)))
@@ -193,17 +260,21 @@ add x y =
 
 main : Html.Html msg
 main =
-    [ "Night King", "Joffrey", "Ramsay" ]
-        |> List.sortWith evilometer
+    isEmpty list2
         |> toString
         |> Html.text
 
 
 
+-- [ "Night King", "Joffrey", "Ramsay" ]
+--     |> List.sortWith evilometer
+--     |> toString
+--     |> Html.text
 -- [ 316, 320, 312, 370, 318, 314 ]
 --     |> List.sortWith descendingList
 --     |> toString
 --     |> Html.text
+--
 --
 -- Html.text revelation
 --
