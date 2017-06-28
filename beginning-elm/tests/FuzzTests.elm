@@ -1,6 +1,7 @@
 module FuzzTests exposing (allTests)
 
 import Random exposing (minInt, maxInt)
+import Array
 import Test exposing (Test, describe, test, fuzz, fuzz2, fuzzWith)
 import Expect
 import Fuzz exposing (..)
@@ -16,6 +17,8 @@ allTests =
         , multiplyFloatTests
         , pizzaLeftTests
         , stringTests
+        , listLengthTests
+        , arrayGetTests
         ]
 
 
@@ -146,4 +149,30 @@ stringTests =
                         |> String.reverse
                         |> Expect.equal randomnlyGeneratedString
             ]
+        ]
+
+
+listLengthTests : Test
+listLengthTests =
+    describe "List.length"
+        [ fuzz (list int) "never returns a negative value" <|
+            \intList ->
+                intList
+                    |> List.length
+                    |> Expect.atLeast 0
+        ]
+
+
+arrayGetTests : Test
+arrayGetTests =
+    describe "Array.get"
+        [ fuzz (array (intRange -20 20)) "returns Nothing for out of range index" <|
+            \intArray ->
+                let
+                    length =
+                        Array.length intArray
+                in
+                    intArray
+                        |> Array.get length
+                        |> Expect.equal Nothing
         ]
