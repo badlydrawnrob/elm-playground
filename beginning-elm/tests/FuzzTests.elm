@@ -2,7 +2,7 @@ module FuzzTests exposing (allTests)
 
 import Random exposing (minInt, maxInt)
 import Array
-import Test exposing (Test, describe, test, fuzz, fuzz2, fuzzWith)
+import Test exposing (Test, describe, test, fuzz, fuzz2, fuzz3, fuzzWith)
 import Expect
 import Fuzz exposing (..)
 
@@ -19,6 +19,7 @@ allTests =
         , stringTests
         , listLengthTests
         , arrayGetTests
+        , listReverseTests
         ]
 
 
@@ -34,8 +35,8 @@ addOneTests =
 addTests : Test
 addTests =
     describe "add"
-        [ fuzz2 int int "adds two given integers" <|
-            \num1 num2 ->
+        [ fuzz (tuple ( int, int )) "adds two given integers" <|
+            \( num1, num2 ) ->
                 add num1 num2
                     |> Expect.equal (num1 + num2)
         ]
@@ -175,4 +176,16 @@ arrayGetTests =
                     intArray
                         |> Array.get length
                         |> Expect.equal Nothing
+        ]
+
+
+listReverseTests : Test
+listReverseTests =
+    describe "List.reverse"
+        [ fuzz (tuple ( (list int), int )) "doesn't remove a member of the list" <|
+            \( intList, num ) ->
+                intList
+                    |> List.reverse
+                    |> List.member num
+                    |> Expect.equal (List.member num intList)
         ]

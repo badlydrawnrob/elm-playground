@@ -1,8 +1,22 @@
 module RippleCarryAdderTests exposing (allTests)
 
-import Test exposing (describe, test)
+import Test exposing (describe, test, fuzz3, Test)
+import Fuzz exposing (..)
 import Expect
 import RippleCarryAdder exposing (..)
+
+
+allTests : Test
+allTests =
+    describe "4-bit Ripple Carry Adder Components"
+        [ inverterTests
+        , andGateTests
+        , orGateTests
+        , halfAdderTests
+        , fullAdderTests
+        , rippleCarryAdderTests
+        , rippleCarryAdderProperty1
+        ]
 
 
 inverterTests =
@@ -157,12 +171,30 @@ rippleCarryAdderTests =
         ]
 
 
-allTests =
-    describe "4-bit Ripple Carry Adder Components"
-        [ inverterTests
-        , andGateTests
-        , orGateTests
-        , halfAdderTests
-        , fullAdderTests
-        , rippleCarryAdderTests
+rippleCarryAdderProperty1 : Test
+rippleCarryAdderProperty1 =
+    describe "carry-out's relationship with most significant digits"
+        [ fuzz3
+            (list (intRange 0 1))
+            (list (intRange 0 1))
+            (intRange 0 1)
+            "carry-out is 0 when most significant digits are both 0"
+          <|
+            \list1 list2 carryIn ->
+                let
+                    convertToBinary digitsList =
+                        digitsList
+                            |> List.take 3
+                            |> numberFromDigits
+
+                    firstInput =
+                        convertToBinary list1
+
+                    secondInput =
+                        convertToBinary list2
+                in
+                    rippleCarryAdder firstInput secondInput carryIn
+                        |> digits
+                        |> List.length
+                        |> Expect.lessThan 5
         ]
