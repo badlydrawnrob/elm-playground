@@ -2,7 +2,7 @@ module Playground exposing (..)
 
 import Html
 import Regex
-import MyList exposing (..)
+import MyList exposing (MyList(..), sum, isEmpty)
 
 
 escapeEarth : Float -> Float -> String -> String
