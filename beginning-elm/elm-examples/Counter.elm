@@ -13,7 +13,7 @@ initialModel =
     0
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick Decrement ] [ text "-" ]
@@ -22,13 +22,23 @@ view model =
         ]
 
 
-update : msg -> Model -> Model
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> Model
 update msg model =
-    initialModel
+    case msg of
+        Increment ->
+            model + 1
+
+        Decrement ->
+            model - 1
 
 
 main =
-    beginnerProgram
+    Html.beginnerProgram
         { model = initialModel
         , view = view
         , update = update
