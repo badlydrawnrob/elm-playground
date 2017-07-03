@@ -4,6 +4,9 @@ import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 
 
+-- Model
+
+
 type alias Model =
     Int
 
@@ -13,6 +16,10 @@ initialModel =
     0
 
 
+
+-- View
+
+
 view : Model -> Html Msg
 view model =
     div []
@@ -20,6 +27,10 @@ view model =
         , text (toString model)
         , button [ onClick Increment ] [ text "+" ]
         ]
+
+
+
+-- Update
 
 
 type Msg
@@ -37,6 +48,11 @@ update msg model =
             model - 1
 
 
+
+-- Entry point
+
+
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = initialModel
