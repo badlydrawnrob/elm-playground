@@ -1,7 +1,10 @@
 module Counter exposing (..)
 
-import Html exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, button, div, text)
+import Html.Events exposing (onClick)
+
+
+-- Model
 
 
 type alias Model =
@@ -13,7 +16,11 @@ initialModel =
     0
 
 
-view : Model -> Html msg
+
+-- View
+
+
+view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick Decrement ] [ text "-" ]
@@ -22,13 +29,32 @@ view model =
         ]
 
 
-update : msg -> Model -> Model
+
+-- Update
+
+
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> Model
 update msg model =
-    initialModel
+    case msg of
+        Increment ->
+            model + 1
+
+        Decrement ->
+            model - 1
 
 
+
+-- Entry point
+
+
+main : Program Never Model Msg
 main =
-    beginnerProgram
+    Html.beginnerProgram
         { model = initialModel
         , view = view
         , update = update
