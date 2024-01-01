@@ -59,6 +59,7 @@ isKeepable? char = char /= '-'
 String.filter isKeepable "800-555-1234" -- strips all '-' characters
 
 
+
 -- 1.3.3
 
 -- Creating a reusable function, but keeping `isKeepable` in local scope,
@@ -73,6 +74,7 @@ withoutDashes string =
     String.filter isKeepable string
 
 withoutDashes "800-555-1234"
+
 
 
 -- 1.3.4
@@ -118,3 +120,104 @@ String.filter (\char -> anonCharFunction char) "(800) 135-2311"
 -- : Alternatively we could've just written that like this:
 String.filter (\char -> char == '1') "(800) 135-2311"
 
+
+
+-- 1.3.5
+
+-- Operators like plus and minus can be written in infix style:
+
+2 + 3 + 4 -- will work
+1 / 2     -- will work
+3 * 4     -- will work
+
+-- Or they can be written in prefix style (like lisp)
+-- : You must wrap these in parenthesis with prefix-style notation
+-- : 🚫 HOWEVER, they accept (and only 2) operands
+
+(+) 2 3 4 -- won't work
+(/) 1 2   -- will work
+(*) 3 4   -- will work
+
+-- You could even name an operator, if you were mad
+
+divideBy = (/)
+divideBy 7 2
+
+-- Testing if calculations are similar
+
+3 + 4 == 8 - 1 -- True
+
+-- You can write this in prefix style, but it looks kind of nasty
+-- : You'd have to wrap the expressions in parenthesis to make sure
+--   that `==` only has two arguments.
+--
+-- : Lisp would be (equal? (+ 3 4) (- 8 1)) which just looks .. better.
+-- : Figure 1.7 (page 78) shows operator precedence/order (how they're evaluated)
+
+(==) ((+) 3 4) ((-) 8 1)
+
+-- Arithmetic operators are `left` associated (evaluate left to right)
+-- : 10 - 5 - 1         =>   ((10 - 5) - 1)
+-- Nonassociative operators can't be chained like this:
+-- : foo == bar == baz  ==>  error
+
+
+
+-- 1.4
+
+-- Elm's most basic collections are lists, records and tuples.
+-- : Elm collections are ALWAYS immutable (which differs from other languages)
+--   Everything from [module] is a function, there's no fields or methods. 
+
+-- Lists
+-- : remember that 'c' is for character, "c" is for string.
+-- : https://package.elm-lang.org/packages/elm/core/latest/List
+
+["one fish", "two fish"]
+
+"one fish" :: ["two fish"]     -- I could also write it like this ...
+"one fish" :: "two fish" :: [] -- Or like this.
+
+["one fish"] ++ ["two fish"]   -- Or even, like this.
+
+-- : That's a bit like Lisp `(cons 'a '(b c))` or `(cons 'a (cons 'b '()))`
+
+-- : Because it is a linked list, you can ask for its first element,
+--   but not for other individual elements. You can't get from index, for instance.
+--   You can grab the first part, and the remainder (like Lisp's `first` and `rest`)
+--
+-- : You can change a list to an array (for index search) but mostly just use lists
+
+someList = [1, 2, 3, 4, 5]
+List.head someList  -- Just 1 : Maybe number
+List.tail someList  -- Just [2, 3, 4, 5] : Maybe (List number)
+someList            -- Returns the original list (it hasn't been mutated!)
+
+-- : 🚫 Every list MUST BE OF THE SAME TYPE!
+--
+--   in javascript an array can be mixed types, which can f* things up later.
+--   For example, what the hell will this javascript snippet return? Who knows?
+--
+--   [ -2, "0", "one", 1, "+02", "(3)" ].filter(function(num) { return num > 0; })
+--
+-- : Elm enforces strict types, which is handy with List.filter as we are more
+--   careful to use the correct function depending on type (like `withoutDashes` above).
+
+[1, "string", 2, "string"]    -- ERROR
+[1, 2, 3, 4]                  -- (List number)
+["string", "string"]          -- (List string)
+
+-- Some examples of mapping a list of strings to try and return integers:
+
+String.toInt "1"                       -- Just 1 : Maybe Int
+List.map String.toInt ["1", "2", "3"]  -- [Just 1,Just 2,Just 3] : List (Maybe Int)
+
+-- An example of using correct types for the boolean functions:
+
+List.filter (\char -> char /= '-') ['1', '-', 'a']   -- Characters
+
+List.filter (\char -> char /= '-') ["1", '-', 'a']   -- ERROR (mixed str/chars)
+List.filter (\str -> str /= "-") ["ZZ", "-", "Top"]  -- Strings
+
+List.filter Char.isDigit ['7', '9', '-']             -- Digits (numbers)
+List.filter (\num -> num > 0) [-1, 2, 5, -4, 3]      -- Numbers
