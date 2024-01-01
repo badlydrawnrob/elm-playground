@@ -87,5 +87,34 @@ withoutDashes "800-555-1234"
 -- : #1: named function (uses `=`)
 -- : #2: unnamed (anonymous) function (note the `->` difference)
 
-area width height = width * height  -- #1
+area width height = width * height   -- #1
 \width height -> width * height      -- #2
+
+-- Anonymous functions can be used much in the same way as named ones:
+--
+-- Why should I use an anonymous function?
+-- : Useful for one-off, or small functions that don't need accessing elsewhere
+-- : - https://docs.racket-lang.org/plait/lambda-tutorial.html
+
+ditchCharacter char = char /= '*'
+ditchCharacter = \char -> char /= '*'
+
+-- Let's improve our business logic, and shorten the String function!
+-- We'll also use a new function and ban all non-digit characters.
+-- : @ https://package.elm-lang.org/packages/elm/core/latest/Char
+
+String.filter (\char -> char /= '-') "800-555-1234"
+String.filter (\char -> char /= '-') "(800) 555-1234"
+
+String.filter (\char -> Char.isDigit char) "(800) 555-1234" -- Anon function
+String.filter Char.isDigit "(800) 555-1234"                 -- RRr! Simpler.
+
+-- Let's have a quick mess around and return only numbers of 1
+-- : String.filter takes any Boolean function and returns if True.
+
+anonCharFunction = \char -> char == '1'
+String.filter (\char -> anonCharFunction char) "(800) 135-2311"
+
+-- : Alternatively we could've just written that like this:
+String.filter (\char -> char == '1') "(800) 135-2311"
+
