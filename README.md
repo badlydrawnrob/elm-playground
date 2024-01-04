@@ -16,3 +16,7 @@ A testing ground for all things Elm.
 ## Some helpful FAQs
 
 - [Elm community FAQs](https://faq.elm-community.org)
+
+## Documentation
+
+- Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)

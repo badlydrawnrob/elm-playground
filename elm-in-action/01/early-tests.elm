@@ -1,9 +1,11 @@
 {-
-  Some early playing with the REPL
-  and getting used the syntax
+  Some early playing with the REPL and getting used the syntax.
+  So far, it seems like Elm won't give you too many WTF moments:
+  : On javascripts quirks, https://github.com/denysdovhan/wtfjs
+  : Or, what the fuck is "this" keyword? http://tinyurl.com/5n8z6kyr
 -}
 
--- 1.3.1
+-- 1.3.1 -----------------------------------------------------------------------
 
 -- Testing for plurality
 -- are there 1 or many elves?
@@ -33,8 +35,36 @@ pluralize "elf" "elves" 3           -- "elves"
 pluralize "elf" "elves" (round 0.9) -- "elf"
 
 
+-- Infix -vs- Prefix notation --------------------------------------------------
 
--- 1.3.2
+-- These all work, but might not be considered "normal" in Elm styleguide.
+-- It looks kind of funky with operators like `* + - /` (which are actually
+-- just functions) as they only accept 2 parameters.
+--
+--   1 * 2              -- ✅ Regular infix notation
+--   (*) 1 2            -- ✅ Infix notation
+--   (*) ((*) 1 2) 3    -- ✅ Infix notation with 3 arguments
+--
+--   (* 1 2 3)          -- Lisp notation
+--
+--   (*) 1 2 3          -- 🚫 ERROR (Elm won't let you do this)
+--   ((*) ((*) 1 2) 3)  -- ✅ FIXED (Elm notation is ugly)
+--
+-- : In general, it seems best to use `infix` notation for these operators.
+-- : As for functions, most in Elm use `prefix` notation, which can be written
+--   with or without `()`.
+
+variableParen a b = a * b * c    -- <function>
+variableParen 1 2                -- 2 : number
+(variableParen 1 2)              -- 2 : number
+
+variableParen a b c = a * b * c  -- <function>
+variableParen 1 2 3              -- 6 : number
+(variableParen 1 2 3)            -- 6 : number
+
+
+
+-- 1.3.2 -----------------------------------------------------------------------
 
 -- The string module houses the functions specific to "strings"
 -- each function set is split into it's own type (i.e: Set)
@@ -60,7 +90,7 @@ String.filter isKeepable "800-555-1234" -- strips all '-' characters
 
 
 
--- 1.3.3
+-- 1.3.3 -----------------------------------------------------------------------
 
 -- Creating a reusable function, but keeping `isKeepable` in local scope,
 -- meaning the function only works within it's parent function ...
@@ -77,7 +107,7 @@ withoutDashes "800-555-1234"
 
 
 
--- 1.3.4
+-- 1.3.4 -----------------------------------------------------------------------
 
 -- Introducing anonymous functions (y'know, lambdas λ). In lisp you can use the
 -- word `lambda` or symbol `λ` to "name" your function, but a `\` in Elm lang.
@@ -122,39 +152,38 @@ String.filter (\char -> char == '1') "(800) 135-2311"
 
 
 
--- 1.3.5
+-- 1.3.5 -----------------------------------------------------------------------
 
 -- Operators like plus and minus can be written in infix style:
 
-2 + 3 + 4 -- will work
-1 / 2     -- will work
-3 * 4     -- will work
+2 + 3 + 4 -- ✅ will work
+1 / 2     -- ✅ will work
+3 * 4     -- ✅ will work
 
 -- Or they can be written in prefix style (like lisp)
 -- : You must wrap these in parenthesis with prefix-style notation
 -- : 🚫 HOWEVER, they accept (and only 2) operands
 
-(+) 2 3 4 -- won't work
-(/) 1 2   -- will work
-(*) 3 4   -- will work
+(+) 2 3 4 -- 🚫 won't work
+(/) 1 2   -- ✅ will work
+(*) 3 4   -- ✅ will work
 
 -- You could even name an operator, if you were mad
 
 divideBy = (/)
 divideBy 7 2
 
--- Testing if calculations are similar
+-- Testing if calculations calculate the same values
 
-3 + 4 == 8 - 1 -- True
+3 + 4 == 8 - 1  -- ✅ This looks simple to look at
 
--- You can write this in prefix style, but it looks kind of nasty
+-- Writing this in `prefix` style looks quite ugly in Elm.
 -- : You'd have to wrap the expressions in parenthesis to make sure
 --   that `==` only has two arguments.
---
--- : Lisp would be (equal? (+ 3 4) (- 8 1)) which just looks .. better.
 -- : Figure 1.7 (page 78) shows operator precedence/order (how they're evaluated)
 
-(==) ((+) 3 4) ((-) 8 1)
+-- In Lisp it's (equal? (+ 3 4) (- 8 1)) — much better.
+(==) ((+) 3 4) ((-) 8 1)  -- 🚫 Waaay more confusing
 
 -- Arithmetic operators are `left` associated (evaluate left to right)
 -- : 10 - 5 - 1         =>   ((10 - 5) - 1)
@@ -163,13 +192,39 @@ divideBy 7 2
 
 
 
--- 1.4
+-- 1.4 -------------------------------------------------------------------------
+
+-- Elm Collections --
 
 -- Elm's most basic collections are lists, records and tuples.
 -- : Elm collections are ALWAYS immutable (which differs from other languages)
---   Everything from [module] is a function, there's no fields or methods. 
+--   Everything from [module] is a function, there's no fields or methods.
+-- : See `Table 1.7`: Comparing lists, records and tuples.
+--
+-- : 1. Lists are good for collections of _varying size_ whose elements share a
+--    _consistent type_.
+--
+--      @ https://elmprogramming.com/list.html
+--
+--   2. Records let us represent collections of _fixed fields_ with _varied types_.
+--
+--      @ https://elmprogramming.com/record.html
+--
+--   3. Tuples are similar to records but add _conciseness_ . Accessed by position,
+--      rather than name. "For when you want a record but don't want to bother
+--      naming it's fields"
+--
+--      If I remember right, with Lisp (Racket lang) you use lists when you're
+--      unsure of the structure/naming of a data set, then convert it to
+--      named `structs` when this is more clear. So lists or tuples might be
+--      a good start until the data matures into proper named data structures:
+--      @ https://www.grinning-cat.com/post/racket_structures/
+--      @ https://beautifulracket.com/explainer/data-structures.html
+--
+--      @ https://elmprogramming.com/tuple.html
 
--- Lists
+
+-- Lists --
 -- : remember that 'c' is for character, "c" is for string.
 -- : https://package.elm-lang.org/packages/elm/core/latest/List
 
@@ -221,3 +276,91 @@ List.filter (\str -> str /= "-") ["ZZ", "-", "Top"]  -- Strings
 
 List.filter Char.isDigit ['7', '9', '-']             -- Digits (numbers)
 List.filter (\num -> num > 0) [-1, 2, 5, -4, 3]      -- Numbers
+
+
+
+-- 1.4.2 -----------------------------------------------------------------------
+
+-- Records --
+
+-- Again, records are _immutable_ — a collection of named fields,
+-- like a `key: value` store. The syntax is different to json.
+--
+-- Difference to javascript:
+-- 1. Records use `=` as a seperator, rather than `:`,
+-- 2. Fields can be accessed directly,
+-- 3. Records cannot be modified (create a new record for changes),
+-- 4. Field names can't start with uppercase letters,
+-- 5. You can't list field names on demand,
+-- 6. There's no concept of inheritance
+--
+-- : #1 Elm rearranges the position of each field in alphabetical order.
+
+{ name = "Li", cats = 2 }  -- : #1 { cats : number, name : String }
+
+-- Record updates --
+
+-- Elm merges new values with the old, but creates a completely new record
+--
+-- : 1. Updating values requires `|` pipe. The stuff to the right of pipe gets updated
+-- : 2. Note that `name` and `cats` are more like a variable name,
+--      not a string (like in json files)
+-- : 3. You'll see that `catLover` _isn't mutated_
+
+catLover = { name = "Li", cats = 2 }    -- { cats = 2, name = "Li" }
+withThirdCat = { catLover | cats = 3 }  -- { cats = 3, name = "Li" }
+
+withThirdCat                            -- { cats = 3, name = "Li" }
+catLover                                -- { cats = 2, name = "Li" }
+
+-- Update multiple fields of record
+-- : You'll see that even updating a record with it's original name
+--   will only "change" it at this point in time. It hasn't been stored,
+--   as `catLover` still remains unchanged.
+-- : `catLover | ...` temporarily created a NEW record.
+-- : You'd have to _store it in a different name_
+
+-- Returns a changed record but ...
+{ catLover | cats = 88, name = "LORD OF CATS"}           
+-- Record hasn't changed! (Above useful to see what _would_ happen)
+catLover
+-- Store in a new named variable
+catLoverForReal = { catLover | cats = 88, name = "LOC"}
+
+
+-- Tuples --
+
+{-| This is a test block
+like is used in Elm docs
+— looks f* ugly.
+|-}
+
+-- Tuples are often used for things like `key: value` pairs. where writing them
+-- out (such as a record) would add verbosity but not much clarity.
+--
+-- : Extracting `first` and `second` can only be used where there are pairs.
+-- : If a tuple has 3 elements, you can use _tuple destructuring_.
+--   @ https://discourse.elm-lang.org/t/purpose-of-3-tuples/5764/4
+--
+-- : 🚫 Elm doesn't support Tuples of more than 3 elements.
+--   - Use a record instead!!
+
+("Tech", 9)
+Tuple.first ("Tech", 9)
+Tuple.second ("Tech", 9)
+
+-- A function that takes a tuple of three elements
+-- : Destructuring a tuple into three named values
+multiply3d (x, y, z) = x * y * z  -- <function>
+multiply3d (6, 7, 2)              -- 84 : number
+
+-- 🚫 Attention! These are NOT the same:
+-- > multiply x y z = x * y * z
+--   <function> : number -> number -> number -> number
+-- > multiply (x, y, z) = x * y * z
+--   <function> : ( number, number, number ) -> number
+--
+-- : The first one is a normal function ...
+--   The second is a function that takes a tuple!
+
+
