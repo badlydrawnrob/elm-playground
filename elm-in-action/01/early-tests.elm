@@ -343,7 +343,9 @@ like is used in Elm docs
 --   @ https://discourse.elm-lang.org/t/purpose-of-3-tuples/5764/4
 --
 -- : 🚫 Elm doesn't support Tuples of more than 3 elements.
---   - Use a record instead!!
+--      - Use a record instead!!
+-- : When you need only two or three elements, though, choose tuples or records
+--   based on whichever would yield more readable code
 
 ("Tech", 9)
 Tuple.first ("Tech", 9)
