@@ -1,5 +1,9 @@
 # README
 
+> Why do we need types? It's best illustrated by the old joke:
+>
+> A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
+
 A testing ground for all things Elm.
 
 ## Some useful docs
