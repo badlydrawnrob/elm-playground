@@ -37,12 +37,12 @@ urlPrefix =
 --
 -- : #5 We're passing `viewThumbnail` as the 1st argument to our _higher order
 --      function_ `List.map` along with the `model` list of `url string` records.
---      - Could look better wrapped in parens so it looks more like a function,
---        and not an argument
+--      - Div is expecting a `[]` list of Html elements, so we need to wrap
+--        our mapping function with `()` parenthesis.
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]  -- #3
-    , div [ id "thumbnails" ] List.map viewThumbnail model     -- #4
+    , div [ id "thumbnails" ] (List.map viewThumbnail model)     -- #4
     ]
 
 
