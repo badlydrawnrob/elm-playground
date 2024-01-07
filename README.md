@@ -24,6 +24,7 @@ A testing ground for all things Elm.
 ## Some nice examples
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
+- [Built with Elm](https://www.builtwithelm.co)
 
 ## Documentation
 
