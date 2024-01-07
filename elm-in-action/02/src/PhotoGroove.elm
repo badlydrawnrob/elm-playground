@@ -24,7 +24,7 @@ import Html.Attributes exposing (..)
 -- Constants ------------------------------------------------------------
 -- : #1 Split out reusable stuff into separate constants
 urlPrefix =
-  "http://elm-in-action.com"
+  "http://elm-in-action.com/"
 
 
 -- View ------------------------------------------------------------------------
@@ -47,9 +47,9 @@ view model =
 
 
 -- See `Figure 2.8`
--- : #1 We pass List.map a translation function and a list
+-- : #1 We pass `List.map` a translation function and a list
 -- : #2 It runs that translation function on each value in the list.
--- : #3 List.map returns a new list containing the translated values.
+-- : #3 `List.map` returns a new list containing the translated values.
 
 -- Helper functions ------------------------------------------------------------
 -- Helps another function to do it's job. Used in the `view` function
