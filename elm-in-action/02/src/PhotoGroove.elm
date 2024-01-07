@@ -43,5 +43,7 @@ initialModel =
   , { url = "3.jpeg" }
   ]
 
+-- View --
+-- Pass the model to the view in main
 main =
   view initialModel
