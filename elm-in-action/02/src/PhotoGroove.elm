@@ -1,3 +1,5 @@
+module PhotoGroove exposing (main)
+
 {-| Beginning our Elm app:
     Photo Groove!
 
@@ -15,10 +17,7 @@
     : Only exposed values can be accessed by other modules.
       As a general rule, it's best for our modules to expose
       _as little as possible_.
-|-}
-
--- #1
-module PhotoGroove exposing (main)
+-}
 
 -- #2
 import Html exposing (div, h1, img, text)
@@ -34,3 +33,6 @@ view model =
       , img [ src "http://elm-in-action.com/3.jpeg" ] []
       ]
     ]
+
+main =
+  view "no model yet"
