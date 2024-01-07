@@ -11,16 +11,16 @@ module PhotoGroove exposing (main)
     : #6 We’ll discuss “main” later.
 
     We're exposing `main` but NOT `view` for other modules to import.
-    Another module that imported `PhotoGroove` would get 
+    Another module that imported `PhotoGroove` would get
     an error if it tried to access `PhotoGroove.view`.
-    
+
     : Only exposed values can be accessed by other modules.
       As a general rule, it's best for our modules to expose
       _as little as possible_.
 -}
 
 -- #2
-import Html exposing (div, h1, img, text)
+import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
@@ -34,5 +34,14 @@ view model =
       ]
     ]
 
+-- Model --
+-- We create a list of _records_
+-- each record containing a `url` string
+initialModel =
+  [ { url = "1.jpeg" }
+  , { url = "2.jpeg" }
+  , { url = "3.jpeg" }
+  ]
+
 main =
-  view "no model yet"
+  view initialModel
