@@ -149,5 +149,6 @@ main =
 -- perhaps other functions that need to know when things are selected, for example.
 --
 -- : #1 A relevant structure of data (list? Record? Nested records?)
--- : #2 If the function requires knowing the `state` of the DOM, but isn't passed
---      the model (or part of it), there's no way to return values based on the model.
+-- : #2 The model needs to be passed around!!! If a function doesn't have access
+--      to the model's current state (and it needs it) we're unable to change
+--      the view/values properly.

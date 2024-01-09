@@ -42,8 +42,10 @@ urlPrefix =
 --      - Div is expecting a `[]` list of Html elements, so we need to wrap
 --        our mapping function with `()` parenthesis.
 --
---      - We've moved our list of `img` to a single function,
---        which is a single Html `img` element. We pass this function to `List.map`
+--    a) We've changed the hardcoded list of `img` to a dynamic `img` element
+--       in a function called `viewThumbnail`. This is passed to `List.map` in view.
+--
+--    b) We're also using conditional loading. Is it a `selected` image or not?
 --
 -- : #6 We need some value to store our `selected` image
 view model =
@@ -61,8 +63,15 @@ view model =
 -- Helper functions ------------------------------------------------------------
 -- Helps another function to do it's job. Used in the `view` function
 -- where we've pulled out the image to use in the `view->img` list.
-viewThumbnail thumb =
-  img [ src (urlPrefix ++ thumb.url) ] []  -- #5: `++` concatonates strings
+--
+-- : Remember that `++` concatonates strings!
+viewThumbnail selectedUrl thumb =
+  if selectedUrl == thumb.url then
+    img [ src (urlPrefix ++ thumb.url)       -- #5a
+        , class "selected"
+        ] []
+  else
+    img [ src (urlPrefix ++ thumb.url) ] []  -- #5b
 
 
 -- Model -----------------------------------------------------------------------
