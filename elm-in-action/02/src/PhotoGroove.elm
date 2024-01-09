@@ -83,8 +83,8 @@ view model =
 -- : `List.map` will pass through a record `{ url = "string" }` to `thumb`
 -- : `thumb` can access the `url` (string) from the record.
 viewThumbnail selectedUrl thumb =
-  img [ src (urlPrefix ++ thumb.url)                      -- #5a
-      , classList ("selected", selectedUrl == thumb.url)  -- #5b
+  img [ src (urlPrefix ++ thumb.url)                          -- #5a
+      , classList [ ("selected", selectedUrl == thumb.url) ]  -- #5b
       ] []
 
 
