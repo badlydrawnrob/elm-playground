@@ -51,7 +51,7 @@ urlPrefix =
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]  -- #3
-    , div [ id "thumbnails" ] (List.map viewThumbnail model)     -- #4
+    , div [ id "thumbnails" ] (List.map viewThumbnail model)  -- #4
     ]
 
 
@@ -65,13 +65,12 @@ view model =
 -- where we've pulled out the image to use in the `view->img` list.
 --
 -- : Remember that `++` concatonates strings!
+-- : `List.map` will pass through a record `{ url = "string" }` to `thumb`
+-- : `thumb` can access the `url` (string) from the record.
 viewThumbnail selectedUrl thumb =
-  if selectedUrl == thumb.url then
-    img [ src (urlPrefix ++ thumb.url)       -- #5a
-        , class "selected"
-        ] []
-  else
-    img [ src (urlPrefix ++ thumb.url) ] []  -- #5b
+  img [ src (urlPrefix ++ thumb.url)                      -- #5a
+      , classList ("selected", selectedUrl == thumb.url)  -- #5b
+      ] []
 
 
 -- Model -----------------------------------------------------------------------

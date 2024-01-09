@@ -152,3 +152,25 @@ main =
 -- : #2 The model needs to be passed around!!! If a function doesn't have access
 --      to the model's current state (and it needs it) we're unable to change
 --      the view/values properly.
+
+-- Reduce, Reduce, reduce! --
+-- Don't use verbose terms if you can use cleaner ones:
+
+-- Verbose --
+viewThumbnail selectedUrl thumb =
+  if selectedUrl == thumb.url then
+    img [ src (urlPrefix ++ thumb.url)       -- individual image if selected
+        , class "selected"
+        ] []
+  else
+    img [ src (urlPrefix ++ thumb.url) ] []  -- individual image if not selected
+
+-- Reduced --
+-- : using `classList`
+--   @ http://tinyurl.com/5enp9ndh
+viewThumbnail selectedUrl thumb =
+  img [ src (urlPrefix ++ thumb.url)
+      , classList [
+        ( "selected", selectedUrl == thumb.url )  -- Tuple: "class" and boolean function
+      ]
+      ] []
