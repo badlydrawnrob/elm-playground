@@ -31,10 +31,17 @@ urlPrefix =
 --
 -- : #3 h1 element with an empty attributes list
 --
--- : #4 Because each Html element accepts two lists:
+-- : #4 An Html element accepts two lists:
 --      - An attributes list
 --      - A child list
---      we can use `List.map` function to return a list!
+--
+--   a) `List.map` returns a list, so we can use this function! However, now that
+--      our `model` is a `record` that contains a `list of url` and `selectedUrl`,
+--      we need to be more specific about which element to pass `List.map` ...
+--      - `model.selectedUrl` is passed to the `viewThumbnail` function (to check "selected")
+--      - `model.photos` is passed to the `List.map` to access `list of url` records!
+--
+--   b) Here we're using the `model.selectedUrl` to add a large image
 --
 -- : #5 We're passing `viewThumbnail` as the 1st argument to our _higher order
 --      function_ `List.map` along with the `model` list of `url string` records.
@@ -51,7 +58,15 @@ urlPrefix =
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]  -- #3
-    , div [ id "thumbnails" ] (List.map viewThumbnail model)  -- #4
+    , div [ id "thumbnails" ]
+        (List.map                    -- #4a
+          (\photo -> viewThumbnail model.selectedUrl photo)
+          model.photos
+        )
+    , img
+        [ class "large"
+        , src (urlPrefix ++ "large/" ++ model.selectedUrl)  -- #4b
+        ] []
     ]
 
 

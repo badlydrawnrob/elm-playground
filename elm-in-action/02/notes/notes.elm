@@ -120,6 +120,16 @@ rules = [
 -- `import Html exposing (..)
 
 
+-- Html elements have two lists --
+--
+-- : List one is the attributes of the element
+img [ class "large", src "./url.jpeg" ] []
+-- : List two is the children elements (if any)
+div [] [
+  img [ src "./url.jpeg" ] [] -- Child element with no children
+]
+
+
 
 -- 2.2 -------------------------------------------------------------------------
 
@@ -144,6 +154,7 @@ initialModel =
 
 main =
   view initialModel
+
 
 -- The model holds the `state` of the data we need to pass around to `view`, and
 -- perhaps other functions that need to know when things are selected, for example.
@@ -174,3 +185,11 @@ viewThumbnail selectedUrl thumb =
         ( "selected", selectedUrl == thumb.url )  -- Tuple: "class" and boolean function
       ]
       ] []
+
+
+-- Accessing records -----------------------------------------------------------
+
+initialModel.photos
+-- [{ url = "1.jpeg" },{ url = "2.jpeg" },{ url = "3.jpeg" }]
+initialModel.selected
+-- "1.jpeg" : String
