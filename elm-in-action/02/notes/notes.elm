@@ -137,10 +137,17 @@ rules = [
 -- where necessary.
 --
 -- First, we declare a model (declares the state of an Elm application)
---
+-- Next, we can initiate the model in `main`.
 
 initialModel =
   types/data
 
 main =
   view initialModel
+
+-- The model holds the `state` of the data we need to pass around to `view`, and
+-- perhaps other functions that need to know when things are selected, for example.
+--
+-- : #1 A relevant structure of data (list? Record? Nested records?)
+-- : #2 If the function requires knowing the `state` of the DOM, but isn't passed
+--      the model (or part of it), there's no way to return values based on the model.
