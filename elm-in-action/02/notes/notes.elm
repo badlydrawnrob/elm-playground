@@ -193,3 +193,41 @@ initialModel.photos
 -- [{ url = "1.jpeg" },{ url = "2.jpeg" },{ url = "3.jpeg" }]
 initialModel.selected
 -- "1.jpeg" : String
+
+
+-- Partial application of a function -------------------------------------------
+-- Also known as `curried` functions. This means you don't have to pass all
+-- arguments through to a function.
+--
+-- : In Elm, functions are curried by default! (in Javascript they're not.)
+-- : To change default behavior, create a tupled function (and deconstruct it)
+--   @ See `early-tests.elm` and `multiply3d` function for example.
+--
+-- : 1) Pass a single argument to a function that accepts two ...
+-- : 2) Returns another function that takes the second argument
+--
+-- : `(+)` Could be thought of as:
+-- : <function> : (number -> number) -> number
+--
+-- 🚫 #1 With curried functions, which order to you add arguments?
+--    which ones do we need to access first?
+
+partial = (+) 1  -- <function> : number -> number
+partial 2        -- 3 : number
+
+-- A simplified version of `viewThumbnail` --
+
+urlPrefix = "http://site.com/"
+
+viewThumbnail selectedUrl thumb =
+  if selectedUrl == "1.jpeg" then
+    img [ src (urlPrefix ++ thumb.url) ] []
+  else
+    img [] []
+
+viewThumbnail "1.jpeg" -- 🚫 #1
+-- <function> : { a | url : String } -> Html msg
+viewThumbnail "1.jpeg" { url = "2.jpeg" }
+-- <internals> : Html msg
+
+

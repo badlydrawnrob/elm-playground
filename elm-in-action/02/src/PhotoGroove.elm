@@ -60,7 +60,7 @@ view model =
     [ h1 [] [ text "Photo Groove" ]  -- #3
     , div [ id "thumbnails" ]
         (List.map                    -- #4a
-          (\photo -> viewThumbnail model.selectedUrl photo)
+          (viewThumbnail model.selectedUrl)
           model.photos
         )
     , img
