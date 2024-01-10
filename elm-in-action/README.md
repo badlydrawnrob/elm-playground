@@ -34,5 +34,5 @@ Learning and teaching with programming takes quite a bit of breaking things down
     - A sketch might be handy (to show [how it's actually called twice](https://livebook.manning.com/forum?p=1&comment=503513&page=1&product=rfeldman))
     - Is there something specific about the _order_ of the arguments, and would it work the other way around? (no)
 11. Understanding [`Html msg`](http://tinyurl.com/elm-lang-html-msg)
-12. What the fuck does [`|` pipe](https://github.com/badlydrawnrob/elm-playground/blob/eeec50661c2d3eaddb17862380895e7be658500d/elm-in-action/02/notes/notes.elm#L272) do? (this is quite different from lisp)
+12. What the fuck does [`|` pipe](https://github.com/badlydrawnrob/elm-playground/blob/eeec50661c2d3eaddb17862380895e7be658500d/elm-in-action/02/notes/notes.elm#L272) do? (this is quite different from lisp) — [answer here](https://elm-lang.org/docs/records#updating-records)
 13. [Difference](https://github.com/badlydrawnrob/elm-playground/commit/5e8dcaf8a02ab3bd25a677280a42d7cc9648eaea#diff-cf788fcfa2aae55b8c1aa182e6a277971730a9d5203ef741f109f311a8c8c9ba) between a static model, and a dynamic one. See [here](https://elmprogramming.com/model-view-update-part-1.html)
