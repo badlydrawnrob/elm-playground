@@ -19,6 +19,7 @@ module PhotoGroove exposing (main)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Browser
 
 
 -- Constants ------------------------------------------------------------
@@ -121,4 +122,8 @@ update msg model =
 -- View --
 -- Pass the model to the view in main
 main =
-  view initialModel
+  Browser.sandbox
+    { init = initialModel
+    , view = view
+    , update = update
+    }

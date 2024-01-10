@@ -283,3 +283,18 @@ update msg model =
 -- ... (thumbnail function)
 , onClick { description = "ClickedPhoto", data = thumb.url }
 -- ... (end thumbnail function)
+
+
+-- The main function needs to change -------------------------------------------
+--
+-- Up until now our `main` function has been simple:
+main =
+  view initialModel
+-- This is "static" and passes the view a static model.
+-- To make things dynamic, we'll need to make some changes!!
+--
+-- @ http://tinyurl.com/elm-lang-browser-module
+-- @ https://elmprogramming.com/model-view-update-part-1.html
+--
+-- : Similar to Racket's Universe, we need a model->view->update process!
+--   @ http://tinyurl.com/designing-world-programs
