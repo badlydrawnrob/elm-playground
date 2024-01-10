@@ -29,6 +29,7 @@ Learning and teaching with programming takes quite a bit of breaking things down
 7. We improved `selectedUrl` in `viewThumbnail` which looks much better using `classList` http://tinyurl.com/5enp9ndh
 8. The `Html` module can make for some verbose code (see 7). Ways to cutcodedown?
 9. Explain partial application in the `List.map (viewThumbnail ...)` section.
-10. A couple of examples of currying [(partially applying functions)](https://www.codingexercises.com/guides/quickstart-elm-part-7) — also in [Scheme](http://tinyurl.com/scheme-lang-currying). See Table 2.1 (add a note on difference between default and tupled functions)
+10. See **`notes.elm`**: A couple of examples of currying [(partially applying functions)](https://www.codingexercises.com/guides/quickstart-elm-part-7) — also in [Scheme](http://tinyurl.com/scheme-lang-currying). See Table 2.1 (add a note on difference between default and tupled functions)
     - Why does the function work after it was changed from this version? http://tinyurl.com/elm-lang-before-currying
+    - A sketch might be handy (to show [how it's actually called twice](https://livebook.manning.com/forum?p=1&comment=503513&page=1&product=rfeldman))
 11. Understanding [`Html msg`](http://tinyurl.com/elm-lang-html-msg)
