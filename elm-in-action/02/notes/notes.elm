@@ -233,8 +233,8 @@ viewThumbnail "1.jpeg" { url = "2.jpeg" }
 
 
 -- 2.2.2 -----------------------------------------------------------------------
---
--- Handling events with messages and updates
+
+-- Handling events with messages and updates --
 -- : A `message` is a value used to pass information from one part of the system
 --   to another. I suppose a little like Racket's Universe (with handler functions)
 --
@@ -244,12 +244,12 @@ viewThumbnail "1.jpeg" { url = "2.jpeg" }
 --   rather, we write an `update` function that translates messages
 --   into our desired `model`.
 
--- Example user action triggers update function:
--- user clicks a thumbnail
-
 -- : The message should descibe _what happened_.
 -- : The format of our message is up to us.
 -- : It could be a string, a list, a number, ...
+--
+-- : Example user action triggers update function:
+--   — user clicks a thumbnail
 
 -- { Action, What was clicked }
 { description = "ClickedPhoto", data = "2.jpeg" }
@@ -265,9 +265,21 @@ update msg model =
   else
     -- use the existing model
 
--- Update the model
+-- Update the model --
 -- : It's a bit like `set!` in lisp, but everything is supposed to
 --   be immutable so I think it returns a new record.
 --   @ https://docs.racket-lang.org/guide/set_.html
 { model | selectedUrl = msg.data }
 
+-- : If we receive an unrecognized message, we return the
+--   original model unchanged. This is important!
+-- : Whatever else happens, the `update` function must **always**
+--   return a new model, even if it's the same as the old one.
+
+-- Html.Events and messages --
+-- We also need some way to "create" the message,
+-- and we're binding it to an `onClick` event:
+--
+-- ... (thumbnail function)
+, onClick { description = "ClickedPhoto", data = thumb.url }
+-- ... (end thumbnail function)

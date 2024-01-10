@@ -18,6 +18,7 @@ module PhotoGroove exposing (main)
 -- #2
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 
 -- Constants ------------------------------------------------------------
@@ -54,6 +55,10 @@ urlPrefix =
 --
 --    b) We're also using conditional loading. Is it a `selected` image or not?
 --
+--    c) We need to capture the event, and pass a `msg` data for update to consume.
+--       The Elm Runtime takes care of managing event listeners behind the scenes,
+--       so this one-line addition is the only change we need to make to our view.
+--
 -- : #6 We need some value to store our `selected` image
 view model =
   div [ class "content" ]
@@ -83,8 +88,10 @@ view model =
 -- : `List.map` will pass through a record `{ url = "string" }` to `thumb`
 -- : `thumb` can access the `url` (string) from the record.
 viewThumbnail selectedUrl thumb =
-  img [ src (urlPrefix ++ thumb.url)                          -- #5a
-      , classList [ ("selected", selectedUrl == thumb.url) ]  -- #5b
+  img [ src (urlPrefix ++ thumb.url)                                -- #5a
+      , classList [ ("selected", selectedUrl == thumb.url)          -- #5b
+      , onClick { description = "ClickedPhoto", data = thumb.url }  -- #5c
+      ]
       ] []
 
 
