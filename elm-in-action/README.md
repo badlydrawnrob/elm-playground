@@ -34,3 +34,4 @@ Learning and teaching with programming takes quite a bit of breaking things down
     - A sketch might be handy (to show [how it's actually called twice](https://livebook.manning.com/forum?p=1&comment=503513&page=1&product=rfeldman))
     - Is there something specific about the _order_ of the arguments, and would it work the other way around? (no)
 11. Understanding [`Html msg`](http://tinyurl.com/elm-lang-html-msg)
+12. What the fuck does [`|` pipe](https://github.com/badlydrawnrob/elm-playground/blob/eeec50661c2d3eaddb17862380895e7be658500d/elm-in-action/02/notes/notes.elm#L272) do? (this is quite different from lisp)

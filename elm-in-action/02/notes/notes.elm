@@ -266,5 +266,8 @@ update msg model =
     -- use the existing model
 
 -- Update the model
+-- : It's a bit like `set!` in lisp, but everything is supposed to
+--   be immutable so I think it returns a new record.
+--   @ https://docs.racket-lang.org/guide/set_.html
 { model | selectedUrl = msg.data }
 
