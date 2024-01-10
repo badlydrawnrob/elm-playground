@@ -231,3 +231,40 @@ viewThumbnail "1.jpeg" { url = "2.jpeg" }
 -- <internals> : Html msg
 
 
+
+-- 2.2.2 -----------------------------------------------------------------------
+--
+-- Handling events with messages and updates
+-- : A `message` is a value used to pass information from one part of the system
+--   to another. I suppose a little like Racket's Universe (with handler functions)
+--
+--   @ http://tinyurl.com/htdp-universe-big-bang
+--
+-- : Elm doesn't use `addEventListener` like Javascript does,
+--   rather, we write an `update` function that translates messages
+--   into our desired `model`.
+
+-- Example user action triggers update function:
+-- user clicks a thumbnail
+
+-- : The message should descibe _what happened_.
+-- : The format of our message is up to us.
+-- : It could be a string, a list, a number, ...
+
+-- { Action, What was clicked }
+{ description = "ClickedPhoto", data = "2.jpeg" }
+
+-- Our update (or handler) function will:
+-- 1. Look at the message received
+-- 2. Look at our current model
+-- 3. Use (1) and (2) to return a new model
+
+update msg model =
+  if msg.description == "ClickedPhoto" then
+    -- update the model
+  else
+    -- use the existing model
+
+-- Update the model
+{ model | selectedUrl = msg.data }
+

@@ -32,4 +32,5 @@ Learning and teaching with programming takes quite a bit of breaking things down
 10. See **[`notes.elm`](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)**: A couple of examples of currying [(partially applying functions)](https://www.codingexercises.com/guides/quickstart-elm-part-7) — also in [Scheme](http://tinyurl.com/scheme-lang-currying). See Table 2.1 (add a note on difference between default and tupled functions)
     - Why does the function work after it was changed from this version? http://tinyurl.com/elm-lang-before-currying
     - A sketch might be handy (to show [how it's actually called twice](https://livebook.manning.com/forum?p=1&comment=503513&page=1&product=rfeldman))
+    - Is there something specific about the _order_ of the arguments, and would it work the other way around? (no)
 11. Understanding [`Html msg`](http://tinyurl.com/elm-lang-html-msg)

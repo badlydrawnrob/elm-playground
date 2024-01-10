@@ -100,6 +100,17 @@ initialModel =
   , selectedUrl = "1.jpeg"  -- #6
   }
 
+
+-- Update --
+-- Look at the message received,
+-- Look at the current model
+-- Use these to find new model
+update msg model =
+  if msg.description == "ClickedPhoto" then
+    { model | selectedUrl = msg.data }
+  else
+    model
+
 -- View --
 -- Pass the model to the view in main
 main =
