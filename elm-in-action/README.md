@@ -11,7 +11,10 @@
 > 7. Mixed learning techniques (learning styles, formats)
 > 8. Interleave where possible (similar ideas in lisp/elm)
 
-Learning and teaching with programming takes quite a bit of breaking things down and moving up in small steps, so that the student understands what options they have, and how to write things more succinctly.
+- To what level do I want to learn programming?
+- How much do I care?
+
+Learning and teaching with programming takes quite a bit of breaking things down and moving up in small steps, so that the student understands what options they have, and how to write things more succinctly. Looking back at some of the [Racket lang challenges]() I've really forgotten quite a bit, and the functional examples seem a little long-winded.
 
 - [ ] Which texts or online learning get it right?
 - [ ] How could you break down that learning for better Anki cards?
