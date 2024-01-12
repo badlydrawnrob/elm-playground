@@ -1,16 +1,18 @@
 # Stuff to add to Anki?
 
-> _See `./__ANKI__` in local folder (not in repo)_. Don't add cards recklessly. Is it really worth the overhead to create and revise this idea?
+> _See `./__ANKI__` in local folder (not in repo)_. Don't add cards recklessly. Is it really worth the overhead to create and revise this idea? Remember your "bin first" approach to grouping, filtering, and timeboxing tasks (and your tendency to get side-tracked!)
 >
 > 1. **Write it down** (a brief summary of a learning point)
-> 2. How well do you **understand?** How well do you **remember?**
-> 3. Is having an example on file, or **a set of notes enough?**
-> 4. **Do I understand the idea well enough?** Will it make sense in a few months?
-> 5. If it's warranted, **create an example in your own words**
-> 6. For more complex ideas, **3 times, 3 ways**
-> 7. **Mixed learning techniques** (learning styles, formats)
-> 8. **Interleave** where possible (similar ideas in lisp/elm)
-> 9. **Group, filter, timebox** a potential card (using other mental models if needed)
+> 2. **Group related learning points!**
+> 3. How well do you **understand?** How well do you **remember?**
+> 4. Is having an example on file, or **a set of notes enough?**
+> 5. **Do I understand the idea well enough?** Will it make sense in a few months?
+> 6. If it's warranted, **write out a "to-do" Anki card item as a sentence of intent**, ideally in your own words.
+> 7. For more complex ideas, **[3 times, 3 ways](https://github.com/badlydrawnrob/anki/issues/93)**
+> 8. **Mixed learning techniques** (learning styles, formats) — add a link, a video, whatever.
+> 9. **Interleave** where possible (e.g: similar ideas in lisp/elm)
+> 10. **Group, filter, timebox** a potential card (using other mental models if needed)
+> 11. **Create an example card in your own words!**
 
 - To what level do I want to learn programming?
 - How much do I care?
@@ -40,3 +42,4 @@ Learning and teaching with programming takes quite a bit of breaking things down
 11. Understanding [`Html msg`](http://tinyurl.com/elm-lang-html-msg)
 12. What the fuck does [`|` pipe](https://github.com/badlydrawnrob/elm-playground/blob/eeec50661c2d3eaddb17862380895e7be658500d/elm-in-action/02/notes/notes.elm#L272) do? (this is quite different from lisp) — [answer here](https://elm-lang.org/docs/records#updating-records)
 13. [Difference](https://github.com/badlydrawnrob/elm-playground/commit/5e8dcaf8a02ab3bd25a677280a42d7cc9648eaea#diff-cf788fcfa2aae55b8c1aa182e6a277971730a9d5203ef741f109f311a8c8c9ba) between a static model, and a dynamic one. See [here](https://elmprogramming.com/model-view-update-part-1.html)
+14. Create a document that shows a basic model with a message (include the initial basic images too)
