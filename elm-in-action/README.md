@@ -1,15 +1,16 @@
 # Stuff to add to Anki?
 
-> _See `./__ANKI__` in local folder (not in repo)_
+> _See `./__ANKI__` in local folder (not in repo)_. Don't add cards recklessly. Is it really worth the overhead to create and revise this idea?
 >
-> 1. Write it down (a brief summary of a learning point)
-> 2. How well do you understand? How well do you remember?
-> 3. Sometimes, having a set of notes, or an example on file is enough.
-> 4. If you understand the idea well enough, is it really worth the overhead to add to Anki?
-> 5. If it's warranted, create an example in your own words
-> 6. For more complex ideas, 3 times, 3 ways
-> 7. Mixed learning techniques (learning styles, formats)
-> 8. Interleave where possible (similar ideas in lisp/elm)
+> 1. **Write it down** (a brief summary of a learning point)
+> 2. How well do you **understand?** How well do you **remember?**
+> 3. Is having an example on file, or **a set of notes enough?**
+> 4. **Do I understand the idea well enough?** Will it make sense in a few months?
+> 5. If it's warranted, **create an example in your own words**
+> 6. For more complex ideas, **3 times, 3 ways**
+> 7. **Mixed learning techniques** (learning styles, formats)
+> 8. **Interleave** where possible (similar ideas in lisp/elm)
+> 9. **Group, filter, timebox** a potential card (using other mental models if needed)
 
 - To what level do I want to learn programming?
 - How much do I care?
