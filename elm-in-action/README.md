@@ -1,6 +1,8 @@
 # Stuff to add to Anki?
 
-> _See `./__ANKI__` in local folder (not in repo)_. Don't add cards recklessly. Is it really worth the overhead to create and revise this idea? Remember your "bin first" approach to grouping, filtering, and timeboxing tasks (and your tendency to get side-tracked!)
+> _See `./__ANKI__` in local folder (not in repo)_. Don't add cards recklessly. Is it really worth the overhead to create and revise this card? Remember your "bin first" approach to grouping, filtering, and timeboxing tasks (and your tendency to get side-tracked!)
+>
+> The book uses quite a few javascript examples, and a lot of terminology that needn't be consigned to memory (I don't think) — important keywords and terminology could be useful.
 >
 > 1. **Write it down** (a brief summary of a learning point)
 > 2. **Group related learning points!**
