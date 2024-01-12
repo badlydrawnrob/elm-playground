@@ -13,9 +13,18 @@ A testing ground for all things Elm.
 - [Learn you an Elm](https://learnyouanelm.github.io/) (based on Haskell book)
 - [Beginning Elm](https://elmprogramming.com/)
 
+## Online courses
+
+- [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
+
+## Books
+
+- [Elm in Action](https://www.manning.com/books/elm-in-action)
+
 ## Some tools
 
 - [Elm land](https://elm.land)
+- [Everything else](https://github.com/sporto/awesome-elm) (massive list)
 
 ## Some helpful FAQs
 
@@ -26,6 +35,7 @@ A testing ground for all things Elm.
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
 - [Richard Feldman](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo) talks
+- [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 
 ## Documentation
 
