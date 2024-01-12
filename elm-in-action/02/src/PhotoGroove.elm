@@ -90,9 +90,8 @@ view model =
 -- : `thumb` can access the `url` (string) from the record.
 viewThumbnail selectedUrl thumb =
   img [ src (urlPrefix ++ thumb.url)                                -- #5a
-      , classList [ ("selected", selectedUrl == thumb.url)          -- #5b
+      , classList [ ("selected", selectedUrl == thumb.url) ]        -- #5b
       , onClick { description = "ClickedPhoto", data = thumb.url }  -- #5c
-      ]
       ] []
 
 
@@ -121,9 +120,16 @@ update msg model =
 
 -- View --
 -- Pass the model to the view in main
+-- : Our model is now dynamic!
+--   1. We listen for an event
+--   2. We pass a message when an event happens
+--   3. The model updates with a message and a model
+--      and returns a new model
+--
+-- : Behind the scenes
 main =
   Browser.sandbox
-    { init = initialModel
-    , view = view
-    , update = update
+    { init = initialModel  -- can be any value
+    , view = view          -- what the visitor sees
+    , update = update      -- what the computer sees
     }
