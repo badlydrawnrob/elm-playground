@@ -321,7 +321,7 @@ catLover                                -- { cats = 2, name = "Li" }
 -- : You'd have to _store it in a different name_
 
 -- Returns a changed record but ...
-{ catLover | cats = 88, name = "LORD OF CATS"}           
+{ catLover | cats = 88, name = "LORD OF CATS"}
 -- Record hasn't changed! (Above useful to see what _would_ happen)
 catLover
 -- Store in a new named variable
@@ -357,12 +357,19 @@ multiply3d (x, y, z) = x * y * z  -- <function>
 multiply3d (6, 7, 2)              -- 84 : number
 
 -- 🚫 Attention! These are NOT the same:
+--
 -- > multiply x y z = x * y * z
 --   <function> : number -> number -> number -> number
 -- > multiply (x, y, z) = x * y * z
 --   <function> : ( number, number, number ) -> number
 --
 -- : The first one is a normal function ...
---   The second is a function that takes a tuple!
+-- : The second is a function that takes a tuple!
+
+-- You can't partially apply a tupled function!!! ------------------------------
+-- If you try this, you'll get an error:
+multiply3d (1)
+-- `multiply3d` needs the 1st argument to be:
+--   ( number, number, number )
 
 

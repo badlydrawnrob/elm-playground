@@ -120,6 +120,16 @@ rules = [
 -- `import Html exposing (..)
 
 
+-- Html elements have two lists --
+--
+-- : List one is the attributes of the element
+img [ class "large", src "./url.jpeg" ] []
+-- : List two is the children elements (if any)
+div [] [
+  img [ src "./url.jpeg" ] [] -- Child element with no children
+]
+
+
 
 -- 2.2 -------------------------------------------------------------------------
 
@@ -137,10 +147,173 @@ rules = [
 -- where necessary.
 --
 -- First, we declare a model (declares the state of an Elm application)
---
+-- Next, we can initiate the model in `main`.
 
 initialModel =
   types/data
 
 main =
   view initialModel
+
+
+-- The model holds the `state` of the data we need to pass around to `view`, and
+-- perhaps other functions that need to know when things are selected, for example.
+--
+-- : #1 A relevant structure of data (list? Record? Nested records?)
+-- : #2 The model needs to be passed around!!! If a function doesn't have access
+--      to the model's current state (and it needs it) we're unable to change
+--      the view/values properly.
+
+-- Reduce, Reduce, reduce! --
+-- Don't use verbose terms if you can use cleaner ones:
+
+-- Verbose --
+viewThumbnail selectedUrl thumb =
+  if selectedUrl == thumb.url then
+    img [ src (urlPrefix ++ thumb.url)       -- individual image if selected
+        , class "selected"
+        ] []
+  else
+    img [ src (urlPrefix ++ thumb.url) ] []  -- individual image if not selected
+
+-- Reduced --
+-- : using `classList`
+--   @ http://tinyurl.com/5enp9ndh
+viewThumbnail selectedUrl thumb =
+  img [ src (urlPrefix ++ thumb.url)
+      , classList [
+        ( "selected", selectedUrl == thumb.url )  -- Tuple: "class" and boolean function
+      ]
+      ] []
+
+
+-- Accessing records -----------------------------------------------------------
+
+initialModel.photos
+-- [{ url = "1.jpeg" },{ url = "2.jpeg" },{ url = "3.jpeg" }]
+initialModel.selected
+-- "1.jpeg" : String
+
+
+-- Partial application of a function -------------------------------------------
+-- Also known as `curried` functions. This means you don't have to pass all
+-- arguments through to a function.
+--
+-- : In Elm, functions are curried by default! (in Javascript they're not.)
+-- : To change default behavior, create a tupled function (and deconstruct it)
+--   @ See `early-tests.elm` and `multiply3d` function for example.
+--
+-- : 1) Pass a single argument to a function that accepts two ...
+-- : 2) Returns another function that takes the second argument
+--
+-- : `(+)` Could be thought of as:
+-- : <function> : (number -> number) -> number
+--
+-- 🚫 #1 With curried functions, which order to you add arguments?
+--    which ones do we need to access first?
+
+partial = (+) 1  -- <function> : number -> number
+partial 2        -- 3 : number
+
+-- A simplified version of `viewThumbnail` --
+
+urlPrefix = "http://site.com/"
+
+viewThumbnail selectedUrl thumb =
+  if selectedUrl == "1.jpeg" then
+    img [ src (urlPrefix ++ thumb.url) ] []
+  else
+    img [] []
+
+viewThumbnail "1.jpeg" -- 🚫 #1
+-- <function> : { a | url : String } -> Html msg
+viewThumbnail "1.jpeg" { url = "2.jpeg" }
+-- <internals> : Html msg
+
+
+
+-- 2.2.2 -----------------------------------------------------------------------
+
+-- Handling events with messages and updates --
+-- : A `message` is a value used to pass information from one part of the system
+--   to another. I suppose a little like Racket's Universe (with handler functions)
+--
+--   @ http://tinyurl.com/htdp-universe-big-bang
+--
+-- : Elm doesn't use `addEventListener` like Javascript does,
+--   rather, we write an `update` function that translates messages
+--   into our desired `model`.
+
+-- : The message should descibe _what happened_.
+-- : The format of our message is up to us.
+-- : It could be a string, a list, a number, ...
+--
+-- : Example user action triggers update function:
+--   — user clicks a thumbnail
+
+-- { Action, What was clicked }
+{ description = "ClickedPhoto", data = "2.jpeg" }
+
+-- Our update (or handler) function will:
+-- 1. Look at the message received
+-- 2. Look at our current model
+-- 3. Use (1) and (2) to return a new model
+
+update msg model =
+  if msg.description == "ClickedPhoto" then
+    -- update the model
+  else
+    -- use the existing model
+
+-- Update the model --
+-- : It's a bit like `set!` in lisp, but everything is supposed to
+--   be immutable so I think it returns a new record.
+--   @ https://docs.racket-lang.org/guide/set_.html
+{ model | selectedUrl = msg.data }
+
+-- : If we receive an unrecognized message, we return the
+--   original model unchanged. This is important!
+-- : Whatever else happens, the `update` function must **always**
+--   return a new model, even if it's the same as the old one.
+
+-- Html.Events and messages --
+-- We also need some way to "create" the message,
+-- and we're binding it to an `onClick` event:
+--
+-- ... (thumbnail function)
+, onClick { description = "ClickedPhoto", data = thumb.url }
+-- ... (end thumbnail function)
+
+
+-- The main function needs to change -------------------------------------------
+--
+-- Up until now our `main` function has been simple:
+main =
+  view initialModel
+-- This is "static" and passes the view a static model.
+-- To make things dynamic, we'll need to make some changes!!
+--
+-- @ http://tinyurl.com/elm-lang-browser-module
+-- @ https://elmprogramming.com/model-view-update-part-1.html
+--
+-- : Similar to Racket's Universe, we need a model->view->update process!
+--   @ http://tinyurl.com/designing-world-programs
+--
+-- Using the `Browser` module we get access to the sandbox
+-- : Here we take a model, a view, and an update function
+-- : Update takes a model and a message, and updates the model.
+--   Our `onClick` function generates the message and update
+--   listens for the event.
+-- : Elm doesn't re-create the entire DOM structure of the page every time,
+--   but compares the old Html to the new Html and updates the necessary parts.
+--   - Imagine it's like a Git file that only needs to update part of a file!
+--
+-- : Updates are batched to avoid expensive repaints and layout reflows.
+-- : Application state is far less likely to get out of sync with the page.
+-- : Replaying application state changes effectively replays user interface changes.
+main =
+  Browser.sandbox
+    { init = initialModel  -- can be any value
+    , view = view          -- what the visitor sees
+    , update = update      -- what the computer sees
+    }
