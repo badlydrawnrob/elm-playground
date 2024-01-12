@@ -25,6 +25,7 @@ A testing ground for all things Elm.
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
+- [Richard Feldman](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo) talks
 
 ## Documentation
 
