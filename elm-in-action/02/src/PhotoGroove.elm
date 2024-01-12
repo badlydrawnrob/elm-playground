@@ -4,7 +4,7 @@ module PhotoGroove exposing (main)
 {-| Photo Groove
 
     See this link for full comments and notes:
-    @
+    @ http://tinyurl.com/elm-in-action-c02-full-notes
 
     : #1 The name of our module
 
