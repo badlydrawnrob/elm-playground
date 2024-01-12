@@ -298,3 +298,18 @@ main =
 --
 -- : Similar to Racket's Universe, we need a model->view->update process!
 --   @ http://tinyurl.com/designing-world-programs
+--
+-- Using the `Browser` module we get access to the sandbox
+-- : Here we take a model, a view, and an update function
+-- : Update takes a model and a message, and updates the model.
+--   Our `onClick` function generates the message and update
+--   listens for the event.
+-- : Elm doesn't re-create the entire DOM structure of the page every time,
+--   but compares the old Html to the new Html and updates the necessary parts.
+--   - Imagine it's like a Git file that only needs to update part of a file!
+main =
+  Browser.sandbox
+    { init = initialModel  -- can be any value
+    , view = view          -- what the visitor sees
+    , update = update      -- what the computer sees
+    }
