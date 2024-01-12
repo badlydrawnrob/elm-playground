@@ -307,6 +307,10 @@ main =
 -- : Elm doesn't re-create the entire DOM structure of the page every time,
 --   but compares the old Html to the new Html and updates the necessary parts.
 --   - Imagine it's like a Git file that only needs to update part of a file!
+--
+-- : Updates are batched to avoid expensive repaints and layout reflows.
+-- : Application state is far less likely to get out of sync with the page.
+-- : Replaying application state changes effectively replays user interface changes.
 main =
   Browser.sandbox
     { init = initialModel  -- can be any value

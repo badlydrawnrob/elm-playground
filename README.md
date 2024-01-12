@@ -4,7 +4,7 @@
 >
 > A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
 
-A testing ground for all things Elm.
+A testing ground for all things Elm. There's plenty of javascript guides out there, so this only covers functional programming in the style of Elm.
 
 ## Some useful docs
 
