@@ -37,9 +37,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ### Chapter 01/02
 
-1. `++` and `==` with a single example
+1. <s>`++` and `==` with a single example</s>
 2. Curried functions (partially applied)
-    - one simple, one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)
+    - <s>one simple</s>
+    - one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)
     - Why does [`List.map`](http://tinyurl.com/elm-lang-before-currying) still work after changing from an anonymous function?
     - Explain an anonymous function.
     - Draw a sketch to show the "black box" of currying
