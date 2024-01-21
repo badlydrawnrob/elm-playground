@@ -10,6 +10,9 @@ For now, I'm only really interested in learning the language Elm so javascript n
 
 ## Lazy loading of cards
 
+> ⚠️ **To what level do I want to learn programming?**[^2]
+> 🎯 **How much do I care?**[^3]
+>
 > 1. **Write it down** (a brief summary of a learning point)
 > 2. **Group related learning points!**
 > 3. How well do you **understand?** How well do you **remember?**
@@ -22,8 +25,8 @@ For now, I'm only really interested in learning the language Elm so javascript n
 > 10. **Group, filter, timebox** a potential card (using other mental models if needed)
 > 11. **Create an example card in your own words!**
 
-- To what level do I want to learn programming?
-- How much do I care?
+- ⚠️ To what level do I want to learn programming?
+- ⚠️ How much do I care?
 
 Learning and teaching with programming takes quite a bit of breaking things down and moving up in small steps, so that the student understands what options they have, and how to write things more succinctly.
 
@@ -47,3 +50,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
+
+[^2]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
+
+[^3] Always. Always [keep in mind your learning target](https://github.com/badlydrawnrob/elm-playground/issues/9).
