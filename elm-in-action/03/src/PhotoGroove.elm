@@ -3,22 +3,13 @@ module PhotoGroove exposing (main)
 
 {-| Photo Groove
 
-    See this link for full comments and notes:
     @ http://tinyurl.com/elm-in-action-c02-full-notes
 
-    : #1 The name of our module
+    Chapter 03:
 
-    : #2 The other modules we’re importing
-
-    : #3 The `view` function takes the current model and returns some HTML.
-
-    : #4 `viewThumbnail` is partially applied here.
-
-    : #5 When the user clicks, this message is sent to update.
-
-    : #6 Changes the selected URL to the photo the user clicked
-
-    : #7 Browser.sandbox describes our complete application.
+    1. Improve code quality and ease of understanding for beginners.
+    2. Let users choose between small, medium, large thumbnails.
+    3. Add a "Surprise me!" button that randomly selects a photo.
 -}
 
 -- #2
@@ -35,36 +26,38 @@ view model =
     [ h1 [] [ text "Photo Groove" ]
     , div [ id "thumbnails" ]
         (List.map
-          (viewThumbnail model.selectedUrl)  -- #4
+          (viewThumbnail model.selectedUrl)
           model.photos
         )
     , img
         [ class "large"
-        , src (urlPrefix ++ "large/" ++ model.selectedUrl)  -- #4b
+        , src (urlPrefix ++ "large/" ++ model.selectedUrl)
         ] []
     ]
 
 -- Helper functions --
 
-urlPrefix =
-  "http://elm-in-action.com/"
+photoListUrl : String
+photoListUrl =
+  "http://elm-in-acdtion.com/list-photos"
 
 viewThumbnail selectedUrl thumb =
   img [ src (urlPrefix ++ thumb.url)
       , classList [ ("selected", selectedUrl == thumb.url) ]
-      , onClick { description = "ClickedPhoto", data = thumb.url }  -- #5
+      , onClick { description = "ClickedPhoto", data = thumb.url }
       ] []
 
 
 -- Model -----------------------------------------------------------------------
 
+initialModel : { photos : List { url : String }, selectedUrl : String }
 initialModel =
   { photos =
-    [ { url = "1.jpeg" }  -- #5
+    [ { url = "1.jpeg" }
     , { url = "2.jpeg" }
     , { url = "3.jpeg" }
     ]
-  , selectedUrl = "1.jpeg"  -- #6
+  , selectedUrl = "1.jpeg"
   }
 
 
