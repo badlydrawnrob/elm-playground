@@ -35,22 +35,6 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ## Candidates for an Anki card
 
-### Chapter 01/02
-
-1. <s>`++` and `==` with a single example</s>
-2. Curried functions (partially applied)
-    - <s>one simple</s>
-    - <s>one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)</s>
-    - <s>Why does [`List.map`](http://tinyurl.com/elm-lang-before-currying) still work after changing from an anonymous function?</s>
-    - <s>Explain an anonymous function.</s>
-3. <s>Example of higher order function in lisp and elm</s>
-4. <s>A single file for some new ideas?
-    - There's always `elm guide` to reference
-    - `early-tests` shows list types (no need to add card)
-    - A single `classList` example</s>
-6. <s>Explain what `|` does in a record</s>
-
-
 ## Chapter 03
 
 1. Draw a sketch to show the "black box" of currying
