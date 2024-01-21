@@ -37,23 +37,29 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ### Chapter 01/02
 
-1. `++` and `==` with a single example
+1. <s>`++` and `==` with a single example</s>
 2. Curried functions (partially applied)
-    - one simple, one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)
-    - Why does [`List.map`](http://tinyurl.com/elm-lang-before-currying) still work after changing from an anonymous function?
-    - Explain an anonymous function.
-    - Draw a sketch to show the "black box" of currying
-3. Example of higher order function in lisp and elm
-4. A single file for some new ideas?
+    - <s>one simple</s>
+    - <s>one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)</s>
+    - <s>Why does [`List.map`](http://tinyurl.com/elm-lang-before-currying) still work after changing from an anonymous function?</s>
+    - <s>Explain an anonymous function.</s>
+3. <s>Example of higher order function in lisp and elm</s>
+4. <s>A single file for some new ideas?
     - There's always `elm guide` to reference
     - `early-tests` shows list types (no need to add card)
-    - A single `classList` example
-    - A DOM picture and a Elm runtime picture
-5. Create a document that shows:
+    - A single `classList` example</s>
+6. <s>Explain what `|` does in a record<s>
+
+
+## Chapter 03
+
+1. Draw a sketch to show the "black box" of currying
+2. A DOM picture and a Elm runtime picture
+3. Create a document that shows:
     - A simple _static_ model (basic data)
     - A `Browser` dynamic model (with a message)
-6. Explain what `|` does in a record
-7. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
+4. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
+
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
