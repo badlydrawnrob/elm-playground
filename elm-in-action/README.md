@@ -43,7 +43,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - <s>one [complex](https://github.com/badlydrawnrob/elm-playground/blob/8d168bd65fbd4fde7b8d428bb8a0f5dd9cd7dc70/elm-in-action/02/notes/notes.elm#L228)</s>
     - <s>Why does [`List.map`](http://tinyurl.com/elm-lang-before-currying) still work after changing from an anonymous function?</s>
     - <s>Explain an anonymous function.</s>
-3. Example of higher order function in lisp and elm
+3. <s>Example of higher order function in lisp and elm</s>
 4. <s>A single file for some new ideas?
     - There's always `elm guide` to reference
     - `early-tests` shows list types (no need to add card)
