@@ -48,7 +48,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - There's always `elm guide` to reference
     - `early-tests` shows list types (no need to add card)
     - A single `classList` example</s>
-6. <s>Explain what `|` does in a record<s>
+6. <s>Explain what `|` does in a record</s>
 
 
 ## Chapter 03
