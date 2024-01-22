@@ -17,6 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Browser
+import Array exposing (Array)
 
 
 -- View ------------------------------------------------------------------------
@@ -59,6 +60,10 @@ initialModel =
     ]
   , selectedUrl = "1.jpeg"
   }
+
+photoArray : Array { url : String }
+photoArray =
+  Array.fromList initialModel.photos
 
 
 -- Update ----------------------------------------------------------------------
