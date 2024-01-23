@@ -49,10 +49,16 @@ viewThumbnail selectedUrl thumb =
 
 -- Model -----------------------------------------------------------------------
 -- : #1 To avoid duplication we can assign `url` a type alias
+-- : #2 We've also created an alias for the `initialModel`
+--      which tidies things up too.
 type alias Photo =
   { url : String }  -- #1
 
-initialModel : { photos : List Photo, selectedUrl : String }  -- #1
+type alias Model =
+  { photos : List Photo  -- #1
+  , selectedUrl : String }
+
+initialModel : Model
 initialModel =
   { photos =
     [ { url = "1.jpeg" }

@@ -50,7 +50,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 4. Give a brief introduction to [`Type Variables`](http://tinyurl.com/elm-lang-type-variables)
     - For example `number` is a type variable.
     - `fromList : List elementType -> Array elementType`
-5. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
+5. Type aliases to reduce code duplication
+    - https://guide.elm-lang.org/types/type_aliases
+    - Use the example with an Array (but don't mention it much)
+6. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
 
 
 

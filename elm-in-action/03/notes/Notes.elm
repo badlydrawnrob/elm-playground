@@ -125,14 +125,20 @@ fromList : List elementType -> Array elementType
 
 -- 3.1.3 -----------------------------------------------------------------------
 
--- Reusing annotations with type aliases
+-- Reusing annotations with type aliases --
+--
 -- : We can reduce duplication, at the moment both `initialModel`
 --   and `photoArray` repeat `{ url : String }`
+
 initialModel : { photos : List {url : String}, ..}
 photoArray : Array {url : String}
+
 -- : A _type alias_ assigns a name to a type. Anywhere you would
 --   refer to that type, you can substitute this name instead.
 -- : Let's give `{url : String}` a type alias called `Photo`
+--
+--   @ https://guide.elm-lang.org/types/type_aliases
+
 type alias Photo =
   { url : String }
 
