@@ -1,5 +1,4 @@
 module PhotoGroove exposing (main)
--- #1
 
 {-| Photo Groove
 
@@ -12,7 +11,6 @@ module PhotoGroove exposing (main)
     3. Add a "Surprise me!" button that randomly selects a photo.
 -}
 
--- #2
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -21,7 +19,7 @@ import Array exposing (Array)
 
 
 -- View ------------------------------------------------------------------------
--- #3
+-- : #1 Error in the book (`photoListUrl`)
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
@@ -38,8 +36,8 @@ view model =
 
 -- Helper functions --
 
-photoListUrl : String
-photoListUrl =
+urlPrefix : String  -- #1
+urlPrefix =
   "http://elm-in-acdtion.com/list-photos"
 
 viewThumbnail selectedUrl thumb =
@@ -50,8 +48,11 @@ viewThumbnail selectedUrl thumb =
 
 
 -- Model -----------------------------------------------------------------------
+-- : #1 To avoid duplication we can assign `url` a type alias
+type alias Photo =
+  { url : String }  -- #1
 
-initialModel : { photos : List { url : String }, selectedUrl : String }
+initialModel : { photos : List Photo, selectedUrl : String }  -- #1
 initialModel =
   { photos =
     [ { url = "1.jpeg" }
@@ -61,7 +62,7 @@ initialModel =
   , selectedUrl = "1.jpeg"
   }
 
-photoArray : Array { url : String }
+photoArray : Array Photo  -- #1
 photoArray =
   Array.fromList initialModel.photos
 

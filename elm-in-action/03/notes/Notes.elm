@@ -33,8 +33,10 @@
 -- @ https://www.micahcantor.com/blog/thoughts-typed-racket/
 
 -- It's as simple as:
-photoListUrl : String
-photoListUrl =
+-- : #! Error in the book: `photoListUrl` should be
+--   `urlPrefix`
+urlPrefix : String
+urlPrefix =
   "http://elm-in-acdtion.com/list-photos"
 
 -- And for functions, we use the `->` between their
@@ -86,10 +88,21 @@ selectPhoto = { description = "ClickedPhoto", data = "1.jpeg" }
 
 import Array
 
-Array.fromList [ 2, 4, 6 ]          -- : Array.Array number
-Array.fromList ["dog"]              -- : Array.Array String
-Array.fromList []                   -- : Array.Array a
-Array.fromList [{ url = "string"}]  -- Array.Array { url : String }
+Array.Array.fromList [ 2, 4, 6 ]          -- : Array.Array number
+Array.Array.fromList ["dog"]              -- : Array.Array String
+Array.Array.fromList []                   -- : Array.Array a
+Array.Array.fromList [{ url = "string"}]  -- Array.Array { url : String }
+
+
+-- Importing the Array module properly -----------------------------------------
+--
+-- ❌ Importing Array without the `exposing` bit
+-- ✅ Importing Array with the `exposing` bit:
+--    (we can write it in a simpler way!)
+import Array exposing (Array)
+
+Array.fromList [ 2, 4, 6 ]  -- Array number
+
 
 -- We can use the following pattern in a type annotation:
 fromList : List elementType -> Array elementType
@@ -104,4 +117,24 @@ fromList : List elementType -> Array elementType
 -- : You must be consistent with naming type variables.
 --
 --   @ http://tinyurl.com/elm-lang-type-variables
+--
+-- : A custom type -vs- type variable?
+--   @ http://tinyurl.com/elm-lang-on-type-variables
 
+
+
+-- 3.1.3 -----------------------------------------------------------------------
+
+-- Reusing annotations with type aliases
+-- : We can reduce duplication, at the moment both `initialModel`
+--   and `photoArray` repeat `{ url : String }`
+initialModel : { photos : List {url : String}, ..}
+photoArray : Array {url : String}
+-- : A _type alias_ assigns a name to a type. Anywhere you would
+--   refer to that type, you can substitute this name instead.
+-- : Let's give `{url : String}` a type alias called `Photo`
+type alias Photo =
+  { url : String }
+
+initialModel : .. List Photo ..
+photoArray : Array Photo

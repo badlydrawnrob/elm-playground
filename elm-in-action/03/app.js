@@ -5216,7 +5216,7 @@ var $elm$html$Html$Attributes$src = function (url) {
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$PhotoGroove$urlPrefix = 'http://elm-in-action.com/';
+var $author$project$PhotoGroove$urlPrefix = 'http://elm-in-acdtion.com/list-photos';
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
