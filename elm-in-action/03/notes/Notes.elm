@@ -144,3 +144,78 @@ type alias Photo =
 
 initialModel : .. List Photo ..
 photoArray : Array Photo
+
+-- Html's type variable --
+--
+-- : Html’s type variable reflects the type of message
+--   it sends to update in response to events from handlers
+--   like `onClick`.
+
+-- Comparing type variables for `List` to `Html`:
+
+[ "foo" ]                    -- List String
+[ 3.14 ]                     -- List Float
+
+div [ onClick "foo" ] []     -- Html String
+div [ onClick 3.14 ] []      -- Html Float
+dive [ onClick { x = 3.3 }]  -- Html { x : Float }
+
+-- : Because our `onClick` handler produces messages in the form of
+--   records that have a `description` string and a `data` string,
+--   our `view` funcdtions return type is as follows:
+
+Html { description : String, data : String }
+
+-- Or convert that into a Type Annotation:
+
+type alias Msg =
+  { description : String, data : String }
+
+
+-- View, model, update, and message --------------------------------------------
+--
+-- See Racket Lang's _Big Bang_:
+--
+-- @ http://tinyurl.com/racket-lang-tick-and-handlers
+--
+-- : `(to-draw ...)` is basically `View`
+-- : `(on-tick tock)` isn't relevant (yet)
+-- : `(on-mouse click)` is our event handler, like `onClick`
+--
+-- : In some of the projects I worked on you'd have conditionals that would
+--   handle a click event, or a key event, and return a model (e.g: a struct)
+--   to update the World.
+
+
+-- 3.1.4 -----------------------------------------------------------------------
+
+-- Annoting longer functions --
+-- : #1 Taking a simple function
+String.padLeft 10 '.' "string"  -- "....string" : String
+
+-- : #2 Now break that function down by currying
+padTen = String.padLeft 10
+
+-- : #3 We know that this will return another function
+--   which takes two arguments, innit? But let's stick
+--   with the curried concept. So this:
+padTen -- <function> -> Char -> (String -> String)
+
+-- : #4 Says we return a function that takes a `Char`
+--      and returns another function!
+giveMeString = padTen '.'
+
+-- : #5 This will return a function that takes a `String`
+--      and, in turn, returns a String:
+giveMeString  -- <function> String -> String
+
+-- : #6 And finally, we pass the last argument
+giveMeResult = giveMeString "string" -- "....string"
+
+-- So putting that all together, you get:
+function : Int -> Char -> String -> String
+String.padLeft 10 '.' "string"
+
+-- Or .. with brackets, something like:
+function : Int -> (Char -> (String -> String))
+

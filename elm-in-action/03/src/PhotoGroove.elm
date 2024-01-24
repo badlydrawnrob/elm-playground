@@ -19,7 +19,20 @@ import Array exposing (Array)
 
 
 -- View ------------------------------------------------------------------------
--- : #1 Error in the book (`photoListUrl`)
+-- : #1 Specifying our `onClick` handler message.
+--      - Our message is a record
+--      - `Html`'s type variable reflects the type of message
+--        it sends to `update` in response to event handlers.
+--        Our event handler here is `onClick`!
+-- : #2 Error in the book (`photoListUrl`)
+--
+--   @ http://tinyurl.com/racket-lang-tick-and-handlers
+--     Handlers and message changing is a bit like big-bang in Racket lang
+
+type alias Msg =
+  { description : String, data : String }  -- #1
+
+view : Model -> Html Msg  -- #1
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
@@ -36,10 +49,11 @@ view model =
 
 -- Helper functions --
 
-urlPrefix : String  -- #1
+urlPrefix : String  -- #2
 urlPrefix =
   "http://elm-in-acdtion.com/list-photos"
 
+viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
   img [ src (urlPrefix ++ thumb.url)
       , classList [ ("selected", selectedUrl == thumb.url) ]

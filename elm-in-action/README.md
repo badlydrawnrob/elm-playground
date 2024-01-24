@@ -54,6 +54,13 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - https://guide.elm-lang.org/types/type_aliases
     - Use the example with an Array (but don't mention it much)
 6. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
+    - Use the type alias of the `Model`
+    - Make links between `Big Bang` in Racket lang and Elm's runtime
+7. A type annotation for a proper function (see chapter `3.1.4` and `Table 3.5` in the book for a breakdown) — I think visuals would help here!!
+    - In the book it starts with `String.padLeft`
+    - With currying it's a little tricky to get your head around
+    - But break it down into three separate functions (using nested variables) and it's easier to get.
+8. More type alias examples here: https://guide.elm-lang.org/types/type_aliases
 
 
 
