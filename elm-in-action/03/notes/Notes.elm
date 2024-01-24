@@ -219,3 +219,10 @@ String.padLeft 10 '.' "string"
 -- Or .. with brackets, something like:
 function : Int -> (Char -> (String -> String))
 
+
+-- 3.2 -------------------------------------------------------------------------
+-- 3.2.1
+
+-- Using case-expressions --
+
+

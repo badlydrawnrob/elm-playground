@@ -36,6 +36,9 @@ view : Model -> Html Msg  -- #1
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
+    , button
+      [ onClick { description = "ClickedSurpriseMe", data = "" } ]
+      [ text "Surprise Me!" ]
     , div [ id "thumbnails" ]
         (List.map
           (viewThumbnail model.selectedUrl)
