@@ -57,7 +57,7 @@ view model =
 
 urlPrefix : String  -- #3
 urlPrefix =
-  "http://elm-in-action.com/list-photos"
+  "http://elm-in-action.com/"
 
 viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
