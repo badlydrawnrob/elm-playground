@@ -224,5 +224,32 @@ function : Int -> (Char -> (String -> String))
 -- 3.2.1
 
 -- Using case-expressions --
+--
+-- : An `if` condition can be converted to `case`
+--   but better use for nested `if` statements ...
+--
+-- @ http://tinyurl.com/elm-lang-case-vs-if-else
 
+sillyError = "http://elm-in-action.com"
 
+-- Stick with `if` ...
+isSillyError string =
+  if string == "http://elm-in-action.com" then
+    "You made a silly error!"
+  else
+    string
+
+-- Convert to `case`
+isSillyError string =
+  if string == "http://poop.com/" then
+    "Wrong url"
+  if string == "http://elm-in-action.com" then
+    "Missing trailing slash (/)"
+  else
+    string
+
+isSillyError string =
+  case string of
+    "http://poop.com" -> "Wrong url"
+    "http://elm-in-action.com" -> "Missing trailing `/`"
+    _ -> string

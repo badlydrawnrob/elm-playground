@@ -62,7 +62,20 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - But break it down into three separate functions (using nested variables) and it's easier to get.
     - Technically, every Elm function takes only one argument, and maybe returns another function
 8. More type alias examples here: https://guide.elm-lang.org/types/type_aliases
-
+9. Quiz: [explain why this code doesn't work](https://ellie-app.com/q7sGdX6wLfsa1) (broken link!)
+    1. Error in the book `http://elm-in-action.com/list-photos`
+    2. Missing a `/` ...
+    3. Where do you go to first in the code to fix a problem?
+10. If we have more than one `Msg` what do we do?
+    - We have two `onClick` events now.
+11. The `update` function looks weird
+    - Two `if` statements, so two ways a `Model` could look (as well as the do nothing `Model`)
+12. Converting an `if` statement to a `case` statement
+    - How to flatten a complex nested `case` statement?
+    - http://tinyurl.com/elm-lang-case-vs-if-else
+    - Conditional branches (like lisp's `cond`)
+    - Explain the `_` underscore (the `else` part)
+        - It's the _default_ branch
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

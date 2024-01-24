@@ -24,7 +24,10 @@ import Array exposing (Array)
 --      - `Html`'s type variable reflects the type of message
 --        it sends to `update` in response to event handlers.
 --        Our event handler here is `onClick`!
--- : #2 Error in the book (`photoListUrl`)
+--
+-- : #2 Add another message (a record) if a button is clicked
+--
+-- : #3 Error in the book (`photoListUrl`)
 --
 --   @ http://tinyurl.com/racket-lang-tick-and-handlers
 --     Handlers and message changing is a bit like big-bang in Racket lang
@@ -37,7 +40,7 @@ view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
     , button
-      [ onClick { description = "ClickedSurpriseMe", data = "" } ]
+      [ onClick { description = "ClickedSurpriseMe", data = "" } ]  -- #2
       [ text "Surprise Me!" ]
     , div [ id "thumbnails" ]
         (List.map
@@ -52,9 +55,9 @@ view model =
 
 -- Helper functions --
 
-urlPrefix : String  -- #2
+urlPrefix : String  -- #3
 urlPrefix =
-  "http://elm-in-acdtion.com/list-photos"
+  "http://elm-in-action.com/list-photos"
 
 viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
@@ -92,11 +95,15 @@ photoArray =
 
 -- Update ----------------------------------------------------------------------
 
+update : Msg -> Model -> Model
 update msg model =
-  if msg.description == "ClickedPhoto" then
-    { model | selectedUrl = msg.data }  -- #6
-  else
-    model
+  case msg.description of
+    "ClickedPhoto" ->
+      { model | selectedUrl = msg.data }
+    "ClickedSurpriseMe" ->
+      { model | selectedUrl = "2.jpeg" }
+    _ ->
+      model
 
 
 -- Main ------------------------------------------------------------------------
