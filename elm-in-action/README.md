@@ -60,6 +60,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - In the book it starts with `String.padLeft`
     - With currying it's a little tricky to get your head around
     - But break it down into three separate functions (using nested variables) and it's easier to get.
+    - Technically, every Elm function takes only one argument, and maybe returns another function
 8. More type alias examples here: https://guide.elm-lang.org/types/type_aliases
 
 
