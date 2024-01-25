@@ -27,12 +27,15 @@ import Array exposing (Array)
 --
 -- : #2 Add another message (a record) if a button is clicked
 --
--- : #3 Error in the book (`photoListUrl`)
+-- : #3 Create our radio buttons for choosing `ThumbnailSize`
+--      (see #5 for more info)
+--
+-- : #4 Error in the book (`photoListUrl`)
 --
 --   @ http://tinyurl.com/racket-lang-tick-and-handlers
 --     Handlers and message changing is a bit like big-bang in Racket lang
 --
--- : #4 Convert our Custom Type `ThumbnailSize` into a string that we can use
+-- : #5 Convert our Custom Type `ThumbnailSize` into a string that we can use
 --      for our checkbox in `viewSizeChooser`
 
 type alias Msg =
@@ -45,6 +48,9 @@ view model =
     , button
       [ onClick { description = "ClickedSurpriseMe", data = "" } ]  -- #2
       [ text "Surprise Me!" ]
+    , h3 [] [ text "Thumbnail Size:" ]
+    , div [ id "choose-size" ]
+      [ viewSizeChooser Small, viewSizeChooser Medium, viewSizeChooser Large ] -- #3
     , div [ id "thumbnails" ]
         (List.map
           (viewThumbnail model.selectedUrl)
@@ -58,7 +64,7 @@ view model =
 
 -- Helper functions --
 
-urlPrefix : String  -- #3
+urlPrefix : String  -- #4
 urlPrefix =
   "http://elm-in-action.com/"
 
@@ -69,14 +75,14 @@ viewThumbnail selectedUrl thumb =
       , onClick { description = "ClickedPhoto", data = thumb.url }
       ] []
 
-viewSizeChooser : ThumbnailSize -> Html Msg
+viewSizeChooser : ThumbnailSize -> Html Msg  -- #3
 viewSizeChooser size =
   label []
     [ input [type_ "radio", name "size" ] []
     , text (sizeToString size)
     ]
 
-sizeToString : ThumbnailSize -> String
+sizeToString : ThumbnailSize -> String  -- #5
 sizeToString size =
   case size of
       Small -> "small"
@@ -90,7 +96,7 @@ sizeToString size =
 -- : #3 We've also created an alias for the `initialModel`
 --      which tidies things up too.
 
-type ThumbnailSize
+type ThumbnailSize  -- #1
   = Small
   | Medium
   | Large
