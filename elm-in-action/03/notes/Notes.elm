@@ -253,3 +253,33 @@ isSillyError string =
     "http://poop.com" -> "Wrong url"
     "http://elm-in-action.com" -> "Missing trailing `/`"
     _ -> string
+
+
+-- 3.2.2 -----------------------------------------------------------------------
+
+-- Custom Type with options --
+
+-- In Javascript we might represent `chosenSize` as a string.
+-- : i.e. `"SMALL"`, `"MEDIUM"`, "LARGE".
+--
+-- : NO, NO, NO, NO!!
+--   We can do better in Elm ...
+--
+-- A Custom Type is one you define by specifying the values it can contain.
+-- This is a BRAND NEW TYPE and not just a type alias (like a name for an `int`)
+--
+-- : ❌ Trying to compare a `ThumbnailSize` to a `number`, `string`,
+--   or any other type (using == or any other comparison) will
+--   yield an error at build time.
+--
+-- : This is different from type alias, which gives a name to an
+--   existing type—much as a variable gives a name to an existing value.
+
+type ThumbnailSize
+  = Small   -- each
+  | Medium  -- of these
+  | Large   -- is a variant
+
+Medium == Medium  -- True
+Medium == 10      -- False
+Medium == Small   -- False

@@ -76,6 +76,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - Conditional branches (like lisp's `cond`)
     - Explain the `_` underscore (the `else` part)
         - It's the _default_ branch
+13. What is a custom type option? See `ThumbnailSize`. Note that it's Title case (sorta)
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
