@@ -80,7 +80,7 @@ sizeToString : ThumbnailSize -> String
 sizeToString size =
   case size of
       Small -> "small"
-      Medium -> "medium"
+      Medium -> "med"
       Large -> "large"
 
 
