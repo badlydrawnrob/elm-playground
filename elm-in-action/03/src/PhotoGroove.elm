@@ -82,6 +82,7 @@ sizeToString size =
       Small -> "small"
       Medium -> "med"
       Large -> "large"
+      _ -> "another"
 
 
 -- Model -----------------------------------------------------------------------

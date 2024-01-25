@@ -272,6 +272,10 @@ isSillyError string =
 --   or any other type (using == or any other comparison) will
 --   yield an error at build time.
 --
+-- : ✅ When using a `case` expression for a Thumbnail size, it can only ever be
+--   one of three branches, as there's only 3 available things a `ThumbnailSize`
+--   can ever be.
+--
 -- : This is different from type alias, which gives a name to an
 --   existing type—much as a variable gives a name to an existing value.
 --

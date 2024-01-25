@@ -81,10 +81,12 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - `Medium == Medium` but not equal to ...
     - Note that `|` pipe operator is used for custom types too to enumerate a list of types
     - Quiz: Why is line 76 in PhotoGrove using `size` variable rather than `ThumbnailSize`?
+    - Why don't we need a default branch? [What happens if `size` is something other](https://ellie-app.com/q7TjWjDQZn8a1)? (can't happen, if it's not a valid `ThumbnailSize` it'll fail?)
 14. Add a link for more info for types https://elmprogramming.com/type-system.html
 15. Also note that `view` functions have `view` in front of their function name. Is this a standard?
     - Note that other `helper functions` don't do this.
     - I guess it's only Html elements that require it?
+17. A quick note on `type_` for the radio button is named because `type` is a reserved word.
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
