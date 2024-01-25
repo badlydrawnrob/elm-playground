@@ -4450,7 +4450,9 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
+var $author$project$PhotoGroove$Medium = {$: 'Medium'};
 var $author$project$PhotoGroove$initialModel = {
+	chosenSize: $author$project$PhotoGroove$Medium,
 	photos: _List_fromArray(
 		[
 			{url: '1.jpeg'},

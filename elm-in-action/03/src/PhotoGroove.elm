@@ -31,6 +31,9 @@ import Array exposing (Array)
 --
 --   @ http://tinyurl.com/racket-lang-tick-and-handlers
 --     Handlers and message changing is a bit like big-bang in Racket lang
+--
+-- : #4 Convert our Custom Type `ThumbnailSize` into a string that we can use
+--      for our checkbox in `viewSizeChooser`
 
 type alias Msg =
   { description : String, data : String }  -- #1
@@ -66,17 +69,40 @@ viewThumbnail selectedUrl thumb =
       , onClick { description = "ClickedPhoto", data = thumb.url }
       ] []
 
+viewSizeChooser : ThumbnailSize -> Html Msg
+viewSizeChooser size =
+  label []
+    [ input [type_ "radio", name "size" ] []
+    , text (sizeToString size)
+    ]
+
+sizeToString : ThumbnailSize -> String
+sizeToString size =
+  case size of
+      Small -> "small"
+      Medium -> "medium"
+      Large -> "large"
+
 
 -- Model -----------------------------------------------------------------------
--- : #1 To avoid duplication we can assign `url` a type alias
--- : #2 We've also created an alias for the `initialModel`
+-- : #1 A Custom Type is not an alias. It's a brand new type!
+-- : #2 To avoid duplication we can assign `url` a type alias
+-- : #3 We've also created an alias for the `initialModel`
 --      which tidies things up too.
+
+type ThumbnailSize
+  = Small
+  | Medium
+  | Large
+
 type alias Photo =
-  { url : String }  -- #1
+  { url : String }  -- #2
 
 type alias Model =
-  { photos : List Photo  -- #1
-  , selectedUrl : String }
+  { photos : List Photo  -- #3
+  , selectedUrl : String
+  , chosenSize : ThumbnailSize  -- #1
+  }
 
 initialModel : Model
 initialModel =
@@ -86,9 +112,10 @@ initialModel =
     , { url = "3.jpeg" }
     ]
   , selectedUrl = "1.jpeg"
+  , chosenSize = Medium
   }
 
-photoArray : Array Photo  -- #1
+photoArray : Array Photo  -- #2
 photoArray =
   Array.fromList initialModel.photos
 

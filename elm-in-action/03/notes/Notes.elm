@@ -274,6 +274,8 @@ isSillyError string =
 --
 -- : This is different from type alias, which gives a name to an
 --   existing type—much as a variable gives a name to an existing value.
+--
+--   @ https://elmprogramming.com/type-system.html
 
 type ThumbnailSize
   = Small   -- each
