@@ -50,7 +50,7 @@ view model =
       [ text "Surprise Me!" ]
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
-      [ viewSizeChooser Small, viewSizeChooser Medium, viewSizeChooser Large ] -- #3
+      (List.map viewSizeChooser [ Small, Medium, Large ] )  -- #3
     , div [ id "thumbnails" ]
         (List.map
           (viewThumbnail model.selectedUrl)

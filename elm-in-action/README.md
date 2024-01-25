@@ -87,6 +87,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - Note that other `helper functions` don't do this.
     - I guess it's only Html elements that require it?
 17. A quick note on `type_` for the radio button is named because `type` is a reserved word.
+18. How can we make our Html cleaner when calling the `viewSizeChooser`?
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

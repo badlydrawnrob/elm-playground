@@ -289,3 +289,17 @@ type ThumbnailSize
 Medium == Medium  -- True
 Medium == 10      -- False
 Medium == Small   -- False
+
+
+-- Reducing duplication --
+-- Any time we see the same function being called multiple times,
+-- in a list, it's likely we can make that cleaner with `List.map`
+
+div [ id "choose-size" ]
+[ viewSizeChooser Small, viewSizeChooser Medium, viewSizeChooser Large ]
+
+-- Make it cleaner!
+
+div [ id "choose-size" ]
+(List.map viewSizeChooser [ Small, Medium, Large ] )
+
