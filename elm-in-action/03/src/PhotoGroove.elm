@@ -101,7 +101,7 @@ sizeToString size =
 
 randomPhotoPicker : Random.Generator Int
 randomPhotoPicker =
-  Random.int 0 2
+  Random.int 0 (Array.length photoArray - 1)
 
 -- Model -----------------------------------------------------------------------
 -- : #1 A Custom Type is not an alias. It's a brand new type!

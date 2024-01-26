@@ -520,3 +520,21 @@ update msg model =
 --
 -- Try to use `_ ->` only as a last resort, so you can benefit
 -- from as many missing-pattern safeguards as possible.
+
+
+-- 3.3 Random numbers ----------------------------------------------------------
+
+-- This is self-explanatory,
+-- but you have to install the package and import it.
+--
+-- : If you call any Elm function five times with the same arguments,
+--   you can expect to get the same return value each time.
+--   This is no mere guideline, but a language-level guarantee!
+--   Knowing that all Elm functions have this useful property makes
+--   bugs easier to track down and reproduce.
+--
+--
+-- : However, a _Command_ is a value that describes an operation
+--   for the Elm Runtime to perform. Unlike calling a function,
+--   running the same command multiple times can have different results.
+
