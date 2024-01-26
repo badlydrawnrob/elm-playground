@@ -35,8 +35,11 @@ import Array exposing (Array)
 --   @ http://tinyurl.com/racket-lang-tick-and-handlers
 --     Handlers and message changing is a bit like big-bang in Racket lang
 --
--- : #5 Convert our Custom Type `ThumbnailSize` into a string that we can use
---      for our checkbox in `viewSizeChooser`
+-- : #5 a) Convert our Custom Type `ThumbnailSize` into a string that we can use
+--         for our checkbox in `viewSizeChooser`
+--      b) Render the `class` of the `ThumbnailSize` depending on which
+--         radio button the user chooses. The `sizeToString` function converts
+--         a `ThumbnailSize` type to a `"string"` which we add to the `class`.
 
 type alias Msg =
   { description : String, data : String }  -- #1
@@ -51,7 +54,7 @@ view model =
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
       (List.map viewSizeChooser [ Small, Medium, Large ] )  -- #3
-    , div [ id "thumbnails" ]
+    , div [ id "thumbnails", class (sizeToString model.chosenSize ) ]  -- #5b
         (List.map
           (viewThumbnail model.selectedUrl)
           model.photos
@@ -82,7 +85,7 @@ viewSizeChooser size =
     , text (sizeToString size)
     ]
 
-sizeToString : ThumbnailSize -> String  -- #5
+sizeToString : ThumbnailSize -> String  -- #5a
 sizeToString size =
   case size of
       Small -> "small"
