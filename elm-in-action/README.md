@@ -96,6 +96,15 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - http://tinyurl.com/elm-lang-maybe-dont-overuse
     - Give an example of _deconstructing_ `Just` and `Nothing` (see line `381` in `Notes.elm`)
     - https://exercism.org/tracks/elm/concepts/maybe#
+22. See another version of `onClick` here with a button.
+    - https://guide.elm-lang.org/architecture/buttons
+23. Migrating from a single `Msg` (a record) to multiple, and different kinds of `Msg` data.
+    - Cut out **everything** except for the messages and the `Msg` type alias.
+    - Note the problems with trying to smush it all into a single `Msg` (changing the data in the `Msg` type alias creates an error, adding unrelated data to unrelated `Msg` types with `onClick` feels wrong, adding a new type of message — one is a `"string"` the other is a `ThumbnailSize`, etc.)
+    - **Seperation of concerns!**
+    - Converting `Msg` as a CUSTOM TYPE
+    - Line `440` gives a so-so summary of what was happening in our original code (how `Msg` was getting passed around).
+    - **BETTER TO MAKE A DIAGRAM OF ALL OF THIS!!!**
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

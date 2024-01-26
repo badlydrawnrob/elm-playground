@@ -19,11 +19,11 @@ import Array exposing (Array)
 
 
 -- View ------------------------------------------------------------------------
--- : #1 Specifying our `onClick` handler message.
---      - Our message is a record
+-- : #1 Specifying our `onClick` handler message(s)
+--      - Our message is a Custom Type
 --      - `Html`'s type variable reflects the type of message
 --        it sends to `update` in response to event handlers.
---        Our event handler here is `onClick`!
+--        Our event handler(s) here are `onClick`!
 --
 -- : #2 Add another message (a record) if a button is clicked
 --
@@ -41,15 +41,17 @@ import Array exposing (Array)
 --         radio button the user chooses. The `sizeToString` function converts
 --         a `ThumbnailSize` type to a `"string"` which we add to the `class`.
 
-type alias Msg =
-  { description : String, data : String }  -- #1
+type Msg =                -- #1
+  = ClickedPhoto String
+  | ClickedSize ThumbnailSize
+  | ClickedSurpriseMe
 
 view : Model -> Html Msg  -- #1
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
     , button
-      [ onClick { description = "ClickedSurpriseMe", data = "" } ]  -- #2
+      [ onClick ClickedSurpriseMe ]  -- #2
       [ text "Surprise Me!" ]
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
@@ -75,7 +77,7 @@ viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
   img [ src (urlPrefix ++ thumb.url)
       , classList [ ("selected", selectedUrl == thumb.url) ]
-      , onClick { description = "ClickedPhoto", data = thumb.url }
+      , onClick (ClickedPhoto thumb.url)
       ] []
 
 viewSizeChooser : ThumbnailSize -> Html Msg  -- #3
@@ -146,13 +148,11 @@ getPhotoUrl index =
 
 update : Msg -> Model -> Model
 update msg model =
-  case msg.description of
-    "ClickedPhoto" ->
-      { model | selectedUrl = msg.data }
-    "ClickedSurpriseMe" ->
+  case msg of
+    ClickedPhoto url ->
+      { model | selectedUrl = url }
+    ClickedSurpriseMe ->
       { model | selectedUrl = "2.jpeg" }
-    _ ->
-      model
 
 
 -- Main ------------------------------------------------------------------------

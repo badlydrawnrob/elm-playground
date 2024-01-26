@@ -420,3 +420,91 @@ anotherCustomTypeVariant index =
             age
         Nothing ->
             0
+
+
+-- 3.2.4 -----------------------------------------------------------------------
+
+-- Flexible messages with custom types --
+--
+-- We don't want to have one `{ record = "data" }` for lots of different `Msg`
+-- as each `onClick` serves it's own purposes. This is a good case for a
+-- separation of concerns.
+
+-- Current code --
+--
+-- 1. Our original `Msg` is a simple record
+-- 2. A case statement with a new (and related) `Msg`
+--    - this hasn't been fully integrated yet.
+--    - falls back to the current model.
+
+-- Let's just run through this quickly:
+-- 1. `update` function (via `main`) gets passed our `onClick` message
+-- 2. Our `viewThumbnail` function creates this message
+-- 3. `update` gets passed the `Msg` (type alias) and the `Model` (type alias)
+-- 4. `onClick` sends a `ClickedPhoto` `description`
+-- 5. The `model` variable accesses `initialModel` ...
+-- 6. `selectedUrl` in `initalModel` is changed to match `msg.data`
+--    `{ description = "ClickedPhoto", data = "1.jpeg" }`
+
+type alias Msg =
+  { description : String, data : String }
+
+update : Msg -> Model -> Model
+update msg model =
+  case msg.description of
+    "ClickedPhoto" ->
+      { model | selectedUrl = msg.data }
+    "ClickedSurpriseMe" ->
+      { model | selectedUrl = "2.jpeg" }
+    _ ->
+      model
+
+-- We also have --
+--
+-- : #1 A `ThumbnailSize` type
+-- : #2 Two `onClick` functions
+-- : #3 Two related `msg.descriptions`:
+--      - "ClickedPhoto"
+--      - "ClickedSurpriseMe"
+-- : #4 An extra `Msg` trigger:
+--      - A radio button to select from
+
+
+-- Changing things up ----------------------------------------------------------
+
+-- 1. Replace our type alias Msg declaration with a type Msg declaration.
+-- 2. Revise update to use a case-expression that destructures our new custom type.
+-- 3. Change our onClick handler to pass a type variant instead of a record.
+
+type Msg                       -- Replaces earlier type alias
+  = ClickedPhoto String        -- Replaces `ClickedPhoto` message
+  | ClickedSize ThumbnailSize  -- NEW clicked a thumbnail size
+  | ClickedSurpriseMe          -- Replaces `ClickedSurpriseMe` message
+
+
+update : Msg -> Model -> Model
+update msg model =
+  case msg of
+    ClickedPhoto url ->
+      { model | selectedUrl = url }  -- Previously `msg.description == "ClickedPhoto"
+    ClickedSurpriseMe ->
+      { model | selectedUrl = "2.jpeg" }  -- Nothing to destructure for this
+
+
+-- This change means our onClick handlers now expect type variants instead of records.
+-- We’ll need to make this change in view:
+
+-- Old: onClick { description = "ClickedSurpriseMe", data = "" }
+-- New: onClick ClickedSurpriseMe
+
+-- Let's also make this change in `viewThumbnail`:
+
+-- Old: onClick { description = "ClickedPhoto", data = thumb.url }
+-- New: onClick (ClickedPhoto thumb.url)
+
+
+-- Compiler errors -------------------------------------------------------------
+
+-- Our type Msg has three possibilities.
+-- This requires 3 branches to resolve.
+--               ..........
