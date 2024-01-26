@@ -80,17 +80,19 @@ viewThumbnail selectedUrl thumb =
 
 viewSizeChooser : ThumbnailSize -> Html Msg  -- #3
 viewSizeChooser size =
-  label []
+  span [] [
+    label []
     [ input [type_ "radio", name "size" ] []
     , text (sizeToString size)
     ]
-
+  ]
 sizeToString : ThumbnailSize -> String  -- #5a
 sizeToString size =
   case size of
       Small -> "small"
       Medium -> "med"
       Large -> "large"
+
 
 
 -- Model -----------------------------------------------------------------------

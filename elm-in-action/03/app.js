@@ -5263,23 +5263,30 @@ var $author$project$PhotoGroove$urlPrefix = 'http://elm-in-action.com/';
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $author$project$PhotoGroove$viewSizeChooser = function (size) {
 	return A2(
-		$elm$html$Html$label,
+		$elm$html$Html$span,
 		_List_Nil,
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$input,
+				$elm$html$Html$label,
+				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$type_('radio'),
-						$elm$html$Html$Attributes$name('size')
-					]),
-				_List_Nil),
-				$elm$html$Html$text(
-				$author$project$PhotoGroove$sizeToString(size))
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$type_('radio'),
+								$elm$html$Html$Attributes$name('size')
+							]),
+						_List_Nil),
+						$elm$html$Html$text(
+						$author$project$PhotoGroove$sizeToString(size))
+					]))
 			]));
 };
 var $elm$core$List$filter = F2(

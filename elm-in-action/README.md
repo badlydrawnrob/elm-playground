@@ -89,6 +89,9 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 17. A quick note on `type_` for the radio button is named because `type` is a reserved word.
 18. How can we make our Html cleaner when calling the `viewSizeChooser`?
 19. As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
+20. How would we create a `sizeToClass` function, to replace the current `class (sizeToString ...)` chunk?
+    - Requires outputting the `class "string"`
+    - What the type annotation would be?
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
