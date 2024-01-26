@@ -109,6 +109,11 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - Line `440` gives a so-so summary of what was happening in our original code (how `Msg` was getting passed around).
     - **BETTER TO MAKE A DIAGRAM OF ALL OF THIS!!! Show the data flow on a whiteboard diagram**
 24. (Related to (23)) explain why [this error message is occuring](https://ellie-app.com/q8kbndhqGX2a1).
+25. A simplified version of the thumbnail size changer ... you can fuse this with, perhaps, a `Typed` `Msg`.
+26. Improve the user experience:
+    - display thumbnail size `medium` on page load
+    - In Safari (with tabbed option selected) the size changes when you tab to the radio button and use the arrow keys to select!
+    - What other options are there than `onClick`? (see **Tip** on page 76 of pdf). See also [Html.Events](https://package.elm-lang.org/packages/elm/html/latest/Html.Events)
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

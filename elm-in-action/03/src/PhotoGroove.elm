@@ -16,6 +16,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Browser
 import Array exposing (Array)
+import Random
 
 
 -- View ------------------------------------------------------------------------
@@ -98,7 +99,9 @@ sizeToString size =
       Medium -> "med"
       Large -> "large"
 
-
+randomPhotoPicker : Random.Generator Int
+randomPhotoPicker =
+  Random.int 0 2
 
 -- Model -----------------------------------------------------------------------
 -- : #1 A Custom Type is not an alias. It's a brand new type!
