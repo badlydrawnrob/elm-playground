@@ -86,6 +86,7 @@ viewSizeChooser size =
     , text (sizeToString size)
     ]
   ]
+
 sizeToString : ThumbnailSize -> String  -- #5a
 sizeToString size =
   case size of
@@ -100,7 +101,9 @@ sizeToString size =
 -- : #2 To avoid duplication we can assign `url` a type alias
 -- : #3 We've also created an alias for the `initialModel`
 --      which tidies things up too.
-
+-- : #4 a) Deconstructing a `Maybe` custom type. We're checking for results
+--      that have an element (`Just typeVariable`) or don't exist `Nothing`.
+--      b) `photo` is a `type variable` so can be named anything.
 type ThumbnailSize  -- #1
   = Small
   | Medium
@@ -129,6 +132,14 @@ initialModel =
 photoArray : Array Photo  -- #2
 photoArray =
   Array.fromList initialModel.photos
+
+getPhotoUrl : Int -> String  -- #4a
+getPhotoUrl index =
+  case Array.get index photoArray of
+    Just photo ->                       -- #4b
+      photo.url
+    Nothing ->
+      ""
 
 
 -- Update ----------------------------------------------------------------------

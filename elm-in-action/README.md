@@ -92,6 +92,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 20. How would we create a `sizeToClass` function, to replace the current `class (sizeToString ...)` chunk?
     - Requires outputting the `class "string"`
     - What the type annotation would be?
+21. A brief introduction to `Maybe`:
+    - http://tinyurl.com/elm-lang-maybe-dont-overuse
+    - Give an example of _deconstructing_ `Just` and `Nothing` (see line `381` in `Notes.elm`)
+    - https://exercism.org/tracks/elm/concepts/maybe#
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

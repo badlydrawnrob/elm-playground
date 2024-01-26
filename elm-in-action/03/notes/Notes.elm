@@ -303,3 +303,120 @@ div [ id "choose-size" ]
 div [ id "choose-size" ]
 (List.map viewSizeChooser [ Small, Medium, Large ] )
 
+
+
+-- 3.2.3 -----------------------------------------------------------------------
+
+-- Problems to be solved --
+--
+-- : #1 We have a `[]` list of `Photo` records
+--
+--      - In Javascript we could access with index `photos[2].url`
+--      - ❌ What happens if the list changes?
+--
+--          1. Our list could be empty
+--          2. Our list could have fewer entries
+--          3. Our list could be really long
+--
+-- : #2 ✅ `Array.get` helps with our problem:
+--
+--       - It NEVER returns `undefined` or `null`
+--       - `Array.get` doesn't use the index
+--       - `Array.get` _always_ returns a container
+--         value called `Maybe`
+--
+-- : #3 `Maybe` is implemented as a custom type, but a special kind of
+--      custom type. One that holds data. A `Maybe` is a _container_ like `List`.
+--      It looks like this:
+--
+--      @ http://tinyurl.com/elm-lang-maybe-dont-overuse
+--
+--      (Note the type variable `value` below.)
+
+type Maybe value
+  = Just value
+  | Nothing
+
+-- Why use `Maybe`? --
+-- It represents the potential absence of a value. It provides a _container-based_
+-- alternative to Javascripts _drop-in replacements_ of `null` and `undefined`.
+--
+-- : See `Figure 3.6` for a comparison.
+
+photos = Array.fromList [ a, b, c, d ]
+
+Array.get 2 photos  -- Just c
+Array.get 2 []      -- Nothing
+
+-- So if the index 2 is outside it's bounds (doesn't exist) then
+-- `Array.get` will return Nothing.
+
+-- `Maybe` as a container --
+--
+-- Just as you can have a `List String` or a `List Photo`,
+-- you can also have a `Maybe String` or `Maybe Photo`.
+-- The difference is that whereas List Photo means “a list of photos,”
+-- `Maybe Photo` means “either a Photo or nothing at all.”
+--
+-- Put another way, `Maybe` is a container that can hold at most one element.
+
+Nothing        -- Nothing : Maybe a
+
+Just           -- <function> : a -> Maybe a
+Just "string"  -- Just "string" : Maybe String
+
+
+-- Destructuring `Just` function --
+-- “A capital question! The answer is right around the corner.
+--
+-- : Before, we destructured a function that had a tuple as it's arguments.
+--   As it turns out, we can also destructure custom type variants such
+--   as Just in the branches of case-expressions. This destructuring is what
+--   sets variants apart from other functions.
+--
+-- : #1 Index is an `int`, but the `List` could contain any number
+-- : #2 Destructuring `Just` and naming it's contained value "age"
+-- : #3 Fall back on "0" if there was no `age` at that index.
+
+numberList = [1, 2.0, 3.3, 4]
+numberArray = Array.fromList numberList
+
+aCustomTypeVariant : Int -> Float  -- #1
+aCustomTypeVariant index =
+  case Array.get index numberArray of
+    Just age ->                         -- #2
+      age
+    Nothing ->
+      0
+
+aCustomTypeVariant 2  -- 3.3 : Float
+aCustomTypeVariant 0  -- 0 : Float
+
+
+-- Capitalized or not capitalized? --
+--
+-- This is where the distinction between capitalized and uncapitalized functions
+-- matters. By comparing their capitalizations, Elm’s compiler can tell that
+-- `Just photo ->` refers to a _type variant_ called `Just` that holds a value
+-- we've chosen to name `photo`. If we'd instead written `Just True ->`,
+-- the compiler would know we meant “the Just variant holding exactly the
+-- value True.”
+
+
+-- Indentation: 2 or 4 spaces? -------------------------------------------------
+
+aCustomTypeVariant : Int -> Float
+aCustomTypeVariant index =
+  case Array.get index numberArray of
+    Just age ->
+      age
+    Nothing ->
+      0
+
+anotherCustomTypeVariant : Int -> Float
+anotherCustomTypeVariant index =
+    case Array.get index numberArray of
+        Just age ->
+            age
+        Nothing ->
+            0
