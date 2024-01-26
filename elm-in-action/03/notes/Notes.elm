@@ -508,3 +508,15 @@ update msg model =
 -- Our type Msg has three possibilities.
 -- This requires 3 branches to resolve.
 --               ..........
+
+-- DO NOT JUST USE `_ ->` DEFAULT BRANCH!!! --
+--
+-- Anytime you use the default case `_ ->` in a case-expression,
+-- you cannot get this error. _That is not a good thing!_
+--
+-- The missing-patterns error is your friend.
+-- When you see it, it’s often saving you from a bug you would
+-- have had to hunt down later.
+--
+-- Try to use `_ ->` only as a last resort, so you can benefit
+-- from as many missing-pattern safeguards as possible.

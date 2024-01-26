@@ -39,6 +39,8 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 ## Chapter 03
 
 > After our initial small app, we get some more feature requests and have to improve it. They should be prioritised before you even start!
+>
+> **See "[The problem with large code bases](https://github.com/badlydrawnrob/elm-playground/issues/12)"** for one of the biggest problems when writing Anki cards: getting to the jist of the problem space with a simple question/answer and **minimal code** to give context.
 
 1. Draw sketches to show the black box procedures[^4]
     - One of them is _currying_
@@ -99,12 +101,14 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 22. See another version of `onClick` here with a button.
     - https://guide.elm-lang.org/architecture/buttons
 23. Migrating from a single `Msg` (a record) to multiple, and different kinds of `Msg` data.
+    - [Explain these changes!](https://github.com/badlydrawnrob/elm-playground/commit/3e66e8a99b1a702c467c319b2abb1ea025af9e5a#diff-bf15ae9c129c62ed2594aaad110aea910f4ea83ba7fb0c6332813bb0e90847ec)
     - Cut out **everything** except for the messages and the `Msg` type alias.
     - Note the problems with trying to smush it all into a single `Msg` (changing the data in the `Msg` type alias creates an error, adding unrelated data to unrelated `Msg` types with `onClick` feels wrong, adding a new type of message — one is a `"string"` the other is a `ThumbnailSize`, etc.)
     - **Seperation of concerns!**
     - Converting `Msg` as a CUSTOM TYPE
     - Line `440` gives a so-so summary of what was happening in our original code (how `Msg` was getting passed around).
-    - **BETTER TO MAKE A DIAGRAM OF ALL OF THIS!!!**
+    - **BETTER TO MAKE A DIAGRAM OF ALL OF THIS!!! Show the data flow on a whiteboard diagram**
+24. (Related to (23)) explain why [this error message is occuring](https://ellie-app.com/q8kbndhqGX2a1).
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

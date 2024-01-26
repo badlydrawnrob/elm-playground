@@ -41,7 +41,7 @@ import Array exposing (Array)
 --         radio button the user chooses. The `sizeToString` function converts
 --         a `ThumbnailSize` type to a `"string"` which we add to the `class`.
 
-type Msg =                -- #1
+type Msg                  -- #1
   = ClickedPhoto String
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
@@ -84,7 +84,9 @@ viewSizeChooser : ThumbnailSize -> Html Msg  -- #3
 viewSizeChooser size =
   span [] [
     label []
-    [ input [type_ "radio", name "size" ] []
+    [ input [
+        type_ "radio", name "size", onClick (ClickedSize size)
+      ] []
     , text (sizeToString size)
     ]
   ]
@@ -149,6 +151,8 @@ getPhotoUrl index =
 update : Msg -> Model -> Model
 update msg model =
   case msg of
+    ClickedSize size ->
+      { model | chosenSize = size }
     ClickedPhoto url ->
       { model | selectedUrl = url }
     ClickedSurpriseMe ->
