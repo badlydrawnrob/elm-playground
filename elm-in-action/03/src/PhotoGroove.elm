@@ -170,10 +170,11 @@ update msg model =
 
 
 -- Main ------------------------------------------------------------------------
-
+main : Program () Model Msg
 main =
-  Browser.sandbox  -- #7
-    { init = initialModel  -- can be any value
-    , view = view          -- what the visitor sees
-    , update = update      -- what the computer sees
+  Browser.element
+    { init = \flags -> ( initialModel, Cmd.none )  -- can be any value
+    , view = view                                  -- what the visitor sees
+    , update = update                              -- what the computer sees
+    , subscriptions = \model -> Sub.none           -- our commands
     }

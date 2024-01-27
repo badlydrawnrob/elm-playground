@@ -119,6 +119,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - See `Figure 3.8` for a visual view
     - Go over the difference between custom types `Msg` and type variables `msg`.
     - `Random.generate` is also a _higher order function_.
+    - Difference between `Browser.sandbox` and `Browser.element`?
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

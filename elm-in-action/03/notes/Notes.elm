@@ -634,3 +634,41 @@ generate : (randomValue -> msg) -> Random.Generator randomValue -> Cmd msg
 -- Capitalization is important! There is a big difference between Msg and msg here.
 -- `msg` is a TYPE VARIABLE and `Msg` is our CUSTOM TYPE.
 -- A function that returns msg could return anything at all!
+
+
+-- `Browser.sandbox` vs `Browser.element` --------------------------------------
+--
+-- The former expects a `Model`.
+-- The latter expects a tuple with a `(Model, Cmd.none)`
+--
+-- 1. The init record has been replaced by a function that takes flags
+--    and returns a tuple. We’ll revisit flags in chapter 5; let’s focus
+--    on the tuple for now. The first element in that tuple is our
+--    initial Model, and the second is a command to run when the application
+--    loads. (init is the only place besides update that can specify
+--    commands to run.) Because we have nothing to run on startup,
+--    we write `Cmd.none`.
+--
+-- 2. We’ve added a subscriptions field. Like flags, we’ll also dive
+--    into that in chapter 5; for now, let’s disregard it.
+--
+-- : Our type annotation has a `()` which is known as `unit`. It contains no
+--   information whatsoever. It's both a value and a type. The `()` type can
+--   be satisfied only with the `()` value.
+
+main : Program () Model Msg
+main =
+  Browser.element
+    { init = \flags -> ( initialModel, Cmd.none )  -- any value, plus commands
+    , view = view                                  -- what the visitor sees
+    , update = update                              -- what the computer sees
+    , subscriptions = \model -> Sub.none
+    }
+
+-- We could also write a function like this:
+getUltimateAnswer : () -> Int
+getUltimateAnswer unit =
+  40 + 2
+
+-- The only way to satisfy the above function is to run it with:
+getUltimateAnswer ()
