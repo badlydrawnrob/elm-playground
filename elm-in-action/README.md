@@ -115,6 +115,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - In Safari (with tabbed option selected) the size changes when you tab to the radio button and use the arrow keys to select!
     - What other options are there than `onClick`? (see **Tip** on page 76 of pdf). See also [Html.Events](https://package.elm-lang.org/packages/elm/html/latest/Html.Events)
 27. An elm function given the same arguments will output the same value every time. A **command** however is a value that describes an operation for the Elm Runtime to perform. Running the same command multiple times can have different results.
+28. What is a command? How does an update functin differ before and after we have a command? Go over type variables again for `Cmd Msg`. Tuples too.
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

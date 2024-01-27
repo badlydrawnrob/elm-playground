@@ -524,8 +524,10 @@ update msg model =
 
 -- 3.3 Random numbers ----------------------------------------------------------
 
--- This is self-explanatory,
--- but you have to install the package and import it.
+-- 3.3.2 -----------------------------------------------------------------------
+
+-- This is self-explanatory, for `Random` generator
+-- you have to install the package and import it.
 --
 -- : If you call any Elm function five times with the same arguments,
 --   you can expect to get the same return value each time.
@@ -533,8 +535,88 @@ update msg model =
 --   Knowing that all Elm functions have this useful property makes
 --   bugs easier to track down and reproduce.
 --
---
--- : However, a _Command_ is a value that describes an operation
---   for the Elm Runtime to perform. Unlike calling a function,
---   running the same command multiple times can have different results.
 
+-- Commands --
+
+-- However, a _Command_ is a value that describes an operation
+-- for the Elm Runtime to perform. Unlike calling a function,
+-- running the same command multiple times can have different results.
+--
+-- : Because Elm forbids functions from returning different values
+--   when they receive the same arguments, it’s not possible to write
+--   an inconsistent function like Math.random as a plain Elm function.
+--   Instead, Elm implements random number generation by using a command.
+
+-- When user clicks the `Surprise Me!` button we'll use a command to translate
+-- our `Random.Generator Int` into a randomly generated `Int`, which will
+-- represent our new selected photo index
+
+photoArray : Array Photo  -- #2
+photoArray =
+  Array.fromList [
+    { url = "1.jpeg" }
+  , { url = "2.jpeg" }
+  , { url = "3.jpeg" }
+  ]
+
+randomPhotoPicker : Random.Generator Int
+randomPhotoPicker =
+  Random.int 0 (Array.length photoArray - 1)
+
+-- Returning commands from update --
+--
+-- `onClick` says "I want this `Msg` to get sent to my `update` function
+--  whenever the user clicks here."
+--
+-- Commands work similarly. We don't say "Generate a random number right
+-- this instant." We say "I want a random number, so please generate one
+-- and send it to my `update` function gift-wrapped in a `Msg`."
+--
+-- : Our `update` function handles it from there.
+-- : `update` can return new commands that trigger new calls
+--   to `update` when they complete.
+--
+-- : See `Figure 3.7` to show how commands flow.
+--
+-- : Commands don't change the fundamental structure of the Elm Architecture ...
+--
+--   1. `Model` is still our single source of truth for state
+--   2. `update` is the ONLY function that can change `Model`
+--   3. Sending a `Msg` is the only way for the runtime to notify
+--      `update` what events have happened.
+--
+-- : All we've done is give `update` some new powers:
+--   the ability to run logic that can have inconsistent results.
+--
+-- : We'll need to upgrade from `Browser.sandbox` to `Browser.element`.
+--
+-- : Now in `update`, we're passing a Tuple, not just our `Model` record.
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        ClickedPhoto url ->
+            ( { model | selectedUrl = url }, Cmd.none )
+
+        ClickedSize size ->
+            ( { model | chosenSize = size }, Cmd.none )
+
+        ClickedSurpriseMe ->
+            ( { model | selectedUrl = "2.jpeg" }, Cmd.none )
+
+
+-- 3.3.3 -----------------------------------------------------------------------
+
+-- Generating random values with `Random.generate` --
+-- Returns a command that generates random values
+-- wrapped up in messages.
+
+type Msg
+  = ClickedPhoto String
+  | GotSelectedIndex Int
+  ...
+
+-- And add another branch to our `update` case:
+
+GotSelectedIndex ->
+  ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )

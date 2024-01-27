@@ -41,9 +41,12 @@ import Random
 --      b) Render the `class` of the `ThumbnailSize` depending on which
 --         radio button the user chooses. The `sizeToString` function converts
 --         a `ThumbnailSize` type to a `"string"` which we add to the `class`.
+--
+-- : #6 Here is our function that wraps up our Command in a `Msg`.
 
 type Msg                  -- #1
   = ClickedPhoto String
+  | GotSelectedIndex Int  -- #6
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
 
@@ -150,16 +153,20 @@ getPhotoUrl index =
 
 
 -- Update ----------------------------------------------------------------------
+--
+-- : #1 Our command is triggered when a user clicks the button and ...
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
+    GotSelectedIndex ->
+      ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
     ClickedSize size ->
-      { model | chosenSize = size }
+      ( { model | chosenSize = size }, Cmd.none )
     ClickedPhoto url ->
-      { model | selectedUrl = url }
+      ( { model | selectedUrl = url }, Cmd.none )
     ClickedSurpriseMe ->
-      { model | selectedUrl = "2.jpeg" }
+      ( { model | selectedUrl = "2.jpeg" }, Cmd.none )
 
 
 -- Main ------------------------------------------------------------------------
