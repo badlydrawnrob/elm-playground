@@ -115,7 +115,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - In Safari (with tabbed option selected) the size changes when you tab to the radio button and use the arrow keys to select!
     - What other options are there than `onClick`? (see **Tip** on page 76 of pdf). See also [Html.Events](https://package.elm-lang.org/packages/elm/html/latest/Html.Events)
 27. An elm function given the same arguments will output the same value every time. A **command** however is a value that describes an operation for the Elm Runtime to perform. Running the same command multiple times can have different results.
-28. What is a command? How does an update functin differ before and after we have a command? Go over type variables again for `Cmd Msg`. Tuples too.
+28. What is a command? [How does an update function differ before](https://github.com/badlydrawnrob/elm-playground/commit/0f843dff086a032b6790c0f006670f0a27ad3370#diff-bf15ae9c129c62ed2594aaad110aea910f4ea83ba7fb0c6332813bb0e90847ec) and after we have a command? Go over type variables again for `Cmd Msg`. Tuples too.
+    - See `Figure 3.8` for a visual view
+    - Go over the difference between custom types `Msg` and type variables `msg`.
+    - `Random.generate` is also a _higher order function_.
 
 
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook

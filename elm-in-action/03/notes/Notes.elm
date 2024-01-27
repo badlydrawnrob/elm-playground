@@ -620,3 +620,17 @@ type Msg
 
 GotSelectedIndex ->
   ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
+
+-- Change the Click Me! button to generate a random Int
+-- Note that it isn't changing the model at all yet.
+
+ClickedSurpriseMe ->
+      ( model, Random.generate GotSelectedIndex randomPhotoPicker )
+
+-- We could write a type annotation for `Random.generate` like so:
+
+generate : (randomValue -> msg) -> Random.Generator randomValue -> Cmd msg
+
+-- Capitalization is important! There is a big difference between Msg and msg here.
+-- `msg` is a TYPE VARIABLE and `Msg` is our CUSTOM TYPE.
+-- A function that returns msg could return anything at all!
