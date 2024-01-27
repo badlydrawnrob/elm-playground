@@ -166,7 +166,7 @@ update msg model =
     ClickedPhoto url ->
       ( { model | selectedUrl = url }, Cmd.none )
     ClickedSurpriseMe ->
-      ( { model | selectedUrl = "2.jpeg" }, Cmd.none )
+      ( model, Random.generate GotSelectedIndex randomPhotoPicker )
 
 
 -- Main ------------------------------------------------------------------------
