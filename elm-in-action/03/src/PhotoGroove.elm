@@ -168,7 +168,7 @@ getPhotoUrl index =
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
-    GotSelectedIndex ->
+    GotSelectedIndex index ->
       ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
