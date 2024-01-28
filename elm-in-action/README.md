@@ -52,13 +52,13 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 ### Type annotations
 
-1. We added documentation in the form of type annotations.
+1. Add a visual diagram of a more complex type annotation.
 
-- A type annotation for a proper function (see chapter `3.1.4` and `Table 3.5` in the book for a breakdown) — I think visuals would help here!!
+- <s>A type annotation for a proper function (see chapter `3.1.4` and `Table 3.5` in the book for a breakdown) — I think visuals would help here!!
     - In the book it starts with `String.padLeft`
     - With currying it's a little tricky to get your head around
     - But break it down into three separate functions (using nested variables) and it's easier to get.
-    - Technically, every Elm function takes only one argument, and maybe returns another function
+    - Technically, every Elm function takes only one argument, and maybe returns another function</s>
 
 ### Type alias
 
