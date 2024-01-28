@@ -16,6 +16,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Online courses
 
 - [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
+- [Exercism](https://exercism.org/tracks/elm)'s Elm track
 
 ## Books
 
