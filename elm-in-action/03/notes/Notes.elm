@@ -655,8 +655,15 @@ generate : (randomValue -> msg) -> Random.Generator randomValue -> Cmd msg
 -- : Our type annotation has a `()` which is known as `unit`. It contains no
 --   information whatsoever. It's both a value and a type. The `()` type can
 --   be satisfied only with the `()` value.
+--
+-- : #1 Flags type (empty `()`)
+-- : #2 Our models type (could be any value type)
+-- : #3 The type of the message `update` and `view` will use.
+--
+-- : an Elm Program with no flags, whose model type is Model
+--   and whose message type is Msg.
 
-main : Program () Model Msg
+main : Program () Model Msg  -- #1, #2, #3
 main =
   Browser.element
     { init = \flags -> ( initialModel, Cmd.none )  -- any value, plus commands

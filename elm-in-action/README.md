@@ -122,6 +122,27 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
     - Difference between `Browser.sandbox` and `Browser.element`?
 
 
+## New concepts to compile
+
+1. `Maybe` and it's Union Types `Just` and `Nothing`
+
+1. We added documentation in the form of type annotations.
+2. Users can now select from one of three thumbnail sizes.
+3. It has a Surprise Me! button that selects a thumbnail at random.
+4. From now on, whenever we add a new Msg value, the compiler will give us a missing-patterns error if we forget to handle it (as when we didn’t account for `ClickedSize`).
+
+- Type variables represent concrete types that have not been specified yet.
+- A type alias declaration assigns a name to a type, much as a constant assigns a name to a value.
+- A type declaration defines a new custom type, one that did not exist before.
+- Custom types can hold more-flexible data than records or tuples can.
+- Custom type variants can be either values that are instances of that custom type, or functions that return instances of that custom type.
+- You can destructure custom type variants in case-expressions to extract their data.
+- If you don’t write a fallback `_ ->` branch in a case-expression, you’ll get a compiler error unless your code handles all possible cases.
+- `Array.get` prevents runtime crashes by returning a Maybe instead of a normal element.
+- The `()` type (known as unit) is both a type and a value. The only value of type () is the value ().
+- The type `Program () Model Msg` refers to an Elm Program with no flags, whose model type is Model and whose message type is Msg.
+
+
 [^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
 
 [^2]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.

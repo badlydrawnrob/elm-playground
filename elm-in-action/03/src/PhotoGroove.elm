@@ -9,6 +9,15 @@ module PhotoGroove exposing (main)
     1. Improve code quality and ease of understanding for beginners.
     2. Let users choose between small, medium, large thumbnails.
     3. Add a "Surprise me!" button that randomly selects a photo.
+
+    What we've achieved:
+
+    1. We added documentation in the form of type annotations.
+    2. Users can now select from one of three thumbnail sizes.
+    3. It has a Surprise Me! button that selects a thumbnail at random.
+    4. From now on, whenever we add a new Msg value, the compiler will
+       give us a missing-patterns error if we forget to handle it
+       (as when we didn’t account for `ClickedSize`).
 -}
 
 import Html exposing (..)
