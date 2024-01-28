@@ -3,21 +3,8 @@ module PhotoGroove exposing (main)
 {-| Photo Groove
 
     @ http://tinyurl.com/elm-in-action-c02-full-notes
+    @ http://tinyurl.com/elm-in-action-c03-full-notes
 
-    Chapter 03:
-
-    1. Improve code quality and ease of understanding for beginners.
-    2. Let users choose between small, medium, large thumbnails.
-    3. Add a "Surprise me!" button that randomly selects a photo.
-
-    What we've achieved:
-
-    1. We added documentation in the form of type annotations.
-    2. Users can now select from one of three thumbnail sizes.
-    3. It has a Surprise Me! button that selects a thumbnail at random.
-    4. From now on, whenever we add a new Msg value, the compiler will
-       give us a missing-patterns error if we forget to handle it
-       (as when we didn’t account for `ClickedSize`).
 -}
 
 import Html exposing (..)
@@ -29,47 +16,24 @@ import Random
 
 
 -- View ------------------------------------------------------------------------
--- : #1 Specifying our `onClick` handler message(s)
---      - Our message is a Custom Type
---      - `Html`'s type variable reflects the type of message
---        it sends to `update` in response to event handlers.
---        Our event handler(s) here are `onClick`!
---
--- : #2 Add another message (a record) if a button is clicked
---
--- : #3 Create our radio buttons for choosing `ThumbnailSize`
---      (see #5 for more info)
---
--- : #4 Error in the book (`photoListUrl`)
---
---   @ http://tinyurl.com/racket-lang-tick-and-handlers
---     Handlers and message changing is a bit like big-bang in Racket lang
---
--- : #5 a) Convert our Custom Type `ThumbnailSize` into a string that we can use
---         for our checkbox in `viewSizeChooser`
---      b) Render the `class` of the `ThumbnailSize` depending on which
---         radio button the user chooses. The `sizeToString` function converts
---         a `ThumbnailSize` type to a `"string"` which we add to the `class`.
---
--- : #6 Here is our function that wraps up our Command in a `Msg`.
 
-type Msg                  -- #1
+type Msg
   = ClickedPhoto String
-  | GotSelectedIndex Int  -- #6
+  | GotSelectedIndex Int
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
 
-view : Model -> Html Msg  -- #1
+view : Model -> Html Msg
 view model =
   div [ class "content" ]
     [ h1 [] [ text "Photo Groove" ]
     , button
-      [ onClick ClickedSurpriseMe ]  -- #2
+      [ onClick ClickedSurpriseMe ]
       [ text "Surprise Me!" ]
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
-      (List.map viewSizeChooser [ Small, Medium, Large ] )  -- #3
-    , div [ id "thumbnails", class (sizeToString model.chosenSize ) ]  -- #5b
+      (List.map viewSizeChooser [ Small, Medium, Large ] )
+    , div [ id "thumbnails", class (sizeToString model.chosenSize ) ]
         (List.map
           (viewThumbnail model.selectedUrl)
           model.photos
@@ -82,7 +46,7 @@ view model =
 
 -- Helper functions --
 
-urlPrefix : String  -- #4
+urlPrefix : String
 urlPrefix =
   "http://elm-in-action.com/"
 
@@ -104,7 +68,7 @@ viewSizeChooser size =
     ]
   ]
 
-sizeToString : ThumbnailSize -> String  -- #5a
+sizeToString : ThumbnailSize -> String
 sizeToString size =
   case size of
       Small -> "small"
@@ -116,25 +80,19 @@ randomPhotoPicker =
   Random.int 0 (Array.length photoArray - 1)
 
 -- Model -----------------------------------------------------------------------
--- : #1 A Custom Type is not an alias. It's a brand new type!
--- : #2 To avoid duplication we can assign `url` a type alias
--- : #3 We've also created an alias for the `initialModel`
---      which tidies things up too.
--- : #4 a) Deconstructing a `Maybe` custom type. We're checking for results
---      that have an element (`Just typeVariable`) or don't exist `Nothing`.
---      b) `photo` is a `type variable` so can be named anything.
-type ThumbnailSize  -- #1
+
+type ThumbnailSize
   = Small
   | Medium
   | Large
 
 type alias Photo =
-  { url : String }  -- #2
+  { url : String }
 
 type alias Model =
-  { photos : List Photo  -- #3
+  { photos : List Photo
   , selectedUrl : String
-  , chosenSize : ThumbnailSize  -- #1
+  , chosenSize : ThumbnailSize
   }
 
 initialModel : Model
@@ -148,22 +106,20 @@ initialModel =
   , chosenSize = Medium
   }
 
-photoArray : Array Photo  -- #2
+photoArray : Array Photo
 photoArray =
   Array.fromList initialModel.photos
 
-getPhotoUrl : Int -> String  -- #4a
+getPhotoUrl : Int -> String
 getPhotoUrl index =
   case Array.get index photoArray of
-    Just photo ->                       -- #4b
+    Just photo ->
       photo.url
     Nothing ->
       ""
 
 
 -- Update ----------------------------------------------------------------------
---
--- : #1 Our command is triggered when a user clicks the button and ...
 
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
@@ -179,11 +135,12 @@ update msg model =
 
 
 -- Main ------------------------------------------------------------------------
+
 main : Program () Model Msg
 main =
   Browser.element
-    { init = \flags -> ( initialModel, Cmd.none )  -- can be any value
-    , view = view                                  -- what the visitor sees
-    , update = update                              -- what the computer sees
-    , subscriptions = \model -> Sub.none           -- our commands
+    { init = \flags -> ( initialModel, Cmd.none )
+    , view = view
+    , update = update
+    , subscriptions = \model -> Sub.none
     }
