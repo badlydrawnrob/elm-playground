@@ -11,8 +11,8 @@ For now, I'm only really interested in learning the language Elm so javascript n
 
 ## Lazy loading of cards
 
-> ⚠️ **To what level do I want to learn programming?**[^2]
-> 🎯 **How much do I care?**[^3]
+> - ⚠️ **To what level do I want to learn programming?**[^2]
+> - 🎯 **How much do I care?**[^3]
 >
 > 1. **Write it down** (a brief summary of a learning point)
 > 2. **Group related learning points!**
