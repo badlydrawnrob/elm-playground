@@ -62,8 +62,8 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 ### Type alias
 
-- A type alias declaration assigns a name to a type, much as a constant assigns a name to a value.
-* Type aliases to reduce code duplication
+- <s>A type alias declaration assigns a name to a type, much as a constant assigns a name to a value.
+* Type aliases to reduce code duplication</s>
     - https://guide.elm-lang.org/types/type_aliases
     - Use the example with an Array (but don't mention it much)
 * More type alias examples here: https://guide.elm-lang.org/types/type_aliases
