@@ -63,10 +63,10 @@ A black box procedure should be obvious to it's input and output, but the user _
 ### Type alias
 
 - <s>A type alias declaration assigns a name to a type, much as a constant assigns a name to a value.
-* Type aliases to reduce code duplication</s>
+* Type aliases to reduce code duplication
     - https://guide.elm-lang.org/types/type_aliases
     - Use the example with an Array (but don't mention it much)
-* More type alias examples here: https://guide.elm-lang.org/types/type_aliases
+* More type alias examples here: https://guide.elm-lang.org/types/type_aliases</s>
 
 ### Type variables
 
@@ -183,6 +183,8 @@ A black box procedure should be obvious to it's input and output, but the user _
     - Go over the difference between custom types `Msg` and type variables `msg`.
     - `Random.generate` is also a _higher order function_.
     - Difference between `Browser.sandbox` and `Browser.element`?
+- More in depth on `Random` and `Commands` — [Elm Guide](https://elmprogramming.com/commands.html)
+- Also here is a [misunderstanding of how `Random` works](https://www.reddit.com/r/elm/comments/bb2xd3/what_is_wrong_with_random/) ....
 
 ### Arrays and lists
 
