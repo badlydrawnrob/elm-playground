@@ -70,10 +70,10 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 ### Type variables
 
-- Type variables represent concrete types that have not been specified yet.
+- <s>Type variables represent concrete types that have not been specified yet.
 - Give a brief introduction to [`Type Variables`](http://tinyurl.com/elm-lang-type-variables)
     - For example `number` is a type variable.
-    - `fromList : List elementType -> Array elementType`
+    - `fromList : List elementType -> Array elementType`</s>
 
 ### Errors
 
@@ -189,6 +189,7 @@ A black box procedure should be obvious to it's input and output, but the user _
 ### Arrays and lists
 
 - `Array.get` prevents runtime crashes by returning a Maybe instead of a normal element.
+- [Arrays vs lists](https://stackoverflow.com/a/37707812)
 
 ### Other stuff
 
@@ -198,7 +199,8 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 ## For later
 
-- As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
+1. Add a couple more `type variable` examples to your deck. For instance [is this a type variable](http://tinyurl.com/elm-lang-is-a-type-variable) or just an argument? Is it wise to [never use them](https://discourse.elm-lang.org/t/the-use-and-over-use-of-type-variables/2044/5)?
+2. As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
 
 
 ## Chapter 03
