@@ -77,37 +77,51 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 ### Errors
 
-* Quiz: [explain why this code doesn't work](https://ellie-app.com/q7sGdX6wLfsa1) (broken link!)
+* <s>Quiz: [explain why this code doesn't work](https://ellie-app.com/q7sGdX6wLfsa1) (broken link!)
     1. Error in the book `http://elm-in-action.com/list-photos`
     2. Missing a `/` ...
-    3. Where do you go to first in the code to fix a problem?
-* (Related to (23)) explain why [this error message is occuring](https://ellie-app.com/q8kbndhqGX2a1).
+    3. Where do you go to first in the code to fix a problem?</s>
+* <s>(Related to (23)) explain why [this error message is occuring](https://ellie-app.com/q8kbndhqGX2a1).</s>
 
 
 
 
 ### Custom Type
 
-- A type declaration defines a new custom type, one that did not exist before.
-- Custom types can hold more-flexible data than records or tuples can.
-- Custom type variants can be either values that are instances of that custom type, or functions that return instances of that custom type.
-- You can destructure custom type variants in case-expressions to extract their data.
-- What is a custom type option? See `ThumbnailSize`. Note that it's Title case (sorta)
-    - What does a ThumbnailSize equal?
-    - `Medium == Medium` but not equal to ...
-    - Note that `|` pipe operator is used for custom types too to enumerate a list of types
-    - Quiz: Why is line 76 in PhotoGrove using `size` variable rather than `ThumbnailSize`?
-    - Why don't we need a default branch? [What happens if `size` is something other](https://ellie-app.com/q7TjWjDQZn8a1)? (can't happen, if it's not a valid `ThumbnailSize` it'll fail?)
-- Add a link for more info for types https://elmprogramming.com/type-system.html
+1. <s>A custom type with only case expressions
+    - Start with `ThumbnailSize` as it's simple
+    - Types must be `CapitalCase` (including it's contents)
+    - Each branch is only equal to itself (and itself only)</s>
+
+
+2. <s>A custom type with type variants that are functions</s>
+
+
+## Case statements
+
+4. <s>A `case` expression with a simple "container" `CustomType String`
+    - I guess this is what's "extracting their data" or "associated data"
+    - http://tinyurl.com/elm-lang-case-vs-if-else</s>
+
+
+- <s>If you don’t write a fallback `_ ->` branch in a case-expression, you’ll get a compiler error unless your code handles all possible cases.
+- Converting an `if` statement to a `case` statement
+    - How to flatten a complex nested `case` statement?
+    - http://tinyurl.com/elm-lang-case-vs-if-else
+    - Conditional branches (like lisp's `cond`)
+    - Explain the `_` underscore (the `else` part)
+        - It's the _default_ branch</s>
+
+
 
 ### Maybe
 
-1. `Maybe` and it's Union Types `Just` and `Nothing`
+1. <s>`Maybe` and it's Union Types `Just` and `Nothing`
 
 - A brief introduction to `Maybe`:
     - http://tinyurl.com/elm-lang-maybe-dont-overuse
     - Give an example of _deconstructing_ `Just` and `Nothing` (see line `381` in `Notes.elm`)
-    - https://exercism.org/tracks/elm/concepts/maybe#
+    - https://exercism.org/tracks/elm/concepts/maybe#</s>
 
 ### The Elm Runtime
 
@@ -163,19 +177,13 @@ A black box procedure should be obvious to it's input and output, but the user _
 - The `update` function looks weird
     - Two `if` statements, so two ways a `Model` could look (as well as the do nothing `Model`)
 
-### Case statements
 
-- If you don’t write a fallback `_ ->` branch in a case-expression, you’ll get a compiler error unless your code handles all possible cases.
-- Converting an `if` statement to a `case` statement
-    - How to flatten a complex nested `case` statement?
-    - http://tinyurl.com/elm-lang-case-vs-if-else
-    - Conditional branches (like lisp's `cond`)
-    - Explain the `_` underscore (the `else` part)
-        - It's the _default_ branch
 
 ### Commands
 
-1. It has a Surprise Me! button that selects a thumbnail at random.
+1. A `case` expression that runs a `Cmd`. (condense "Commands" header)
+
+2. It has a Surprise Me! button that selects a thumbnail at random.
 
 - An elm function given the same arguments will output the same value every time. A **command** however is a value that describes an operation for the Elm Runtime to perform. Running the same command multiple times can have different results.
 - What is a command? [How does an update function differ before](https://github.com/badlydrawnrob/elm-playground/commit/0f843dff086a032b6790c0f006670f0a27ad3370#diff-bf15ae9c129c62ed2594aaad110aea910f4ea83ba7fb0c6332813bb0e90847ec) and after we have a command? Go over type variables again for `Cmd Msg`. Tuples too.
@@ -201,6 +209,7 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 1. Add a couple more `type variable` examples to your deck. For instance [is this a type variable](http://tinyurl.com/elm-lang-is-a-type-variable) or just an argument? Is it wise to [never use them](https://discourse.elm-lang.org/t/the-use-and-over-use-of-type-variables/2044/5)?
 2. As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
+3. A `type SomeType` variant that holds functions?
 
 
 ## Chapter 03

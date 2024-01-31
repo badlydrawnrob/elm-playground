@@ -18,6 +18,15 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 - [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
 - [Exercism](https://exercism.org/tracks/elm)'s Elm track
 
+## Helpful talks
+
+1. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
+2. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U)
+3. [Scaling Elm apps](https://www.youtube.com/watch?v=DoA4Txr4GUs)
+4. [Making impossible states possible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^1]
+5. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
+6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
+
 ## Books
 
 - [Elm in Action](https://www.manning.com/books/elm-in-action)
@@ -35,9 +44,12 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
-- [Richard Feldman](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo) talks
+
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 
 ## Documentation
 
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
+
+
+[^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
