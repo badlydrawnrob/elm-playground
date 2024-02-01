@@ -144,36 +144,54 @@ A black box procedure should be obvious to it's input and output, but the user _
 
 1. <s>From now on, whenever we add a new Msg value, the compiler will give us a missing-patterns error if we forget to handle it (as when we didn’t account for `ClickedSize`).</s>
 
-- If we have more than one `Msg` what do we do?
+- <s>If we have more than one `Msg` what do we do?
     - We have two `onClick` events now.
     - Comparing `if` `case` and `case` with `Msg` type
     - It isn't good practice to cram every `msg` in a single record
     - Data that looks related, but isn't really (different `onClick` functions)
     - A quick sketch of how message gets passed around
-- Basically both `Msg` and `update` work better if there's _more than one way our `Model` could look after providing it a `Msg`
+- Basically both `Msg` and `update` work better if there's _more than one way our `Model` could look after providing it a `Msg`</s>
 
 
 
 ### Commands
 
-1. A `case` expression that runs a `Cmd`. (condense "Commands" header)
+1. <s>A `case` expression that runs a `Cmd`. (condense "Commands" header)
+    - http://tinyurl.com/elm-lang-convert-update-tuple
 2. It has a Surprise Me! button that selects a thumbnail at random.
-3. An elm function given the same arguments will output the same value every time.
-4. A `command` is a value that describes an operation for the Elm Runtime to perform. This `command` can be run multiple times with different results.
-    - We have to change our model and [pass a `tuple`](http://tinyurl.com/elm-lang-cmd-needs-tuple) (see `Figure 3.8` in book)
-5. For a random number we have a `generator` and a get the result using `Random.generate GotSelectedIndex randomPhotoPicker` (why?)
+3. An elm function given the same arguments will output the same value every time.<s>
+4. <s>A `command` is a value that describes an operation for the Elm Runtime to perform. This `command` can be run multiple times with different results.
+    - We have to change our model and [pass a `tuple`](http://tinyurl.com/elm-lang-cmd-needs-tuple) (see `Figure 3.8` in book)</s>
+5. <s>For a random number we have a `generator` and a get the result using `Random.generate GotSelectedIndex randomPhotoPicker` (why?)
     - https://elmprogramming.com/commands.html
 
+The below function is also interesting, as it's calling a function inside the `case .. of`. `photo` (I think) is a type variable (i.e: `a`)</s>
+
+```elm
+getPhotoUrl : Int -> String
+getPhotoUrl index =
+  case Array.get index photoArray of
+    Just photo ->
+      photo.url
+    Nothing ->
+      ""
+```
 
 
 
-### Other stuff
+## Things to think about later
 
-- The `()` type (known as unit) is both a type and a value. The only value of type () is the value ().
-- The type `Program () Model Msg` refers to an Elm Program with no flags, whose model type is Model and whose message type is Msg.
+### Code organisation
 
+Which types and functions go in each section?
 
-## For later
+1. `Model`
+2. `View`
+3. `Update`
+4. `helper functions`
+5. `Cmd`
+6. `Msg`
+7. ...
 
 ### Types
 1. Add a couple more `type variable` examples to your deck. For instance [is this a type variable](http://tinyurl.com/elm-lang-is-a-type-variable) or just an argument? Is it wise to [never use them](https://discourse.elm-lang.org/t/the-use-and-over-use-of-type-variables/2044/5)?
