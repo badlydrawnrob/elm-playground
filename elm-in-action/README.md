@@ -1,8 +1,8 @@
 # Stuff to add to Anki?
 
-> **[Bin first](https://hamberg.no/gtd).** Then group. Then filter. Then do.
+> **[Bin first](https://hamberg.no/gtd).** Then group. Then filter. Then do.[^1]
 >
-> 1. A higlighted and heavily bookmarked eBook[^1]
+> 1. A higlighted and heavily bookmarked eBook[^2]
 > 2. A folder full of useful screenshots from the book (not in repo)
 > 3. A `Notes.elm` file for each chapter
 > 4. Useful notes in each `PhotoGroove.elm` file (removed once chapter completed)
@@ -23,14 +23,12 @@
     - How quickly can I get to the root of the question?
     - If it takes longer than 30 seconds to solve, is there a better way to revise?
 
-The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory. For now, I'm only really interested in learning the language Elm, so javascript notes aren't useful (to me).[^1] Common functional programming concepts and terminology that can be shared across Lisp, Elm, and other functional languages are useful. <mark>Mark them with highlights</mark>.
-
-Programming and learning are NEBULOUS.
+The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory. For now, I'm only really interested in learning the language Elm, so javascript notes aren't useful (to me).[^2] Common functional programming concepts and terminology that can be shared across Lisp, Elm, and other functional languages are useful. <mark>Mark them with highlights</mark>.
 
 ## Lazy loading of cards
 
-> - ⚠️ **To what level do I want to learn programming?**[^2]
-> - 🎯 **How much do I care?**[^3]
+> - ⚠️ **To what level do I want to learn programming?**[^3]
+> - 🎯 **How much do I care?**[^4]
 >
 > 1. **Write it down** (a brief summary of a learning point)
 > 2. **Group related learning points!**
@@ -89,9 +87,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 
 
+[^1]: Most things should be punted to **some day**: that goes for books, courses, learning a new thing (I'd love to play piano well), starting a new project, so on. For instance, I tried to work through both SICP and Elm in Action and there's simply not enough headspace to do both productively. [Apocryphal or not](https://www.cnbc.com/2018/06/05/warren-buffetts-answer-to-this-question-taught-alex-banayan-a-lesson.html), the 5/25 rule is all about honing in on what's important. Unless you're a kid, you simply don't have time to do everything well. Programming and learning are NEVER-ENDING. So be pragmatic and do a handful of things well.
 
-[^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook. Just how useful these notes are is up for question. It's quite hard to skim the book for knowledge; that would be a job for documentation, or "micro programs' where everything is in-place.
+[^2]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook. Just how useful these notes are is up for question. It's quite hard to skim the book for knowledge; that would be a job for documentation, or "micro programs' where everything is in-place.
 
-[^2]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
+[^3]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
 
-[^3] Always. Always [keep in mind your learning target](https://github.com/badlydrawnrob/elm-playground/issues/9).
+[^4] Always. Always [keep in mind your learning target](https://github.com/badlydrawnrob/elm-playground/issues/9).
