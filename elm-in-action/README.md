@@ -1,13 +1,31 @@
 # Stuff to add to Anki?
 
-> See the Books app on Mac for highlighted eBook
-> _See `./__ANKI__` in local folder (not in repo)_.
+> **[Bin first](https://hamberg.no/gtd).** Then group. Then filter. Then do.
+>
+> 1. A higlighted and heavily bookmarked eBook[^1]
+> 2. A folder full of useful screenshots from the book (not in repo)
+> 3. A `Notes.elm` file for each chapter
+> 4. Useful notes in each `PhotoGroove.elm` file (removed once chapter completed)
 
-Don't add cards recklessly. Is it really worth the overhead to create and revise this card? Remember your "bin first" approach to grouping, filtering, and timeboxing tasks (and your tendency to get side-tracked!)
+**Don't add cards recklessly.** One of the biggest downsides of writing revision notes and a big `to-do` list for Anki card creation is one of time. Is it really worth the overhead to create and revise this card? Perhaps I'm lazy, but in general I try to remind myself:
 
-The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory — shared concepts and important keywords/terminology could be useful. <mark>Mark them with highlights</mark>.
+1. Start with NO!
+    - I start projects from a place of "why would I want to do __"?
+    - Is __ in-keeping with my goals? Is it a timesink?
+2. _Try_ not to get sidetracked. Is this a useful waste of time?
+    - I get sidetracked _all the time_, especially for CSS and new programming concepts.
+    - Keep in mind _why_ you're learning. Does it fit my target goals?
+    - You can waste _hours_ (and days) trying to figure things out with code :(
+3. Have a great filter.
+    - Group related tasks and remove ones that aren't important.
+    - Where possible, find shortcuts or ask someone for help.
+4. Cards should be done in 30 seconds (in general).
+    - How quickly can I get to the root of the question?
+    - If it takes longer than 30 seconds to solve, is there a better way to revise?
 
-For now, I'm only really interested in learning the language Elm so javascript notes aren't useful (to me).[^1]
+The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory. For now, I'm only really interested in learning the language Elm, so javascript notes aren't useful (to me).[^1] Common functional programming concepts and terminology that can be shared across Lisp, Elm, and other functional languages are useful. <mark>Mark them with highlights</mark>.
+
+Programming and learning are NEBULOUS.
 
 ## Lazy loading of cards
 
@@ -34,20 +52,21 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 - [ ] How to break down that learning for better Anki cards?
 - [ ] Is linking cards to Chapter of the book enough?
 
+
 ## General notes for all code ventures:
 
 > 1. How do we sketch out and prioritise new feature requests? Start with the Model!
 > 2. How do you take [a large code base](https://github.com/badlydrawnrob/elm-playground/issues/12) and distill it down for an Anki card in just a few lines? Or, do you link through to the full program/file?
 
 
-## Chapter 04
+## Chapter 04 to-dos
 
 
 
 
 
 
-## For later ...
+## Things for later ...
 
 **A black box procedure** should be obvious to it's input and output, but the user _does not have to know_ anything about the internal mechanism. You should be able to change the inner workings and keep the same inputs and outputs (or at least, refactor with minimal fuss)
 
@@ -71,7 +90,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 
 
-[^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
+[^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook. Just how useful these notes are is up for question. It's quite hard to skim the book for knowledge; that would be a job for documentation, or "micro programs' where everything is in-place.
 
 [^2]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
 
