@@ -102,6 +102,12 @@ randomPhotoPicker =
 
 -- Model -----------------------------------------------------------------------
 
+-- #1: Change model to `Status` (original below)
+--     @ http://tinyurl.com/elm-in-action-change-status
+--
+-- #2: Change `initialModel` to `Loading` (original below)
+--     @ http://tinyurl.com/nhddmc8v
+
 type ThumbnailSize
   = Small
   | Medium
@@ -110,20 +116,19 @@ type ThumbnailSize
 type alias Photo =
   { url : String }
 
+type Status
+  = Loading
+  | Loaded (List Photo) String
+  | Errored String
+
 type alias Model =
-  { photos : List Photo
-  , selectedUrl : String
+  { photos : Status  -- #1
   , chosenSize : ThumbnailSize
   }
 
 initialModel : Model
 initialModel =
-  { photos =
-    [ { url = "1.jpeg" }
-    , { url = "2.jpeg" }
-    , { url = "3.jpeg" }
-    ]
-  , selectedUrl = "1.jpeg"
+  { status = Loading
   , chosenSize = Medium
   }
 
