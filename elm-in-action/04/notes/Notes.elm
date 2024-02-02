@@ -42,3 +42,25 @@ type Status
 --
 --   @ List zippers (Learn you an Elm — difficult) http://tinyurl.com/ycxyy7kt
 --   @ Elm Package: http://tinyurl.com/elm-lang-list-zippers
+
+
+-- Our view now has to change --
+-- inside our main `view` function
+
+-- A div is just a set of attributes and a `List`
+-- of children ...
+
+div [ class "wrapper" ]  -- Missing `[]`
+
+-- That's not valid syntax until we add the missing `[]`
+-- but we create a separate function that will return
+-- a `List (Html Msg)` like so:
+
+aRandomNumber : Int
+aRandomNumber = 1
+
+viewInsideWrapper Int -> List (Html Msg)
+viewInsideWrapper arguments =
+  [
+    p [] [ text (String.fromInt arguments)]
+  ]
