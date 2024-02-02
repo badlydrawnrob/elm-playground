@@ -47,6 +47,19 @@ type Msg
 view : Model -> Html Msg
 view model =
   div [ class "content" ]
+    (case model.status of
+      Loaded photos selectedUrl ->
+        (viewLoaded photos selectedUrl model.chosenSize)
+
+      Loading ->
+        []
+
+      Errored errorMessage ->
+        [ text ("Error: " ++ errorMessage) ]
+    )
+
+viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
+viewLoaded photos selectedUrl chosenSize =
     [ h1 [] [ text "Photo Groove" ]
     , button
       [ onClick ClickedSurpriseMe ]
@@ -64,6 +77,7 @@ view model =
         , src (urlPrefix ++ "large/" ++ model.selectedUrl)
         ] []
     ]
+
 
 -- Helper functions --
 
