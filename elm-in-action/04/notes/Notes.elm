@@ -64,3 +64,9 @@ viewInsideWrapper arguments =
   [
     p [] [ text (String.fromInt arguments)]
   ]
+
+-- We've just broken up our `Model` into it's component parts ------------------
+--
+-- : The main `view` function takes a `Model`
+-- : Our `viewInsideWrapper` need only access the
+--   arguments it needs to make things happen!

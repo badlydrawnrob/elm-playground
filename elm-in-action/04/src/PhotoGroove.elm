@@ -38,6 +38,17 @@ import Random
 
 -- View ------------------------------------------------------------------------
 
+-- We've broken our `view` into different parts, which follow our `Status` type.
+-- This means we can deconstruct our `Model` and give each function only what it
+-- requires to work properly.
+--
+-- : 1) Our main function that takes a `Model`
+-- : 2) Our child function that takes only what it needs:
+--      `photos`, `selectedUrl`, and a `chosenSize`.
+-- : 3) Our other `Status` loading states.
+--
+-- Also note that (2) returns a `List (Html Msg)` now.
+
 type Msg
   = ClickedPhoto String
   | GotSelectedIndex Int
@@ -67,14 +78,14 @@ viewLoaded photos selectedUrl chosenSize =
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
       (List.map viewSizeChooser [ Small, Medium, Large ] )
-    , div [ id "thumbnails", class (sizeToString model.chosenSize ) ]
+    , div [ id "thumbnails", class (sizeToString chosenSize ) ]
         (List.map
-          (viewThumbnail model.selectedUrl)
+          (viewThumbnail selectedUrl)
           model.photos
         )
     , img
         [ class "large"
-        , src (urlPrefix ++ "large/" ++ model.selectedUrl)
+        , src (urlPrefix ++ "large/" ++ selectedUrl)
         ] []
     ]
 
