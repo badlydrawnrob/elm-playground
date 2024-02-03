@@ -70,3 +70,22 @@ viewInsideWrapper arguments =
 -- : The main `view` function takes a `Model`
 -- : Our `viewInsideWrapper` need only access the
 --   arguments it needs to make things happen!
+
+
+-- The `<|` operator --
+
+-- An operator that calls a function.
+-- These two expressions do exactly the same thing!
+--
+-- : The <| operator takes a function and another value,
+--   and passes the value to the function. That might not sound
+--   like it does much, but it’s handy for situations like the
+--   one we have here — where an infix operator would look nicer than
+--   parentheses.
+
+String.toUpper (string.reverse "hello")  -- parens
+String.toUpper <| String.reverse "hello" -- `<|` operator
+
+
+-- 4.1.2 -----------------------------------------------------------------------
+

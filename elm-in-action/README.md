@@ -59,6 +59,30 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ## Chapter 04 to-dos
 
+### Dealing with refactoring
+
+```terminal
+-- TYPE MISMATCH ------------------------------------------- src/PhotoGroove.elm
+
+This `model` record does not have a `status` field:
+
+61|     (case model.status of
+                    ^^^^^^
+This is usually a typo. Here are the `model` fields that are most similar:
+
+    { photos : Status
+    , chosenSize : ThumbnailSize
+    }
+
+So maybe status should be photos?
+```
+
+See http://tinyurl.com/elm-in-action-refactor-status
+
+
+### The `<|` operator
+
+A couple of simple and more verbose examples.
 
 
 

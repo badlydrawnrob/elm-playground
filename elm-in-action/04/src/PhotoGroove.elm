@@ -57,8 +57,8 @@ type Msg
 
 view : Model -> Html Msg
 view model =
-  div [ class "content" ]
-    (case model.status of
+  div [ class "content" ] <|
+    case model.status of
       Loaded photos selectedUrl ->
         (viewLoaded photos selectedUrl model.chosenSize)
 
@@ -67,7 +67,6 @@ view model =
 
       Errored errorMessage ->
         [ text ("Error: " ++ errorMessage) ]
-    )
 
 viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
 viewLoaded photos selectedUrl chosenSize =
