@@ -80,8 +80,7 @@ viewLoaded photos selectedUrl chosenSize =
       (List.map viewSizeChooser [ Small, Medium, Large ] )
     , div [ id "thumbnails", class (sizeToString chosenSize ) ]
         (List.map
-          (viewThumbnail selectedUrl)
-          model.photos
+          (viewThumbnail selectedUrl) photos
         )
     , img
         [ class "large"
