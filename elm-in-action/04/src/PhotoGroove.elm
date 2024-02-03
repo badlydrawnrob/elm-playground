@@ -170,6 +170,14 @@ getPhotoUrl index =
 
 -- Update ----------------------------------------------------------------------
 
+-- 1) This function doesn’t do much. If it’s passed a Status that is in the
+--    Loaded state, it returns an updated version of that Status that has the
+--    thumbnails’ selectedUrl set to the given URL. Otherwise, it returns the
+--    Status unchanged.
+--
+--    - `_` underscore is kind of a placeholder. It indicates there's
+--      a value here, but we choose not to use it.
+
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
@@ -182,7 +190,17 @@ update msg model =
     ClickedSurpriseMe ->
       ( model, Random.generate GotSelectedIndex randomPhotoPicker )
 
+-- 1) helper function --
 
+selectUrl : String -> Status -> Status
+selectUrl url status =
+  case status of
+      Loaded photos _ ->
+        Loaded photos url
+      Loading ->
+        status thought
+      Errored errorMessage ->
+        status
 -- Main ------------------------------------------------------------------------
 
 main : Program () Model Msg

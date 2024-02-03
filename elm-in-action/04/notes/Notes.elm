@@ -89,3 +89,26 @@ String.toUpper <| String.reverse "hello" -- `<|` operator
 
 -- 4.1.2 -----------------------------------------------------------------------
 
+-- Resolving data dependencies --
+--
+-- If you change your model, you'll have to make sure any
+-- `case` statements or `model.outdated` calls are changed.
+-- For instance, `model.selectedUrl` no longer exists!
+
+GotSelectedIndex index ->
+  ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
+--            ^^^^^^^^^^
+
+-- We require a new helper function called `selectUrl url status`
+-- that `case`s on our `Status` type for it's three branches (see `PhotoGroove.elm`)
+
+-- The `_` underscore placeholder --
+--
+-- : It is a special placeholder indicating that there is a value here,
+--   but we’re choosing not to use it. Attempting to reference `_`
+--   in our logic would be a compile error.
+--
+-- : You can use `_` in case-expression branches as well as in function arguments
+
+a3ArgumentFunction _ _ _ =
+  "I ignore all three of my arguments and return string!"

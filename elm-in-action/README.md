@@ -85,7 +85,16 @@ See http://tinyurl.com/elm-in-action-refactor-status
 A couple of simple and more verbose examples.
 
 
+### More robust functions and errors (logging)
 
+> pg. 96 (pdf) or pg. 234 (book)
+>
+> Tip
+>
+> This function could be made more robust. Currently, if it gets a photo URL to select before the photos have loaded, it ignores that error and proceeds as if nothing has gone wrong. A more robust implementation might return a Maybe Status, so that update could fire off a Cmd to record the error in a logging service. We won’t use a logging service in this book, but although it’s good to recover from errors that shouldn’t have happened, additionally logging that they happened gives you a way to later investigate what went wrong.
+
+
+-----
 
 
 ## Things for later ...
