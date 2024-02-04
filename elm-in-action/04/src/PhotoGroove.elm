@@ -32,7 +32,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Browser
-import Array exposing (Array)
 import Random
 
 
