@@ -145,7 +145,7 @@ type Status
   | Errored String
 
 type alias Model =
-  { photos : Status  -- #1
+  { status : Status  -- #1
   , chosenSize : ThumbnailSize
   }
 
@@ -170,7 +170,11 @@ getPhotoUrl index =
 
 -- Update ----------------------------------------------------------------------
 
--- 1) This function doesn’t do much. If it’s passed a Status that is in the
+-- 1) Instead of updateing a `selectedUrl` string (which doesn't exist now),
+--    we pass it a function. That function tackes a `url` (a "string") and a
+--    `model.status`.
+--
+-- 2) This function doesn’t do much. If it’s passed a Status that is in the
 --    Loaded state, it returns an updated version of that Status that has the
 --    thumbnails’ selectedUrl set to the given URL. Otherwise, it returns the
 --    Status unchanged.
@@ -182,15 +186,17 @@ update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
     GotSelectedIndex index ->
-      ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
+      ( { model | status = selectUrl (getPhotoUrl index) model.status }
+      , Cmd.none )
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
     ClickedPhoto url ->
-      ( { model | selectedUrl = url }, Cmd.none )
+      ( { model | status = selectUrl url model.status }
+      , Cmd.none )
     ClickedSurpriseMe ->
       ( model, Random.generate GotSelectedIndex randomPhotoPicker )
 
--- 1) helper function --
+-- 2) helper function --
 
 selectUrl : String -> Status -> Status
 selectUrl url status =
