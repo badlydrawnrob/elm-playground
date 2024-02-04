@@ -119,9 +119,9 @@ sizeToString size =
       Medium -> "med"
       Large -> "large"
 
-randomPhotoPicker : Random.Generator Int
-randomPhotoPicker =
-  Random.int 0 (Array.length photoArray - 1)
+-- randomPhotoPicker : Random.Generator Int
+-- randomPhotoPicker =
+--   Random.int 0 (Array.length photoArray - 1)
 
 -- Model -----------------------------------------------------------------------
 
@@ -155,23 +155,23 @@ initialModel =
   , chosenSize = Medium
   }
 
-photoArray : Array Photo
-photoArray =
-  Array.fromList initialModel.photos
+-- photoArray : Array Photo
+-- photoArray =
+--   Array.fromList initialModel.photos
 
-getPhotoUrl : Int -> String
-getPhotoUrl index =
-  case Array.get index photoArray of
-    Just photo ->
-      photo.url
-    Nothing ->
-      ""
+-- getPhotoUrl : Int -> String
+-- getPhotoUrl index =
+--   case Array.get index photoArray of
+--     Just photo ->
+--       photo.url
+--     Nothing ->
+--       ""
 
 
 -- Update ----------------------------------------------------------------------
 
--- 1) Instead of updateing a `selectedUrl` string (which doesn't exist now),
---    we pass it a function. That function tackes a `url` (a "string") and a
+-- 1) Instead of updating a `selectedUrl` string (which doesn't exist now),
+--    we pass it a function (2). That function tackes a `url` (a "string") and a
 --    `model.status`.
 --
 -- 2) This function doesn’t do much. If it’s passed a Status that is in the

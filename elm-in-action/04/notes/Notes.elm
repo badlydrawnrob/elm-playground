@@ -112,3 +112,10 @@ GotSelectedIndex index ->
 
 a3ArgumentFunction _ _ _ =
   "I ignore all three of my arguments and return string!"
+
+
+-- No longer hardcoded Photos --
+-- We need a new approach.
+--
+-- 1. We delete our photo functions and LET THE COMPILER HELP US
+--    to figure out what we do next.
