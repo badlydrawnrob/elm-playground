@@ -198,3 +198,20 @@ ClickedSurpriseMe ->
       -- do nothing (return `status`)
     Errored errorMessage ->
       -- do nothing (return `status`)
+
+
+-- Using the pipeline operator --
+-- Remember, this is only possible because Elm allows you to do partial
+-- functions (functions that return a function when not given all the arguments)
+
+-- Lisp style --
+
+Tuple.pair model
+  (Random.generate GotRandomPhoto
+    (Random.uniform firstPhoto otherPhotos))
+
+-- Elm Pipline style --
+
+Random.uniform firstPhoto otherPhotos
+  |> Random.generate GotRandomPhoto
+  |> Tuple.pair model
