@@ -84,7 +84,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 ### `case` the `Model` more than once. Why?
 
 1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
-2. Destructuring. We use `first :: rest` which we wrapped in `()` brackets. Explain.
+2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
 3. Explain the difference between our original random function and the new `random.uniform` one.
 
 ### The `<|` operator

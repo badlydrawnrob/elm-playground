@@ -142,4 +142,6 @@ Random.uniform elem -> List elem -> Random.Generator elem
 --   but functions like this take a _default_ value.
 --
 -- : So TL;DR: you _must_ supply a default value as well as a `List elem`
+--   a function can also return a non-empty list using a Tuple:
+--   `( elem, List elem )`
 
