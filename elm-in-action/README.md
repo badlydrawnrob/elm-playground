@@ -62,7 +62,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ### General to-dos
 
-1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To show the difference of our refactor.
+1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To [show the difference of our refactor](https://github.com/badlydrawnrob/elm-playground/commit/55b0d1b45ff9ee000426747bd35a34c84a0b9559).
 
 ### Dealing with refactoring
 
