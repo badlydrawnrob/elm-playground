@@ -221,3 +221,9 @@ Tuple.pair model
 Random.uniform firstPhoto otherPhotos
   |> Random.generate GotRandomPhoto
   |> Tuple.pair model
+
+
+
+-- 4.2 -------------------------------------------------------------------------
+
+-- 4.2.1 -----------------------------------------------------------------------
