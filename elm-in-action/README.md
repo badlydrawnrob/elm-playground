@@ -60,6 +60,10 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ## Chapter 04 to-dos
 
+### General to-dos
+
+1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To show the difference of our refactor.
+
 ### Dealing with refactoring
 
 ```terminal
@@ -86,6 +90,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
 2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
 3. Explain the difference between our original random function and the new `random.uniform` one.
+
 
 ### The `<|` operator
 

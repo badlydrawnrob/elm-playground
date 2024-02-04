@@ -145,3 +145,11 @@ Random.uniform elem -> List elem -> Random.Generator elem
 --   a function can also return a non-empty list using a Tuple:
 --   `( elem, List elem )`
 
+
+-- We're now randomly generating a `Photo` (not an `Index` number) -------------
+--
+-- : Our message type changes from `GotSelectedIndex`
+--   to `GotSelectedPhoto` (which is a `Photo` type).
+
+| GotRandomPhoto Photo
+

@@ -51,7 +51,7 @@ import Random
 
 type Msg
   = ClickedPhoto String
-  | GotSelectedIndex Int
+  | GotRandomPhoto Photo
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
 
@@ -119,9 +119,6 @@ sizeToString size =
       Medium -> "med"
       Large -> "large"
 
--- randomPhotoPicker : Random.Generator Int
--- randomPhotoPicker =
---   Random.int 0 (Array.length photoArray - 1)
 
 -- Model -----------------------------------------------------------------------
 
@@ -155,28 +152,16 @@ initialModel =
   , chosenSize = Medium
   }
 
--- photoArray : Array Photo
--- photoArray =
---   Array.fromList initialModel.photos
-
--- getPhotoUrl : Int -> String
--- getPhotoUrl index =
---   case Array.get index photoArray of
---     Just photo ->
---       photo.url
---     Nothing ->
---       ""
-
 
 -- Update ----------------------------------------------------------------------
 
--- 1) Instead of updating a `selectedUrl` string (which doesn't exist now),
+-- #1 Instead of updating a `selectedUrl` string (which doesn't exist now),
 --    we pass it a function (2). That function tackes a `url` (a "string") and a
 --    `model.status`.
 --
--- 2) We `case` on the `Model` again. Why do we do this?
+-- #2 We `case` on the `Model` again. Why do we do this?
 --
--- 3) This function doesn’t do much. If it’s passed a Status that is in the
+-- #3 This function doesn’t do much. If it’s passed a Status that is in the
 --    Loaded state, it returns an updated version of that Status that has the
 --    thumbnails’ selectedUrl set to the given URL. Otherwise, it returns the
 --    Status unchanged.
@@ -187,8 +172,8 @@ initialModel =
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
-    GotSelectedIndex index ->
-      ( { model | status = selectUrl (getPhotoUrl index) model.status }
+    GotRandomPhoto photo ->
+      ( { model | status = selectUrl photo.url model.status }
       , Cmd.none )
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
@@ -196,7 +181,7 @@ update msg model =
       ( { model | status = selectUrl url model.status }
       , Cmd.none )
     ClickedSurpriseMe ->
-      case model.status of
+      case model.status of  -- #2
           Loaded (firstPhoto :: otherPhotos) _ ->
             ( model
             , Random.generate GotRandomPhoto
@@ -207,7 +192,7 @@ update msg model =
           Errored errorMessage ->
             ( model, Cmd.none )
 
--- 2) helper function --
+-- #3: helper function --
 
 selectUrl : String -> Status -> Status
 selectUrl url status =
