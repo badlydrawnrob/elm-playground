@@ -181,15 +181,17 @@ update msg model =
       , Cmd.none )
     ClickedSurpriseMe ->
       case model.status of  -- #2
-          Loaded (firstPhoto :: otherPhotos) _ ->
-            ( model
-            , Random.generate GotRandomPhoto
-                (Random.uniform firstPhoto otherPhotos)
-            )
-          Loading ->
-            ( model, Cmd.none )
-          Errored errorMessage ->
-            ( model, Cmd.none )
+        Loaded [] _ ->
+          -- I'm an empty list!
+        Loaded (firstPhoto :: otherPhotos) _ ->
+          ( model
+          , Random.generate GotRandomPhoto
+              (Random.uniform firstPhoto otherPhotos)
+          )
+        Loading ->
+          ( model, Cmd.none )
+        Errored errorMessage ->
+          ( model, Cmd.none )
 
 -- #3: helper function --
 

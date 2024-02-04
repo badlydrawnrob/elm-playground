@@ -153,3 +153,48 @@ Random.uniform elem -> List elem -> Random.Generator elem
 
 | GotRandomPhoto Photo
 
+
+-- Preparing for all cases! ----------------------------------------------------
+--
+-- Loading is self explanatory (show a spinny icon)
+-- Errored just holds an error `String`
+-- What about `Loaded`?
+--
+-- `Loaded (List Photo) String` could be in two states:
+--
+-- 1) Loaded with an `[]` empty list
+-- 2) Loaded with [{url = "1.jpeg"}] a single item
+-- 3) Loaded with many items
+--
+-- `Random.Uniform` allows us to set a default if the list only has one item,
+-- so that's got us covered, but `(first :: last)` will error out if there's
+-- nothing in the list.
+--
+-- : We need to `case` on the empty list!!
+
+type Status
+  = Loading
+  | Loaded (List Photo) String
+  | Errored String
+
+
+-- We do this in the `ClickedSurpriseMe` button `case`
+-- We do this in the `update` function (it's a `Msg`)
+-- We do this with `[] ->` pattern matching
+
+type Msg
+  = ...
+  | ClickedSurpriseMe
+
+-- in `update`
+ClickedSurpriseMe ->
+  case model.status of
+    Loaded [] _ ->
+      -- There's nothing in the list ...
+      -- DO SOMETHING with that case!
+    Loaded (first :: rest) _ ->
+      -- do something
+    Loading ->
+      -- do nothing (return `status`)
+    Errored errorMessage ->
+      -- do nothing (return `status`)
