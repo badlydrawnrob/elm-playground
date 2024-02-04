@@ -45,7 +45,6 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
-
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 
 ## Documentation
