@@ -158,7 +158,9 @@ initialModel =
 --    we pass it a function (2). That function tackes a `url` (a "string") and a
 --    `model.status`.
 --
--- #2 We `case` on the `Model` again. Why do we do this?
+-- #2 a) We `case` on the `Model` again. Why do we do this?
+--    b) If there's an `[]` empty list, we basically _do nothing_
+--       and return the `model` (and no `Cmd`)
 --
 -- #3 This function doesn’t do much. If it’s passed a Status that is in the
 --    Loaded state, it returns an updated version of that Status that has the
@@ -180,9 +182,9 @@ update msg model =
       ( { model | status = selectUrl url model.status }
       , Cmd.none )
     ClickedSurpriseMe ->
-      case model.status of  -- #2
+      case model.status of  -- #2a
         Loaded [] _ ->
-          -- I'm an empty list!
+          ( model, Cmd.none )  -- #2b
         Loaded (firstPhoto :: otherPhotos) _ ->
           ( model
           , Random.generate GotRandomPhoto
@@ -193,7 +195,7 @@ update msg model =
         Errored errorMessage ->
           ( model, Cmd.none )
 
--- #3: helper function --
+-- #: helper function --
 
 selectUrl : String -> Status -> Status
 selectUrl url status =
