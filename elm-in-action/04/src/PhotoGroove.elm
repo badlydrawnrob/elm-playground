@@ -174,7 +174,9 @@ initialModel =
 --    we pass it a function (2). That function tackes a `url` (a "string") and a
 --    `model.status`.
 --
--- 2) This function doesn’t do much. If it’s passed a Status that is in the
+-- 2) We `case` on the `Model` again. Why do we do this?
+--
+-- 3) This function doesn’t do much. If it’s passed a Status that is in the
 --    Loaded state, it returns an updated version of that Status that has the
 --    thumbnails’ selectedUrl set to the given URL. Otherwise, it returns the
 --    Status unchanged.
@@ -194,7 +196,16 @@ update msg model =
       ( { model | status = selectUrl url model.status }
       , Cmd.none )
     ClickedSurpriseMe ->
-      ( model, Random.generate GotSelectedIndex randomPhotoPicker )
+      case model.status of
+          Loaded (firstPhoto :: otherPhotos) _ ->
+            ( model
+            , Random.generate GotRandomPhoto
+                (Random.uniform firstPhoto otherPhotos)
+            )
+          Loading ->
+            ( model, Cmd.none )
+          Errored errorMessage ->
+            ( model, Cmd.none )
 
 -- 2) helper function --
 

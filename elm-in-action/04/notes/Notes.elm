@@ -114,8 +114,32 @@ a3ArgumentFunction _ _ _ =
   "I ignore all three of my arguments and return string!"
 
 
--- No longer hardcoded Photos --
--- We need a new approach.
+-- SKETCHING OUT REFACTOR OPTIONS ----------------------------------------------
+--
+-- We no longer hardcoded Photos so need a new approach.
 --
 -- 1. We delete our photo functions and LET THE COMPILER HELP US
 --    to figure out what we do next.
+--
+-- 2. We look at our options and sketch out possiblities:
+--
+--    - Create a `photoArray` on the fly?
+--    - Randomly pick a photo without `Array.get`?
+--
+-- There's a function called `Random.uniform` that can help us.
+-- This produces a `Random.Generator` that randomly picks one of the
+-- `elem` values we passed it. It's called `uniform` because it has the same
+-- chance of randomly producing any of the elements. Their probabilities have
+-- a _uniform_ distribution.
+
+Random.uniform elem -> List elem -> Random.Generator elem
+
+-- Why does it take both `elem` argument and a `List elem`?
+-- Because `List.elem` could be empty, and it would be impossible
+-- for `uniform` to pick one element from `[]` empty.
+--
+-- : Elm's standard libraries don't include a `NonEmptyList` type
+--   but functions like this take a _default_ value.
+--
+-- : So TL;DR: you _must_ supply a default value as well as a `List elem`
+

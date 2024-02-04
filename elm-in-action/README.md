@@ -2,10 +2,11 @@
 
 > **[Bin first](https://hamberg.no/gtd).** Then group. Then filter. Then do.[^1]
 >
-> 1. A higlighted and heavily bookmarked eBook[^2]
+> 1. A highighted and heavily bookmarked eBook[^2]
 > 2. A folder full of useful screenshots from the book (not in repo)
 > 3. A `Notes.elm` file for each chapter
 > 4. Useful notes in each `PhotoGroove.elm` file (removed once chapter completed)
+> 5. The [Elm in Action repo](https://github.com/rtfeldman/elm-in-action/commits/master/) with code examples
 
 **Don't add cards recklessly.** One of the biggest downsides of writing revision notes and a big `to-do` list for Anki card creation is one of time. Is it really worth the overhead to create and revise this card? Perhaps I'm lazy, but in general I try to remind myself:
 
@@ -79,6 +80,12 @@ So maybe status should be photos?
 
 See http://tinyurl.com/elm-in-action-refactor-status
 
+
+### `case` the `Model` more than once. Why?
+
+1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
+2. Destructuring. We use `first :: rest` which we wrapped in `()` brackets. Explain.
+3. Explain the difference between our original random function and the new `random.uniform` one.
 
 ### The `<|` operator
 
