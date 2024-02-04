@@ -95,7 +95,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 ### The `<|`, `|>` operator
 
 1. A couple of simple and more verbose examples for `<|`.
-2. See the `Tuple.pair` example (also in `__Anki__`) Show an example before and after using the `|>` operator. Show that you flip the function order around (do you do like Lisp, or like Elm?)
+2. See the `Tuple.pair` example (also in `__Anki__`) Show an example [before and after](http://tinyurl.com/elm-lang-parens-vs-pipeline) using the `|>` operator. Show that you flip the function order around (do you do like Lisp, or like Elm?)
 3. In general, I'm quite happy with Lisp style.
 
 

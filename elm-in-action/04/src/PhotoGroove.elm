@@ -8,6 +8,7 @@ module PhotoGroove exposing (main)
                          https://gist.github.com/laszlopandy/c3bf56b6f87f71303c9f
                          https://github.com/ohanhi/elm-style-guide
 
+    Be sure to check:
       1. All View functions should be prepended with `view`?
       2. Helper functions seem to ignore this, so ...
       3. Perhaps it's all functions that return `Html` start with `view`?
@@ -26,6 +27,18 @@ module PhotoGroove exposing (main)
       4. Chapter 03:
             @ http://tinyurl.com/elm-in-action-chapter-03-done
             @ http://tinyurl.com/elm-in-action-c03-full-notes
+
+    Here's what we're doing in Chapter 04:
+      1. Our data model now represents three distinct states:
+         Loading, Loaded, and Errored.
+      2. We begin in the Loading state, but now we access photos
+         or selectedUrl only when in the Loaded state.
+        (Because we now store those values in the Loaded variant,
+        we’ve guaranteed that we can’t possibly access them in any
+        other state.)
+      3. When the user clicks the Surprise Me! button, we randomly select
+         a photo without creating an intermediate Array (so we got rid of
+         the `Array` import).
 -}
 
 import Html exposing (..)

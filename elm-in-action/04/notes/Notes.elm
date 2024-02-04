@@ -201,8 +201,14 @@ ClickedSurpriseMe ->
 
 
 -- Using the pipeline operator --
+--
 -- Remember, this is only possible because Elm allows you to do partial
 -- functions (functions that return a function when not given all the arguments)
+--
+-- 1) Call Random.uniform firstPhoto otherPhotos.
+-- 2) Pass its _return value_ as the final argument to Random.generate GotRandomPhoto.
+-- 3) Pass that _return value_ as the final argument to Tuple.pair model.
+
 
 -- Lisp style --
 
