@@ -30,6 +30,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Books
 
 - [Elm in Action](https://www.manning.com/books/elm-in-action)
+- [Learn you an Elm](https://learnyouanelm.github.io)
 
 ## Some tools
 
