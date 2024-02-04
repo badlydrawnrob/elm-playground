@@ -204,7 +204,7 @@ selectUrl url status =
       Loaded photos _ ->
         Loaded photos url
       Loading ->
-        status thought
+        status
       Errored errorMessage ->
         status
 -- Main ------------------------------------------------------------------------
