@@ -186,9 +186,9 @@ update msg model =
         Loaded [] _ ->
           ( model, Cmd.none )  -- #2b
         Loaded (firstPhoto :: otherPhotos) _ ->
-          ( model
-          , Random.generate GotRandomPhoto
-              (Random.uniform firstPhoto otherPhotos)
+          ( Tuple.pair model
+            (Random.generate GotRandomPhoto
+              (Random.uniform firstPhoto otherPhotos))
           )
         Loading ->
           ( model, Cmd.none )
