@@ -365,6 +365,23 @@ Model "working" Small
 --    : Model
 
 
+-- Case expression: Pattern Matching -------------------------------------------
+--
+-- Pattern matching is a way of destructuring values based on how their
+-- containers look. In the example, if we have a `GotPhotos` containing
+-- an `Ok` containing a `value`, that value will go into a variable called
+-- `responseStr`.
+
+case msg of
+  ...
+  GotPhotos (Ok responseStr) ->
+    ...
+  GotPhotos (Err _) ->
+    ( model, Cmd.none )
+
+case list of
+  (first :: rest) ->  -- 1 :: [2,3]
+    someFunction first rest  -- 1 [2,3]
 
 
 
