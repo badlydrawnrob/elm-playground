@@ -384,4 +384,46 @@ case list of
     someFunction first rest  -- 1 [2,3]
 
 
+-- Commands --------------------------------------------------------------------
+
+-- Making initial Cmd Msg --
+--
+-- We'll use this `initialCmd` value to run our HTTP request when
+-- the program starts up.
+--
+-- The type of initialCmd:
+--
+-- Why does `initialCmd` have the type `Cmd Msg`?
+-- Let’s look at the type of Http.get again:
+--
+-- `Http.get : { url : String, expect : Expect msg } -> Cmd msg`
+--
+-- Because `msg` is lowercase, it’s a `type variable` like the ones
+-- we saw in chapter 3. This means whatever flavor of Expect we pass to
+-- `Http.get`, we’ll get the same flavor of `Cmd` back.
+--
+-- Their type parameters will necessarily be the same!
+--
+-- How can we tell what Expect’s type parameter will be in this expression?
+-- Let’s dig one level deeper and look at `Http.expectString` again:
+--
+-- `Http.expectString : (Result Http.Error String -> msg) -> Expect msg`
+--
+-- Once again we see a type variable called msg. So the Expect will be
+-- parameterized on whatever `type` we return from the
+-- `(Result Http.Error String -> msg)` function we pass to
+-- `Http.expectString`. In our case, that would be this anonymous function:
+--
+-- `Http.ExpectString (\result -> GotPhotos result)`
+--
+-- Because that function returns a `Msg`, the call to `Http.expectString`
+-- will return an `Expect Msg`, which in turn means `Http.get` will return
+-- `Cmd Msg`.
+
+initialCmd : Cmd Msg
+initialCmd =
+  Http.get
+    { url = "http://link.com/to/images"
+    , expect = Http.expectString (\result -> GotPhotos result)
+    }
 
