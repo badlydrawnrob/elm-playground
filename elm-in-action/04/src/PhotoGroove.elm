@@ -256,7 +256,7 @@ initialCmd =
 main : Program () Model Msg
 main =
   Browser.element
-    { init = \flags -> ( initialModel, Cmd.none )
+    { init = \flags -> ( initialModel, initialCmd )
     , view = view
     , update = update
     , subscriptions = \model -> Sub.none
