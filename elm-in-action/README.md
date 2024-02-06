@@ -60,6 +60,11 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ## Chapter 04 to-dos
 
+### First working example
+
+> A working PhotoGroove from a simple string of photos served on an external server: https://github.com/badlydrawnrob/elm-playground/releases/tag/0.3.23
+
+
 ### General to-dos
 
 1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To [show the difference of our refactor](https://github.com/badlydrawnrob/elm-playground/commit/55b0d1b45ff9ee000426747bd35a34c84a0b9559).
@@ -81,6 +86,7 @@ GotPhotos result ->  -- is a Result
 7. Explain [this code properly](http://tinyurl.com/elm-in-action-initialCmd-HTTP) with images! [(Http.get)](https://package.elm-lang.org/packages/elm/http/latest/Http#get)
 8. **Now explain how it's possible to [simplify to just `GotPhotos`](http://tinyurl.com/eia-curried-initialCmd)** (how is pg.264 of the eBook) We know we're expecting a `Ok String` or an `Error String` but where is it passed to `GotPhotos _`?
 9. Note that `_` is a common pattern for variables that we don't care about (yet) and aren't being used.
+
 
 
 ### Dealing with refactoring
