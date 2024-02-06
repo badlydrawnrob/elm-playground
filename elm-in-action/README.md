@@ -75,7 +75,7 @@ GotPhotos result ->  -- is a Result
 5. [Explain this refactor](http://tinyurl.com/eia-destructure-firstUrl). Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
     - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
     - Simple question, should I use `List.head` here or something else? `deconstruct the list`
-6. **`type alias Photo` also gives us a convenience function** whose job is to build `Photo` record instances!
+6. **`type alias Photo` also gives us a [convenience function](http://tinyurl.com/elm-in-action-convenience-func)** whose job is to build `Photo` record instances!
     - `Photo "1.jpeg" == { url = "1.jpeg" }`
     - Convert `List.map (\url -> { url = url }) urls` to the above shorter refactor.
 
