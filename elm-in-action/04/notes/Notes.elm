@@ -316,3 +316,18 @@ case list of
 --      For example, `doSomethingWithTuple (( first, second ) as tuple) = ...`
 --      or perhaps `doSomethingWithRecord ({ username, password } as record) = ...`
 
+
+
+-- 🎯 DESIGN DECISIONS ----------------------------------------------------------
+
+-- A NON-EMPTY LIST
+--
+-- Because we now know our `List Photo` in the `Loaded` variant
+-- will never be empty, we could change the type of Loaded to hold
+-- a non-empty list instead of a `List Photo`.
+--
+-- : For example, its type could be `Loaded Photo (List Photo) String`.
+--   We won’t make that change here, but try it out if you have time.”
+
+
+

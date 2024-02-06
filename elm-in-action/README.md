@@ -72,7 +72,7 @@ GotPhotos result ->  -- is a Result
     case result of   -- is a Result
         Ok responseStr ->  -- if Result is Ok
 ```
-5. Explain this refactor. Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
+5. [Explain this refactor](http://tinyurl.com/eia-destructure-firstUrl). Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
     - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
     - Simple question, should I use `List.head` here or something else? `deconstruct the list`
 
@@ -149,7 +149,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
     - Use the type alias of the `Model`
     - Make links between `Big Bang` in Racket lang and Elm's runtime
 8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
-9. Destructuring, both in `case` and in `functions` like this example.
+9. [Destructuring](http://tinyurl.com/eia-destructure-firstUrl), both in `case` and in `functions` like this example.
 
 
 
