@@ -77,6 +77,7 @@ GotPhotos result ->  -- is a Result
     - Simple question, should I use `List.head` here or something else? `deconstruct the list`
 6. **`type alias Photo` also gives us a convenience function** whose job is to build `Photo` record instances!
     - `Photo "1.jpeg" == { url = "1.jpeg" }`
+    - Convert `List.map (\url -> { url = url }) urls` to the above shorter refactor.
 
 ### Dealing with refactoring
 
