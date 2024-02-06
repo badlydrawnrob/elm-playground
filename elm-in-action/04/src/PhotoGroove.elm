@@ -253,11 +253,14 @@ initialCmd =
 
 -- Main ------------------------------------------------------------------------
 
+-- #1 Unused `flags` anon func (for init)
+-- #2 Unused `model` anon func (for subscriptions)
+
 main : Program () Model Msg
 main =
   Browser.element
-    { init = \flags -> ( initialModel, initialCmd )
+    { init = \_ -> ( initialModel, initialCmd )  -- #1
     , view = view
     , update = update
-    , subscriptions = \model -> Sub.none
+    , subscriptions = \_ -> Sub.none  -- #2
     }

@@ -80,6 +80,7 @@ GotPhotos result ->  -- is a Result
     - Convert `List.map (\url -> { url = url }) urls` to the above shorter refactor.
 7. Explain [this code properly](http://tinyurl.com/elm-in-action-initialCmd-HTTP) with images! [(Http.get)](https://package.elm-lang.org/packages/elm/http/latest/Http#get)
 8. **Now explain how it's possible to [simplify to just `GotPhotos`](http://tinyurl.com/eia-curried-initialCmd)** (how is pg.264 of the eBook) We know we're expecting a `Ok String` or an `Error String` but where is it passed to `GotPhotos _`?
+9. Note that `_` is a common pattern for variables that we don't care about (yet) and aren't being used.
 
 
 ### Dealing with refactoring
