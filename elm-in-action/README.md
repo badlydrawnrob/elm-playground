@@ -81,6 +81,9 @@ GotPhotos result ->  -- is a Result
 
 ### Dealing with refactoring
 
+1. Type mismatch
+2. Refactoring with `case` pattern matching. Whenever you find yourself putting a `case` inside another `case` you might be able to do this. (and do it in [another language](https://dev.realworldocaml.org/lists-and-patterns.html))
+
 ```terminal
 -- TYPE MISMATCH ------------------------------------------- src/PhotoGroove.elm
 

@@ -5522,12 +5522,11 @@ var $author$project$PhotoGroove$update = F2(
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			default:
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var responseStr = result.a;
-					var _v4 = A2($elm$core$String$split, ',', responseStr);
-					if (_v4.b) {
-						var urls = _v4;
+				if (msg.a.$ === 'Ok') {
+					var responseStr = msg.a.a;
+					var _v3 = A2($elm$core$String$split, ',', responseStr);
+					if (_v3.b) {
+						var urls = _v3;
 						var firstUrl = urls.a;
 						var photos = A2($elm$core$List$map, $author$project$PhotoGroove$Photo, urls);
 						return _Utils_Tuple2(
@@ -5547,7 +5546,6 @@ var $author$project$PhotoGroove$update = F2(
 							$elm$core$Platform$Cmd$none);
 					}
 				} else {
-					var httpError = result.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
