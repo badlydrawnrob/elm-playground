@@ -227,3 +227,48 @@ Random.uniform firstPhoto otherPhotos
 -- 4.2 -------------------------------------------------------------------------
 
 -- 4.2.1 -----------------------------------------------------------------------
+
+-- No side-effects! --
+--
+-- : An effect is an operation that modifies external state.
+--   A function that modifies external state when it executes
+--   has a side effect.
+--
+-- : Our code can explain what effects to perform, but all side-effects
+--   are handled by the Elm Runtime. When you return a new Model with `update`,
+--   it's not the `update` function directly alters state, but the Runtime.
+--
+-- : This is called _"Managed Effects"_.
+
+-- HTTP request --
+--
+-- We'll use `Cmd` to tell Elm Runtime to perform and effect,
+-- like we did with `Random`. When this `Cmd` is complete, it
+-- will send a `Msg` to `update` to tell us what happened.
+--
+-- 1) Send an HTTP GET request to http://manning.com.
+-- 2) I expect to get back a String for the response.
+-- 3) When the response comes back, use this toMsg function to translate it into a Msg.
+-- 4) Send that Msg to update.
+--
+-- (see Figure 4.2)
+--
+-- : There's a lot that can go wrong with a HTTP request,
+--   so if it fails we'll want to know what went wrong.
+--   `Http.expectString` uses a `Result` for this. It's a little
+--   similar to `Maybe` in that it can return an `Ok` or an `Error`.
+--
+-- : The `errValue` or the `okValue` could be any type (it's a type variable)
+--   so if we asked for a `string` that's what we'd get back.
+--   If we asked for `json` — that's what we'd get back (or an error message).
+
+Http.get : { url : String, expect : Expect msg } -> Cmd msg
+
+type Result errValue okValue
+  = Err errValue
+  | Ok okValue
+
+expectString : (Result Http.Error String -> Msg) -> Expect msg
+get          :             { url : String, expect : Expect msg } -> Cmd msg
+
+

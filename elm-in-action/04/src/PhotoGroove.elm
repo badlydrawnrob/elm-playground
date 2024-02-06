@@ -46,6 +46,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Browser
 import Random
+import Http
 
 
 -- View ------------------------------------------------------------------------
@@ -63,9 +64,10 @@ import Random
 
 type Msg
   = ClickedPhoto String
-  | GotRandomPhoto Photo
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
+  | GotRandomPhoto Photo
+  | GotPhotos (Result Http.Error String)
 
 view : Model -> Html Msg
 view model =
@@ -182,6 +184,12 @@ initialModel =
 --
 --    - `_` underscore is kind of a placeholder. It indicates there's
 --      a value here, but we choose not to use it.
+--
+-- #4 Here we're expecting a `String` "1.jpeg, 2.jpeg, ..." — our `GotPhotos _`
+--    will hold the `String` if (and only if) the requeset succeds.
+--    If there's any problem, our `case` on `Err` will run.
+--    Remember that `GotPhotos` is like a "container" function we can use
+--    to hold any data we need it to.
 
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
@@ -207,6 +215,12 @@ update msg model =
           ( model, Cmd.none )
         Errored errorMessage ->
           ( model, Cmd.none )
+    GotPhotos result ->
+      case result of
+          Ok responseStr ->
+            -- translate responseStr into a list of photos for our model
+          Err httpError ->
+            ( { model | status = Errored "Server error!" }, Cmd.none )
 
 -- #: helper function --
 
@@ -219,6 +233,8 @@ selectUrl url status =
         status
       Errored errorMessage ->
         status
+
+
 -- Main ------------------------------------------------------------------------
 
 main : Program () Model Msg
