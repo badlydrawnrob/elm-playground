@@ -72,6 +72,9 @@ GotPhotos result ->  -- is a Result
     case result of   -- is a Result
         Ok responseStr ->  -- if Result is Ok
 ```
+5. Explain this refactor. Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
+    - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
+    - Simple question, should I use `List.head` here or something else? `deconstruct the list`
 
 ### Dealing with refactoring
 
@@ -95,6 +98,12 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 
 ### `case` the `Model` more than once. Why?
+
+> We must cater for all eventualities:
+>
+> 1. A server error
+> 2. A "no string found" error
+> 3. A `List photo` error (empty list?)
 
 1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
 2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
@@ -140,6 +149,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
     - Use the type alias of the `Model`
     - Make links between `Big Bang` in Racket lang and Elm's runtime
 8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
+9. Destructuring, both in `case` and in `functions` like this example.
 
 
 

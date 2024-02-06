@@ -289,3 +289,30 @@ GotPhotos result ->
       --   Grab the first in `List`
       -- `in`
       --   store in `Loaded _ _` as `model.status`
+
+
+-- `List.head` vs `(firstUrl :: _)` --
+--
+-- to get around the `Maybe` problem (having to write a `case`
+-- statement to account for an empty list) we can do like this:
+--
+-- : The as urls part of this pattern means
+--   “give the name `urls` to this entire List,
+--   while also subdividing it into its first element
+--   (which we will name firstUrl) and its remaining elements,
+--   which we will decline to name by using the _ placeholder.
+
+
+case list of
+  (firstUrl :: _) as urls ->
+    aListFunction firstUrl url  -- Returns something
+
+-- Alternatively ...
+(firstUrl :: _) as urls ->
+  urls -- Simply recreates the original list
+       -- because `1 :: [2, 3, 4]` -> `[1, 2, 3, 4]`
+
+-- TIP: You can also use as when destructuring function arguments.
+--      For example, `doSomethingWithTuple (( first, second ) as tuple) = ...`
+--      or perhaps `doSomethingWithRecord ({ username, password } as record) = ...`
+
