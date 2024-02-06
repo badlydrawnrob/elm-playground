@@ -331,3 +331,40 @@ case list of
 
 
 
+-- Using TYPE ALIAS to create records ------------------------------------------
+--
+-- Declaring `type aliad Photo = { url : String }` does more than give
+-- us a `Photo` type we can use in type annotations. It also gives us a
+-- convenience function whose job is to build `Photo` record instances.
+--
+-- : This function is also called `Photo`!
+
+type alias Photo
+  = { url : String }
+
+Photo
+-- <function> : String -> Photo
+
+Photo "1.jpeg" == { url = "1.jpeg" }
+
+type alias ThumbnailSize
+  = Small
+  | Medium
+  | Large
+
+type alias Model =
+    { status : "string"
+    , chosenSize : ThumbnailSize
+    }
+
+Model
+-- <function> : String -> ThumbnailSize -> Model
+
+Model "working" Small
+-- { chosenSize = Medium, status = "someone" }
+--    : Model
+
+
+
+
+

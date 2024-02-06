@@ -75,6 +75,8 @@ GotPhotos result ->  -- is a Result
 5. [Explain this refactor](http://tinyurl.com/eia-destructure-firstUrl). Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
     - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
     - Simple question, should I use `List.head` here or something else? `deconstruct the list`
+6. **`type alias Photo` also gives us a convenience function** whose job is to build `Photo` record instances!
+    - `Photo "1.jpeg" == { url = "1.jpeg" }`
 
 ### Dealing with refactoring
 
@@ -150,6 +152,12 @@ See http://tinyurl.com/elm-in-action-refactor-status
     - Make links between `Big Bang` in Racket lang and Elm's runtime
 8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
 9. [Destructuring](http://tinyurl.com/eia-destructure-firstUrl), both in `case` and in `functions` like this example.
+
+
+## Various design decisions:
+
+- `Loaded Photo (List Photo) String` ([non-empty list](http://tinyurl.com/eia-design-decisions-nonempty))
+
 
 
 
