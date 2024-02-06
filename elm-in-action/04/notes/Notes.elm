@@ -427,3 +427,20 @@ initialCmd =
     , expect = Http.expectString (\result -> GotPhotos result)
     }
 
+-- Simplifying `initialCmd` --
+--
+-- This will compile, but we can simplify it. Back in section 2.2.1
+-- of chapter 2, we noted that an anonymous function like
+-- `(\foo -> bar baz foo)` can always be rewritten as `(bar baz)`
+-- by itself (a partially applied function).
+--
+-- This means we can replace `(\result -> GotPhotos result)`
+-- with `GotPhotos` like so:
+
+initialCmd : Cmd Msg
+initialCmd =
+  Http.get
+    { url = "http://link.com/to/images"
+    , expect = Http.expectString GotPhotos -- curried function:
+    }                                      -- the string will get
+                                           -- passed to GotPhotos _

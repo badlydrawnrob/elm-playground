@@ -78,6 +78,8 @@ GotPhotos result ->  -- is a Result
 6. **`type alias Photo` also gives us a [convenience function](http://tinyurl.com/elm-in-action-convenience-func)** whose job is to build `Photo` record instances!
     - `Photo "1.jpeg" == { url = "1.jpeg" }`
     - Convert `List.map (\url -> { url = url }) urls` to the above shorter refactor.
+7. Explain [this code properly](http://tinyurl.com/elm-in-action-initialCmd-HTTP) with images! [(Http.get)](https://package.elm-lang.org/packages/elm/http/latest/Http#get)
+8. Now explain how it's possible to simplify to just `GotPhotos` (how is pg.264 of the eBook) We know we're expecting a `Ok String` or an `Error String` but where is it passed to `GotPhotos _`?
 
 ### Dealing with refactoring
 
