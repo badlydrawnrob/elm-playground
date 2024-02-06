@@ -272,3 +272,20 @@ expectString : (Result Http.Error String -> Msg) -> Expect msg
 get          :             { url : String, expect : Expect msg } -> Cmd msg
 
 
+-- In our `GotPhotos result ->` result case --
+-- Which is a new `Msg` type variant ...
+--
+-- 1. Case on `Ok` and `Error`
+-- 2. If `Ok` generate `List Photo`
+-- 3. If `Ok` change the `model.status`
+
+GotPhotos result ->
+  case result of
+    Ok responseStr
+      -- Ok will be a String
+      -- in a `let` split string with ","
+      --   next generate `{ url = "1.jpeg" }`
+      --   i.e: List Photo
+      --   Grab the first in `List`
+      -- `in`
+      --   store in `Loaded _ _` as `model.status`

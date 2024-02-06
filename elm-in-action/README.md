@@ -65,6 +65,13 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To [show the difference of our refactor](https://github.com/badlydrawnrob/elm-playground/commit/55b0d1b45ff9ee000426747bd35a34c84a0b9559).
 2. Explain `side-effects`. Elm functions can't have these. All side-effects are performed by the Elm-runtime itself. Our code only describes what effects to perform.
 3. **How do you uninstall packages?!**
+4. Passing a `Result` and `case`ing on it
+
+```elm
+GotPhotos result ->  -- is a Result
+    case result of   -- is a Result
+        Ok responseStr ->  -- if Result is Ok
+```
 
 ### Dealing with refactoring
 
