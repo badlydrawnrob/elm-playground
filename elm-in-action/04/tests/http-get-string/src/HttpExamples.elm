@@ -1,4 +1,4 @@
-module HttpExamples exposing (Model)
+module HttpExamples exposing (main)
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
@@ -116,4 +116,5 @@ main =
     { init = \_ -> ( [], Cmd.none )  -- #1
     , view = view
     , update = update
-    , subscriptions = \_ -> Sub.none }  -- #2
+    , subscriptions = \_ -> Sub.none  -- #2
+    }
