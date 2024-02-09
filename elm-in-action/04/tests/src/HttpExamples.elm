@@ -99,5 +99,5 @@ updaet msg model =
         String.split "," nicknamesStr
       in
         ( nicknames, Cmd.none )
-    DataReceived (Err httpError) ->
+    DataReceived (Err _) ->
       ( model, Cmd.none )
