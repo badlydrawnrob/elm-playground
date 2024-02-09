@@ -9,7 +9,16 @@ import Browser
 -- Model -----------------------------------------------------------------------
 
 type alias Model =
-  List String
+  { nicknames : List String
+  , errorMessage : Maybe String
+  }
+
+
+initialModel : Model
+initialModel =
+  { nicknames = []
+  , errorMessage = Nothing
+  }
 
 
 -- View ------------------------------------------------------------------------
@@ -18,9 +27,35 @@ view : Model -> Html Msg
 view model =
   div []
     [ button [ onClick SendHttpRequest ]
-        [ text "Get data from the server" ]
-    , h3 [] [ text "Old School Main Characters" ]
-    , ul [] (List.map viewNickname model)
+      [ text "Get data from the server" ]
+    , viewNicknamesOrError model
+    ]
+
+viewNicknamesOrError : Model -> Html Msg
+viewNicknamesOrError model =
+  case model.errorMessage of
+      Just message ->
+        viewError message
+      Nothing ->
+        viewNicknames model.nicknames
+
+viewError : String -> Html Msg
+viewError errorMessage =
+  let
+    errorHeading =
+      "Couldn't fetch nicknames at this time."
+  in
+    div []
+      [ h3 [] [ text errorHeading ]
+      , text ("Error: " ++ errorMessage)
+      ]
+
+
+viewNicknames : List String -> Html Msg
+viewNicknames nicknames =
+  div []
+    [ h3 [] [ text "Old School Main Characters" ]
+    , ul [] (List.map viewNickname nicknames)
     ]
 
 viewNickname : String -> Html Msg
@@ -89,6 +124,14 @@ getNicknames =
     , expect = Http.expectString DataReceived  -- #2
     }
 
+isError : Maybe String -> String
+isError error =
+  case error of
+      Just error ->
+        error
+      Nothing ->
+        Nothing
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
@@ -100,9 +143,9 @@ update msg model =
         nicknames =
           String.split "," nicknamesStr
       in
-        ( nicknames, Cmd.none )
-    DataReceived (Err _) ->
-      ( model, Cmd.none )
+      ( { model |  nicknames = nicknames }, Cmd.none )
+    DataReceived (Err error) ->
+      ( { model | errorMessage = isError error }, Cmd.none )
 
 
 -- Making it all work with main ------------------------------------------------
@@ -113,7 +156,7 @@ update msg model =
 main : Program () Model Msg
 main =
   Browser.element
-    { init = \_ -> ( [], Cmd.none )  -- #1
+    { init = \_ -> ( initialModel, Cmd.none )  -- #1
     , view = view
     , update = update
     , subscriptions = \_ -> Sub.none  -- #2
