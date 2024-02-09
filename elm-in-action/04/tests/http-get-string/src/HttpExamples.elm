@@ -108,6 +108,8 @@ viewNickname nickname =
 --
 --     : We’ve also replaced the payload httpError with `_`
 --       because we aren’t using it right now.
+--
+-- #6  Errors ...
 
 type Msg
   = SendHttpRequest
@@ -115,7 +117,7 @@ type Msg
 
 url : String
 url =
-  "http://localhost:5016/old-school.txt"
+  "http://localhost:5016/invalid.txt"
 
 getNicknames : Cmd Msg
 getNicknames =
@@ -143,16 +145,17 @@ update msg model =
 
 buildErrorMessage : Http.Error -> String
 buildErrorMessage httpError =
-  Http.BadUrl message ->
-    message
-  Http.Timeout ->
-    "Server taking too long to respond"
-  Http.NetworkError ->
-    "Unable to reach server."
-  Http.BadStatus statusCode ->
-    "Request failed with status code " ++ String.fromInt statusCode
-  Http.BadBody message ->
-    message
+  case httpError of
+    Http.BadUrl message ->
+      message
+    Http.Timeout ->
+      "Server taking too long to respond"
+    Http.NetworkError ->
+      "Unable to reach server."
+    Http.BadStatus statusCode ->
+      "Request failed with status code " ++ String.fromInt statusCode
+    Http.BadBody message ->
+      message
 
 
 -- Making it all work with main ------------------------------------------------
