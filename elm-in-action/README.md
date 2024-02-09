@@ -138,6 +138,8 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 ### JSON and JSON Pipeline
 
+> **There's [a couple of ways to do this](https://github.com/badlydrawnrob/elm-playground/commit/8463befd4e69c77e3ae87afeddf7b001dbf9a029#r138476648).** Currently has the pipeline method.
+
 1. Examples of atoms
 2. Examples of multiple [fields](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#field) `map3`
 3. How to nest using `map3`?
