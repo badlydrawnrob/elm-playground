@@ -148,7 +148,9 @@ type ThumbnailSize
   | Large
 
 type alias Photo =
-  { url : String }
+  { url : String
+  , size : Int
+  , title : String }
 
 type Status
   = Loading
@@ -165,6 +167,14 @@ initialModel =
   { status = Loading
   , chosenSize = Medium
   }
+
+photoDecoder : Decoder Photo
+photoDecoder =
+  map3
+    (\url size title -> { url = url, size = size, title = title })
+    (field "url" string)
+    (field "size" int)
+    (field "title" string)
 
 
 -- Update ----------------------------------------------------------------------

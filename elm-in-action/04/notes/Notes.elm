@@ -444,3 +444,112 @@ initialCmd =
     , expect = Http.expectString GotPhotos -- curried function:
     }                                      -- the string will get
                                            -- passed to GotPhotos _
+
+
+
+-- 4.3 -------------------------------------------------------------------------
+-- 4.3.1 -----------------------------------------------------------------------
+
+-- The Json.Decode.decodeString function --
+--
+-- Has many functions for different types of primitives:
+--   `decodeString (bool | string | int | float) value`
+-- `undefined` is NOT allowed.
+--
+-- : `decodeString bool "true"
+--
+-- : A table showing what will return:
+
+decodeString : Decoder val -> String -> Result Error val
+
+-- Decoder passed in  | Returns                 | Example success value
+-- -------------------|-------------------------|------------------------
+-- Decoder Bool       | Result Error Bool       | Ok True
+-- Decode String      | Result Error String     | Ok "Win!"
+-- Decoder (List Int) | Result Error (List Int) | Ok [1, 2, 3]
+
+decodeString bool "true"
+-- Ok True : Result Error Bool
+decodeString bool "false"
+-- Ok False : Result Error Bool
+decodeString bool "42"
+-- Err (Failure ("Expecting a BOOL") <internals>) : Result Error Bool
+decodeString float "3.33"
+decodeString int "76"
+decodeString string "\"backslashes escape quotation marks\""
+
+
+-- Arrays --
+--
+-- Whereas bool is a decoder, list is a function that takes
+-- a decoder and returns a new one.
+
+bool : Decoder bool
+list : Decoder value -> Decoder (List value)
+
+list bool
+-- <internals> : Decoder (List Bool)
+
+
+-- Decoding objects ------------------------------------------------------------
+--
+-- The simplest way to decode an object is with the
+-- field function. When this decoder runs, it performs
+-- three checks:
+--
+-- 1. Are we decoding an `Object`?
+-- 2. If so, does that `Object` have a field called `email`?
+-- 3. If so, is the `Object`s `email` field a `String`?
+--
+-- If all three are true, then decoding succeeds with the
+-- value of the `Object`’s email field.
+
+-- JSON
+-- 5                           -- Err ... (not a field)
+-- {"email": 5}                -- Err ... (not a string)
+-- {"email": "cate@nolf.com"}  -- Ok "cate@nolf.com"
+
+decoder : Decoder String
+decoder =
+  field "email" string
+
+
+-- Decoding multiple fields ----------------------------------------------------
+--
+-- The simplest way is using a function like `map2`
+
+-- JSON
+-- {"x": 5}            -- Error ... (y was missing)
+-- {"x": 5, "y": null} -- Err ... (y was null, not int)
+-- {"x": 5, "y": 12}   -- Ok (5, 12)
+
+  map2
+    (\x y -> (x, y))
+    (field "x" int)
+    (field "y" int)
+
+
+-- Decoding many fields --------------------------------------------------------
+
+-- The photo information we'll be getting back from our server
+-- will be in the form of JSON that looks like this:
+
+-- JSON
+-- {"url": "1.jpeg", "size": 36, "title"}
+--
+-- : An object with 3 fields — use `map3`!
+-- : `map8` is as high as it goes.
+
+type alias Photo =
+  { url : String
+  , size: Int
+  , title : String
+  }
+
+photoDecoder : Decoder Photo
+photoDecorder =
+  map3
+    (\url size title -> { url = url, size = size, title = title })
+    (field "url" string)
+    (field "size" int)
+    (field "title" string)

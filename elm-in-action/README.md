@@ -62,7 +62,9 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 ### First working example
 
-> A working PhotoGroove from a simple string of photos served on an external server: https://github.com/badlydrawnrob/elm-playground/releases/tag/0.3.23
+> A working PhotoGroove from a simple string of photos served on an external server: https://github.com/badlydrawnrob/elm-playground/releases/tag/0.3.23 and in Ellie App: https://ellie-app.com/qgp5GSmkLk4a1
+
+A diagram of how the different bits fit together, mainly the initial `Http.get`, it's `Result` and how we're casing on that result, then propogating to other `Status` checks.
 
 
 ### General to-dos
