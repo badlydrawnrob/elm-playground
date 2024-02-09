@@ -124,14 +124,6 @@ getNicknames =
     , expect = Http.expectString DataReceived  -- #2
     }
 
-isError : Maybe String -> String
-isError error =
-  case error of
-      Just error ->
-        error
-      Nothing ->
-        Nothing
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
@@ -145,7 +137,22 @@ update msg model =
       in
       ( { model |  nicknames = nicknames }, Cmd.none )
     DataReceived (Err error) ->
-      ( { model | errorMessage = isError error }, Cmd.none )
+      ( { model | errorMessage = Just (buildErrorMessage error) }
+      , Cmd.none
+      )
+
+buildErrorMessage : Http.Error -> String
+buildErrorMessage httpError =
+  Http.BadUrl message ->
+    message
+  Http.Timeout ->
+    "Server taking too long to respond"
+  Http.NetworkError ->
+    "Unable to reach server."
+  Http.BadStatus statusCode ->
+    "Request failed with status code " ++ String.fromInt statusCode
+  Http.BadBody message ->
+    message
 
 
 -- Making it all work with main ------------------------------------------------
