@@ -62,6 +62,10 @@ viewNickname nickname =
 --        | NetworkError
 --        | BadStatus Int
 --        | BadBody String
+--
+-- #5  We need to tell the `update` function what to do when the
+--     `DataReceived` message arrives! All we are doing here is
+--     unpacking the result payload that rides on `DataReceived`’s back.
 
 type Msg
   = SendHttpRequest
@@ -83,3 +87,13 @@ updaet msg model =
   case msg of
     SendHttpRequest ->
       ( model, getNicknames )
+
+    DataReceived result ->
+      case result of
+          Ok nicknamesStr ->
+            let nicknames =
+              String.split "," nicknamesStr
+            in
+              ( nicknames, Cmd.none )
+          Err httpError ->
+            ( model, Cmd.none )
