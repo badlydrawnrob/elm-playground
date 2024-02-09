@@ -96,8 +96,9 @@ update msg model =
       ( model, getNicknames )
 
     DataReceived (Ok nicknamesStr) ->
-      let nicknames =
-        String.split "," nicknamesStr
+      let
+        nicknames =
+          String.split "," nicknamesStr
       in
         ( nicknames, Cmd.none )
     DataReceived (Err _) ->
