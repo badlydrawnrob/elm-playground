@@ -3,6 +3,7 @@ module HttpExamples exposing (Model)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Browser
 
 
 -- Model -----------------------------------------------------------------------
@@ -89,7 +90,7 @@ getNicknames =
     }
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-updaet msg model =
+update msg model =
   case msg of
     SendHttpRequest ->
       ( model, getNicknames )
@@ -101,3 +102,17 @@ updaet msg model =
         ( nicknames, Cmd.none )
     DataReceived (Err _) ->
       ( model, Cmd.none )
+
+
+-- Making it all work with main ------------------------------------------------
+
+-- #1  flags unused
+-- #2  subscriptions unused
+
+main : Program () Model Msg
+main =
+  Browser.element
+    { init = \_ -> ( [], Cmd.none )  -- #1
+    , view = view
+    , update = update
+    , subscriptions = \_ _> Sub.none }  -- #2
