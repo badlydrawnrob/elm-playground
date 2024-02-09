@@ -109,7 +109,17 @@ viewNickname nickname =
 --     : We’ve also replaced the payload httpError with `_`
 --       because we aren’t using it right now.
 --
--- #6  Errors ...
+-- #6  Errors ... try loading with an incorrect `url` for example:
+--     @ http://localhost:5016/invalid.txt
+--
+--     : We use a function called `buildErrorMessage` to `case` on all possible
+--       `Http.Error`s and return a String for each one.
+--
+--     : We wrap the result in a `Just String` which we'll use in the `view`!
+--       We `case` again with a `viewNicknamesOrError` helper function, and
+--       pass forward the data that we need.
+--
+--       - `viewError String` or `viewNicknames List String`.
 
 type Msg
   = SendHttpRequest
@@ -117,7 +127,7 @@ type Msg
 
 url : String
 url =
-  "http://localhost:5016/invalid.txt"
+  "http://localhost:5016/old-school.txt"  -- #6
 
 getNicknames : Cmd Msg
 getNicknames =
@@ -132,14 +142,14 @@ update msg model =
     SendHttpRequest ->
       ( model, getNicknames )
 
-    DataReceived (Ok nicknamesStr) ->
+    DataReceived (Ok nicknamesStr) ->  -- #5
       let
         nicknames =
           String.split "," nicknamesStr
       in
       ( { model |  nicknames = nicknames }, Cmd.none )
     DataReceived (Err error) ->
-      ( { model | errorMessage = Just (buildErrorMessage error) }
+      ( { model | errorMessage = Just (buildErrorMessage error) }  -- #6
       , Cmd.none
       )
 
