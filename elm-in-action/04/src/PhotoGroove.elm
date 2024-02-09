@@ -47,6 +47,8 @@ import Html.Events exposing (onClick)
 import Browser
 import Random
 import Http
+import Json.Decode exposing (Decoder, int, list, string, succeed)
+import Json.Decode.Pipeline exposing (optional, required)
 
 
 -- View ------------------------------------------------------------------------
@@ -170,11 +172,14 @@ initialModel =
 
 photoDecoder : Decoder Photo
 photoDecoder =
-  map3
-    (\url size title -> { url = url, size = size, title = title })
-    (field "url" string)
-    (field "size" int)
-    (field "title" string)
+  succeed buildPhoto
+    |> required "url" string
+    |> required "size" int
+    |> optional "title" string "(untitled)"
+
+buildPhoto : String -> Int -> String -> Photo
+buildPhoto url size title =
+  { url = url, size = size, title = title }
 
 
 -- Update ----------------------------------------------------------------------

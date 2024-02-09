@@ -553,3 +553,18 @@ photoDecorder =
     (field "url" string)
     (field "size" int)
     (field "title" string)
+
+
+-- Decoding with pipeline ------------------------------------------------------
+-- requires `NoRedInk/elm-json-decode-pipeline`
+
+photoDecoder : Decoder Photo
+photoDecoder =
+  succeed buildPhoto
+    |> required "url" string
+    |> required "size" int
+    |> optional "title" string "(untitled)"  -- default value
+
+buildPhoto : String -> Int -> String -> Photo
+buildPhoto url size title =
+  { url = url, size = size, title = title }

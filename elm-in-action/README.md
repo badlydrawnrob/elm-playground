@@ -79,6 +79,7 @@ GotPhotos result ->  -- is a Result
     case result of   -- is a Result
         Ok responseStr ->  -- if Result is Ok
 ```
+
 5. [Explain this refactor](http://tinyurl.com/eia-destructure-firstUrl). Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
     - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
     - Simple question, should I use `List.head` here or something else? `deconstruct the list`
@@ -130,10 +131,20 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 ### The `<|`, `|>` operator
 
-1. A couple of simple and more verbose examples for `<|`.
+1. **A couple of simple and more verbose examples for `<|`.**
 2. See the `Tuple.pair` example (also in `__Anki__`) Show an example [before and after](http://tinyurl.com/elm-lang-parens-vs-pipeline) using the `|>` operator. Show that you flip the function order around (do you do like Lisp, or like Elm?)
 3. In general, I'm quite happy with Lisp style.
 
+
+### JSON and JSON Pipeline
+
+1. Examples of atoms
+2. Examples of multiple [fields](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#field) `map3`
+3. How to nest using `map3`?
+4. **JSON pipeline and the [`succeed`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#succeed) function**
+    - **Remind yourself of `|>` pipeline operator ([it takes some time](https://harfangk.github.io/2018/01/27/elm-function-operators.html) to wrap your head around)**
+    - Think about what each "field" returns and gets passed as a value to `buildPhoto` (otherwise it would look unwieldy)
+5. Understanding [`succeed`](https://stackoverflow.com/a/59329981)
 
 ### More robust functions and errors (logging)
 
