@@ -116,4 +116,4 @@ main =
     { init = \_ -> ( [], Cmd.none )  -- #1
     , view = view
     , update = update
-    , subscriptions = \_ _> Sub.none }  -- #2
+    , subscriptions = \_ -> Sub.none }  -- #2
