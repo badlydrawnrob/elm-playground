@@ -66,6 +66,12 @@ viewNickname nickname =
 -- #5  We need to tell the `update` function what to do when the
 --     `DataReceived` message arrives! All we are doing here is
 --     unpacking the result payload that rides on `DataReceived`’s back.
+--
+--     : We can use pattern matching instead of nested `case`.
+--       @ http://tinyurl.com/beginning-elm-pattern-matching
+--
+--     : We’ve also replaced the payload httpError with `_`
+--       because we aren’t using it right now.
 
 type Msg
   = SendHttpRequest
@@ -88,12 +94,10 @@ updaet msg model =
     SendHttpRequest ->
       ( model, getNicknames )
 
-    DataReceived result ->
-      case result of
-          Ok nicknamesStr ->
-            let nicknames =
-              String.split "," nicknamesStr
-            in
-              ( nicknames, Cmd.none )
-          Err httpError ->
-            ( model, Cmd.none )
+    DataReceived (Ok nicknamesStr) ->
+      let nicknames =
+        String.split "," nicknamesStr
+      in
+        ( nicknames, Cmd.none )
+    DataReceived (Err httpError) ->
+      ( model, Cmd.none )
