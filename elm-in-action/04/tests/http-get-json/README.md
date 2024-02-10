@@ -26,6 +26,8 @@ We need to go through three steps to retrieve data from a server:
 
 With `http-server` the url is `/old-school.txt`, but with `json-server` it's using the `key` `"nicknames"` as the url `/nicknames` (not the filename.)
 
+The process for retrieving JSON from a server isn't any different from retrieving a string. It's still a _raw string_. So how does Elm interpret it? The server uses a `Content-Type` header `application/json` value (for a string it uses `text/plain`).
+
 ### Resources
 
 For instance, this JSON defines three different resources: `posts`, `comments`, and `profile`. Each resource has a unique location from where we can access it.
