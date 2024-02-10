@@ -1,5 +1,19 @@
 module HttpExamples exposing (main)
 
+{-| Here's what's going on:
+
+    1. Setup our `initialModel` and pass it to `main`
+    2. Click on a button to call `onClick` which sends a `Msg`
+    3. This triggers a `Http.get` which in turn sends a payload
+       (via a `Cmd` to our other `Msg` type variant.
+    4. This triggers one of the `case` expressions in `update`
+    5. Our `view` looks at our `Model` and decides whether to show
+       our rendered data, or an error message.
+
+    So we're casing a few times. In `view` and in `update`.
+
+-}
+
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
@@ -149,6 +163,15 @@ viewNickname nickname =
 --      : You can create larger decoders by using primitave decoders and
 --        using them as building blocks.
 --
+--
+-- #8  Unlike `String.split` (in our simple `old-school.txt`), `decodeString`
+--     returns a `Result`. This means we need to `case` on that result for the
+--     two possible branches (`Ok` and `Err`).
+--
+--     1. If `Ok` send our payload to the `nicknamesDecoder` and return a
+--        `List String` (if our JSON works properly). Otherwise return an
+--        `Err`or.
+--
 
 
 type Msg
@@ -177,12 +200,13 @@ update msg model =
     SendHttpRequest ->
       ( model, getNicknames )
 
-    DataReceived (Ok nicknamesStr) ->  -- #1, #6
-      let
-        nicknames =
-          String.split "," nicknamesStr
-      in
-      ( { model |  nicknames = nicknames }, Cmd.none )
+    DataReceived (Ok nicknamesJson) ->  -- #1, #6
+      case decodeString nicknamesDecoder nicknamesJson of
+          Ok nicknames ->  -- #8
+            ( { model | nicknames = nicknames }, Cmd.none )
+          Err error ->
+            ( { model | errorMessage = handleJsonError error }
+            , Cmd.none )
     DataReceived (Err error) ->
       ( { model | errorMessage = Just (buildErrorMessage error) }  -- #2
       , Cmd.none
