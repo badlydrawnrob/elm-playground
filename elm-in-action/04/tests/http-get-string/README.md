@@ -12,6 +12,16 @@ npx http-server server -a localhost -p 5016
 elm reactor
 ```
 
+## How it all works
+
+We need to go through three steps to retrieve data from a server:
+
+1. Specify where to retrieve data from using `Http.get`
+2. Retrieve data. Use the Elm Runtime by sending a `Cmd`
+3. This `Cmd` will in turn generate a `Msg`. It's either successful `Ok` or an `Err`or.
+4. `Update` handles the model change.
+5. We case `view` for both error and success.
+
 ## Other tutorials
 
 - [Handling HTTP Errors](https://elmprogramming.com/fetching-data-using-get#handling-http-errors)
