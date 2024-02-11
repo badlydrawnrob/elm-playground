@@ -84,4 +84,4 @@ For instance, each `/posts/` entry has a unique ID, so we can call the REST API 
 [^1]: Currently using a non-alpha version of `json-server` (otherwise getting errors). Using [`npx`](https://stackoverflow.com/a/52018825) instead of installing server globally.
 
 
-[^2]: Unlike `http-server`, `json-server` automatically enables [Cross-Origin Resource Sharing](https://elmprogramming.com/fetching-data-using-get.html#allowing-cross-origin-resource-sharing) (CORS). That’s why we didn’t get the No `'Access-Control-Allow-Origin' header is present on the requested resource.` error when fetching the nicknames.
+[^2]: Unlike `http-server`, `json-server` automatically enables [Cross-Origin Resource Sharing](https://elmprogramming.com/fetching-data-using-get.html#allowing-cross-origin-resource-sharing) (CORS). That’s why we didn’t get the `No 'Access-Control-Allow-Origin' header is present on the requested resource.` error when fetching the nicknames.
