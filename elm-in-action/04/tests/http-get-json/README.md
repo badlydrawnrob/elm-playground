@@ -2,7 +2,7 @@
 
 > [Fetching json with `Html.get` tutorial](https://elmprogramming.com/decoding-json-part-1.html)[^1] (part 1)
 >
-> ⚠️ Warning! Beware of [url errors](http://tinyurl.com/beginning-elm-origin-200-error)!![^2]]
+> ⚠️ Warning! Beware of [url errors](http://tinyurl.com/beginning-elm-origin-200-error)!![^2]
 
 ```terminal
 # terminal window 1

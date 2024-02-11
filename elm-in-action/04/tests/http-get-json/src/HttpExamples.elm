@@ -161,7 +161,8 @@ viewNickname nickname =
 --        @ http://tinyurl.com/elm-lang-json-decode-error
 --
 --      : You can create larger decoders by using primitave decoders and
---        using them as building blocks.
+--        using them as building blocks. All elements in a list need to
+--        be the same type! (just like Elm lists)
 --
 --
 -- #8  Unlike `String.split` (in our simple `old-school.txt`), `decodeString`
@@ -171,7 +172,18 @@ viewNickname nickname =
 --     1. If `Ok` send our payload to the `nicknamesDecoder` and return a
 --        `List String` (if our JSON works properly). Otherwise return an
 --        `Err`or.
+--     2. See (#2) and (#3) for more information on error.
 --
+--
+-- #9  See (#2) and (#3) — we're handling errors in two places.
+--     We're currently only interested in the `Failure` Error
+--     type variant. There's a lot more we could do with this error
+--     message, such as `_` which is the JSON value causing failure.
+--
+--     1. Is `DataReceived`? No? `buildErrorMessage`
+--     2. Is JSON sucessfully decoded? No? `handleJsonError`
+--
+--     @ http://tinyurl.com/elm-lang-json-decode-error
 
 
 type Msg
@@ -198,21 +210,28 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     SendHttpRequest ->
-      ( model, getNicknames )
+      ( model, getNicknames )  -- Http.get and return payload
 
-    DataReceived (Ok nicknamesJson) ->  -- #1, #6
-      case decodeString nicknamesDecoder nicknamesJson of
+    DataReceived (Ok nicknamesJson) ->  -- #1, #6  payload is a json string
+      case decodeString nicknamesDecoder nicknamesJson of  -- parse with decoder
           Ok nicknames ->  -- #8
-            ( { model | nicknames = nicknames }, Cmd.none )
+            ( { model | nicknames = nicknames }, Cmd.none )  -- store list
           Err error ->
             ( { model | errorMessage = handleJsonError error }
             , Cmd.none )
     DataReceived (Err error) ->
-      ( { model | errorMessage = Just (buildErrorMessage error) }  -- #2
+      ( { model | errorMessage = Just (buildErrorMessage error) }  -- #2, #3
       , Cmd.none
       )
 
-buildErrorMessage : Http.Error -> String
+handleJsonError : Json.Decode.Error -> Maybe String  -- #9
+handleJsonError error =
+  case error of
+      Failure errorMessage _ ->
+        Just errorMessage
+      _ -> Just "Error: Invalid JSON"
+
+buildErrorMessage : Http.Error -> String  -- #9
 buildErrorMessage httpError =
   case httpError of
     Http.BadUrl message ->
