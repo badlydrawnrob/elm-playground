@@ -55,6 +55,12 @@ The retrieving and decoding of JSON happen in one go. The `Http.get` call includ
 
 With `http-server` the url is `/old-school.txt`, but with `json-server` it's using the `key` `"nicknames"` as the url `/nicknames` (not the filename.)
 
+```json
+{
+    "nicknames" : ["The Godfather","The Tank","Beanie","Cheese"]
+}
+```
+
 The process for retrieving JSON from a server isn't any different from retrieving a string. It's still a _raw string_. So how does Elm interpret it? The server uses a `Content-Type` header `application/json` value (for a string it uses `text/plain`).
 
 ### Resources
