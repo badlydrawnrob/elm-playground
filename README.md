@@ -50,6 +50,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Documentation
 
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
+- Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
 
 
 [^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)

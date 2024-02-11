@@ -192,7 +192,7 @@ type Msg
 
 url : String
 url =
-  "http://localhost:5016/nicknames"  -- #3
+  "http://localhost:5019/nicknames"  -- #3
 
 getNicknames : Cmd Msg
 getNicknames =
