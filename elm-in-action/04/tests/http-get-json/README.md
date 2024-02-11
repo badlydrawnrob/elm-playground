@@ -10,9 +10,11 @@ npx json-server --watch server/old-school.json -p 5019
 elm reactor
 ```
 
-## 01a
+## JSON (part 1)
 
-### How it all works
+> The simplest thing possible!
+
+### 01a
 
 We need to go through three steps to retrieve data from a server:
 
@@ -29,7 +31,7 @@ Now we have our data, what will we do with it? `Msg -> Update -> View`.
 3. If not, we update our `error` in `model` and render that in `view`.
 
 
-## 01b
+### 01b
 
 We can simplify our process (01) quite a bit by using `Http.expectJson` function insted of `Http.expectString`.
 
@@ -41,6 +43,12 @@ We can simplify our process (01) quite a bit by using `Http.expectJson` function
 4. No need for any more steps!!
 
 The retrieving and decoding of JSON happen in one go. The `Http.get` call includes the decoder in it's type signature.
+
+
+## JSON (part 2)
+
+...
+
 
 
 ## Our REST API (url)
