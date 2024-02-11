@@ -41,7 +41,6 @@ type alias Model =
   , errorMessage : Maybe String
   }
 
-
 initialModel : Model
 initialModel =
   { nicknames = []
@@ -77,7 +76,6 @@ viewError errorMessage =
       [ h3 [] [ text errorHeading ]
       , text ("Error: " ++ errorMessage)
       ]
-
 
 viewNicknames : List String -> Html Msg
 viewNicknames nicknames =
@@ -124,10 +122,38 @@ viewNickname nickname =
 --       - `viewError String` or `viewNicknames List String`.
 --
 --
--- #4 `Http.expectString` looks like this:
---     `expectString : (Result Http.Error String -> msg) -> Expect msg
+-- #4 `Http.expectJson` looks like this:
+--     `expectJson : (Result Http.Error a -> msg) Decoder a -> Expect msg
+--
+--     : Unlike `Http.expectString`, we pass the decoder in straight away,
+--       no need for a nested `case` statement for the JSON decoder.
 --
 --     : Elm Runtime will send a `Msg` to update for us.
+--
+--     Our decoders can be an `atom`, or a `List atom` (or a nested list).
+--     This generates a `Decoder` that knows how to translate a JSON array
+--     into a list of Elm `String`s.
+--
+--     `list` is a function that returns a decoder:
+--         `Decoder a -> Decoder (List a)`
+--     `string` returns a Decoder:
+--         `Decoder string`
+--      `list string` returns a Decoder:
+--          `Decoder (List String)`
+--
+--     : These by themselves DO NOT DECODE JSON. It's like a recipe, or
+--       instructions to be passed on to a function like `decodeString`
+--       or `decodeJson`, which does the actual decoding. These functions
+--       apply the Decoder to the `string` or `json`.
+--
+--        @ http://tinyurl.com/elm-lang-http-expectJson
+--        @ http://tinyurl.com/elm-lang-http-expectString
+--        @ http://tinyurl.com/elm-lang-json-decode-string
+--        @ http://tinyurl.com/elm-lang-json-decode-error
+--
+--      : You can create larger decoders by using primitive decoders and
+--        using them as building blocks. All elements in a list need to
+--        be the same type! (just like Elm lists)
 --
 --
 -- #5 `Http.get` type signature looks like this:
@@ -142,6 +168,14 @@ viewNickname nickname =
 --     3. Which message should be sent to the app after the
 --        command has been executed?
 --
+--     It now does two things:
+--
+--     1. Checks the server is available (responsive),
+--     2. Checks if the JSON is valid and returns `Ok (elm data)`
+--        or an `Err`or.
+--
+--     @ http://tinyurl.com/elm-lang-json-decode-error
+--
 --
 -- #6  We need to tell the `update` function what to do when the
 --     `DataReceived` message arrives! All we are doing here is
@@ -150,58 +184,11 @@ viewNickname nickname =
 --     : We can use pattern matching instead of nested `case`.
 --       @ http://tinyurl.com/beginning-elm-pattern-matching
 --
---
--- #7  Our decoders can be an `atom`, or a `List atom`. This generates
---     a `Decoder` that knows how to translate a JSON array into a list
---     of Elm Strings.
---
---     `list` is a function that returns a decoder:
---         `Decoder a -> Decoder (List a)`
---     `string` returns a Decoder:
---         `Decoder string`
---      `list string` returns a Decoder:
---          `Decoder (List String)`
---
---     : These by themselves DO NOT DECODE JSON. It's like a recipe, or
---       instructions to be passed on to a function like `decodeString`,
---       which does the actual decoding. That first parses a raw string
---       into JSON and applies the Decoder to it.
---
---       `decodeString string "\"Beanie\""` -> Ok "Beanie"
---       `decodeString string "42"          -> Error (Failure ...)
---
---        @ http://tinyurl.com/elm-lang-json-decode-string
---        @ http://tinyurl.com/elm-lang-json-decode-error
---
---      : You can create larger decoders by using primitave decoders and
---        using them as building blocks. All elements in a list need to
---        be the same type! (just like Elm lists)
---
---
--- #8  Unlike `String.split` (in our simple `old-school.txt`), `decodeString`
---     returns a `Result`. This means we need to `case` on that result for the
---     two possible branches (`Ok` and `Err`).
---
---     1. If `Ok` send our payload to the `nicknamesDecoder` and return a
---        `List String` (if our JSON works properly). Otherwise return an
---        `Err`or.
---     2. See (#2) and (#3) for more information on error.
---
---
--- #9  See (#2) and (#3) — we're handling errors in two places.
---     We're currently only interested in the `Failure` Error
---     type variant. There's a lot more we could do with this error
---     message, such as `_` which is the JSON value causing failure.
---
---     1. Is `DataReceived`? No? `buildErrorMessage`
---     2. Is JSON sucessfully decoded? No? `handleJsonError`
---
---     @ http://tinyurl.com/elm-lang-json-decode-error
 
 
 type Msg
   = SendHttpRequest
-  | DataReceived (Result Http.Error String)  -- #1, #2
+  | DataReceived (Result Http.Error (List String))  -- #1, #2
 
 url : String
 url =
@@ -211,9 +198,8 @@ getNicknames : Cmd Msg
 getNicknames =
   Http.get  -- #5
     { url = url
-    , expect = Http.expectString DataReceived  -- #4
+    , expect = Http.expectJson DataReceived nicknamesDecoder -- #4
     }
-
 
 nicknamesDecoder : Decoder (List String)
 nicknamesDecoder =
@@ -225,24 +211,13 @@ update msg model =
     SendHttpRequest ->
       ( model, getNicknames )  -- Http.get and return payload
 
-    DataReceived (Ok nicknamesJson) ->  -- #1, #6  payload is a json string
-      case decodeString nicknamesDecoder nicknamesJson of  -- parse with decoder
-          Ok nicknames ->  -- #8
-            ( { model | nicknames = nicknames }, Cmd.none )  -- store list
-          Err error ->
-            ( { model | errorMessage = handleJsonError error }
-            , Cmd.none )
-    DataReceived (Err error) ->
-      ( { model | errorMessage = Just (buildErrorMessage error) }  -- #2, #3
+    DataReceived (Ok nicknames) ->  -- #1, #4, #6  payload piggybacks on type variant
+      ( { model | nicknames = nicknames }, Cmd.none )  -- store `List String`
+
+    DataReceived (Err httpError) ->
+      ( { model | errorMessage = Just (buildErrorMessage httpError) }  -- #2, #3
       , Cmd.none
       )
-
-handleJsonError : Json.Decode.Error -> Maybe String  -- #9
-handleJsonError error =
-  case error of
-      Failure errorMessage _ ->
-        Just errorMessage
-      _ -> Just "Error: Invalid JSON"
 
 buildErrorMessage : Http.Error -> String  -- #9
 buildErrorMessage httpError =

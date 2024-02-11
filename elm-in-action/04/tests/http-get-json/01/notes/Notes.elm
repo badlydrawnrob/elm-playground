@@ -1,4 +1,4 @@
-module Notes exposing (..)
+module http-get-json.01.notes.Notes exposing (..)
 
 import Json.Decode exposing (decodeString, list, string, int)
 

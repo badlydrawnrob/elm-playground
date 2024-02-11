@@ -1,8 +1,6 @@
 # README
 
-> [Fetching json with `Html.get` tutorial](https://elmprogramming.com/decoding-json-part-1.html)[^1] (part 1)
->
-> ⚠️ Warning! Beware of [url errors](http://tinyurl.com/beginning-elm-origin-200-error)!![^2]
+> [Fetching json with `Html.get` tutorial](https://elmprogramming.com/decoding-json-part-1.html)[^1][^2] (part 1)
 
 ```terminal
 # terminal window 1
@@ -12,17 +10,40 @@ npx json-server --watch server/old-school.json -p 5019
 elm reactor
 ```
 
-## How it all works
+## 01a
+
+### How it all works
 
 We need to go through three steps to retrieve data from a server:
 
-1. Specify where to retrieve data from using `Http.get`
-2. Retrieve data. Use the Elm Runtime by sending a `Cmd`
-3. This `Cmd` will in turn generate a `Msg`. It's either successful `Ok` or an `Err`or.
-4. `Update` handles the model change.
-5. We case `view` for both error and success.
+1. Specify where to retrieve data from using `Http.get` when a button is clicked;
+2. This creates a `Cmd` to retrieve data. This data is added to a `Msg` type variant as payload.
+3. We can `case` on the `Msg` variant in `update`. It's either successful (`Ok`) or unsuccessful (`Err`or).
+4. `Update` changes the model depending on our `Msg`.
+5. We also `case` within `view`, rendering a different state for a success or failure.
 
-## The url
+Now we have our data, what will we do with it? `Msg -> Update -> View`.
+
+1. We need to check if our data is valid. We'll `case` again with our decoder function.
+2. If valid `json`, `Ok` updates the model with our data, in turn updating our `view`.
+3. If not, we update our `error` in `model` and render that in `view`.
+
+
+## 01b
+
+We can simplify our process (01) quite a bit by using `Http.expectJson` function insted of `Http.expectString`.
+
+1. `Cmd` with `Http.get` using `url`. We let the Elm Runtime know we're expecting JSON response.
+2. The runtime runs the command.
+3. The runtime sends `DataReceived` message to `update`
+    - Include decoded nicknames as a payload if the request to _retrieve JSON_ and _decoding_ both succed.
+    - Include an error of type `Http.Error` as a payload if either the request to _retrieve JSON_ or the _decoding_ fails.
+4. No need for any more steps!!
+
+The retrieving and decoding of JSON happen in one go. The `Http.get` call includes the decoder in it's type signature.
+
+
+## Our REST API (url)
 
 With `http-server` the url is `/old-school.txt`, but with `json-server` it's using the `key` `"nicknames"` as the url `/nicknames` (not the filename.)
 
