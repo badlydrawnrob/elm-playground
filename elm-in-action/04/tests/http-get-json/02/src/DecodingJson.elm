@@ -95,7 +95,7 @@ postDecoder =
   Decode.succeed Post
     |> required "id" int
     |> required "title" string
-    |> required "author" string
+    |> optional "author" string "anonymous"
 
 httpCommand : Cmd Msg
 httpCommand =

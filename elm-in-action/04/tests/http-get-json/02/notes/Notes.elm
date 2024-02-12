@@ -122,3 +122,7 @@ postDecoder =
     |> required "id" int
     |> required "title" string
     |> required "author" string
+
+-- You can also specify an optional field --
+
+|> optional "author" string "default"
