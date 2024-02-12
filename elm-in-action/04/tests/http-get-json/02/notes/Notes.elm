@@ -99,3 +99,26 @@ table []
         [ text "indexzero" ]
     ]
   ]
+
+
+-- `Decode.succed` tests -------------------------------------------------------
+
+import Json.Decode exposing (..)
+
+decodeString (succed 42) "1"
+-- Ok 42 : Result Error number
+decodeString (succed 42) "true"
+-- Ok 42 : Result Error number
+
+
+-- `Json.Decode.Pipeline` --
+
+-- Makes clever use of `succeed` to turn the
+-- JSON decoding process into a pipeline operation.
+
+postDecoder : Decoder Post
+postDecoder =
+  Decode.succeed Post
+    |> required "id" int
+    |> required "title" string
+    |> required "author" string

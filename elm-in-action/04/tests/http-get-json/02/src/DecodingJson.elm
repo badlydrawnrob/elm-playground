@@ -82,6 +82,10 @@ viewPost post =
 
 -- Update ----------------------------------------------------------------------
 
+-- #1  We added Decode as an alias, so we can write it this way.
+--     `Decode.succeed` function ignores the given JSON and always
+--     produces a specific value.
+
 type Msg
   = SendHttpRequest
   | DataReceived (Result Http.Error (List Post))
