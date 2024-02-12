@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, decodeString, field, int, list, map3, string)
-import JSON.Decode.Pipeline exposing (optonal, optionalAt, required, requiredAt)
+import Json.Decode.Pipeline exposing (optional, optionalAt, required, requiredAt)
 
 
 -- Model -----------------------------------------------------------------------
