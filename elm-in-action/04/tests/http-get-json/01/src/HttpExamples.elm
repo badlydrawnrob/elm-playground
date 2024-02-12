@@ -5,25 +5,12 @@ module HttpExamples exposing (main)
     1. Setup our `initialModel` and pass it to `main`
     2. Click on a button to call `onClick` which sends a `Msg`
     3. This triggers a `Http.get` which in turn sends a payload
-       (via a `Cmd` to our other `Msg` type variant, `DataReceived`.
+       via a `Cmd` to our other `Msg` type variant, `DataReceived`.
     4. This triggers one of the `case` expressions in `update` with either
        an `Ok` or an `Err`.
-    5. If there's an issue with the server, we load our `view` with
-       the error message.
-
-    That's the data request done. You _could_ add a `Loading | Loaded`
-    `Msg` type there as well. The next thing we need to do is to check
-    that our data is a valid JSON string:
-
-    1. We `case` again with our decoder and return `Ok` or error.
-       So we've now cased twice — one for loading the data, one for checking
-       the data is valid.
-
-    2. The `case` expression updates the model if JSON is `Ok` and our list
-       will load into `view`. If there's a JSON error, we update the model record
-       to display _that_ error (so there's two potential errors that can show).
-
-    So we're casing a few times. In `view` and in `update`.
+    5. If there's an issue with the server (or the json), we load our
+       `view` with the error message.
+    6. If all is good, we load our `view` proper.
 
 -}
 
