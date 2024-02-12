@@ -4,16 +4,8 @@ import Browser
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode
-  exposing
-    ( Decoder
-    , decodeString
-    , field
-    , int
-    , list
-    , map3
-    , string
-    )
+import Json.Decode as Decode exposing (Decoder, decodeString, field, int, list, map3, string)
+import JSON.Decode.Pipeline exposing (optonal, optionalAt, required, requiredAt)
 
 
 -- Model -----------------------------------------------------------------------
@@ -96,10 +88,10 @@ type Msg
 
 postDecoder : Decoder Post
 postDecoder =
-  map3 Post
-    (field "id" int)
-    (field "title" string)
-    (field "author" string)
+  Decode.succeed Post
+    |> required "id" int
+    |> required "title" string
+    |> required "author" string
 
 httpCommand : Cmd Msg
 httpCommand =
