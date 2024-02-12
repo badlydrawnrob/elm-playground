@@ -124,5 +124,8 @@ postDecoder =
     |> required "author" string
 
 -- You can also specify an optional field --
+--
+-- This will handle values that don't exist,
+-- as well as `null` values!
 
 |> optional "author" string "default"
