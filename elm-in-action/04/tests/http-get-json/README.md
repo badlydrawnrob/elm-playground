@@ -39,7 +39,7 @@ We can simplify our process (01) quite a bit by using `Http.expectJson` function
 2. The runtime runs the command.
 3. The runtime sends `DataReceived` message to `update`
     - Include decoded nicknames as a payload if the request to _retrieve JSON_ and _decoding_ both succed.
-    - Include an error of type `Http.Error` as a payload if either the request to _retrieve JSON_ or the _decoding_ fails.
+    - Include an error of type `Http.Error` as a payload if either the request to _retrieve JSON_ or the _decoding_ fails.[^3]
 4. No need for any more steps!!
 
 The retrieving and decoding of JSON happen in one go. The `Http.get` call includes the decoder in it's type signature.
@@ -47,7 +47,7 @@ The retrieving and decoding of JSON happen in one go. The `Http.get` call includ
 
 ## JSON (part 2)
 
-...
+The retrieving and decoding of JSON happens in one go, as before. It's either an `Ok ...` or an `Err ...`, and we have to `case` on that in `view` and `update`.
 
 
 
@@ -120,3 +120,5 @@ For instance, each `/posts/` entry has a unique ID, so we can call the REST API 
 
 
 [^2]: Unlike `http-server`, `json-server` automatically enables [Cross-Origin Resource Sharing](https://elmprogramming.com/fetching-data-using-get.html#allowing-cross-origin-resource-sharing) (CORS). That’s why we didn’t get the `No 'Access-Control-Allow-Origin' header is present on the requested resource.` error when fetching the nicknames.
+
+[^3]: There's a potential [error in the code](http://disq.us/p/269bbhk) that might need rectifying. Branch `DataReceived (Ok nicknames)` might be better to set the `errorMessage` as `Nothing` just incase we've had an error before that's been resolved.

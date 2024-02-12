@@ -148,6 +148,10 @@ See http://tinyurl.com/elm-in-action-refactor-status
     - Think about what each "field" returns and gets passed as a value to `buildPhoto` (otherwise it would look unwieldy)
 5. Understanding [`succeed`](https://stackoverflow.com/a/59329981)
 
+### Dealing with lists and Html
+
+1. `tables` and concatonating lists, like `th` and `td` each wrapped in a `tr`, inside a `table [] []`.
+
 ### More robust functions and errors (logging)
 
 > pg. 96 (pdf) or pg. 234 (book)
