@@ -129,3 +129,36 @@ postDecoder =
 -- as well as `null` values!
 
 |> optional "author" string "default"
+
+
+-- Nested Decoders --
+
+-- Assuming you had the following JSON:
+--
+-- {
+--  "id": 1,
+-- "title": "json-server",
+--  "author": {
+--    "name": "typicode",
+--    "url": "https://github.com/typicode"
+-- }
+
+type alias Author =
+  { name : String
+  , url : String
+  }
+
+type alias Post =
+  {
+    ..
+    author: Author
+  }
+
+authorDecoder =
+  Decode.succed Author
+    |> required "name" string
+    |> optional "url" string
+
+postDecoder =
+  ...
+  |> required "author" authorDecoder
