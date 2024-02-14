@@ -49,6 +49,42 @@ The retrieving and decoding of JSON happen in one go. The `Http.get` call includ
 
 The retrieving and decoding of JSON happens in one go, as before. It's either an `Ok ...` or an `Err ...`, and we have to `case` on that in `view` and `update`.
 
+```elm
+import Json.Decode exposing (..)
+
+intDecoder =
+  map (\a -> { x = a })
+      (field "x" int)
+
+decodeString intDecoder "{ \"x\": 3 }"
+-- Ok { x = 3 } : Result Error { x : Int }
+
+type Model
+  = { x : Int
+    , error : Maybe String
+    }
+
+type Msg
+  = SendHttpRequest
+  | DataReceived (Result Http.Error )
+
+-- The httpCommand automatically converts our
+-- server json to an Elm-type record ...
+httpCommand =
+  Http.get
+    { url = "http://localhost:5019/int"
+    , expect = Http.expectJson DataReceived intDecoder
+    }
+
+-- Button click sends httpCommand
+--   Cmd -> Msg
+-- Update function
+--   case msg of ... for (Ok ..) and (Err ..)
+--   ({ model | x = .. }, Cmd.none)
+--   ({ model | error = .. }, Cmd.none)
+-- View has state for Error and Ok (success)
+```
+
 
 
 ## Our REST API (url)
