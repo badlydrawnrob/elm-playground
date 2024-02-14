@@ -99,7 +99,6 @@ postDecoder =
   Decode.succeed Post
     |> required "id" int
     |> required "title" string
-    |> required "author" authorDecoder
     |> requiredAt [ "author", "name" ] string
     |> requiredAt [ "author", "url" ] string
 
