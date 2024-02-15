@@ -143,6 +143,13 @@ sizeToString size =
 --
 -- #2: Change `initialModel` to `Loading` (original below)
 --     @ http://tinyurl.com/nhddmc8v
+--
+-- #3  Our type alias `Photo` gives us a constructor function,
+--     which allows us to create a `Photo` record like this:
+--
+--         Photo "http://somewhere.com" 4 "Some where"
+--
+--     Which means we can hand it over to our Decoder easily!
 
 type ThumbnailSize
   = Small
@@ -153,6 +160,13 @@ type alias Photo =
   { url : String
   , size : Int
   , title : String }
+
+photoDecoder : Decoder Photo
+photoDecoder =
+  succeed Photo
+    |> required "url" string
+    |> required "size" int
+    |> optional "title" string "(untitled)"
 
 type Status
   = Loading
@@ -169,17 +183,6 @@ initialModel =
   { status = Loading
   , chosenSize = Medium
   }
-
-photoDecoder : Decoder Photo
-photoDecoder =
-  succeed buildPhoto
-    |> required "url" string
-    |> required "size" int
-    |> optional "title" string "(untitled)"
-
-buildPhoto : String -> Int -> String -> Photo
-buildPhoto url size title =
-  { url = url, size = size, title = title }
 
 
 -- Update ----------------------------------------------------------------------

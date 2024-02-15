@@ -568,3 +568,69 @@ photoDecoder =
 buildPhoto : String -> Int -> String -> Photo
 buildPhoto url size title =
   { url = url, size = size, title = title }
+
+
+-- Let's break that down --
+
+succeed : a -> Decoder a
+buildPhoto : String -> Int -> String -> Photo
+
+-- putting them together --
+
+Decoder (String -> Int -> String -> Photo)
+
+-- That does (almost) nothing by itself, so ... --
+-- Adding a `required` field succeed if (and only
+-- if) we give it a JSON object with a field
+-- called `url` that holds a `string`.
+
+functionDecoder : Decoder (Int -> String -> Photo)
+functionDecoder =
+  succeed buildPhoto
+    |> required "url" string
+
+-- before:
+--   Decoder (String -> Int -> String -> Photo)
+-- after:
+--   Decoder (          Int -> String -> Photo)
+
+-- This decoder also has a different type than the
+-- `succeed Photo` one did (it's shrunk by one argument)
+
+-- Adding more fields in this method eventually shrinks
+-- our `Decoder (String -> Int -> String -> Photo)` down
+-- to a `Decoder Photo`!
+
+
+-- You don't actually need `buildPhoto`!! --------------------------------------
+
+-- A type alias also gives us a `Photo` function
+-- for free! If we supply it with arguments, it'll
+-- construct a record (of type `Photo`) for us!
+
+type alias Photo =
+  { url : String
+  , size : Int
+  , title : String
+  }
+
+-- So we can call it like this:
+
+-- > Photo
+-- <function> : String -> Int -> String -> Photo
+
+-- And create it like this:
+
+-- > Photo "http://somewhere.com" 3 "some photo"
+-- { size = 3, title = "some photo", url = "http://somewhere.com" }
+--    : Photo
+
+
+-- Warning!!! ------------------------------------------------------------------
+
+-- Reordering any function’s arguments can lead to unpleasant
+-- surprises. Because reordering the fields in the `Model` type
+-- alias has the consequence of reordering the `Model` function’s
+-- arguments, you should be exactly as careful when reordering
+-- a `type alias` as you would be when reordering any
+-- function’s arguments!

@@ -152,6 +152,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 1. `tables` and concatonating lists, like `th` and `td` each wrapped in a `tr`, inside a `table [] []`.
 
+
 ### More robust functions and errors (logging)
 
 > pg. 96 (pdf) or pg. 234 (book)
