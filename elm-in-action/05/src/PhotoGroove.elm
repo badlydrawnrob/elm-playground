@@ -78,8 +78,8 @@ viewFilter name magnitude =
   div [ class "filter-slider" ]
       [ label [] [ text name ] ]  -- #1a
       , rangeSlider   -- #1b
-          [ max "11"  -- #1b
-          , Html.Attributes.property "val" (Json.Encode.int magnitude)  -- #1c
+          [ Attr.max "11"  -- #1b
+          , Attr.property "val" (Encode.int magnitude)  -- #1c
           ]
           []
       , label [] [ text (String.fromInt magnitude) ]  -- #1d
