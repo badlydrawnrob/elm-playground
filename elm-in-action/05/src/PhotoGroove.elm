@@ -9,8 +9,11 @@ module PhotoGroove exposing (main)
                          https://github.com/ohanhi/elm-style-guide
 
     Be sure to check:
-      1. Ellie App requires `https`
-      2. Prepended view functions with `view`
+      1. Hard reload the page (or clear history)
+          - Sometimes the `index.html` gets "stuck" in old version.
+          - @ http://tinyurl.com/safari-hard-refresh
+      2. Ellie App requires `https` (or it won't load `json`)
+      3. Prepended view functions with `view`
           - No need to do this with helper functions.
           - All functions that return `Html Msg` do need this.
 
@@ -76,13 +79,14 @@ view model =
 viewFilter : String -> Int -> Html Msg
 viewFilter name magnitude =
   div [ class "filter-slider" ]
-      [ label [] [ text name ] ]  -- #1a
+      [ label [] [ text name ]  -- #1a
       , rangeSlider   -- #1b
           [ Attr.max "11"  -- #1b
           , Attr.property "val" (Encode.int magnitude)  -- #1c
           ]
           []
       , label [] [ text (String.fromInt magnitude) ]  -- #1d
+      ]
 
 viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
 viewLoaded photos selectedUrl chosenSize =
@@ -90,6 +94,11 @@ viewLoaded photos selectedUrl chosenSize =
     , button
       [ onClick ClickedSurpriseMe ]
       [ text "Surprise Me!" ]
+    , div [ class "filters" ]
+      [ viewFilter "Hue" 0
+      , viewFilter "Ripple" 0
+      , viewFilter "Noise" 0
+      ]
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
       (List.map viewSizeChooser [ Small, Medium, Large ] )
