@@ -1,18 +1,35 @@
 # Stuff to add to Anki?
 
-> See the Books app on Mac for highlighted eBook
-> _See `./__ANKI__` in local folder (not in repo)_.
+> **[Bin first](https://hamberg.no/gtd).** Then group. Then filter. Then do.[^1]
+>
+> 1. A highighted and heavily bookmarked eBook[^2]
+> 2. A folder full of useful screenshots from the book (not in repo)
+> 3. A `Notes.elm` file for each chapter
+> 4. Useful notes in each `PhotoGroove.elm` file (removed once chapter completed)
+> 5. The [Elm in Action repo](https://github.com/rtfeldman/elm-in-action/commits/master/) with code examples
 
-Don't add cards recklessly. Is it really worth the overhead to create and revise this card? Remember your "bin first" approach to grouping, filtering, and timeboxing tasks (and your tendency to get side-tracked!)
+**Don't add cards recklessly.** One of the biggest downsides of writing revision notes and a big `to-do` list for Anki card creation is one of time. Is it really worth the overhead to create and revise this card? Perhaps I'm lazy, but in general I try to remind myself:
 
-The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory — shared concepts and important keywords/terminology could be useful. <mark>Mark them with highlights</mark>.
+1. Start with NO!
+    - I start projects from a place of "why would I want to do __"?
+    - Is __ in-keeping with my goals? Is it a timesink?
+2. _Try_ not to get sidetracked. Is this a useful waste of time?
+    - I get sidetracked _all the time_, especially for CSS and new programming concepts.
+    - Keep in mind _why_ you're learning. Does it fit my target goals?
+    - You can waste _hours_ (and days) trying to figure things out with code :(
+3. Have a great filter.
+    - Group related tasks and remove ones that aren't important.
+    - Where possible, find shortcuts or ask someone for help.
+4. Cards should be done in 30 seconds (in general).
+    - How quickly can I get to the root of the question?
+    - If it takes longer than 30 seconds to solve, is there a better way to revise?
 
-For now, I'm only really interested in learning the language Elm so javascript notes aren't useful (to me).[^1]
+The book uses quite a few javascript examples and a lot of terminology that needn't be consigned to memory. For now, I'm only really interested in learning the language Elm, so javascript notes aren't useful (to me).[^2] Common functional programming concepts and terminology that can be shared across Lisp, Elm, and other functional languages are useful. <mark>Mark them with highlights</mark>.
 
 ## Lazy loading of cards
 
-> - ⚠️ **To what level do I want to learn programming?**[^2]
-> - 🎯 **How much do I care?**[^3]
+> - ⚠️ **To what level do I want to learn programming?**[^3]
+> - 🎯 **How much do I care?**[^4]
 >
 > 1. **Write it down** (a brief summary of a learning point)
 > 2. **Group related learning points!**
@@ -34,216 +51,154 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 - [ ] How to break down that learning for better Anki cards?
 - [ ] Is linking cards to Chapter of the book enough?
 
-## Candidates for an Anki card
 
-> A brief note on how to sketch out and prioritise new feature requests. Start with the Model!
->
-> How do you take [a large code base](https://github.com/badlydrawnrob/elm-playground/issues/12) and distill it down for an Anki card in just a few lines? Or, do you link through to the full program/file?
+## General notes for all code ventures:
 
-## For now ...
-
-### Currying
-
-- Draw sketches to show the black box procedures
-    - One of them is _currying_
-    - One of them is _random numbers_
-
-A black box procedure should be obvious to it's input and output, but the user _does not have to know_ anything about the internal mechanism. You should be able to change the inner workings and keep the same inputs and outputs (or at least, refactor with minimal fuss)
-
-### Type annotations
-
-1. Add a visual diagram of a more complex type annotation.
-
-- <s>A type annotation for a proper function (see chapter `3.1.4` and `Table 3.5` in the book for a breakdown) — I think visuals would help here!!
-    - In the book it starts with `String.padLeft`
-    - With currying it's a little tricky to get your head around
-    - But break it down into three separate functions (using nested variables) and it's easier to get.
-    - Technically, every Elm function takes only one argument, and maybe returns another function</s>
-
-### Type alias
-
-- <s>A type alias declaration assigns a name to a type, much as a constant assigns a name to a value.
-* Type aliases to reduce code duplication
-    - https://guide.elm-lang.org/types/type_aliases
-    - Use the example with an Array (but don't mention it much)
-* More type alias examples here: https://guide.elm-lang.org/types/type_aliases</s>
-
-### Type variables
-
-- <s>Type variables represent concrete types that have not been specified yet.
-- Give a brief introduction to [`Type Variables`](http://tinyurl.com/elm-lang-type-variables)
-    - For example `number` is a type variable.
-    - `fromList : List elementType -> Array elementType`</s>
-
-### Errors
-
-* <s>Quiz: [explain why this code doesn't work](https://ellie-app.com/q7sGdX6wLfsa1) (broken link!)
-    1. Error in the book `http://elm-in-action.com/list-photos`
-    2. Missing a `/` ...
-    3. Where do you go to first in the code to fix a problem?</s>
-* <s>(Related to (23)) explain why [this error message is occuring](https://ellie-app.com/q8kbndhqGX2a1).</s>
+> 1. How do we sketch out and prioritise new feature requests? Start with the Model!
+> 2. How do you take [a large code base](https://github.com/badlydrawnrob/elm-playground/issues/12) and distill it down for an Anki card in just a few lines? Or, do you link through to the full program/file?
 
 
+## Chapter 04 to-dos
+
+### First working example
+
+> A working PhotoGroove from a simple string of photos served on an external server: https://github.com/badlydrawnrob/elm-playground/releases/tag/0.3.23 and in Ellie App: https://ellie-app.com/qgp5GSmkLk4a1
+
+A diagram of how the different bits fit together, mainly the initial `Http.get`, it's `Result` and how we're casing on that result, then propogating to other `Status` checks.
 
 
-### Custom Type
+### General to-dos
 
-1. <s>A custom type with only case expressions
-    - Start with `ThumbnailSize` as it's simple
-    - Types must be `CapitalCase` (including it's contents)
-    - Each branch is only equal to itself (and itself only)</s>
-
-
-2. <s>A custom type with type variants that are functions</s>
-
-
-## Case statements
-
-4. <s>A `case` expression with a simple "container" `CustomType String`
-    - I guess this is what's "extracting their data" or "associated data"
-    - http://tinyurl.com/elm-lang-case-vs-if-else</s>
-
-
-- <s>If you don’t write a fallback `_ ->` branch in a case-expression, you’ll get a compiler error unless your code handles all possible cases.
-- Converting an `if` statement to a `case` statement
-    - How to flatten a complex nested `case` statement?
-    - http://tinyurl.com/elm-lang-case-vs-if-else
-    - Conditional branches (like lisp's `cond`)
-    - Explain the `_` underscore (the `else` part)
-        - It's the _default_ branch</s>
-
-
-
-### Maybe
-
-1. <s>`Maybe` and it's Union Types `Just` and `Nothing`</s>
-
-- <s>A brief introduction to `Maybe`:
-    - http://tinyurl.com/elm-lang-maybe-dont-overuse
-    - Give an example of _deconstructing_ `Just` and `Nothing` (see line `381` in `Notes.elm`)
-    - https://exercism.org/tracks/elm/concepts/maybe#</s>
-
-
-
-
-### View
-
-1. <s>Users can now select from one of three thumbnail sizes.
-
-- Also note that `view` functions have `view` in front of their function name. Is this a standard?
-    - Note that other `helper functions` don't do this.
-    - I guess it's only Html elements that require it?
-- A quick note on `type_` for the radio button is named because `type` is a reserved word.</s>
-
-- <s>How can we make our Html cleaner when calling the `viewSizeChooser`?</s>
-
-
-
-
-### Messages
-
-1. <s>From now on, whenever we add a new Msg value, the compiler will give us a missing-patterns error if we forget to handle it (as when we didn’t account for `ClickedSize`).</s>
-
-- <s>If we have more than one `Msg` what do we do?
-    - We have two `onClick` events now.
-    - Comparing `if` `case` and `case` with `Msg` type
-    - It isn't good practice to cram every `msg` in a single record
-    - Data that looks related, but isn't really (different `onClick` functions)
-    - A quick sketch of how message gets passed around
-- Basically both `Msg` and `update` work better if there's _more than one way our `Model` could look after providing it a `Msg`</s>
-
-
-
-### Commands
-
-1. <s>A `case` expression that runs a `Cmd`. (condense "Commands" header)
-    - http://tinyurl.com/elm-lang-convert-update-tuple
-2. It has a Surprise Me! button that selects a thumbnail at random.
-3. An elm function given the same arguments will output the same value every time.<s>
-4. <s>A `command` is a value that describes an operation for the Elm Runtime to perform. This `command` can be run multiple times with different results.
-    - We have to change our model and [pass a `tuple`](http://tinyurl.com/elm-lang-cmd-needs-tuple) (see `Figure 3.8` in book)</s>
-5. <s>For a random number we have a `generator` and a get the result using `Random.generate GotSelectedIndex randomPhotoPicker` (why?)
-    - https://elmprogramming.com/commands.html
-
-The below function is also interesting, as it's calling a function inside the `case .. of`. `photo` (I think) is a type variable (i.e: `a`)</s>
+1. We've removed our `getPhotoUrl` function, which relied on our `Array.get` function (which in turn provided us a `Maybe Photo`). Make a very concise diagram? file? piece of code? To [show the difference of our refactor](https://github.com/badlydrawnrob/elm-playground/commit/55b0d1b45ff9ee000426747bd35a34c84a0b9559).
+2. Explain `side-effects`. Elm functions can't have these. All side-effects are performed by the Elm-runtime itself. Our code only describes what effects to perform.
+3. **How do you uninstall packages?!**
+4. Passing a `Result` and `case`ing on it
 
 ```elm
-getPhotoUrl : Int -> String
-getPhotoUrl index =
-  case Array.get index photoArray of
-    Just photo ->
-      photo.url
-    Nothing ->
-      ""
+GotPhotos result ->  -- is a Result
+    case result of   -- is a Result
+        Ok responseStr ->  -- if Result is Ok
 ```
 
+5. [Explain this refactor](http://tinyurl.com/eia-destructure-firstUrl). Note that you're no longer storing `url` but rather generating a `list` in between `case ... of` and we're using the [`as`](https://elm-lang.org/docs/syntax#:~:text=import%20List%20as%20L) keyword (`1 :: [2, 3, 4]`)
+    - Rather than the base case resulting in an `[]` empty list we use `Errored ""` instead.
+    - Simple question, should I use `List.head` here or something else? `deconstruct the list`
+6. **`type alias Photo` also gives us a [convenience function](http://tinyurl.com/elm-in-action-convenience-func)** whose job is to build `Photo` record instances!
+    - `Photo "1.jpeg" == { url = "1.jpeg" }`
+    - Convert `List.map (\url -> { url = url }) urls` to the above shorter refactor.
+7. Explain [this code properly](http://tinyurl.com/elm-in-action-initialCmd-HTTP) with images! [(Http.get)](https://package.elm-lang.org/packages/elm/http/latest/Http#get)
+8. **Now explain how it's possible to [simplify to just `GotPhotos`](http://tinyurl.com/eia-curried-initialCmd)** (how is pg.264 of the eBook) We know we're expecting a `Ok String` or an `Error String` but where is it passed to `GotPhotos _`?
+9. **Note that `_` is a common pattern for variables that we don't care about (yet) and aren't being used.**
 
 
-## Things to think about later
 
-### Code organisation
+### Dealing with refactoring
 
-Which types and functions go in each section?
+1. Type mismatch like the one below. How to fix it?
+2. Refactoring [with `case` pattern matching](http://tinyurl.com/elm-lang-case-pattern-matching). Whenever you find yourself putting a `case` inside another `case` you might be able to do this. (and do it in [another language](https://dev.realworldocaml.org/lists-and-patterns.html))
 
-1. `Model`
-2. `View`
-3. `Update`
-4. `helper functions`
-5. `Cmd`
-6. `Msg`
-7. ...
+```terminal
+-- TYPE MISMATCH ------------------------------------------- src/PhotoGroove.elm
 
-### Types
-1. Add a couple more `type variable` examples to your deck. For instance [is this a type variable](http://tinyurl.com/elm-lang-is-a-type-variable) or just an argument? Is it wise to [never use them](https://discourse.elm-lang.org/t/the-use-and-over-use-of-type-variables/2044/5)?
-2. As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
-3. A `type SomeType` variant that holds functions?
+This `model` record does not have a `status` field:
 
-### Cleaning up code
+61|     (case model.status of
+                    ^^^^^^
+This is usually a typo. Here are the `model` fields that are most similar:
 
-- How would we create a `sizeToClass` function, [to replace the current `class (sizeToString ...)`](https://github.com/badlydrawnrob/elm-playground/blob/5fd295c5f8a1aa5315e1a9e2e073e03566c83c14/elm-in-action/03/src/PhotoGroove.elm#L36) chunk?
-- Improve the user experience:
-    - display thumbnail size `medium` on page load
-    - tabbed selection already works
-    - what other options are there than `onClick` for events?
+    { photos : Status
+    , chosenSize : ThumbnailSize
+    }
 
-### The Elm Runtime
+So maybe status should be photos?
+```
 
-- A DOM picture and a Elm runtime picture
-- A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
+See http://tinyurl.com/elm-in-action-refactor-status
+
+
+### `case` the `Model` more than once. Why?
+
+> We must cater for all eventualities:
+>
+> 1. A server error
+> 2. A "no string found" error
+> 3. A `List photo` error (empty list?)
+
+1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
+2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
+3. Explain the difference between our original random function and the new `random.uniform` one.
+
+
+### The `<|`, `|>` operator
+
+1. **A couple of simple and more verbose examples for `<|`.**
+2. See the `Tuple.pair` example (also in `__Anki__`) Show an example [before and after](http://tinyurl.com/elm-lang-parens-vs-pipeline) using the `|>` operator. Show that you flip the function order around (do you do like Lisp, or like Elm?)
+3. In general, I'm quite happy with Lisp style.
+
+
+### JSON and JSON Pipeline
+
+> **There's [a couple of ways to do this](https://github.com/badlydrawnrob/elm-playground/commit/8463befd4e69c77e3ae87afeddf7b001dbf9a029#r138476648).** Currently has the pipeline method.
+
+1. Examples of atoms
+2. Examples of multiple [fields](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#field) `map3`
+3. How to nest using `map3`?
+4. **JSON pipeline and the [`succeed`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#succeed) function**
+    - **Remind yourself of `|>` pipeline operator ([it takes some time](https://harfangk.github.io/2018/01/27/elm-function-operators.html) to wrap your head around)**
+    - Think about what each "field" returns and gets passed as a value to `buildPhoto` (otherwise it would look unwieldy)
+5. Understanding [`succeed`](https://stackoverflow.com/a/59329981)
+
+### Dealing with lists and Html
+
+1. `tables` and concatonating lists, like `th` and `td` each wrapped in a `tr`, inside a `table [] []`.
+
+
+### More robust functions and errors (logging)
+
+> pg. 96 (pdf) or pg. 234 (book)
+>
+> Tip
+>
+> This function could be made more robust. Currently, if it gets a photo URL to select before the photos have loaded, it ignores that error and proceeds as if nothing has gone wrong. A more robust implementation might return a Maybe Status, so that update could fire off a Cmd to record the error in a logging service. We won’t use a logging service in this book, but although it’s good to recover from errors that shouldn’t have happened, additionally logging that they happened gives you a way to later investigate what went wrong.
+
+
+-----
+
+
+## Things for later ...
+
+**A black box procedure** should be obvious to it's input and output, but the user _does not have to know_ anything about the internal mechanism. You should be able to change the inner workings and keep the same inputs and outputs (or at least, refactor with minimal fuss)
+
+**Which types and functions go in each section?** (1) `Model`, (2) `View`, (3) `Update`, (4) `helper functions`, (5) `Cmd`, (6) `Msg`.
+
+**Cleaning up code** such as: instead of `class (sizeToString ...)` could we create a function to make this class [better](https://github.com/badlydrawnrob/elm-playground/blob/5fd295c5f8a1aa5315e1a9e2e073e03566c83c14/elm-in-action/03/src/PhotoGroove.elm#L36)? Improve the user experience: display thumbnail size `medium` on page load; tabbed selection already works.
+
+1. Draw sketches to show the black box procedures of `currying`.
+    - One of them is _currying_
+    - One of them is _random numbers_
+2. Add a visual diagram of a more complex type annotation.
+3. Add a couple more `type variable` examples to your deck. For instance [is this a type variable](http://tinyurl.com/elm-lang-is-a-type-variable) or just an argument? Is it wise to [never use them](https://discourse.elm-lang.org/t/the-use-and-over-use-of-type-variables/2044/5)?
+4. As the main `view` function gets bigger with more `Html` elements, how can we keep the code nice to view at-a-glance? In proper HTML there's more indentation and it's easier to see the different elements.
+5. What other options are there than `onClick` for events?
+6. A DOM picture and a Elm runtime picture
+7. A basic `model->view->update` — a view takes a model and returns a list of Html nodes, user events like clicks get translated into message values, messages get run through the update function to produce a new model, after an update a new model is sent to the view function to determine the new dom, so on (reduce this down to 3 simple steps)
     - Use the type alias of the `Model`
     - Make links between `Big Bang` in Racket lang and Elm's runtime
-
-### Our Model
-
-- Create a document that shows:
-    - A simple _static_ model (basic data)
-    - A `Browser` dynamic model (with a message)
+8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
+9. [Destructuring](http://tinyurl.com/eia-destructure-firstUrl), both in `case` and in `functions` like this example.
 
 
+## Various design decisions:
 
+- `Loaded Photo (List Photo) String` ([non-empty list](http://tinyurl.com/eia-design-decisions-nonempty))
 
 
 
 
+[^1]: Most things should be punted to **some day**: that goes for books, courses, learning a new thing (I'd love to play piano well), starting a new project, so on. For instance, I tried to work through both SICP and Elm in Action and there's simply not enough headspace to do both productively. [Apocryphal or not](https://www.cnbc.com/2018/06/05/warren-buffetts-answer-to-this-question-taught-alex-banayan-a-lesson.html), the 5/25 rule is all about honing in on what's important. Unless you're a kid, you simply don't have time to do everything well. Programming and learning are NEVER-ENDING. So be pragmatic and do a handful of things well.
 
+[^2]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook. Just how useful these notes are is up for question. It's quite hard to skim the book for knowledge; that would be a job for documentation, or "micro programs' where everything is in-place.
 
+[^3]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[^1]: I have color-coordinated some sections with highlights on the _Elm in Action_ ebook
-
-[^2]: Remember to be careful with your time and energy! Eli5, RRr, Bin first, filter, and timebox tasks.
-
-[^3] Always. Always [keep in mind your learning target](https://github.com/badlydrawnrob/elm-playground/issues/9).
+[^4] Always. Always [keep in mind your learning target](https://github.com/badlydrawnrob/elm-playground/issues/9).

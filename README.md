@@ -30,6 +30,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Books
 
 - [Elm in Action](https://www.manning.com/books/elm-in-action)
+- [Learn you an Elm](https://learnyouanelm.github.io)
 
 ## Some tools
 
@@ -39,17 +40,18 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Some helpful FAQs
 
 - [Elm community FAQs](https://faq.elm-community.org)
+- [Why do I have to use Json decoders?](https://gist.github.com/evancz/1c5f2cf34939336ecb79b97bb89d9da6)
 
 ## Some nice examples
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
-
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 
 ## Documentation
 
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
+- Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
 
 
 [^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
