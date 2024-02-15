@@ -42,7 +42,7 @@ module PhotoGroove exposing (main)
 -}
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, classList, id, name, title, type_, src)
 import Html.Events exposing (onClick)
 import Browser
 import Random
@@ -69,7 +69,7 @@ type Msg
   | ClickedSize ThumbnailSize
   | ClickedSurpriseMe
   | GotRandomPhoto Photo
-  | GotPhotos (Result Http.Error String)
+  | GotPhotos (Result Http.Error (List Photo))
 
 view : Model -> Html Msg
 view model =
@@ -93,7 +93,7 @@ viewLoaded photos selectedUrl chosenSize =
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
       (List.map viewSizeChooser [ Small, Medium, Large ] )
-    , div [ id "thumbnails", class (sizeToString chosenSize ) ]
+    , div [ id "thumbnails", class (sizeToString chosenSize) ]
         (List.map
           (viewThumbnail selectedUrl) photos
         )
@@ -113,7 +113,8 @@ urlPrefix =
 viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
   img [ src (urlPrefix ++ thumb.url)
-      , classList [ ("selected", selectedUrl == thumb.url) ]
+      , title (thumb.title ++ " [" ++ String.fromInt thumb.size ++" KB]")
+      , classList [ ( "selected", selectedUrl == thumb.url ) ]
       , onClick (ClickedPhoto thumb.url)
       ] []
 
@@ -150,6 +151,9 @@ sizeToString size =
 --         Photo "http://somewhere.com" 4 "Some where"
 --
 --     Which means we can hand it over to our Decoder easily!
+--
+--     : Beware of re-ordering type alias fields! This will re-order
+--       it's function's arguments, too.
 
 type ThumbnailSize
   = Small
@@ -163,7 +167,7 @@ type alias Photo =
 
 photoDecoder : Decoder Photo
 photoDecoder =
-  succeed Photo
+  succeed Photo  -- #3
     |> required "url" string
     |> required "size" int
     |> optional "title" string "(untitled)"
@@ -180,7 +184,7 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-  { status = Loading
+  { status = Loading  -- #2
   , chosenSize = Medium
   }
 
@@ -188,38 +192,37 @@ initialModel =
 -- Update ----------------------------------------------------------------------
 
 -- #1 Instead of updating a `selectedUrl` string (which doesn't exist now),
---    we pass it a function (2). That function tackes a `url` (a "string") and a
+--    we pass it a function (2). That function takes a `url` (a "string") and a
 --    `model.status`.
 --
 -- #2 a) We `case` on the `Model` again. Why do we do this?
 --    b) If there's an `[]` empty list, we basically _do nothing_
 --       and return the `model` (and no `Cmd`)
 --
--- #3 This function doesn’t do much. If it’s passed a Status that is in the
---    Loaded state, it returns an updated version of that Status that has the
---    thumbnails’ selectedUrl set to the given URL. Otherwise, it returns the
---    Status unchanged.
+-- #3 Here we're using the pipeline operator which both pass `Random.uniform`
+--    to the `.generate` function needed, then wrap the whole thing in a
+--    `(model, [the randomiser Cmd])` tuple.
 --
---    - `_` underscore is kind of a placeholder. It indicates there's
---      a value here, but we choose not to use it.
---
--- #4 Here we're expecting a `String` "1.jpeg, 2.jpeg, ..." — our `GotPhotos _`
---    will hold the `String` if (and only if) the requeset succeds.
---    If there's any problem, our `case` on `Err` will run.
---    Remember that `GotPhotos` is like a "container" function we can use
---    to hold any data we need it to.
+-- #4 We're no longer expecting a `String` because we're using `expectJson`.
+--    this means (thanks to our Decoder) that the return value will be a
+--    `List Photo`. We can use _pattern matching_ to split the `List` and
+--    pass to `Loaded _ _`. If it's an empty list `[]` then we'll add an
+--    Error with a string.
 
 update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
     GotRandomPhoto photo ->
-      ( { model | status = selectUrl photo.url model.status }
+      ( { model | status = selectUrl photo.url model.status }  -- #1
       , Cmd.none )
+
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
+
     ClickedPhoto url ->
       ( { model | status = selectUrl url model.status }
       , Cmd.none )
+
     ClickedSurpriseMe ->
       case model.status of  -- #2a
         Loaded [] _ ->
@@ -227,22 +230,20 @@ update msg model =
         Loaded (firstPhoto :: otherPhotos) _ ->
           ( Random.uniform firstPhoto otherPhotos
               |> Random.generate GotRandomPhoto
-              |> Tuple.pair model
+              |> Tuple.pair model  -- #3
           )
         Loading ->
           ( model, Cmd.none )
         Errored errorMessage ->
           ( model, Cmd.none )
-    GotPhotos (Ok responseStr) ->  -- #4
-      case String.split "," responseStr of
-        (firstUrl :: _) as urls ->
-          let
-            photos =
-              List.map Photo urls
-          in
-            ( { model | status = Loaded photos firstUrl }, Cmd.none )
+
+    GotPhotos (Ok photos) ->  -- #4
+      case photos of
+        (first :: rest) ->
+          ( { model | status = Loaded photos first.url }, Cmd.none )
         [] ->
-          ( {model | status = Errored "0 photos found" }, Cmd.none )
+          ( { model | status = Errored "O photos found" }, Cmd.none )
+
     GotPhotos (Err _) ->
       ( { model | status = Errored "Server error!" }, Cmd.none )
 
@@ -262,11 +263,14 @@ selectUrl url status =
 
 -- Commands --------------------------------------------------------------------
 
+-- #1  The `list` here is important as `GotPhotos` and `Loaded`
+--     expect a `List Photo` data type.
+
 initialCmd : Cmd Msg
 initialCmd =
   Http.get
-    { url = "http://elm-in-action.com/photos/list"
-    , expect = Http.expectString GotPhotos
+    { url = "http://elm-in-action.com/photos/list.json"
+    , expect = Http.expectJson GotPhotos (list photoDecoder)  -- #1
     }
 
 -- Main ------------------------------------------------------------------------

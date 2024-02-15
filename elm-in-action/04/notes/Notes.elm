@@ -634,3 +634,55 @@ type alias Photo =
 -- arguments, you should be exactly as careful when reordering
 -- a `type alias` as you would be when reordering any
 -- function’s arguments!
+
+
+
+-- 4.3.3 -----------------------------------------------------------------------
+
+-- Beware of naming errors! --
+--
+-- Sometimes if you `import` two modules that share similar
+-- naming conventions, such as `Json.Decode.Pipeline.required` and
+-- `Html.Attributes.required` you'll run into errors.
+--
+-- 1. Use the `as` keyword (and name it as `Decode` for example)
+-- 2. Be more specific in your `exposing` such as `(href)`.
+
+-- Error --
+--
+-- I recommend using qualified names for imported values. I also recommend having
+-- at most one `exposing (..)` per file to make name clashes like this less common
+-- in the long run.
+
+
+-- Http.ExpectJson -------------------------------------------------------------
+
+-- You can use `Http.get` with a `expectJson` (instead of a
+-- `expectString`) which will decode things for you right away.
+--
+-- : See `tests/http-get-json` for examples.
+-- : `expectJson` accepts a `Decoder val` and on success produces
+--   an `Ok val` result instead of an `Ok String` (which means simpler `case`)
+
+expectString : (Result Http.Error String -> msg)                -> Expect msg
+expectJson   : (Result Http.Error val    -> msg) -> Decoder val -> Expect msg
+
+
+-- When decoding fails --
+--
+-- We'll have to `case` on the following with a `handleError` function.
+
+type Error
+  = BadUrl String
+  | Timeout
+  | NetworkError
+  | BadStatus Int
+  | BadBody String  -- JSON fails to decode
+
+
+-- Http.request --
+--
+-- This allows you a finer grain of detail on your
+-- requests and error messages, should you need it:
+--
+-- @ http://tinyurl.com/elm-lang-http-request
