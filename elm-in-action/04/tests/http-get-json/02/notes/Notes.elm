@@ -131,7 +131,7 @@ postDecoder =
 |> optional "author" string "default"
 
 
--- Nested Decoders --
+-- Nested Decoders -------------------------------------------------------------
 
 -- Assuming you had the following JSON:
 --
@@ -162,3 +162,11 @@ authorDecoder =
 postDecoder =
   ...
   |> required "author" authorDecoder
+
+
+-- Flat style (from nested object) ---------------------------------------------
+
+-- Very simple, it traverses json with a list of "keys"
+
+|> requiredAt [ "author", "name" ] string
+|> optionalAt [ "author", "url" ] string "http://nothingthere.com"

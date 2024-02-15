@@ -40,6 +40,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 ## Some helpful FAQs
 
 - [Elm community FAQs](https://faq.elm-community.org)
+- [Why do I have to use Json decoders?](https://gist.github.com/evancz/1c5f2cf34939336ecb79b97bb89d9da6)
 
 ## Some nice examples
 

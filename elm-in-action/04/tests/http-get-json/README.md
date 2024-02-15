@@ -47,6 +47,10 @@ The retrieving and decoding of JSON happen in one go. The `Http.get` call includ
 
 ## JSON (part 2)
 
+> Due to easier syntax, it’s better to use functions in the `Json.Decode.Pipeline` module instead of those defined in `Json.Decode` — they share similarities, so you can check the core documents for (sometimes better) how-tos.
+>
+> If a field doesn’t exist or is `null` we can use `requiredAt`, `optionalAt` or a nested decoder.
+
 The retrieving and decoding of JSON happens in one go, as before. It's either an `Ok ...` or an `Err ...`, and we have to `case` on that in `view` and `update`.
 
 ```elm

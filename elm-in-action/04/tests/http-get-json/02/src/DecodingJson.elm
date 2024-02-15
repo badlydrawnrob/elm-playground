@@ -99,8 +99,8 @@ postDecoder =
   Decode.succeed Post
     |> required "id" int
     |> required "title" string
-    |> requiredAt [ "author", "name" ] string
-    |> requiredAt [ "author", "url" ] string
+    |> required "authorName" string
+    |> optional "authorUrl" string "http://nothingthere.com"
 
 httpCommand : Cmd Msg
 httpCommand =
