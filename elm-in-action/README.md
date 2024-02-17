@@ -180,6 +180,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 ### Design choices and tradeoffs
 
 1. Pages 323—328 are good overviews of making design decisions about the model — especially about trying to rule out bugs in our design. "Guarantees" that the compiler can give us.
+2. It’s generally a good idea to keep our types as narrow as possible, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
 
 
 -----

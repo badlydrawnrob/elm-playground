@@ -56,6 +56,10 @@ import Json.Decode.Pipeline exposing (optional, required)
 --     c) Sets the slider's val to the current magnitude
 --     d) Displays the current magnitude
 --     e) We'll need to pass a `Msg` to `onSlide` depending on slider
+--
+-- #2  It’s generally a good idea to keep our types as narrow as possible,
+--     so we’d like to avoid passing `viewLoaded` the entire `Model` if we can.
+--     However, that’s not a refactor we need to do right now.
 
 type Msg
   = ClickedPhoto String
@@ -72,7 +76,7 @@ view model =
   div [ class "content" ] <|
     case model.status of
       Loaded photos selectedUrl ->
-        (viewLoaded photos selectedUrl model.chosenSize)
+        (viewLoaded photos selectedUrl model)  -- #2
 
       Loading ->
         []
@@ -93,8 +97,8 @@ viewFilter toMsg name magnitude =
       , label [] [ text (String.fromInt magnitude) ]  -- #1d
       ]
 
-viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
-viewLoaded photos selectedUrl chosenSize =
+viewLoaded : List Photo -> String -> Model -> List (Html Msg)
+viewLoaded photos selectedUrl model =
     [ h1 [] [ text "Photo Groove" ]
     , button
       [ onClick ClickedSurpriseMe ]
@@ -107,7 +111,7 @@ viewLoaded photos selectedUrl chosenSize =
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
       (List.map viewSizeChooser [ Small, Medium, Large ] )
-    , div [ id "thumbnails", class (sizeToString chosenSize) ]
+    , div [ id "thumbnails", class (sizeToString model.chosenSize) ]
         (List.map
           (viewThumbnail selectedUrl) photos
         )
