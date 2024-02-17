@@ -181,6 +181,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 1. Pages 323—328 are good overviews of making design decisions about the model — especially about trying to rule out bugs in our design. "Guarantees" that the compiler can give us.
 2. It’s generally a good idea to keep our types as narrow as possible, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
+3. SHARING CODE BETWEEN UPDATE BRANCHES — Usually, the simplest way to share code is to extract common logic into a helper func- tion and call it from both places. This is just as true for update as it is for any func- tion, so let’s do that!
 
 
 -----

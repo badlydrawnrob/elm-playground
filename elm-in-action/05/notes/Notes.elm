@@ -97,3 +97,26 @@ onSlide toMsg =
 -- changes in the first column. Then let’s revise our viewLoaded function to
 -- accept Model as its final argument instead of ChosenSize, and to use Model’s
 -- new fields:
+
+
+-- Cmd msg (a type variable) --
+--
+-- A command that produces no messages has the type `Cmd msg`,
+-- a subscription (for example, Sub.none) that produces no messages
+-- has the type `Sub msg`, and a list that has no elements—that is,
+-- `[]` has the similar type `List val`. Because their type variables
+-- have no restriction, you can use a `Cmd msg` anywhere you need any
+-- flavor of `Cmd`, just as you can use an empty list anywhere you need
+-- any flavor of List. Playing around with empty lists in elm repl can
+-- be a helpful way to see how types like these interact with other types.
+--
+-- Both Cmd.none and setFilters produce no message after completing.
+
+port setFilters : FilterOptions -> Cmd msg
+
+
+-- SHARING CODE BETWEEN UPDATE BRANCHES --
+--
+-- Usually, the simplest way to share code is to extract common logic
+-- into a helper function and call it from both places. This is just
+-- as true for update as it is for any function, so let’s do that!

@@ -1,4 +1,4 @@
-module PhotoGroove exposing (main)
+port module PhotoGroove exposing (main)
 
 {-|
     Rules:
@@ -166,6 +166,13 @@ type ThumbnailSize
   = Small
   | Medium
   | Large
+
+port setFilters : FilterOptions -> Cmd msg
+
+type alias FilterOptions =
+  { url : String
+  , filters : List { name : String, amount : Int }
+  }
 
 type alias Photo =
   { url : String
