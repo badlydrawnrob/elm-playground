@@ -78,3 +78,22 @@ onSlide toMsg =
     at [ "detail", "userSlidTo" ] int
         |> Json.Decode.map toMsg
         |> on "slide"
+
+
+-- AVOIDING BUGS (vs design choices) -------------------------------------------
+
+-- By using individual fields instead of a list of records, we can rule out the
+-- entire category of bugs related to invalid filter names.
+--
+-- Increasing conciseness and saving potential future effort are nice, but
+-- preventing bugs in a growing code base tends to be more valuable over time.
+-- Verbosity has a predictable impact on a project, whereas the impact of bugs
+-- can range from “quick fix” - to “apocalyptic progress torpedo.”
+--
+-- Ruling those out is more valuable than a bit of conciseness!
+-- We’ll go with the approach that prevents more bugs.
+--
+-- Take a moment to look back at tables 5.3, 5.4, and 5.5, and implement the
+-- changes in the first column. Then let’s revise our viewLoaded function to
+-- accept Model as its final argument instead of ChosenSize, and to use Model’s
+-- new fields:

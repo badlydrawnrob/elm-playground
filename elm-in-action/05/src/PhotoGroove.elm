@@ -55,6 +55,7 @@ import Json.Decode.Pipeline exposing (optional, required)
 --     b) <range-slider> that goes from 0 to 11
 --     c) Sets the slider's val to the current magnitude
 --     d) Displays the current magnitude
+--     e) We'll need to pass a `Msg` to `onSlide` depending on slider
 
 type Msg
   = ClickedPhoto String
@@ -62,6 +63,9 @@ type Msg
   | ClickedSurpriseMe
   | GotRandomPhoto Photo
   | GotPhotos (Result Http.Error (List Photo))
+  | SlidHue Int
+  | SlidRipple Int
+  | SlidNoise Int
 
 view : Model -> Html Msg
 view model =
@@ -76,13 +80,14 @@ view model =
       Errored errorMessage ->
         [ text ("Error: " ++ errorMessage) ]
 
-viewFilter : String -> Int -> Html Msg
-viewFilter name magnitude =
+viewFilter : (Int -> Msg) -> String -> Int -> Html Msg
+viewFilter toMsg name magnitude =
   div [ class "filter-slider" ]
       [ label [] [ text name ]  -- #1a
       , rangeSlider   -- #1b
           [ Attr.max "11"  -- #1b
           , Attr.property "val" (Encode.int magnitude)  -- #1c
+          , onSlide toMsg  -- #1e
           ]
           []
       , label [] [ text (String.fromInt magnitude) ]  -- #1d
@@ -95,9 +100,9 @@ viewLoaded photos selectedUrl chosenSize =
       [ onClick ClickedSurpriseMe ]
       [ text "Surprise Me!" ]
     , div [ class "filters" ]
-      [ viewFilter "Hue" 0
-      , viewFilter "Ripple" 0
-      , viewFilter "Noise" 0
+      [ viewFilter SlidHue "Hue" model.hue
+      , viewFilter SlidRipple "Ripple" model.ripple
+      , viewFilter SlidNoise "Noise" model.noise
       ]
     , h3 [] [ text "Thumbnail Size:" ]
     , div [ id "choose-size" ]
@@ -178,12 +183,18 @@ type Status
 type alias Model =
   { status : Status  -- #1
   , chosenSize : ThumbnailSize
+  , hue : Int
+  , ripple : Int
+  , noise : Int
   }
 
 initialModel : Model
 initialModel =
   { status = Loading  -- #2
   , chosenSize = Medium
+  , hue = 5
+  , ripple = 5
+  , noise = 5
   }
 
 
@@ -232,6 +243,13 @@ update msg model =
 
     GotPhotos (Err _) ->
       ( { model | status = Errored "Server error!" }, Cmd.none )
+
+    SlidHue hue ->
+      ( { model | hue = hue }, Cmd.none )
+    SlidRipple ripple ->
+      ( { model | ripple = ripple }, Cmd.none )
+    SlidNoise noise ->
+      ( { model | noise = noise }, Cmd.none )
 
 
 -- #: helper function --
