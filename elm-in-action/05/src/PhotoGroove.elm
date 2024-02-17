@@ -218,15 +218,13 @@ update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
     GotRandomPhoto photo ->
-      ( applyFilters { model | status = selectUrl photo.url model.status }  -- #1
-      , Cmd.none )
+      applyFilters { model | status = selectUrl photo.url model.status }  -- #1
 
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
 
     ClickedPhoto url ->
-      ( applyFilters { model | status = selectUrl url model.status }
-      , Cmd.none )
+      applyFilters { model | status = selectUrl url model.status }
 
     ClickedSurpriseMe ->
       case model.status of  -- #2a
