@@ -129,3 +129,9 @@ port setFilters : FilterOptions -> Cmd msg
 -- This is because if something crashes at runtime, it’s a safe bet that the
 -- culprit is somewhere in our JavaScript code so the less of it we have,
 -- the less code we’ll have to sift through to isolate the problem.
+
+
+-- Division --
+
+-- Elm’s division operator (/) works only if you give it two Float values.
+-- The Basics.toFloat function converts an Int to a Float, so toFloat model.hue converts model.hue from an Int to a Float—at which point we can divide it by 11 as normal.

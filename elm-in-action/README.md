@@ -183,6 +183,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 2. It’s generally a good idea to keep our types as narrow as possible, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
 3. SHARING CODE BETWEEN UPDATE BRANCHES — Usually, the simplest way to share code is to extract common logic into a helper func- tion and call it from both places. This is just as true for update as it is for any func- tion, so let’s do that!
 4. Note that you can pass a model (record) to another helper function, like our `applyFilters` function. It first applies changes to the model, then passes through to the `applyFilters` helper which also adds further changes to the model.
+5. <s>Elm’s division operator (/) works only if you give it two Float values. The `Basics.toFloat` function converts an Int to a Float, so `toFloat model.hue` converts `model.hue` from an `Int` to a `Float—at` which point we can divide it by 11 as normal.</s> — this doesn't seem true in 0.19.1
 
 
 -----

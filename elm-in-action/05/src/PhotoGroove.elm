@@ -168,7 +168,7 @@ port setFilters : FilterOptions -> Cmd msg
 
 type alias FilterOptions =
   { url : String
-  , filters : List { name : String, amount : Int }
+  , filters : List { name : String, amount : Float }
   }
 
 type alias Photo =
@@ -276,9 +276,9 @@ applyFilters model =
       Loaded photos selectedUrl ->
         let
           filters =
-            [ { name = "Hue", amount = model.hue }
-            , { name = "Ripple", amount = model.ripple }
-            , { name = "Noise", amount = model.noise }
+            [ { name = "Hue", amount = (toFloat model.hue) / 11 }
+            , { name = "Ripple", amount = (toFloat model.ripple) / 11 }
+            , { name = "Noise", amount = (toFloat model.noise) / 11 }
             ]
           url =
             urlPrefix ++ "large/" ++ selectedUrl
