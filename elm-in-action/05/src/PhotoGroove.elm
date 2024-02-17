@@ -115,10 +115,7 @@ viewLoaded photos selectedUrl model =
         (List.map
           (viewThumbnail selectedUrl) photos
         )
-    , img
-        [ class "large"
-        , src (urlPrefix ++ "large/" ++ selectedUrl)
-        ] []
+    , canvas [ id "main-canvas", class "large" ] []
     ]
 
 
@@ -221,14 +218,14 @@ update : Msg -> Model -> ( Model, Cmd Msg)
 update msg model =
   case msg of
     GotRandomPhoto photo ->
-      ( { model | status = selectUrl photo.url model.status }  -- #1
+      ( applyFilters { model | status = selectUrl photo.url model.status }  -- #1
       , Cmd.none )
 
     ClickedSize size ->
       ( { model | chosenSize = size }, Cmd.none )
 
     ClickedPhoto url ->
-      ( { model | status = selectUrl url model.status }
+      ( applyFilters { model | status = selectUrl url model.status }
       , Cmd.none )
 
     ClickedSurpriseMe ->
@@ -275,6 +272,24 @@ selectUrl url status =
       Errored errorMessage ->
         status
 
+applyFilters : Model -> ( Model, Cmd Msg )
+applyFilters model =
+  case model.status of
+      Loaded photos selectedUrl ->
+        let
+          filters =
+            [ { name = "Hue", amount = model.hue }
+            , { name = "Ripple", amount = model.ripple }
+            , { name = "Noise", amount = model.noise }
+            ]
+          url =
+            urlPrefix ++ "large/" ++ selectedUrl
+        in
+        ( model, setFilters { url = url, filters = filters } )
+      Loading ->
+        ( model, Cmd.none )
+      Errored errorMessage ->
+        ( model, Cmd.none )
 
 -- Commands --------------------------------------------------------------------
 

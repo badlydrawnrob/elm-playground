@@ -115,8 +115,17 @@ onSlide toMsg =
 port setFilters : FilterOptions -> Cmd msg
 
 
--- SHARING CODE BETWEEN UPDATE BRANCHES --
---
+-- SHARING CODE BETWEEN UPDATE BRANCHES ----------------------------------------
+
 -- Usually, the simplest way to share code is to extract common logic
 -- into a helper function and call it from both places. This is just
 -- as true for update as it is for any function, so let’s do that!
+
+
+-- Keep javascript light (to a minimum) ----------------------------------------
+
+-- Now we’re going to write a bit more JavaScript code. Whenever we access a
+-- JS library from Elm, it’s best to write as little JavaScript as possible.
+-- This is because if something crashes at runtime, it’s a safe bet that the
+-- culprit is somewhere in our JavaScript code so the less of it we have,
+-- the less code we’ll have to sift through to isolate the problem.
