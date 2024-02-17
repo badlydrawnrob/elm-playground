@@ -27,3 +27,54 @@ Html.Attributes.property "val" (Json.Encode.int magnitude)
 import Html.Attributes as Attr exposing (class, classList, ...)
 
 -- Now you can call `Attr.max` instead!
+
+
+-- Nested fields --
+-- for Json.Decode
+--
+-- These two methods are essentially the same.
+--
+-- : You can also use these to convert a JavaScript object like
+--   `{detail: {userSlidto: 7}}`
+
+field "detail" (field "userSlidTo" int)
+
+at [ "detail", "userSlidTo" ] int
+
+
+-- Http.Events.on --
+--
+-- Using Json.Decode.Map
+
+Json.Decode.map negate float  -- decodes a float, then negates it
+Json.Decode.map (\num -> num * 2) int  -- decodes an integer, then doubles it
+Json.Decode.map (\_ -> "[[redacted]]") string
+-- decodes a string, then replaces it with "[[redacted]]"
+-- no matter what it was originally.
+
+
+import Html.Events exposing (on, onClick)
+
+onSlide : (Int -> msg) -> Attribute msg
+onSlide toMsg =
+    let
+        detailUserSlidTo : Decoder Int
+        detailUserSlidTo =
+            at [ "detail", "userSlidTo" ] int
+        msgDecoder : Decoder msg
+        msgDecoder =
+            Json.Decode.map toMsg detailUserSlidTo
+    in
+    on "slide" msgDecoder
+
+-- Notice how we assemble this value in three steps
+-- (detailUserSlidTo, msgDecoder, and on), and each step’s
+-- final argument is the previous step’s return value?
+-- That means we can rewrite this to use the pipeline style
+-- you learned in chapter 4! Let’s do that refactor:
+
+onSlide : (Int -> msg) -> Attribute msg
+onSlide toMsg =
+    at [ "detail", "userSlidTo" ] int
+        |> Json.Decode.map toMsg
+        |> on "slide"

@@ -40,12 +40,12 @@ module PhotoGroove exposing (main)
 
 import Html exposing (..)
 import Html.Attributes as Attr exposing (class, classList, id, name, src, title, type_)
-import Html.Events exposing (onClick)
+import Html.Events exposing (on, onClick)
 import Browser
 import Json.Encode as Encode
 import Random
 import Http
-import Json.Decode exposing (Decoder, int, list, string, succeed)
+import Json.Decode exposing (Decoder, at, string, int, list, succeed)
 import Json.Decode.Pipeline exposing (optional, required)
 
 
@@ -282,7 +282,25 @@ main =
 
 -- Together with our JavaScript in `index.html` we're creating
 -- a custom element to manipulate our images.
+--
+-- #1  Decodes the integer located at `event.detail.userSlidTo`
+-- #2  Converts that integer to a message using toMsg
+--     - `toMsg` needs to be flexible as we have 3 sliders
+--        so we'll need 3 unique messages.
+-- #3  Creates a custom event handler using that decoder
 
 rangeSlider : List (Attribute msg) -> List (Html msg) -> Html msg
 rangeSlider attributes children =
   node "range-slider" attributes children
+
+onSlide : (Int -> msg) -> Attribute msg
+onSlide toMsg =
+  let
+    detailUserSlidTo : Decode Int  -- #1
+    detailUserSlidTo =
+      at [ "detail", "userSlidTo" ] int
+    msgDecoder : Decoder msg  -- #2
+    msgDecoder =
+      Json.Decode.map toMsg detailUserSlidTo
+  in
+  on "slide" msgDecoder  -- #3

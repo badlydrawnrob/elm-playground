@@ -17,6 +17,16 @@
                         sliders: 1, /* Tweaks some other JSR knobs— */
                         grid: false /* these aren't important */
                     })
+
+                    var rangeSliderNode = this;
+
+                    jsr.addEventListener("update", function(elem, value) {
+                        var event = new CustomEvent("slide", {
+                            detail: {userSlidTo: value}
+                        });
+
+                        rangeSliderNode.dispatchEvent(event);
+                    });
                 }
             }
 
