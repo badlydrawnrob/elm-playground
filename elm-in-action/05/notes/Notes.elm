@@ -134,4 +134,96 @@ port setFilters : FilterOptions -> Cmd msg
 -- Division --
 
 -- Elm’s division operator (/) works only if you give it two Float values.
--- The Basics.toFloat function converts an Int to a Float, so toFloat model.hue converts model.hue from an Int to a Float—at which point we can divide it by 11 as normal.
+-- The Basics.toFloat function converts an Int to a Float, so toFloat model.hue
+-- converts model.hue from an Int to a Float—at which point we can divide it by
+-- 11 as normal.
+
+
+-- Timing Ports and Rendering --------------------------------------------------
+
+-- 1) We initialize model.status to Loading.
+-- 2) We request a list of photos from the server.
+-- 3) view runs, and does not call viewLoaded because model.status is Loading.
+-- 4) Because viewLoaded is never called, the <canvas> is never rendered.
+-- 5) The server responds with our photos, meaning update gets a GotPhotos
+--    message.
+-- 6) update runs its GotPhotos branch and returns a new Model (with a status
+-- that is no longer Loading), as well as a Cmd that will instruct our
+-- JavaScript code to have Pasta render to the <canvas>.
+--
+-- See the problem? Step 6 tells Pasta to render to a <canvas>,
+-- but as we noted in step 4, no such <canvas> has been created yet!
+--
+-- This means our JavaScript call to:
+--
+--    `Pasta.apply(document.getElementById ("main-canvas"), options)`
+--
+-- will silently fail. Shortly after this happens, view will run again with the
+-- new model. This time, model.status will not be Loading— meaning viewLoaded
+-- will happily ask for a fresh, blank <canvas>. Great.
+
+-- TIP: Anytime you need to trigger some JavaScript port code to run after the
+-- next time view results in a DOM update, you can synchronize things by wrapping
+-- your port code in requestAnimationFrame like this.
+
+
+-- Subscriptions ---------------------------------------------------------------
+
+-- DEFINITION A subscription represents a way to translate certain events
+-- outside our program into messages that get sent to our update function.
+--
+-- Ever since chapter 3, we’ve been setting this subscriptions field to an
+-- anonymous function that always returned `Sub.none`.
+-- Now we’ve made that function return activityChanges GotActivity instead,
+-- which means that whenever JavaScript sends a string to the activityChanges
+-- port, it will result in a GotActivity message being sent to update.
+
+port activityChanges : (String -> msg) -> Sub msg
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  activityChanges GotActivity
+
+main : Program () Model Msg
+main =
+  Browser.element
+    {
+    ..
+    , subscriptions = subscriptions
+    }
+
+-- The argument this anonymous subscriptions function accepts is a Model.
+-- Whenever our model changes, the new model is passed to this function,
+-- giving us a chance to return a different Sub depending on what’s in the
+-- new model. This lets us dynamically control which subscriptions our program
+-- pays attention to.
+
+
+-- Flags -----------------------------------------------------------------------
+
+-- Flags can set our initial model with some kind of activity monitor.
+-- For instance, passing through the version number of a js package.
+--
+-- `Program () Model Msg` means “a Program with Model as its model type,
+-- Msg as its message type, and which has no flags.”
+--
+-- `Program Float Model Msg` means the same thing, except that its
+-- flags are a Float. (For a refresher on the () type, see chapter 3,
+-- section 3.3.3.)
+
+-- main : Program () Model Msg
+--                ^^
+
+main : Program Float Model Msg
+main =
+  { init = init
+  ..
+  }
+
+init : Float -> (Model, Cmd Msg)
+init flags =
+  let
+    activity =
+      "Initializing Pasta v" ++ String.fromFloat flags
+    in
+      ( { initialModel | activity = activity }, initialCmd )

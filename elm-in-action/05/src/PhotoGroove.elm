@@ -67,6 +67,7 @@ type Msg
   | ClickedSurpriseMe
   | GotRandomPhoto Photo
   | GotPhotos (Result Http.Error (List Photo))
+  | GotActivity String
   | SlidHue Int
   | SlidRipple Int
   | SlidNoise Int
@@ -103,6 +104,7 @@ viewLoaded photos selectedUrl model =
     , button
       [ onClick ClickedSurpriseMe ]
       [ text "Surprise Me!" ]
+    , div [ class "activity" ] [ text model.activity ]
     , div [ class "filters" ]
       [ viewFilter SlidHue "Hue" model.hue
       , viewFilter SlidRipple "Ripple" model.ripple
@@ -166,6 +168,8 @@ type ThumbnailSize
 
 port setFilters : FilterOptions -> Cmd msg
 
+port activityChanges : (String -> msg) -> Sub msg
+
 type alias FilterOptions =
   { url : String
   , filters : List { name : String, amount : Float }
@@ -190,6 +194,7 @@ type Status
 
 type alias Model =
   { status : Status  -- #1
+  , activity : String
   , chosenSize : ThumbnailSize
   , hue : Int
   , ripple : Int
@@ -199,6 +204,7 @@ type alias Model =
 initialModel : Model
 initialModel =
   { status = Loading  -- #2
+  , activity = ""
   , chosenSize = Medium
   , hue = 5
   , ripple = 5
@@ -243,12 +249,16 @@ update msg model =
     GotPhotos (Ok photos) ->  -- #4
       case photos of
         (first :: rest) ->
-          ( { model | status = Loaded photos first.url }, Cmd.none )
+          applyFilters
+            { model | status = Loaded photos first.url }
         [] ->
           ( { model | status = Errored "O photos found" }, Cmd.none )
 
     GotPhotos (Err _) ->
       ( { model | status = Errored "Server error!" }, Cmd.none )
+
+    GotActivity activity ->
+      ( { model | activity = activity }, Cmd.none )
 
     SlidHue hue ->
       applyFilters { model | hue = hue }
@@ -316,9 +326,16 @@ main =
     { init = \_ -> ( initialModel, initialCmd )  -- #1
     , view = view
     , update = update
-    , subscriptions = \_ -> Sub.none  -- #2
+    , subscriptions = subscriptions  -- #2
     }
 
+init : Float -> (Model, Cmd Msg)
+init flags =
+  let
+    activity =
+      "Initializing Pasta v" ++ String.fromFloat flags
+    in
+      ( { initialModel | activity = activity }, initialCmd )
 
 -- Custom elements -------------------------------------------------------------
 
@@ -340,3 +357,10 @@ onSlide toMsg =
   at [ "detail", "userSlidTo" ] int  -- #1
     |> Json.Decode.map toMsg  -- #2
     |> on "slide"  -- #3
+
+
+-- Subscriptions ---------------------------------------------------------------
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  activityChanges GotActivity

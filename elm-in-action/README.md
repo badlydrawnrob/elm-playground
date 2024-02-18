@@ -168,6 +168,12 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 ## Chapter 05 to-dos
 
+> In this chapter we covered JS interop through custom html elements and Ports. We also covered using a helper function to add filters to the model, and using flags and subscriptions.
+>
+> Use [Beginning Elm](https://elmprogramming.com/interact-with-javascript-intro.html) to better understand [subscriptions](https://elmprogramming.com/subscriptions.html) and flags. **In general I want to avoid using javascript wherever possible.**
+>
+> **Asking “Which approach rules out more bugs?” is a good way to decide between different ways to model data.**
+
 ### I don't like javascript
 
 It might be useful, but I'm not going to save this to memory. If and when I need it I can look up the chapter again.
@@ -178,8 +184,16 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 2. It’s generally a good idea to keep our types as narrow as possible, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
 3. SHARING CODE BETWEEN UPDATE BRANCHES — Usually, the simplest way to share code is to extract common logic into a helper func- tion and call it from both places. This is just as true for update as it is for any func- tion, so let’s do that!
 4. Note that you can pass a model (record) to another helper function, like our `applyFilters` function. It first applies changes to the model, then passes through to the `applyFilters` helper which also adds further changes to the model.
+    - You can do this on `update` in any branch
+    - So if you need to add a filter, for instance, you'd need to call the function **on load**, **on change**, etc.
+    - Give an example that's simpler than the slider.
+    - Take care — you'd need to `Tuple.pair` and add `Cmd.none` in the _helper function_ so it's taking a model and returning a `(model, Cmd.none)`
 5. <s>Elm’s division operator (/) works only if you give it two Float values. The `Basics.toFloat` function converts an Int to a Float, so `toFloat model.hue` converts `model.hue` from an `Int` to a `Float—at` which point we can divide it by 11 as normal.</s> — this doesn't seem true in 0.19.1
+6. Working with Ports and external javascript also has **a problem with _timing_**. If the javascript loads _before_ the `Loaded` state happens, your javascript might not work on page load. See "browsers repaint the DOM" on page 151 of pdf. See also `requestAnimationFrame`.
+7. Cmd and Sub are both parameterized on the type of message they produce. We noted earlier that `setFilters` returns a `Cmd msg` (as opposed to `Cmd Msg`) because it is a command that **produces no message after it completes**. In contrast, activityChanges returns a `Sub msg`, but **here `msg` refers to the `type` of message** returned by the `(String -> msg)` function we pass to `activityChanges`.
+8. Flags and decoding javascript values with `Json.Decode.Value`
 
+> Whereas it’s normal for setFilters to return Cmd msg, it would be bizarre for activityChanges to return Sub msg. After all, a Cmd msg is a command that has an effect but never sends a message to update—but sub- scriptions do not run effects. Their whole purpose is to send messages to update. Subscribing to a Sub msg would be like listening to a disconnected phone line: not terribly practical.
 
 -----
 
