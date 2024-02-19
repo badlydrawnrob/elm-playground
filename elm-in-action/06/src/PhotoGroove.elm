@@ -1,4 +1,4 @@
-module PhotoGroove exposing (main)
+module PhotoGroove exposing (main, photoDecoder)
 
 {-|
     Rules:

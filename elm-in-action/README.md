@@ -195,6 +195,12 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 > Whereas it’s normal for setFilters to return Cmd msg, it would be bizarre for activityChanges to return Sub msg. After all, a Cmd msg is a command that has an effect but never sends a message to update—but sub- scriptions do not run effects. Their whole purpose is to send messages to update. Subscribing to a Sub msg would be like listening to a disconnected phone line: not terribly practical.
 
+
+
+## Chapter 06
+
+> I'll probably have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
+
 -----
 
 
