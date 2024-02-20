@@ -243,3 +243,32 @@ identity a = a
 
 List.map .title [{url = "string", title = "title"}, {url = "string2", title = "bother"}]
 -- ["title","bother"] : List String
+
+
+-- 6.2 -------------------------------------------------------------------------
+
+-- Writing fuzz tests ----------------------------------------------------------
+
+-- It can be time consuming to hunt down _edge cases_ in tests.
+-- In Elm, _fuzz tests_ help us detect edge case failures by writing
+-- one test that verifies a large number of randomly generated inputs.
+--
+-- These run several times with randomly generated inputs. Also known as
+-- _fuzzing, generative testing, property-based testing, or QuickCheck-style
+-- testing_.
+--
+-- Often you'll start with a unit test and convert into a fuzz test.
+
+{..} -- from one manual record input
+
+{..}
+{..}
+{..} -- to multiple automated record inputs
+
+
+-- 6.2.1 -----------------------------------------------------------------------
+
+-- Replace hardcoded Json string with code to generate Json programatically.
+
+-- We used `Json.Decode` module to turn Json into Elm values.
+-- We can use `Json.Encode` to turn Elm values into Json
