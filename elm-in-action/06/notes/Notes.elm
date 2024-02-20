@@ -272,3 +272,50 @@ List.map .title [{url = "string", title = "title"}, {url = "string2", title = "b
 
 -- We used `Json.Decode` module to turn Json into Elm values.
 -- We can use `Json.Encode` to turn Elm values into Json
+
+-- Whereas the Json.Decode module centers around the Decoder abstraction,
+-- the Json.Encode module centers around the Value abstraction. A Value
+-- (short for Json.Encode.Value) represents a JSON-like structure.
+--
+-- In our case, we will use it to represent actual JSON, but it can
+-- represent objects from JavaScript (like the JavaScript event objects
+-- we decoded in chapter 5) as well.
+
+Encode.int    : Int                    -> Value
+Encode.string : String                 -> Value
+Encode.object : List ( String, Value ) -> Value
+--                     ^^^^^^  ^^^^^
+
+-- For Json (or Javascript) objects:
+--    The key must be a String
+--    The value can be Int, Float, String, etc.
+--
+-- """{"url": "fruits.com",
+--     "size": 5}"""
+
+encoded =
+  Encode.object
+    [ ( "url", Encode.string "fruits.com" )
+    , ( "size", Encode.int 5 )
+    ]
+
+-- We represent the same JSON structure as we did with `photoDecoder`
+-- with the above functions.
+
+
+-- Next steps --
+--
+-- 1. Call `Encode.encode` to convert `Value` to a `String` (and use our
+--    `decodeString photoDecoder call to run our decoder on that JSON string)
+-- 2. Don't bother calling `Encode.encode` and instead swap out our
+--    `decodeString photoDecoder` call for a call to `decodeValue photoDecoder`
+--    instead.
+--
+-- Like decodeString, the `decodeValue` function also resides in the Json.Decode
+-- module. It decodes a Value directly, without having to convert to and
+-- from an intermediate string representation.
+--
+-- That’s simpler and will run faster, so we’ll do it that way.
+
+Encode.encode 0 encoded
+-- "{\"url\":\"fruits.com\",\"size\":5}" : String
