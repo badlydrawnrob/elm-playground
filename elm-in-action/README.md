@@ -212,6 +212,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 3. Briefly explain how we [reduced this code down](http://tinyurl.com/elm-lang-json-decode-test) (we were checking the entire decoder but now we're just checking the optional field)
 4. `decodeValue` is quicker than converting into a string, and decoding from a string. Make a note of the difference between using a hardcoded test, vs a fuzz test.
 5. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
+6. It's also quite tricky to know which parts of `PhotoGroove` we need to expose (or which we need to import into `PhotoGrooveTest`) as there's a lot of moving parts. Perhaps this gets easier with practice.
 
 
 

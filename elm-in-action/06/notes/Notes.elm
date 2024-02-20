@@ -448,3 +448,32 @@ testSlider description toMsg amountFromModel =
 -- `SlidHue : Int -> Msg`, which is what the `toMsg` argument expects,
 -- and because the `.hue` shorthand is a function whose type is
 -- `.hue : Model -> Int`, which is what the amount `FromModel` argument expects.
+
+
+-- 6.3 -------------------------------------------------------------------------
+
+-- Testing views --
+--
+-- We render thumbnail photos in different ways:
+--
+-- 1) Initially we don't render them
+-- 2) Once photos load, we render a thumbnail for each of them
+-- 3) When you click a thumnail, that photo becomes selected
+--
+-- By writing tests we can guard against breaking changes if we change other
+-- parts of our program. We'll write tests to verify all three of these rules.
+--
+-- We expose some new modules, as well as `view` so we can import it.
+-- We'll also expose `Status(..)` and `urlPrefix` ...
+
+import Html.Attributes as Attr exposing (src)
+import Test.Html.Query as Query
+import Test.Html.Selector exposing (text, tag, attribute)
+
+import PhotoGroove exposing (Model, Msg(..), Photo, Status(..),
+initialModel, update, urlPrefix, view)
+
+-- in the `PhotoGroove.elm` file:
+exposing (Model, Msg(..), Photo, Status(..),
+  initialModel, main, photoDecoder, update, urlPrefix, view)
+--                               ^^^^^^^^^^^^^^^^^^^^  ^^^^

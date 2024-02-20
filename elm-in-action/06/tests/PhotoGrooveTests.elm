@@ -4,7 +4,7 @@ import Expect exposing (Expectation)
 import Json.Decode as Decode exposing (decodeString, decodeValue)
 import Json.Encode as Encode
 import Fuzz exposing (Fuzzer, int, list, string)
-import PhotoGroove
+import PhotoGroove exposing (Status(..), urlPrefix, view, main, photoDecoder)
 import Test exposing (..)
 
 
