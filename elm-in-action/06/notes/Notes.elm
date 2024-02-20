@@ -122,3 +122,124 @@ jsonTripleQuote =
 -- `|> Expect.equal`, we should be able to look at our code side by side
 -- with the test output and see by visual inspection which value Expect.equal received as which argument. The value at the top in our test should line up with the value at the top of the console output, and the value on the bottom in our test should line up with the value on the bottom of the console output.
 
+-- It’s useful to start with an intentionally failing test and then fix it.
+-- This helps avoid the embarrassing situation of accidentally writing a test
+-- that always passes! After you’ve seen the test fail, and then fixed it—or,
+-- even better, fixed the implementation it’s testing—you can have more
+-- confidence that the test is actually verifying something.
+
+
+-- The left pipe operator <| ---------------------------------------------------
+
+funcSubtract a b = a - b
+
+funcSubtract 10 <| 2
+
+test "title defaults to (untitled)"
+  (\_ -> ... )
+
+test "title defaults to (untitled)" <|
+  \_ -> ...
+
+
+-- 6.1.3 -----------------------------------------------------------------------
+
+-- Narrowing test scope --------------------------------------------------------
+
+-- Our test’s description says "title defaults to (untitled)", but we're
+-- actually testing much more than that. We’re testing the structure of the
+-- entire Photo!
+--
+-- If we were to update the structure of `Photo` like adding a neew field,
+-- the test will break.
+--
+-- We’ll have to come back and fix it manually, when we wouldn’t have needed
+-- to if the test did not rely on the entire Photo structure. Even worse,
+-- if something breaks about url or size, we’ll get failures not only for the
+-- tests that are directly responsible for those, but also for this unrelated
+-- test of title.
+--
+-- Those spurious failures will clutter up our test run output!
+--
+-- Result.map
+-- Apply a function to a result. If the result is Ok, it will be converted.
+-- If the result is an Err, the same error value will propagate through.
+
+Result.map : (a -> value) -> Result x a -> Result x value
+
+"""{"url": "fruits.com", "size": 5}"""
+  |> decodeString PhotoGroove.photoDecoder
+  |> Result.map (\photo -> photo.title)  -- 1
+  |> Expect.equal (Ok "(untitled)")  -- 2
+
+-- 1) We added a step to our pipeline
+-- 2) We changed Ok to the narrower test of (Ok "(untitled)")
+
+-- Similarities to other map functions:
+       List.map : (a -> b) -> List     a  -> List     b
+Json.Decode.map : (a -> b) -> Decoder  a  -> Decoder  b
+     Result.map : (a -> b) -> Result x a  -> Result x b
+
+-- 1. Takes a data structure with a type variable we’ve called a here
+-- 2. Also takes an (a -> b) function that converts from a to b
+-- 3. Returns a version of the original data structure in which the type variable is b instead of a
+
+-- Here's some examples:
+
+       List.map   String.fromInt            [ 5 ] ==        [ "5" ]
+Json.Decode.map   String.fromInt     (succeed 5)  == (succeed "5")
+     Result.map   String.fromInt          (Ok 5)  ==      (Ok "5")
+
+-- Transforming a container’s contents is the main purpose of map, but
+-- in some cases map does not transform anything, and returns the original
+-- container unchanged:
+
+       List.map  String.fromInt             [] ==             []
+Json.Decode.map  String.fromInt (fail "argh!") == (fail "argh!")
+     Result.map  String.fromInt        (Err 1) ==        (Err 1)
+
+-- 1) List.map has no effect on [].
+-- 2) Json.Decode.map has no effect on decoders created with fail.
+-- 3) Result.map has no effect on Err variants.
+
+Result.map : (a -> b) -> Result x a -> Result x b  -- x cannot be passed through to (a -> b) function
+--                              ^^
+
+Result.mapError : (x -> y) -> Result x a -> Result y a  -- but it can be here.
+--                ^^^               ^^^
+
+-- So passing `Err` value to `Result.map` does nothing
+-- And passing a `Ok` value to a `Result.mapError` does nothing either
+-- It's all in the type signature, as to how the function affects it's values.
+
+identity : a -> a
+identity a = a
+
+-- This function knows so little about it's argument that it can't do anything
+-- to it. For example, if it tried to divide whatever it received by 2, it would
+-- have to be `identity : Float -> Float` instead.
+--
+-- The only way to implement an Elm function with the type `a -> a` is to have
+-- it return its argument unchanged.
+--
+-- Inferring implementation details like this can speed up bug hunting.
+-- Sometimes you can track a bug just by looking at a functions type.
+-- If the function couldn't possibly affect the problematic value, you're clear
+-- to move on and search elsewhere.
+
+-- Reducing our anonymous function by refactoring ------------------------------
+--
+-- Writing `.title` by itself gives us a function that takes a record,
+-- and returns the contents of it's title field. It's exactly the same as
+-- `(\photo -> photo.title)` function, but shorter.
+
+"""{"url": "fruits.com", "size": 5}"""
+  |> decodeString PhotoGroove.photoDecoder
+  |> Result.map (\photo -> photo.title)  -- 1
+  |> Expect.equal (Ok "(untitled)")
+
+  |> Result.map .title  -- 1
+
+
+List.map .title [{url = "string", title = "title"}, {url = "string2", title = "bother"}]
+-- ["title","bother"] : List String

@@ -201,7 +201,22 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 > I'll probably have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
 
------
+1. Why does this function return `(Err 1)`
+ unchanged? (tip: look at the type signature). You'd use `Result.mapError` instead.
+
+ ```elm
+ Result.map : (a -> b) -> Result x a -> Result x b
+ Result.map String.fromInt (Err 1) -- == (Err 1)
+ ```
+2. Accessing a record value by just using `List.map` with a `.key` "function", for records. It's exactly the same as an anonymous function `(\record -> record.title)` — it takes a record and returns the content of it's title field.
+3. Briefly explain how we reduced this code down (we were checking the entire decoder but now we're just checking the optional field)
+
+
+
+
+
+
+ -----
 
 
 ## Things for later ...
