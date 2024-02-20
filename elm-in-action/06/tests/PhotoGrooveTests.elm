@@ -23,8 +23,16 @@ decoderTest =
 
 -- Building our Json programatically -------------------------------------------
 
--- Currently built out of hardcoded values, e.g: "fruits.com"
--- We want randomly generated `String` and `Int` values
+-- #1: We're now building our Json programatically but with hardcoded values,
+--     e.g: "fruits.com". We want randomly generated `String` and `Int` values
+--
+-- #2: Here we've setup a fuzz test. Elm will run this function 100 times,
+--     each time randomly generating a fresh `String` value and passing it
+--     in as `url`, and a fresh `Int` value and passing it in as `size`.
+--
+--     We can now have considerably more confidence that any JSON string
+--     containing only properly set "url" and "size" fields—but no
+--     "title" field—will result in a photo whose title defaults to "(untitled)".
 
 decoderValueTest : Test
 decoderValueTest =
@@ -32,6 +40,18 @@ decoderValueTest =
     \_ ->
       [ ( "url", Encode.string "fruits.com" )
       , ( "size", Encode.int 5 )
+      ]
+        |> Encode.object
+        |> decodeValue PhotoGroove.photoDecoder  -- Calling decodeValue instead of decodeString
+        |> Result.map .title
+        |> Expect.equal (Ok "(untitled)")
+
+decoderValueFuzzTest : Test
+decoderValueFuzzTest =
+  fuzz2 string int "title defaults to (untitled) using Value with Fuzz testing" <|
+    \url size ->
+      [ ( "url", Encode.string url )
+      , ( "size", Encode.int size )
       ]
         |> Encode.object
         |> decodeValue PhotoGroove.photoDecoder  -- Calling decodeValue instead of decodeString

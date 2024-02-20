@@ -319,3 +319,21 @@ encoded =
 
 Encode.encode 0 encoded
 -- "{\"url\":\"fruits.com\",\"size\":5}" : String
+
+
+fuzz2 string int "the fuzz test notes" <| \str int -> ...
+--    ^^^^^^ ^^^
+      string : Fuzzer String
+      int : Fuzzer Int
+
+
+-- Fuzz.string --
+--
+-- `Fuzz.string` does not generate strings completely at random.
+-- It has a higher probability of generating values that are likely
+-- to cause bugs: the empty string, very short strings, and very long strings.
+--
+-- Similarly, Fuzz.int prioritizes generating 0, a mix of positive and
+-- negative numbers, and a mix of very small and very large numbers.
+--
+-- Other fuzzers tend to be designed with similar priorities.
