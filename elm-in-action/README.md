@@ -210,7 +210,8 @@ It might be useful, but I'm not going to save this to memory. If and when I need
  ```
 2. Accessing a record value by just using `List.map` with a `.key` "function", for records. It's exactly the same as an anonymous function `(\record -> record.title)` — it takes a record and returns the content of it's title field.
 3. Briefly explain how we [reduced this code down](http://tinyurl.com/elm-lang-json-decode-test) (we were checking the entire decoder but now we're just checking the optional field)
-4. `decodeValue` is quicker than converting into a string, and decoding from a string.
+4. `decodeValue` is quicker than converting into a string, and decoding from a string. Make a note of the difference between using a hardcoded test, vs a fuzz test.
+5. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
 
 
 

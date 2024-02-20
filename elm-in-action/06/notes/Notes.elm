@@ -337,3 +337,114 @@ fuzz2 string int "the fuzz test notes" <| \str int -> ...
 -- negative numbers, and a mix of very small and very large numbers.
 --
 -- Other fuzzers tend to be designed with similar priorities.
+
+
+-- 6.2.2 -----------------------------------------------------------------------
+
+-- Testing update functions --
+--
+-- The entire application state is represented by a single `Model` value
+-- Model changes only when `update` receives a `Msg` and returns new `Model`
+-- `update` is a plain old function, so we can call it from tests.
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+
+-- 1) Call `update` in a test, passing the `Msg` and `Model` of our choice
+-- 2) Examine the `Model` it returns
+
+-- REDACTED THE CHAPTER 05 CODE --
+--
+-- But this is what it'd look like to check the following message:
+
+SlidHue hue ->
+  applyFilters { model | hue = hue }
+
+-- It looks simple enough, but that `applyFilters` function could change it
+-- in ways we don't expect (if it gets updated) so here's how we'd do it:
+
+slidHueSetsHue : Test
+slidHueSetsHue =
+  fuzz int "SlidHue sets the hue" <|
+    \amount ->
+      initialModel
+        |> update (SlidHue amount)  -- Returns (Model, Cmd.none)
+        |> Tuple.first              -- Model
+        |> .hue                     -- Aceesses `hue` key
+        |> Expect.equal amount      -- Compares `hue` value
+        --              ^^^^^^      -- Should match the amount we passed to test
+
+-- ERROR: TEST WON'T COMPILE ---------------------------------------------------
+
+-- If you tried to run this test it won't compile.
+-- You MUST expose the `update` function as well as the following:
+
+module PhotoGroove exposing
+  (Model, Msg(..), Photo, initialModel, main, photoDecoder, update)
+
+
+-- ERROR: COMMANDS -------------------------------------------------------------
+
+-- Currently `elm-test` does not support testing commands directly.
+-- You can work around this if you modify your `update` function, by
+-- making a custom type that represents all the commands your application
+-- can run.
+--
+-- See pg. 185/186 in the pdf
+
+
+-- 6.2.3 -----------------------------------------------------------------------
+
+-- Creating multiple tests with one function --
+-- For functions that behave in exactly the same way, it may be an idea
+-- to run a shared test (that is running more than one test in a test function)
+--
+-- The photo filter sliders are a good case for this:
+--
+-- 1) All of them are sliders
+-- 2) All of them take an int
+--
+-- When one of the tests in the given list fails, elm-test will print out
+-- not only that test’s description, but also the string passed to describe
+-- as the first argument here.
+--
+-- The testSlider function is a generalized version of our slidHueSetsHue
+-- test from earlier.
+--
+-- See `Table 6.5` on pg 187 of pdf
+
+sliders : Test
+sliders =
+  describe "Slider sets the desired field in the Model"
+    [ testSlider "SlidHue" SlidHue .hue
+    , testSlider "SlidRipple" SlidRipple .ripple
+    , testSlider "SlidNoise" SlidNoise .noise
+    ]
+
+testSlider : String -> (Int -> Msg) -> (Model -> Int) -> Test
+testSlider description toMsg amountFromModel =
+  fuzz int description <|
+    \amount ->                   -- fuzz `int`
+      initialModel               -- inital model
+        |> update (toMsg amount) -- i.e: `SlidHue amount`
+        |> Tuple.first           -- Model
+        |> amountFromModel       -- i.e: .hue (from Model)
+        |> Expect.equal amount   -- fuzz `int`
+
+-- Take a look at the type of `testSlider`
+testSlider : String -> (Int -> Msg) -> (Model -> Int) -> Test
+testSlider description toMsg amountFromModel =
+
+-- It's 3 arguments correspond to what we want to customize about the
+-- `SlidHue` test
+--
+-- 1) `description : String` lets us use descriptions other than "SlidHue sets the hue".
+-- 2) `toMsg : Int -> Msg` lets us use messages other than SlidHue.
+-- 3) `amountFromModel : Model -> Int` lets us use model fields other than .hue.
+--
+--  `testSlider` function returns a Test,
+-- `describe` takes a `List Test`
+--
+-- This compiles because the SlidHue variant is a function whose type is
+-- `SlidHue : Int -> Msg`, which is what the `toMsg` argument expects,
+-- and because the `.hue` shorthand is a function whose type is
+-- `.hue : Model -> Int`, which is what the amount `FromModel` argument expects.
