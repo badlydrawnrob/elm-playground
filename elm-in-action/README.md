@@ -213,6 +213,8 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 4. `decodeValue` is quicker than converting into a string, and decoding from a string. Make a note of the difference between using a hardcoded test, vs a fuzz test.
 5. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
 6. It's also quite tricky to know which parts of `PhotoGroove` we need to expose (or which we need to import into `PhotoGrooveTest`) as there's a lot of moving parts. Perhaps this gets easier with practice.
+7. Writing tests seems to (sometimes) take almost as long as writing bloody code. So I need to look at various ways to do it that keeps time down. One way is to look at functions as black boxes and only check inputs and outputs — and not just replicating the code functionality which seems wasteful.
+    - For view we're randomly generating urls to pass through to our view. This seems a bit wasteful of time to me.
 
 
 

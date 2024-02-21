@@ -3,9 +3,12 @@ module PhotoGrooveTests exposing (..)
 import Expect exposing (Expectation)
 import Json.Decode as Decode exposing (decodeString, decodeValue)
 import Json.Encode as Encode
+import Html.Attributes as Attr exposing (src)
+import PhotoGroove exposing (Status(..), urlPrefix, view, main, photoDecoder, initialModel)
 import Fuzz exposing (Fuzzer, int, list, string)
-import PhotoGroove exposing (Status(..), urlPrefix, view, main, photoDecoder)
 import Test exposing (..)
+import Test.Html.Query as Query
+import Test.Html.Selector exposing (text, tag, attribute)
 
 
 -- A simple unit test with a Json string ---------------------------------------
@@ -57,3 +60,49 @@ decoderValueFuzzTest =
         |> decodeValue PhotoGroove.photoDecoder  -- Calling decodeValue instead of decodeString
         |> Result.map .title
         |> Expect.equal (Ok "(untitled)")
+
+
+-- Testing the view ------------------------------------------------------------
+
+noPhotosNoThumbnails : Test
+noPhotosNoThumbnails =
+  test "Not thumbnails render when there are no photos to render" <|
+    \_ ->
+      initialModel
+        |> PhotoGroove.view
+        |> Query.fromHtml
+        |> Query.findAll [ tag "img" ]
+        |> Query.count (Expect.equal 0)
+
+
+-- Getting more complicated --
+
+thumbnailRendered : String -> Query.Single msg -> Expectation
+thumbnailRendered url query =
+  query
+    |> Query.findAll [ tag "img", attribute (Attr.src (urlPrefix ++ url)) ]
+    |> Query.count (Expect.atLeast 1)
+
+photoFromUrl : String -> Photo
+photoFromUrl url =
+  { url = url, size = 0, title = "" }
+
+thumbnailsWork : Test
+thumbnailsWork =
+  fuzz (Fuzz.intRange 1 5) "URLs render as thumbnails" <|
+    \urlCount ->
+      let
+        urls : List String
+        urls =
+          List.range 1 urlCount
+            |> List.map (\num -> String.fromInt num ++ ".png")
+
+        thumbnailChecks : List (Query.Single msg -> Expectation)
+        thumbnailChecks =
+          List.map thumbnailRendered urls
+      in
+        { initialModel | status = Loaded (List.map photoFromUrl urls) "" }
+
+          |> view
+          |> Query.fromHtml
+          |> Expect.all thumbnailChecks

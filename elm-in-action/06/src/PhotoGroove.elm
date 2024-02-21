@@ -1,4 +1,4 @@
-module PhotoGroove exposing (Status(..), urlPrefix, view, main, photoDecoder)
+module PhotoGroove exposing (Status(..), urlPrefix, view, main, photoDecoder, initialModel)
 
 {-|
     Rules:

@@ -1,5 +1,27 @@
 module Notes exposing (..)
 
+{-|
+
+    I DON'T UNDERSTAND TESTING AND IT'S PLUGINS VERY WELL.
+    ------------------------------------------------------
+
+    I think I need to go over it a handful of times to get it.
+    Especially looking through the docs and figuring out how the
+    pieces fit together – it's not very easy for me at all.
+
+    It kind of makes you disheartened, as some of the tests are easy,
+    but some of them seem to be almost as much work as writing the damn
+    functions in the main module — testing `view` for instance.
+
+    For that reason, these notes don't cover the whole of the chapter.
+    For now I'm just concentrating on making the fucking thing work for
+    very simplified usecases, and not worry about testing too much.
+
+    I can test it manually if it's small enough, or very small tests
+    that'll test the Json decoders.
+
+|-}
+
 -- 6.1 -------------------------------------------------------------------------
 
 -- The compiler can do a lot for us, but we should still test our
@@ -477,3 +499,99 @@ initialModel, update, urlPrefix, view)
 exposing (Model, Msg(..), Photo, Status(..),
   initialModel, main, photoDecoder, update, urlPrefix, view)
 --                               ^^^^^^^^^^^^^^^^^^^^  ^^^^
+
+-- Building a Query.Single --
+--
+-- The first part of the pipeline is this:
+
+initialModel
+  |> PhotoGroove.view  -- Html Msg
+  |> Query.fromHtml    -- div [ class "content" ]
+
+-- Builds a representation of the DOM to examine
+
+  |> Query.findAll [ tag "img" ]   -- Query.Single msg -> Query.Multiple msg
+  |> Query.count (Expect.equal 0)  -- Query.Multiple msg -> Expectation
+
+-- will return all the img tags in the DOM tree beneath the
+-- `div [ "content" ]` at the root of our Single query.
+
+-- As you may recall, Expect.equal takes two arguments and compares
+-- them to verify that they’re equal. That means these two expressions
+-- are equivalent:
+
+Query.count (Expect.equal 0)
+Query.count (\count -> Expect.equal 0 count)
+
+
+-- When tests get bigger and longer --------------------------------------------
+
+-- As our test suites get larger, it can be handy to run only a few tests
+-- at a time. Take a look at the `Test.skip` and `Test.only` functions in
+-- the documentation for the elm-explorations/test package on the
+-- `https://package.elm-lang.org` website. We can also run only a few test
+-- files at a time by passing them as arguments to elm-test; for example,
+-- elm-test tests/ DecoderTests.elm or elm-test tests/User/*.elm.
+
+
+
+-- 6.3.2 -----------------------------------------------------------------------
+
+-- Fuzzing view tests --
+
+-- It’s better to use `Expect.atLeast 1` than `Expect.equal 1` because our
+-- business logic permits duplicate thumbnail URLs, and we wouldn’t want
+-- our test to incorrectly reject repeats as invalid.
+
+thumbnailRendered : String -> Query.Single msg -> Expectation
+thumbnailRendered url query =
+  query
+    |> Query.findAll [ tag "img", attribute (Attr.src (urlPrefix ++ url)) ]
+    |> Query.count (Expect.atLeast 1)
+
+-- We use (urlPrefix ++ url) for our src check instead of url because that’s
+-- what our viewThumbnail implementation does.
+--
+-- Now that we have a function to test whether a single thumbnail was rendered,
+-- let’s use it to build a function that tests whether all thumbnails were rendered.
+--
+-- We can get better test cov- erage by using fuzz tests to randomly generate
+-- URLs, and build photos from those!
+
+photoFromUrl : String -> Photo
+photoFromUrl url =
+  { url = url, size = 0, title = "" }
+
+list : Fuzzer a -> List (Fuzzer a)
+
+fuzz (list string) "Urls render as thumbnails" <|
+  \urls ->
+
+-- This will randomly generate a list of strings we can
+-- use for our thumbnail urls (prepending `urlPrefix`)
+
+
+-- Don't create too many randomly created urls! --------------------------------
+
+-- Performance and speed of tests
+-- ------------------------------
+--
+-- Remember that fuzz tests run 100 times by default.
+--
+-- If those tests generate 300 URLs on average, the total traversal count would
+-- be 300 × 300 × 100 — so we’d be looking at _nine million traversals_ in
+-- a single test run. That test would take, uh . . . a bit of time to run.
+--
+-- So let’s not do that!
+--
+-- When test suites start taking a long time to run, it slows down the
+-- whole team. Tests accumulate, and it’s important to be mindful of their
+-- performance characteristics to avoid letting slowdowns accumulate as well.
+
+fuzz (Fuzz.intRange 1 5)  -- This will limit the amount of urls we create
+--         ^^^^^^^^
+
+
+-- Fuzzer map --
+
+Fuzz.map : (a -> b) -> Fuzzer   a -> Fuzzer   b
