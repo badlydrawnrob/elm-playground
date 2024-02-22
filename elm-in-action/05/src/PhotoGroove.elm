@@ -45,7 +45,7 @@ import Browser
 import Json.Encode as Encode
 import Random
 import Http
-import Json.Decode exposing (Decoder, at, string, int, list, succeed)
+import Json.Decode exposing (Decoder, at, string, int, list, succeed, Value)
 import Json.Decode.Pipeline exposing (optional, required)
 
 
@@ -169,6 +169,7 @@ type ThumbnailSize
 port setFilters : FilterOptions -> Cmd msg
 
 port activityChanges : (String -> msg) -> Sub msg
+port activityChanges : (Value -> msg) -> Sub msg
 
 type alias FilterOptions =
   { url : String
@@ -320,7 +321,7 @@ initialCmd =
 -- #1 Unused `flags` anon func (for init)
 -- #2 Unused `model` anon func (for subscriptions)
 
-main : Program () Model Msg
+main : Program Value Model Msg
 main =
   Browser.element
     { init = \_ -> ( initialModel, initialCmd )  -- #1

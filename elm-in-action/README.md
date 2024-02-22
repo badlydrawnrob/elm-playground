@@ -195,7 +195,35 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 > Whereas it’s normal for setFilters to return Cmd msg, it would be bizarre for activityChanges to return Sub msg. After all, a Cmd msg is a command that has an effect but never sends a message to update—but sub- scriptions do not run effects. Their whole purpose is to send messages to update. Subscribing to a Sub msg would be like listening to a disconnected phone line: not terribly practical.
 
------
+
+
+## Chapter 06
+
+> **I do not understand the `view` tests — probably about 50% of it.**
+>
+> I'll have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
+
+1. Why does this function return `(Err 1)`
+ unchanged? (tip: look at the type signature). You'd use `Result.mapError` instead.
+
+ ```elm
+ Result.map : (a -> b) -> Result x a -> Result x b
+ Result.map String.fromInt (Err 1) -- == (Err 1)
+ ```
+2. Accessing a record value by just using `List.map` with a `.key` "function", for records. It's exactly the same as an anonymous function `(\record -> record.title)` — it takes a record and returns the content of it's title field.
+3. Briefly explain how we [reduced this code down](http://tinyurl.com/elm-lang-json-decode-test) (we were checking the entire decoder but now we're just checking the optional field)
+4. `decodeValue` is quicker than converting into a string, and decoding from a string. Make a note of the difference between using a hardcoded test, vs a fuzz test.
+5. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
+6. It's also quite tricky to know which parts of `PhotoGroove` we need to expose (or which we need to import into `PhotoGrooveTest`) as there's a lot of moving parts. Perhaps this gets easier with practice.
+7. Writing tests seems to (sometimes) take almost as long as writing bloody code. So I need to look at various ways to do it that keeps time down. One way is to look at functions as black boxes and only check inputs and outputs — and not just replicating the code functionality which seems wasteful.
+    - For view we're randomly generating urls to pass through to our view. This seems a bit wasteful of time to me.
+
+
+
+
+
+
+ -----
 
 
 ## Things for later ...
