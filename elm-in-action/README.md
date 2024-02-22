@@ -190,7 +190,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
     - Take care — you'd need to `Tuple.pair` and add `Cmd.none` in the _helper function_ so it's taking a model and returning a `(model, Cmd.none)`
 
 
-## Chapter 06
+## Chapter 06 to-dos
 
 1. Why does this function return `(Err 1)`
  unchanged? (tip: look at the type signature). You'd use `Result.mapError` instead.
@@ -205,6 +205,8 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 
 
+
+## Chapter 07 to-dos
 
 
 
