@@ -199,7 +199,9 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 ## Chapter 06
 
-> I'll probably have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
+> **I do not understand the `view` tests — probably about 50% of it.**
+>
+> I'll have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
 
 1. Why does this function return `(Err 1)`
  unchanged? (tip: look at the type signature). You'd use `Result.mapError` instead.
