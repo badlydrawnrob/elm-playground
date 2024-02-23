@@ -79,6 +79,8 @@ Dict.get "pi, give or take" dict
 --
 -- A Dict has two type parameters (unlike `List a` or `Array a`)
 -- for example `Dict Char Int` or `Dict String Photo`.
+--
+-- It's keys must be `comparable`, but it's values can be any type.
 
 
 -- Remembering `Maybe` types ---------------------------------------------------
@@ -106,3 +108,66 @@ Dict.get
 (*)
 --    ^^^^^^    ^^^^^^
 --   comparable of type `number`
+
+
+
+-- Retrieving a `Photo` --------------------------------------------------------
+
+-- Our `viewSelectedPhoto` expects a `Photo` type, from which it'll extract the
+-- values it neeeds, i.e: `.title`
+--
+-- We have (at init) a `Dict.empty` and (with server response) a `Dict String Photo`.
+-- So we need to review our Types to find useful functions to get
+-- the types we need.
+--
+-- When our server has returned our request:
+--
+-- 1. We want a `Photo` for the selected photo, so `view` can pass it to the function
+-- 2. We have a `Maybe String` indicating which photo is selected, if any
+-- 3. We have a `Dict string Photo` of all the photos.
+--
+-- To get from a `Maybe String` to a `Photo` record we'll need to do 3 things:
+--
+-- 1. Handle the possibility that `selectedPhotoUrl` is `Nothing`.
+-- 2. If it isn't `Nothing`, pass the selected photo URL to `Dict.get` on `model.photos`
+-- 3. Handle the possibility that `Dict.get` returns `Nothing`.
+--
+-- We're back to nested `case` expressions again:
+
+selectedPhoto : Html Msg
+selectedPhoto =
+  case model.selectedPhotoUrl of
+    Just url ->
+      case Dict.get url model.photos of
+        Just photo ->
+          viewSelectedPhoto photo
+
+        Nothing ->
+          text ""  -- These could perhaps be more useful
+
+    Nothing ->
+      text ""      -- Throw an error instead of empty string?
+
+
+-- Using `Maybe.andThen` -------------------------------------------------------
+
+-- We can make the above code neater (and smaller) by using `Maybe.andThen`:
+
+Maybe.andThen : (original -> Maybe final) -> Maybe original -> Maybe final
+
+-- Whenever we have two nested `case` expressions like this, with both of them
+-- handling `Nothing` the same way, `Maybe.andThen` does exactly the same
+-- thing as the code we had before.
+
+photoByUrl : String -> Maybe Photo
+photoByUrl url =
+  Dict.get url model.photos
+
+selectedPhoto : Html Msg
+selectedPhoto =
+  case Maybe.andThen photoByUrl model.selectedPhotoUrl of
+    Just photo ->
+      viewSelectedPhoto photo
+
+    Nothing ->
+      text ""

@@ -7,24 +7,36 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, src)
 import Html.Events exposing (onClick)
+import Dict exposing (Dict)
 
 
 -- Model -----------------------------------------------------------------------
 
--- #1: We're getting data from the server right away, by sending a `Cmd`
--- #2: For now, ignore the server's response and succeed with `initialModel`.
+-- #1: Instead of a `List Photo` or an `Array Photo`, we're using a `Dict`.
+--     A `Dict` must have a `comparable` as it's Key. It's Value can be anything.
+--     This make our `Photo`s much quicker to find/search.
+--
+--     As our `init` won't have access to the server's `Photo`s, we'll need to
+--     start off with an empty dictionary: `Dict.empty`
+--
+-- #2: We're getting data from the server right away, by sending a `Cmd`
+-- #3: For now, ignore the server's response and succeed with `initialModel`.
 
 type alias Model =
-  { selectedPhotoUrl : Maybe String }
+  { selectedPhotoUrl : Maybe String
+  , photos : Dict String Photo  -- #1
+  }
 
 initialModel : Model
 initialModel =
-  { selectedPhotoUrl = Nothing }
+  { selectedPhotoUrl = Nothing
+  , photos = Dict.empty  -- #1
+  }
 
 init : () -> ( Model, Cmd Msg )
 init _ =
   ( initialModel
-  , Http.get  -- #1
+  , Http.get  -- #2
       { url = "http://elm-in-action.com/folders/list"
       , expect = Http.expectJson GotInitialModel modelDecoder
       }
@@ -32,7 +44,7 @@ init _ =
 
 modelDecoder : Decoder Model
 modelDecoder =
-  Decode.succeed initialModel  -- #2
+  Decode.succeed initialModel  -- #3
 
 
 -- Update ----------------------------------------------------------------------
@@ -106,6 +118,20 @@ viewRelatedPhoto url =
     , (imgSource url "/thumb")
     ]
     []
+
+selectedPhoto : Html Msg
+selectedPhoto =
+  case model.selectedPhotoUrl of
+    Just url ->
+      case Dict.get url model.photos of
+        Just photo ->
+          viewSelectedPhoto photo
+
+        Nothing ->
+          text ""
+
+    Nothing ->
+      text ""
 
 -- Main ------------------------------------------------------------------------
 

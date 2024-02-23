@@ -6124,7 +6124,7 @@ var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
 		{body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $author$project$PhotoFolders$initialModel = {selectedPhotoUrl: $elm$core$Maybe$Nothing};
+var $author$project$PhotoFolders$initialModel = {photos: $elm$core$Dict$empty, selectedPhotoUrl: $elm$core$Maybe$Nothing};
 var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed($author$project$PhotoFolders$initialModel);
 var $author$project$PhotoFolders$init = function (_v0) {
 	return _Utils_Tuple2(

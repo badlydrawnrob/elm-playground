@@ -128,7 +128,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
 2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
-3. Explain the difference between our original random function and the new `random.uniform` one.
+3. Explain the difference between our original random function (which used an `Array`) and the new `random.uniform` one. In general it seems easier (at least when fetching from a server).
 
 
 ### The `<|`, `|>` operator
@@ -208,8 +208,10 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 ## Chapter 07 to-dos
 
+> ...
 
-
+1. Explain why a `Dict` is better (for this purpose) than a `List Photo`. We need to compare the `selectedPhotoUrl` with one in the `List Photo`. See Notes if you get stuck.
+2. [`Maybe.andThen`](http://tinyurl.com/elm-lang-maybe-and-then) instead of nested `Just` or `Nothing` case expressions.
 
 
 
