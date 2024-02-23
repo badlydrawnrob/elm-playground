@@ -25,13 +25,21 @@ import Dict exposing (Dict)
 -- #4: We're adding a Recursive Custom Type called `Folder`, that represents our
 --     folder structure. It also contains a `name` and a `List String` of our
 --     `photoUrls`. See notes on recursive structures.
+--
+-- #5: a) A path from a folder to a particular subfolder
+--     b) Like Folder, FolderPath is also a recursive custom type.
 
 type Folder =
   Folder   -- #4
     { name : String
+    , expanded : Bool
     , photoUrls : List String
     , subfolders : List Folder  -- #4
   }
+
+type FolderPath  -- #5a
+    = End
+    | Subfolder Int FolderPath  -- #5b
 
 type alias Model =
   { selectedPhotoUrl : Maybe String
@@ -43,7 +51,7 @@ initialModel : Model
 initialModel =
   { selectedPhotoUrl = Nothing
   , photos = Dict.empty  -- #1
-  , root = Folder { name = "", photoUrls = [], subfolders = [] }
+  , root = Folder { name = "", photoUrls = [], expanded = False, subfolders = [] }
   }
 
 init : () -> ( Model, Cmd Msg )
@@ -84,29 +92,29 @@ modelDecoder =
         ]
     , root =
         Folder
-          { name = "Photos", photoUrls = []
+          { name = "Photos", expanded = True, photoUrls = []
           , subfolders =
               [ Folder
-                  { name = "2016", photoUrls = [ "trevi", "coli" ]
+                  { name = "2016", expanded = True, photoUrls = [ "trevi", "coli" ]
                   , subfolders =
                     [ Folder
-                      { name = "outdoors", photoUrls = []
+                      { name = "outdoors", expanded = True, photoUrls = []
                       , subfolders = []
                       }
                     , Folder
-                      { name = "indoors", photoUrls = [ "fresco" ]
+                      { name = "indoors", expanded = True, photoUrls = [ "fresco" ]
                       , subfolders = []
                       }]
                   }
                 , Folder
-                  { name = "2017", photoUrls = []
+                  { name = "2017", expanded = True, photoUrls = []
                   , subfolders =
                       [ Folder
-                        { name = "outdoors", photoUrls = []
+                        { name = "outdoors", expanded = True, photoUrls = []
                         , subfolders = []
                         }
                       , Folder
-                        { name = "indoors", photoUrls = []
+                        { name = "indoors", expanded = True, photoUrls = []
                         , subfolders = []
                         }
                       ]
@@ -124,10 +132,14 @@ modelDecoder =
 type Msg
   = ClickedPhoto String
   | GotInitialModel (Result Http.Error Model)
+  | ClickedFolder FolderPath
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
+    ClickedFolder path ->
+      ( { model | root = toggleExpanded path model.root }, Cmd.none )
+
     ClickedPhoto url ->
       ( { model | selectedPhotoUrl = Just url }, Cmd.none )
 
@@ -247,6 +259,28 @@ viewFolder (Folder folder) =  -- #4a
       [ label [] [ text folder.name ]
       , div [ class "subfolders" ] subfolders
       ]
+
+toggleExpanded : FolderPath -> Folder -> Folder
+toggleExpanded path (Folder folder) =  -- Destructuring the Folder custom type inline
+  case path of
+      End ->
+        Folder { folder | expanded = not folder.expanded }
+
+      Subfolder targetIndex remainingPath -> -- `targetIndex` is an Int.
+        let                                  -- `remainingPath` is a `FolderPath`
+          subfolders : List Folder
+          subfolders =
+            List.indexedMap transform folder.subfolders
+
+          transform : Int -> Folder -> Folder
+          transform currentIndex currentSubfolder =
+            if currentIndex == targetIndex then
+              toggleExpanded remainingPath currentSubfolder  -- `toggleExpanded` is
+                                                             -- recursive; it calls itself.
+            else
+              currentSubfolder
+        in
+          Folder { folder | subfolders = subfolders }
 
 
 -- Main ------------------------------------------------------------------------

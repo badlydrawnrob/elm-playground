@@ -323,3 +323,21 @@ viewFolder (Folder folder) =  -- Pattern matching (similar to casing above)
       [ label [] [ text folder.name ]          -- Grab the first `(Folder folder.name)`
       , div [ class "subfolders" ] subfolders  -- Call `List.map` for every subsequent folder
       ]
+
+
+-- 7.2.2 -----------------------------------------------------------------------
+-- Recursive Messages ----------------------------------------------------------
+
+-- Collapsing the folders ------------------------------------------------------
+
+-- We have some more STATE to add to our `Folder` recursive type.
+-- We want to be able to collapse/expand our folders.
+--
+-- 1. We need to pass `onClick` a new `Msg` that tells `update` which folder the
+--    user clicked.
+-- 2. When `update` receives one of these messages, descend from the root folder
+--    into the folder tree and toggle the appropriate folders expanded field in
+--    the `Model`.
+
+expanded : Bool
+expanded = True  -- or False

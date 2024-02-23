@@ -6130,7 +6130,7 @@ var $author$project$PhotoFolders$Folder = function (a) {
 var $author$project$PhotoFolders$initialModel = {
 	photos: $elm$core$Dict$empty,
 	root: $author$project$PhotoFolders$Folder(
-		{name: '', photoUrls: _List_Nil, subfolders: _List_Nil}),
+		{expanded: false, name: '', photoUrls: _List_Nil, subfolders: _List_Nil}),
 	selectedPhotoUrl: $elm$core$Maybe$Nothing
 };
 var $elm$core$Dict$fromList = function (assocs) {
@@ -6180,21 +6180,24 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 				])),
 		root: $author$project$PhotoFolders$Folder(
 			{
+				expanded: true,
 				name: 'Photos',
 				photoUrls: _List_Nil,
 				subfolders: _List_fromArray(
 					[
 						$author$project$PhotoFolders$Folder(
 						{
+							expanded: true,
 							name: '2016',
 							photoUrls: _List_fromArray(
 								['trevi', 'coli']),
 							subfolders: _List_fromArray(
 								[
 									$author$project$PhotoFolders$Folder(
-									{name: 'outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
+									{expanded: true, name: 'outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
 									$author$project$PhotoFolders$Folder(
 									{
+										expanded: true,
 										name: 'indoors',
 										photoUrls: _List_fromArray(
 											['fresco']),
@@ -6204,14 +6207,15 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 						}),
 						$author$project$PhotoFolders$Folder(
 						{
+							expanded: true,
 							name: '2017',
 							photoUrls: _List_Nil,
 							subfolders: _List_fromArray(
 								[
 									$author$project$PhotoFolders$Folder(
-									{name: 'outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
+									{expanded: true, name: 'outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
 									$author$project$PhotoFolders$Folder(
-									{name: 'indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
+									{expanded: true, name: 'indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
 								])
 						})
 					])
@@ -6231,24 +6235,57 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$PhotoFolders$toggleExpanded = F2(
+	function (path, _v0) {
+		var folder = _v0.a;
+		if (path.$ === 'End') {
+			return $author$project$PhotoFolders$Folder(
+				_Utils_update(
+					folder,
+					{expanded: !folder.expanded}));
+		} else {
+			var targetIndex = path.a;
+			var remainingPath = path.b;
+			var transform = F2(
+				function (currentIndex, currentSubfolder) {
+					return _Utils_eq(currentIndex, targetIndex) ? A2($author$project$PhotoFolders$toggleExpanded, remainingPath, currentSubfolder) : currentSubfolder;
+				});
+			var subfolders = A2($elm$core$List$indexedMap, transform, folder.subfolders);
+			return $author$project$PhotoFolders$Folder(
+				_Utils_update(
+					folder,
+					{subfolders: subfolders}));
+		}
+	});
 var $author$project$PhotoFolders$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'ClickedPhoto') {
-			var url = msg.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						selectedPhotoUrl: $elm$core$Maybe$Just(url)
-					}),
-				$elm$core$Platform$Cmd$none);
-		} else {
-			if (msg.a.$ === 'Ok') {
-				var newModel = msg.a.a;
-				return _Utils_Tuple2(newModel, $elm$core$Platform$Cmd$none);
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
+		switch (msg.$) {
+			case 'ClickedFolder':
+				var path = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							root: A2($author$project$PhotoFolders$toggleExpanded, path, model.root)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ClickedPhoto':
+				var url = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							selectedPhotoUrl: $elm$core$Maybe$Just(url)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				if (msg.a.$ === 'Ok') {
+					var newModel = msg.a.a;
+					return _Utils_Tuple2(newModel, $elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $elm$core$Maybe$andThen = F2(

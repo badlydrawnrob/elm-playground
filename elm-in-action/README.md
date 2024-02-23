@@ -221,6 +221,8 @@ It might be useful, but I'm not going to save this to memory. If and when I need
     - What's the **inline pattern matching** that `Listing 7.6` (pg 221 pdf) means?
     - `viewFolder` is a recursive function that navigates the `tree` of `Folder`.
     - It takes a bit of getting your head around this recursive function, using `(Folder folder)` and `.subfolders` record field to grab the values. Each subfolder is a list, and some `subfolders` in turn hold a `Folder` with another record.
+    - Think of it as simple data, not Html (might help wrapping your head around function)
+5. In general I think I'm going to have to research into `trees` and `nodes` with recursive functions. It's using `List.indexMapped` etc. Might need to scrub up on some theory as it's kind of difficult.
 
 
 
