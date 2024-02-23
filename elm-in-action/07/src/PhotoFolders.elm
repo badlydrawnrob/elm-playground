@@ -20,7 +20,7 @@ import Dict exposing (Dict)
 --     start off with an empty dictionary: `Dict.empty`
 --
 -- #2: We're getting data from the server right away, by sending a `Cmd`
--- #3: For now, ignore the server's response and succeed with `initialModel`.
+-- #3: For now, use a hardcoded dictionary
 
 type alias Model =
   { selectedPhotoUrl : Maybe String
@@ -44,7 +44,32 @@ init _ =
 
 modelDecoder : Decoder Model
 modelDecoder =
-  Decode.succeed initialModel  -- #3
+  Decode.succeed
+    { selectedPhotoUrl = Just "trevi"
+    , photos = Dict.fromList
+        [ ( "trevi"
+          , { title = "Trevi"
+            , relatedUrls = [ "coli", "fresco" ]
+            , size = 34
+            , url = "trevi"
+            }
+          )
+        , ( "fresco"
+            , { title = "Fresco"
+            , relatedUrls = [ "trevi" ]
+            , size = 46
+            , url = "fresco"
+            }
+          )
+        , ( "coli"
+          , { title = "Coliseum"
+            , relatedUrls = [ "trevi", "fresco" ]
+            , size = 36
+            , url = "coli"
+            }
+          )
+        ]
+      }
 
 
 -- Update ----------------------------------------------------------------------
