@@ -21,16 +21,29 @@ import Dict exposing (Dict)
 --
 -- #2: We're getting data from the server right away, by sending a `Cmd`
 -- #3: For now, use a hardcoded dictionary
+--
+-- #4: We're adding a Recursive Custom Type called `Folder`, that represents our
+--     folder structure. It also contains a `name` and a `List String` of our
+--     `photoUrls`. See notes on recursive structures.
+
+type Folder =
+  Folder   -- #4
+    { name : String
+    , photoUrls : List String
+    , subfolders : List Folder  -- #4
+  }
 
 type alias Model =
   { selectedPhotoUrl : Maybe String
   , photos : Dict String Photo  -- #1
+  , root : Folder -- #4
   }
 
 initialModel : Model
 initialModel =
   { selectedPhotoUrl = Nothing
   , photos = Dict.empty  -- #1
+  , root = Folder { name = "", photoUrls = [], subfolders = [] }
   }
 
 init : () -> ( Model, Cmd Msg )
@@ -69,6 +82,37 @@ modelDecoder =
             }
           )
         ]
+    , root =
+        Folder
+          { name = "Photos", photoUrls = []
+          , subfolders =
+              [ Folder
+                  { name = "2016", photoUrls = [ "trevi", "coli" ]
+                  , subfolders =
+                    [ Folder
+                      { name = "outdoors", photoUrls = []
+                      , subfolders = []
+                      }
+                    , Folder
+                      { name = "indoors", photoUrls = [ "fresco" ]
+                      , subfolders = []
+                      }]
+                  }
+                , Folder
+                  { name = "2017", photoUrls = []
+                  , subfolders =
+                      [ Folder
+                        { name = "outdoors", photoUrls = []
+                        , subfolders = []
+                        }
+                      , Folder
+                        { name = "indoors", photoUrls = []
+                        , subfolders = []
+                        }
+                      ]
+                  }
+              ]
+          }
       }
 
 
@@ -88,9 +132,9 @@ update msg model =
       ( { model | selectedPhotoUrl = Just url }, Cmd.none )
 
     GotInitialModel (Ok newModel) ->
-      ( newModel, Cmd.none )  -- #1
+      ( newModel, Cmd.none )    -- #1
 
-    GotInitialModel (Err _) ->
+    GotInitialModel (Err _) ->  -- #2
       ( model, Cmd.none )
 
 
@@ -114,6 +158,21 @@ update msg model =
 --        Pass that value to call our `viewSelectedPhoto` function to build the image.
 --     d) If there is no `selectedPhotoUrl`, return `Nothing`. If there is no
 --        match in `Dict`ionary, return `Nothing`. (Share the `Nothing` case)
+--
+-- #4: Here we access the `Folder` type we are using in our `model.root`:
+--
+--     a) This uses a shorthand for accessing `Folder` content, which is a record.
+--        In fact, there's a bunch of records that are nested inside `subfolders`
+--        so `Folder { record }` has a few children.
+--
+--        `(Folder folder)` could also be seen as `(Folder record)` or
+--        `(Folder content)` — See the `Folder` type above.
+--
+--      b) This is the first recursive `view` function I've seen.
+--         `List.map` is going to loop through all nested `(Folder record)`
+--        entries from `model.root` and use the `viewFolder` to render them.
+--
+--
 
 type alias Photo =
   { title : String
@@ -141,6 +200,10 @@ view model =
     in
       div [ class "content" ]
         [ h1 [] [ text "The Grooviest Folders the World Has Ever Seen" ]
+        , div [ class "folders"]
+            [ h1 [] [ text "Folders" ]
+            , viewFolder model.root
+            ]
         , div [ class "selected-photo" ] [ selectedPhoto ]
         ]
 
@@ -173,6 +236,17 @@ viewRelatedPhoto url =
     , (imgSource url "/thumb")
     ]
     []
+
+viewFolder : Folder -> Html Msg
+viewFolder (Folder folder) =  -- #4a
+  let
+    subfolders =
+      List.map viewFolder folder.subfolders  -- #4b
+  in
+    div [ class "folder" ]
+      [ label [] [ text folder.name ]
+      , div [ class "subfolders" ] subfolders
+      ]
 
 
 -- Main ------------------------------------------------------------------------

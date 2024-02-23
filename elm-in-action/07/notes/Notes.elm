@@ -200,3 +200,126 @@ initialModel =
 -- Anything we can implement with `map`, we could implement with `andThen` instead.
 -- However, `map` is often preferred in practice because it’s more concise,
 -- and more often than not, the extra power of `andThen` is not needed.
+
+
+-- 7.2 -------------------------------------------------------------------------
+
+-- We have the hypothetical page where users can edit their folders,
+-- but we're not covering that here. We'll load folders and contents from the
+-- sever later, but for now we'll hardcode them.
+--
+-- This helps us get the UI right, before worrying too much about servers.
+--
+-- 1) Each folder could contain one or more photos
+-- 2) Each folder could contain a subfolder
+-- 3) Those subfolders can in turn contain phots/subfolders
+--
+-- This relationship forms a TREE, which is a data structure we haven't used yet.
+
+-- 7.2.1 -----------------------------------------------------------------------
+
+-- Defining TREES by using Custom Types --
+
+-- Let's say we tried to represent our folder tree structure with a
+-- type alias, like this:
+
+type alias Folder = { name : String, subfolders : List Folder }
+
+-- THIS WON'T WORK!! If we try to compile it, we'll get an error.
+-- ^^^^^^^^^^^^^^^^^
+--
+-- The purpose of `type alias` is to name a Type Annotation. When the compiler
+-- encounters this name, it substitutes in the type annotation we associated
+-- with that name and proceeds as normal.
+--
+-- The problem with this is it's an INFINITE LOOP.
+--                               ^^^^^^^^^^^^^^^^^
+
+{ name : String, photoUrls : List String, subfolders : List
+    { name : String, photoUrls : List String, subfolders : List
+        { name ... }}}
+
+-- Trying to expand that type annotation would never end!
+-- YOU CAN'T DEFINE `type alias` IN TERMS OF ITSELF (you can't reference the
+-- type alias within itself)
+
+
+-- Recursive Custom Types ------------------------------------------------------
+
+-- Custom Types on the other hand, CAN reference themselves.
+-- Using a (probably little used) package `hrldcpr/elm-cons`:
+
+import Cons exposing (cons, tail)
+
+type Cons a
+    = Cons a (List a)
+--    ^^^^^^
+
+cons : a -> List a -> Cons a
+
+c = cons 1 [2,3]  -- Cons 1 [2,3]
+tail c            -- [2, 3]\
+
+-- Linked List --
+
+type MyList elem
+  = Empty
+  | Prepend elem (MyList elem)
+
+[ 1, 2, 3 ]      -- (Prepend 1 (Prepend 2 (Prepend 3 Empty)))
+-- Similar to Lisp: (cons 1 (cons 2 (cons 3 '())))
+
+
+-- Making our Folders a Recursive Custom Type ----------------------------------
+
+-- Notice that whereas other custom types we've seen have had multiple variants,
+-- for example `type Msg` this custom type has only ONE variant.
+-- It holds plenty of info though, because that one variant contains a record:
+-- `type Folder = Folder { name : String, ... }`.
+--
+-- This is a common technique in Elm: when a `type alias` is the wrong fit,
+-- you can update it to a custom type with a single variant.
+--
+-- It's typical when doing this to give the single variant the same name as the
+-- type itself — in theis case `type Folder = Folder { ... }` — but we could just
+-- as easily called it something like `type Folder = SingleFolder {...}` instead.
+--
+-- This upgrade has no runtime cost when you run `elm make` with the
+-- `--optimize` flag. Elm will "unbox" it for you (`type Foo = Foo String` -> `String`)
+
+type Folder =
+  Folder  -- Type Variant
+    { name : String
+    , photoUrls : List String
+    , subfolders : List Folder  -- Recursive, or [] empty list
+    }
+
+
+-- RECURSIVE FUNCTION to Access `Folder` type ----------------------------------
+
+-- 1) DESTRUCTURING Single Variant Custom Types
+--
+-- `viewFolder (Folder folder)` is shorthand that makes our code
+-- more concise. Our `Folder` type is a custom type that holds a single variant
+-- and inside that variant is a `record` we want to access (with
+-- `{ name : String }` and so on).
+--
+-- One way to access that record is to use a `case` expression to destructure
+-- our custom types one and only variant — `Folder`, just like the type itself.
+
+-- viewFolder : Folder -> Html Msg
+-- viewFolder wrappedFolder =
+--    case wrappedFolder of
+--        Folder folder ->
+--            ... "folder" now refers to the record we want ...
+
+viewFolder : Folder -> Html Msg
+viewFolder (Folder folder) =  -- Pattern matching (similar to casing above)
+  let
+    subfolders =
+      List.map viewFolder folder.subfolders    -- Pass subfolder list back into the function
+  in                                           -- using `List.map` to generate `List subfolder`
+    div [ class "folder" ]
+      [ label [] [ text folder.name ]          -- Grab the first `(Folder folder.name)`
+      , div [ class "subfolders" ] subfolders  -- Call `List.map` for every subsequent folder
+      ]

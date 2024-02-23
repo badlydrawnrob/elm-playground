@@ -214,8 +214,13 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 2. [`Maybe.andThen`](http://tinyurl.com/elm-lang-maybe-and-then) instead of [nested `Just` or `Nothing`](https://github.com/badlydrawnrob/elm-playground/commit/a7abdf386b9c8de655b14b20ee0b2635d56345e7#r138991332) case expressions. (It's easier to write when both `Maybe` types return the same `Nothing -> Value`)
     - It's a tad hard to understand as the value from the first `Maybe` gets handed to the second `Maybe` if it succeeds (is not `Nothing`).
     - Using the `|>` pipeline makes it a bit easier to read/understand.
-3. Design and refactoring: Using some dummy data when you're starting to build out your functions until you're ready to pull from the server.
+3. Design and refactoring: Using [some dummy data](https://github.com/badlydrawnrob/elm-playground/commit/dfc1661e869d24adfabf44ead51739e56863f0af#r138991666) when you're starting to build out your functions until you're ready to pull from the server.
     - **Pretend we’re already able to decode some useful Photo data from the server.**
+4. `type Folder` — how does this know when to STOP and not an infinite loop? Other recursive functions like a list have an `Empty` which stops them recursing. Perhaps because it's a record we just have to stop adding subfolders.
+    - Seems like an `[]` empty list is enough.
+    - What's the **inline pattern matching** that `Listing 7.6` (pg 221 pdf) means?
+    - `viewFolder` is a recursive function that navigates the `tree` of `Folder`.
+    - It takes a bit of getting your head around this recursive function, using `(Folder folder)` and `.subfolders` record field to grab the values. Each subfolder is a list, and some `subfolders` in turn hold a `Folder` with another record.
 
 
 
