@@ -77,6 +77,15 @@ update msg model =
 --     @ https://tinyurl.com/elm-lang-html-attr-src
 --
 -- #2: Here we cycle through a list of urls (Strings) and generate our thumbs
+--
+-- #3: This is a little complex. We need to check:
+--
+--     a) Does `selectedPhotoUrl` contain a `String`?
+--     b) Using `Dict.get`, does our `comparable` `String` have an entry
+--        in our `Dict`ionary of `Photo`s? Is there a Key of the same name?
+--     c) If there isn't, both `case` say `Nothing -> text ""` empty String.
+--        If we have a `String` AND our `Dict.get` returns a Value, we then
+--        call our `viewSelectedPhoto` function to build the image.
 
 type alias Photo =
   { title : String
@@ -97,6 +106,27 @@ urlPrefix =
 imgSource : String -> String -> Attribute msg  -- #1
 imgSource url size =
   src (urlPrefix ++ "photos/" ++ url ++ size)
+
+view : Model -> Html Msg
+view model =
+  let
+    selectedPhoto : Html Msg
+    selectedPhoto =
+      case model.selectedPhotoUrl of
+        Just url ->
+          case Dict.get url model.photos of
+            Just photo ->
+              viewSelectedPhoto photo
+
+            Nothing ->
+              text ""
+
+        Nothing ->
+          text ""
+    in
+      div [ class "content" ]
+        [ div [ class "selected-photo" ] [ selectedPhoto ] ]
+
 
 viewSelectedPhoto : Photo -> Html Msg
 viewSelectedPhoto photo =
@@ -119,19 +149,6 @@ viewRelatedPhoto url =
     ]
     []
 
-selectedPhoto : Html Msg
-selectedPhoto =
-  case model.selectedPhotoUrl of
-    Just url ->
-      case Dict.get url model.photos of
-        Just photo ->
-          viewSelectedPhoto photo
-
-        Nothing ->
-          text ""
-
-    Nothing ->
-      text ""
 
 -- Main ------------------------------------------------------------------------
 
