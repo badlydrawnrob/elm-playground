@@ -81,11 +81,14 @@ update msg model =
 -- #3: This is a little complex. We need to check:
 --
 --     a) Does `selectedPhotoUrl` contain a `String`?
---     b) Using `Dict.get`, does our `comparable` `String` have an entry
---        in our `Dict`ionary of `Photo`s? Is there a Key of the same name?
---     c) If there isn't, both `case` say `Nothing -> text ""` empty String.
---        If we have a `String` AND our `Dict.get` returns a Value, we then
---        call our `viewSelectedPhoto` function to build the image.
+--     b) If so, use this value for `Dict.get` function. If the`comparable`
+--       value (a `String`) has a matching `Key` in our Dictionary, grab it's
+--       value (a `Photo`).
+--     c) If we have both a `String` value in `selectedPhotoUrl`, AND it's also
+--        matching our `Dict.get` Key in our `Dict`ionary — return it's Value.
+--        Pass that value to call our `viewSelectedPhoto` function to build the image.
+--     d) If there is no `selectedPhotoUrl`, return `Nothing`. If there is no
+--        match in `Dict`ionary, return `Nothing`. (Share the `Nothing` case)
 
 type alias Photo =
   { title : String
@@ -97,7 +100,25 @@ type alias Photo =
 
 view : Model -> Html Msg
 view model =
-  h1 [] [ text "The Grooviest Folders the World Has Ever Seen" ]
+  let
+    photoByUrl : String -> Maybe Photo
+    photoByUrl url =
+      Dict.get url model.photos
+
+    selectedPhoto : Html Msg
+    selectedPhoto =
+      case Maybe.andThen photoByUrl model.selectedPhotoUrl of  -- #3b, #3a
+          Just photo ->
+            viewSelectedPhoto photo                            -- #3c
+
+          Nothing ->
+            text ""                                       -- #3c
+    in
+      div [ class "content" ]
+        [ h1 [] [ text "The Grooviest Folders the World Has Ever Seen" ]
+        , div [ class "selected-photo" ] [ selectedPhoto ]
+        ]
+
 
 
 urlPrefix =
@@ -106,27 +127,6 @@ urlPrefix =
 imgSource : String -> String -> Attribute msg  -- #1
 imgSource url size =
   src (urlPrefix ++ "photos/" ++ url ++ size)
-
-view : Model -> Html Msg
-view model =
-  let
-    selectedPhoto : Html Msg
-    selectedPhoto =
-      case model.selectedPhotoUrl of
-        Just url ->
-          case Dict.get url model.photos of
-            Just photo ->
-              viewSelectedPhoto photo
-
-            Nothing ->
-              text ""
-
-        Nothing ->
-          text ""
-    in
-      div [ class "content" ]
-        [ div [ class "selected-photo" ] [ selectedPhoto ] ]
-
 
 viewSelectedPhoto : Photo -> Html Msg
 viewSelectedPhoto photo =

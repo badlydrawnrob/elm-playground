@@ -151,13 +151,19 @@ selectedPhoto =
 
 -- Using `Maybe.andThen` -------------------------------------------------------
 
--- We can make the above code neater (and smaller) by using `Maybe.andThen`:
+-- We can make the above code neater (and smaller) by using `Maybe.andThen`.
+-- It's type signature shows (although a bit hard to read) that the return value
+-- of the original `Maybe` gets passed through to a function with another `Maybe`
+-- type.
 
 Maybe.andThen : (original -> Maybe final) -> Maybe original -> Maybe final
+--               ^^^^^^^^ <----------------------- ^^^^^^^^
+--       Value from original function        Original Maybe
+--       gets passed to second Maybe ...
 
--- Whenever we have two nested `case` expressions like this, with both of them
+-- Whenever we have two nested `case` expressions as above, with both of them
 -- handling `Nothing` the same way, `Maybe.andThen` does exactly the same
--- thing as the code we had before.
+-- thing as the code we had before. It's simpler to write with no nested case.
 
 photoByUrl : String -> Maybe Photo
 photoByUrl url =
@@ -166,8 +172,22 @@ photoByUrl url =
 selectedPhoto : Html Msg
 selectedPhoto =
   case Maybe.andThen photoByUrl model.selectedPhotoUrl of
+  --                 ^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^
+  --                            This is checked first!!
     Just photo ->
       viewSelectedPhoto photo
 
     Nothing ->
       text ""
+
+ -- Returns `Nothing` as no URL available. `photoByUrl` never runs.
+initialModel =
+  { selectedPhotoUrl = Nothing
+  , ...
+  }
+
+-- `photoByUrl` runs, but returns `Nothing` as `Dict` doesn't contain `1.jpeg` key
+initialModel =
+  { selectedPhotoUrl = "1.jpeg"
+  , photo = Dict.fromList [("2.jpeg", 2), ("3.jpeg", 3)]
+  }

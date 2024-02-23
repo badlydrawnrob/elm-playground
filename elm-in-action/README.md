@@ -211,7 +211,9 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 > ...
 
 1. Explain why a `Dict` is better (for this purpose) than a `List Photo`. We need to compare the `selectedPhotoUrl` with one in the `List Photo`. See Notes if you get stuck.
-2. [`Maybe.andThen`](http://tinyurl.com/elm-lang-maybe-and-then) instead of nested `Just` or `Nothing` case expressions.
+2. [`Maybe.andThen`](http://tinyurl.com/elm-lang-maybe-and-then) instead of nested `Just` or `Nothing` case expressions. (It's easier to write when both `Maybe` types return the same `Nothing -> Value`)
+    - It's a tad hard to understand as the value from the first `Maybe` gets handed to the second `Maybe` if it succeeds (is not `Nothing`).
+    - Using the `|>` pipeline makes it a bit easier to read/understand.
 
 
 
