@@ -241,6 +241,7 @@ It might be useful, but I'm not going to save this to memory. If and when I need
     - Make links between `Big Bang` in Racket lang and Elm's runtime
 8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
 9. [Destructuring](http://tinyurl.com/eia-destructure-firstUrl), both in `case` and in `functions` like this example.
+10. Comparing `andThen` and `map` for both `Result` and `Maybe` — **see bottom of pg 216 in PDF**.
 
 ### Various design decisions:
 

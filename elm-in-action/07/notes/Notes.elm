@@ -191,3 +191,12 @@ initialModel =
   { selectedPhotoUrl = "1.jpeg"
   , photo = Dict.fromList [("2.jpeg", 2), ("3.jpeg", 3)]
   }
+
+-- MORE INFO ON `.map` and `.andThen` ------------------------------------------
+
+-- Read pg 216 and 217 of pdf for more information.
+--
+-- This additional capability makes `andThen` strictly more powerful than map.
+-- Anything we can implement with `map`, we could implement with `andThen` instead.
+-- However, `map` is often preferred in practice because it’s more concise,
+-- and more often than not, the extra power of `andThen` is not needed.

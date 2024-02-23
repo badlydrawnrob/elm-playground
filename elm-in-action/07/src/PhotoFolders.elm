@@ -112,7 +112,7 @@ view model =
             viewSelectedPhoto photo                            -- #3c
 
           Nothing ->
-            text ""                                       -- #3c
+            text ""                                            -- #3c
     in
       div [ class "content" ]
         [ h1 [] [ text "The Grooviest Folders the World Has Ever Seen" ]
