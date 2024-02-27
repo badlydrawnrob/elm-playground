@@ -223,6 +223,8 @@ It might be useful, but I'm not going to save this to memory. If and when I need
     - It takes a bit of getting your head around this recursive function, using `(Folder folder)` and `.subfolders` record field to grab the values. Each subfolder is a list, and some `subfolders` in turn hold a `Folder` with another record.
     - Think of it as simple data, not Html (might help wrapping your head around function)
 5. In general I think I'm going to have to research into `trees` and `nodes` with recursive functions. It's using `List.indexMapped` etc. Might need to scrub up on some theory as it's kind of difficult.
+    - https://livebook.manning.com/concept/elm/folderpath
+    - **Starting from `7.2.2` it gets tricky to understand ... pg 223 in pdf.**
 
 
 
