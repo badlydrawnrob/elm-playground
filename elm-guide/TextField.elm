@@ -7,15 +7,15 @@ import Html.Events exposing (onInput)
 
     A simple app that reverses the contents of a text field.
 
-    1. Originally I reversed the text in `update` (edited the model)
-    2. In the Elm Guide, it's done in the `view` instead.
+    1. In the Elm Guide, `String.reverse` is called in `view`
+    2. Previous versions of mine also only kept the `String.reverse`
+       version of the `String` which I updated in a record.
+    3. Finally, I've stored both the original user input, AND the
+       reversed string. There's a record entry for both.
 
-    I don't know which way is preferrable (I guess you should store
-    the original first, and then convert it).
+    @ https://elm-lang.org/docs/records#updating-records
 
-    I suppose it's possible to store both the original text
-    (that the user is entering) and a separate record entry for the
-    reversed text too. You'd have to clone it with a function.
+
 -}
 
 -- Main ------------------------------------------------------------------------
@@ -31,10 +31,15 @@ main =
 -- Model -----------------------------------------------------------------------
 
 type alias Model =
-  { content : String }
+  { content : String
+  , reverseContent : String
+  }
 
 init : Model
-init = { content = "" }
+init =
+  { content = ""
+  , reverseContent = ""
+  }
 
 -- Update ----------------------------------------------------------------------
 
@@ -45,14 +50,17 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     Change str ->
-      { model | content = str }
+      { model | content = str, reverseContent = (String.reverse str) }
 
 
 -- View ------------------------------------------------------------------------
 
+-- #1: `onInput` requires a function that takes a `String` and returns a `Msg`.
+--     so our "container" of type `Msg` will hold that `String`.
+
 view : Model -> Html Msg
 view model =
   div []
-  [ input [ type_ "text", onInput Change ] []
-  , text (String.reverse model.content)
+  [ input [ type_ "text", onInput Change ] []  -- #1
+  , text model.reverseContent
   ]
