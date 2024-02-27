@@ -33,15 +33,15 @@ init =
 -- Update ----------------------------------------------------------------------
 
 type Msg
-  = Increment
+  = IncrementBy Int
   | Decrement
   | Reset
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    IncrementBy num ->
+      model + num
 
     Decrement ->
       if modelIsZero model then
@@ -64,6 +64,6 @@ view model =
   div []
     [ button [ onClick Decrement ] [ text "-" ]  -- Reduce Int
     , div [] [ text (String.fromInt model) ]     -- The text
-    , button [ onClick Increment ] [ text "+" ]  -- Increase Int
+    , button [ onClick (IncrementBy 10) ] [ text "+" ]  -- Increase Int
     , button [ onClick Reset ] [ text "Reset" ]  -- Reset to Zero
     ]
