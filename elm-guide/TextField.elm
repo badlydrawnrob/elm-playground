@@ -57,10 +57,16 @@ update msg model =
 
 -- #1: `onInput` requires a function that takes a `String` and returns a `Msg`.
 --     so our "container" of type `Msg` will hold that `String`.
+-- #2: Here I've changed the code slightly so that the `Model` record holds
+--     the reversed string.
 
 view : Model -> Html Msg
 view model =
   div []
-  [ input [ type_ "text", onInput Change ] []  -- #1
-  , text model.reverseContent
+  [ input
+      [ type_ "text"
+      , placeholder "Text to reverse"
+      , value model.content
+      , onInput Change ] []    -- #1
+  , text model.reverseContent  -- #2
   ]
