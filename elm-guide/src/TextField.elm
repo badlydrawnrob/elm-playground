@@ -1,5 +1,7 @@
+module TextField exposing (main)
+
 import Browser
-import Html exposing (Html, Attribute, div, input, text)
+import Html exposing (Html, Attribute, div, input, text, p)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 
@@ -67,6 +69,8 @@ view model =
       [ type_ "text"
       , placeholder "Text to reverse"
       , value model.content
-      , onInput Change ] []    -- #1
-  , text model.reverseContent  -- #2
+      , onInput Change ] []  -- #1
+  , p [ class "content" ] [ text model.reverseContent ]  -- #2
+  , p [ class "length" ]
+      [ text (String.fromInt (String.length model.content)) ]
   ]
