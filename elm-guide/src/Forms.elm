@@ -19,6 +19,8 @@ import Buttons exposing (Msg)
     3. Add some more simple `Bool` validations
        - Is not "" empty string
        - Is at least 8 characters long
+    4. Convert 3 messages into ONE
+       - Record pattern matching
 
     Obviously this is a fraction of the work needed to properly validate
     a form — and it should also be validated server side for security reasons!!
