@@ -2,6 +2,9 @@ module Types exposing (..)
 
 {-| From the `Types` section of the guide -}
 import Buttons exposing (Msg)
+import Html exposing (a)
+import Html.Attributes exposing (value)
+import Browser.Dom exposing (Error)
 
 
 -- Type inferance --
@@ -265,3 +268,163 @@ toPost title content =
 -- These kind of situations are extremely common. Where the solution is
 -- simple, you can use an off-the-shelf type. Where you want to get more
 -- specific, create a custom type!
+
+
+-- MAYBE -----------------------------------------------------------------------
+
+-- For instance, not all `String`s are going to be `Float` or `number` types,
+-- so with some functions, they'll return a `Maybe` type. This type can be one
+-- of two variants.
+--
+-- An example of this can be seen here:
+--
+--    @ https://ellie-app.com/bJSMQz9tydqa1
+--
+-- -----------------------
+-- DO NOT OVERUSE MAYBE!!!
+-- -----------------------
+
+type Maybe a
+  = Just a
+  | Nothing
+
+-- Just 3.14 : Maybe Float
+-- Just "hi" : Maybe String
+-- Nothing   : Maybe a
+
+String.toFloat "3.1415"
+-- Just 3.1415 : Maybe Float
+
+String.toFloat "abc"
+-- Nothing : Maybe Float
+
+
+-- Optional Fields -------------------------------------------------------------
+
+-- When dealing with a `Maybe` type, you MUST cover all branches or the code
+-- will fail to compile. Elm will remind you to add a `Nothing` branch.
+--
+-- ---------------------
+-- DO NOT OVERUSE MAYBE!
+-- ---------------------
+-- Is a CUSTOM TYPE more appropriate?
+
+type alias User =
+  { name : String
+  , age : Maybe Int
+  }
+
+sue : User
+sue = { name = "Sue", age = Nothing }  -- Sue doesn't want to give her age
+
+-- User could miss out on functionality like "Birthday Gift"
+
+tom : User
+tom = { name = "Tom", age = Just 24 }
+
+-- We'll have to `case` on this however, we can't simply pull out `tom.age`
+-- and use it in our `view`, unfortunately. Or, `Maybe.withDefault` we Char.
+
+canBuyAlcohol : User -> Bool
+canBuyAlcohol user =
+  case user.age of
+      Nothing ->
+        False
+
+      Just age ->
+        age >= 21
+
+canBuyAlcohol sue  -- False
+canBuyAlcohol tom  -- True
+
+
+-- PROPER MODELLING (avoiding overuse of `Maybe`) ------------------------------
+
+-- How does your application actually work?
+-- The information is here, but it's incorrect ...
+
+type alias Friend =
+  { name : String
+  , age : Maybe Int
+  , height : Maybe Float
+  , weight : Maybe Float
+  }
+
+-- You could MODEL THIS BETTER by capturing much more
+-- about your application. There are two real situations:
+--
+-- 1. Either you have just the name ...
+-- 2. Or, you have the name and a bunch of information!
+--
+-- In your `view` code, you just think about whether you are showing
+-- a `Less` or `More` view of the friend.
+--
+-- However, this is an all-or-nothing approach: What if you wanted to
+-- have all of the `More` fields as optional?
+--
+-- If you find yourself using `Maybe` everywhere, it's worth examining your
+-- `type` and `type alias` definitions to see if you can model your
+-- application data for a more precise representation.
+
+type Friend
+  = Less String
+  | More String Info
+
+type alias Info =
+  { age : Int
+  , height : Float
+  , weight : Float
+}
+
+
+-- Result ----------------------------------------------------------------------
+
+-- The `Maybe` type can help with simple functions that may fail, but it does
+-- not tell you _why_ it failed. `Result` gives you a more complete response.
+-- You get helpful _feedback_ if the function is written well:
+
+type Result error value
+  = Ok value
+  | Err error
+
+isReasonableAge : String -> Result String Int
+isReasonableAge input =
+  case String.toInt input of
+      Nothing ->
+        Err "That is not a number!"
+
+      Just age ->
+        if age < 0 then
+          Err "Please try again after you are born."
+
+        else if age > 135 then
+          Err "Are you some kind of turtle?"
+
+        else
+          Ok age
+
+-- isReasonableAge "abc" == Err ...
+-- isReasonableAge "-13" == Err ...
+-- isReasonableAge "24"  == Ok 24
+-- isReasonableAge "150" == Err ...
+
+
+-- Error Recovery --
+-- The `Result` type can also help you recover from errors. One place you see
+-- this is when making `HTTP` requests (like `Http.get`) ...
+-- It could fail in a number of ways!
+--
+-- We can show helpful `Err`or messages to our customers. If we see a
+-- `Timeout` it may work to wait a little while and try again. Whereas if we
+-- see a `BadStatus 404` then there is no point in trying again.
+
+type Error
+  = BadUrl String
+  | Timeout
+  | NetworkError
+  | BadStatus Int
+  | BadBody String
+
+-- Ok "All happy ..." : Result Error String
+-- Err Timeout        : Result Error String
+-- Err NetworkError   : Result Error String
