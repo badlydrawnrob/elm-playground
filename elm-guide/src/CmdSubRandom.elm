@@ -37,7 +37,7 @@ import CmdSubHttp exposing (Msg)
       symbol = Random.uniform Cherry [ Seven, Bar, Grapes ]
 
       spin = Random.map3 Spin symbol symbol symbol
-}
+-}
 
 
 -- Main ------------------------------------------------------------------------
