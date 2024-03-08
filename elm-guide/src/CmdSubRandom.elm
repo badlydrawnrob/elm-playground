@@ -12,25 +12,18 @@ import CmdSubHttp exposing (Msg)
     Improvements that could be made:
     --------------------------------
 
-    1. Using a `Random.map` or other similar functions that would allow us
-       to create a structure that could run both the `Image` generator and the
-       `Int` generator within the same function.
-    2. So rather than having multiple `Msg` types, we would have a single
-       `NewFace Int Image Image` that would allow us to store all the potential
-       dice throws in a single `Msg` strucure.
-          - i.e: You would run `Model Int Image Image` as a single
-            function call.
-    3. You'd then store the results in a simple model structure, a record,
-       or whatever.
+    1. Using `Random.map` could allow us to store all `Random.generator`s
+       in a simple `Model Int DieFace DieFace` without the need for extra
+       record fields.
+    2. So rather than having multiple `Msg` types, we'd have a single
+       `NewFace Int Image Image` structure.
+    3. Have the dice flip around randomly before they settle on
+         a final value
 
     Tasks:
     ------
 
-      1. Show the die face as an image
-      2. Create a weighted die with `Random.weighted`
-      3. Add a second die and have them roll at the same time
-      4. Have the dice flip around randomly before they settle on
-         a final value
+
 
     Here's what we're doing
     -----------------------
