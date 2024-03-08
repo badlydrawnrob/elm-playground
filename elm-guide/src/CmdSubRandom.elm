@@ -127,19 +127,26 @@ update msg model =
 
 
 -- Original
--- randomInt : (Int -> NewFace) -> Generator Int -> Cmd Msg
+randomInt : Cmd Msg
 randomInt =
   Random.generate NewFace (Random.int 1 6)
 
--- Upgraded to images
--- randomImage : (DieFace -> NewFaceImage) -> Generator DieFace -> Cmd Msg
+randomImage : Random.Generator DieFace
 randomImage =
-  Random.uniform One [Two, Three, Four, Five, Six]
+  Random.weighted
+    (10, One)
+    [ (10, Two)
+    , (10, Three)
+    , (10, Four)
+    , (20, Five)
+    , (40, Six)
+    ]
 
--- randomList : Random.Generator DieFace
+randomList : Random.Generator (List DieFace)
 randomList =
   Random.list 2 randomImage
 
+randomImageGenerator : Cmd Msg
 randomImageGenerator =
   Random.generate NewFaceImage randomList
 
