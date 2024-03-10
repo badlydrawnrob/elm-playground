@@ -6,6 +6,21 @@
 
 A testing ground for all things Elm. There's plenty of javascript guides out there, so this only covers functional programming in the style of Elm. Also see ["Lazy Loading of Anki Cards"](https://github.com/badlydrawnrob/anki/issues/91) for revision.
 
+## Basic commands
+
+```terminal
+# Initialise an Elm project
+elm init
+# Install a package
+elm install elm/<package>
+# Make a HTML file from an Elm one
+elm make src/Main.elm
+# Compile to javascript file
+elm make src/Main.elm --output=app.js
+# View in the browser
+elm reactor
+```
+
 ## Some useful docs
 
 - [Official Elm guide](https://guide.elm-lang.org/)
