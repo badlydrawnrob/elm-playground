@@ -1,0 +1,14 @@
+{
+  "name": "elm-guide",
+  "version": "1.0.0",
+  "description": "Running through the official Elm Guide",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rob",
+  "license": "ISC",
+  "devDependencies": {
+    "elm-format": "^0.8.7"
+  }
+}

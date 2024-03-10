@@ -1,15 +1,16 @@
 module CmdSubTime exposing (..)
 
 import Browser
+import CmdSubHttp exposing (Msg)
 import Html exposing (..)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Task
 import Time
-import CmdSubHttp exposing (Msg)
+
 
 {-| Taking the time ...
-    -------------------
+-------------------
 
     I don't really understand `Time` that well, nor using `Task`, so would
     need to seek out better tutorials or documentation. I guess `Task` is to
@@ -52,19 +53,21 @@ import CmdSubHttp exposing (Msg)
 -}
 
 
+
 -- Main ------------------------------------------------------------------------
 
+
 main =
-  Browser.element
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
 
 
 -- Model -----------------------------------------------------------------------
-
 -- #1: Getting `Time.Zone` is tricky. We created a `command` with
 --     `Task.perform ... ...` — we command the runtime to give us the
 --     `Time.Zone` wherever the code is running. See `Task` for more
@@ -72,48 +75,52 @@ main =
 --
 --       @ https://package.elm-lang.org/packages/elm/core/latest/Task
 
-type alias Model =
-  { zone : Time.Zone
-  , time : Time.Posix
-  , paused : Bool
-  }
 
-init : () -> (Model, Cmd Msg)
+type alias Model =
+    { zone : Time.Zone
+    , time : Time.Posix
+    , paused : Bool
+    }
+
+
+init : () -> ( Model, Cmd Msg )
 init _ =
-  ( Model Time.utc (Time.millisToPosix 0) False
-  , Task.perform AdjustTimeZone Time.here
-  )
+    ( Model Time.utc (Time.millisToPosix 0) False
+    , Task.perform AdjustTimeZone Time.here
+    )
+
 
 
 -- Update ----------------------------------------------------------------------
 
+
 type Msg
-  = Tick Time.Posix
-  | AdjustTimeZone Time.Zone
-  | StopStartClock
+    = Tick Time.Posix
+    | AdjustTimeZone Time.Zone
+    | StopStartClock
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-      Tick newTime ->
-        ( { model | time = newTime }
-        , Cmd.none
-        )
+    case msg of
+        Tick newTime ->
+            ( { model | time = newTime }
+            , Cmd.none
+            )
 
-      AdjustTimeZone newZone ->
-        ( { model | zone = newZone }
-        , Cmd.none
-        )
+        AdjustTimeZone newZone ->
+            ( { model | zone = newZone }
+            , Cmd.none
+            )
 
-      StopStartClock ->
-        ( { model | paused = not model.paused }
-        , Cmd.none
-        )
+        StopStartClock ->
+            ( { model | paused = not model.paused }
+            , Cmd.none
+            )
+
 
 
 -- Subscriptions ---------------------------------------------------------------
-
 -- #1: We use `1000` which means every second. We could've also said `60 * 1000`
 --     for every minute, or `5 * 60 * 1000` for every five minutes.
 --
@@ -124,36 +131,51 @@ update msg model =
 --     A subscription is given some configuration, and you describe how to
 --     to produce `Msg` values.
 
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  if model.paused then
-    Sub.none
-  else
-    Time.every 1000 Tick  -- #1
+    if model.paused then
+        Sub.none
+
+    else
+        Time.every 1000 Tick
 
 
+
+-- #1
 -- View
+
 
 view : Model -> Html Msg
 view model =
-  let
-    hour = String.fromInt   (Time.toHour model.zone model.time)
-    minute = String.fromInt (Time.toMinute model.zone model.time)
-    second = String.fromInt (Time.toSecond model.zone model.time)
+    let
+        hour =
+            String.fromInt (Time.toHour model.zone model.time)
 
-  in
-    div [ style "width" "200px"
-        , style "margin" "20px auto" ]
-      [ h1 [ style "color" "red"
-           , style "font-family" "system-ui"]
-           [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
-      , viewButton model.paused
-    ]
+        minute =
+            String.fromInt (Time.toMinute model.zone model.time)
+
+        second =
+            String.fromInt (Time.toSecond model.zone model.time)
+    in
+    div
+        [ style "width" "200px"
+        , style "margin" "20px auto"
+        ]
+        [ h1
+            [ style "color" "red"
+            , style "font-family" "system-ui"
+            ]
+            [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
+        , viewButton model.paused
+        ]
+
 
 viewButton : Bool -> Html Msg
 viewButton switch =
-  case switch of
-      True ->
-        button [ onClick StopStartClock ] [ text "Turn on clock" ]
-      False ->
-        button [ onClick StopStartClock ] [ text "Turn off clock" ]
+    case switch of
+        True ->
+            button [ onClick StopStartClock ] [ text "Turn on clock" ]
+
+        False ->
+            button [ onClick StopStartClock ] [ text "Turn off clock" ]
