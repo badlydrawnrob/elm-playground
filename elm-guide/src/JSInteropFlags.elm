@@ -62,17 +62,19 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscription = subscription
+    , subscriptions = subscriptions
     }
 
 
 -- Model -----------------------------------------------------------------------
 
+-- #1: Elm code gets immediate access to the flags you pass in from JavaScript
+
 type alias Model = { currentTime : Int }
 
 init : Int -> ( Model, Cmd Msg )
 init currentTime =
-  ( { currentTime = currentTime }
+  ( { currentTime = currentTime }  -- #1
   , Cmd.none
   )
 

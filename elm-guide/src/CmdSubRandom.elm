@@ -5,7 +5,6 @@ import Html exposing (..)
 import Html.Attributes exposing (src, title)
 import Html.Events exposing (..)
 import Random
-import CmdSubHttp exposing (Msg)
 
 {-| Generate a random dice
 

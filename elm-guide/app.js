@@ -4370,7 +4370,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$TextField$init = {content: '', reverseContent: ''};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5159,60 +5158,97 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
+var $elm$browser$Browser$element = _Browser_element;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			init: function (_v0) {
-				return _Utils_Tuple2(impl.init, $elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_v1) {
-				return $elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.update, msg, model),
-						$elm$core$Platform$Cmd$none);
-				}),
-			view: impl.view
-		});
+var $author$project$JSInteropPorts$init = function (flags) {
+	return _Utils_Tuple2(
+		{draft: '', messages: _List_Nil},
+		$elm$core$Platform$Cmd$none);
 };
-var $elm$core$String$reverse = _String_reverse;
-var $author$project$TextField$update = F2(
-	function (msg, model) {
-		var str = msg.a;
-		return _Utils_update(
-			model,
-			{
-				content: str,
-				reverseContent: $elm$core$String$reverse(str)
-			});
-	});
-var $author$project$TextField$Change = function (a) {
-	return {$: 'Change', a: a};
+var $author$project$JSInteropPorts$Recv = function (a) {
+	return {$: 'Recv', a: a};
+};
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$JSInteropPorts$messageReceiver = _Platform_incomingPort('messageReceiver', $elm$json$Json$Decode$string);
+var $author$project$JSInteropPorts$subscriptions = function (_v0) {
+	return $author$project$JSInteropPorts$messageReceiver($author$project$JSInteropPorts$Recv);
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
+var $author$project$JSInteropPorts$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
+var $author$project$JSInteropPorts$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'DraftChanged':
+				var draft = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{draft: draft}),
+					$elm$core$Platform$Cmd$none);
+			case 'Send':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{draft: ''}),
+					$author$project$JSInteropPorts$sendMessage(model.draft));
+			default:
+				var message = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							messages: _Utils_ap(
+								model.messages,
+								_List_fromArray(
+									[message]))
+						}),
+					$elm$core$Platform$Cmd$none);
+		}
 	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$JSInteropPorts$DraftChanged = function (a) {
+	return {$: 'DraftChanged', a: a};
+};
+var $author$project$JSInteropPorts$Send = {$: 'Send'};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$JSInteropPorts$ifIsEnter = function (msg) {
+	return A2(
+		$elm$json$Json$Decode$andThen,
+		function (key) {
+			return (key === 'Enter') ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('some other key');
+		},
+		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+};
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -5220,12 +5256,10 @@ var $elm$html$Html$Events$stopPropagationOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$html$Html$Events$targetValue = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
@@ -5240,53 +5274,74 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$TextField$view = function (model) {
+var $author$project$JSInteropPorts$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
 				A2(
+				$elm$html$Html$h1,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Echo Chat')
+					])),
+				A2(
+				$elm$html$Html$ul,
+				_List_Nil,
+				A2(
+					$elm$core$List$map,
+					function (msg) {
+						return A2(
+							$elm$html$Html$li,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(msg)
+								]));
+					},
+					model.messages)),
+				A2(
 				$elm$html$Html$input,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$placeholder('Text to reverse'),
-						$elm$html$Html$Attributes$value(model.content),
-						$elm$html$Html$Events$onInput($author$project$TextField$Change)
+						$elm$html$Html$Attributes$placeholder('Draft'),
+						$elm$html$Html$Events$onInput($author$project$JSInteropPorts$DraftChanged),
+						A2(
+						$elm$html$Html$Events$on,
+						'keydown',
+						$author$project$JSInteropPorts$ifIsEnter($author$project$JSInteropPorts$Send)),
+						$elm$html$Html$Attributes$value(model.draft)
 					]),
 				_List_Nil),
 				A2(
-				$elm$html$Html$p,
+				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('content')
+						$elm$html$Html$Events$onClick($author$project$JSInteropPorts$Send)
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.reverseContent)
-					])),
-				A2(
-				$elm$html$Html$p,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('length')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(
-							$elm$core$String$length(model.content)))
+						$elm$html$Html$text('Send')
 					]))
 			]));
 };
-var $author$project$TextField$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$TextField$init, update: $author$project$TextField$update, view: $author$project$TextField$view});
-_Platform_export({'TextField':{'init':$author$project$TextField$main(
+var $author$project$JSInteropPorts$main = $elm$browser$Browser$element(
+	{init: $author$project$JSInteropPorts$init, subscriptions: $author$project$JSInteropPorts$subscriptions, update: $author$project$JSInteropPorts$update, view: $author$project$JSInteropPorts$view});
+_Platform_export({'JSInteropPorts':{'init':$author$project$JSInteropPorts$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
