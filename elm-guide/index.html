@@ -1,3 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WebAppsDocument</title>
+  <style>body { padding: 0; margin: 0; }</style>
+</head>
+
+<body>
+
+<pre id="elm"></pre>
+
+<script>
+try {
 (function(scope){
 'use strict';
 
@@ -4370,12 +4384,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$WebAppsNav$LinkClicked = function (a) {
-	return {$: 'LinkClicked', a: a};
-};
-var $author$project$WebAppsNav$UrlChanged = function (a) {
-	return {$: 'UrlChanged', a: a};
-};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5164,103 +5172,63 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
-var $elm$browser$Browser$application = _Browser_application;
-var $author$project$WebAppsNav$Model = F2(
-	function (key, url) {
-		return {key: key, url: url};
-	});
+var $elm$browser$Browser$document = _Browser_document;
+var $author$project$WebAppsDocument$Model = function (counter) {
+	return {counter: counter};
+};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$WebAppsNav$init = F3(
-	function (flags, url, key) {
-		return _Utils_Tuple2(
-			A2($author$project$WebAppsNav$Model, key, url),
-			$elm$core$Platform$Cmd$none);
-	});
+var $author$project$WebAppsDocument$init = function (_v0) {
+	return _Utils_Tuple2(
+		$author$project$WebAppsDocument$Model(1),
+		$elm$core$Platform$Cmd$none);
+};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$WebAppsNav$subscriptions = function (_v0) {
+var $author$project$WebAppsDocument$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $elm$browser$Browser$Navigation$load = _Browser_load;
-var $elm$core$Debug$log = _Debug_log;
-var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
-var $elm$url$Url$addPort = F2(
-	function (maybePort, starter) {
-		if (maybePort.$ === 'Nothing') {
-			return starter;
-		} else {
-			var port_ = maybePort.a;
-			return starter + (':' + $elm$core$String$fromInt(port_));
-		}
-	});
-var $elm$url$Url$addPrefixed = F3(
-	function (prefix, maybeSegment, starter) {
-		if (maybeSegment.$ === 'Nothing') {
-			return starter;
-		} else {
-			var segment = maybeSegment.a;
-			return _Utils_ap(
-				starter,
-				_Utils_ap(prefix, segment));
-		}
-	});
-var $elm$url$Url$toString = function (url) {
-	var http = function () {
-		var _v0 = url.protocol;
-		if (_v0.$ === 'Http') {
-			return 'http://';
-		} else {
-			return 'https://';
-		}
-	}();
-	return A3(
-		$elm$url$Url$addPrefixed,
-		'#',
-		url.fragment,
-		A3(
-			$elm$url$Url$addPrefixed,
-			'?',
-			url.query,
-			_Utils_ap(
-				A2(
-					$elm$url$Url$addPort,
-					url.port_,
-					_Utils_ap(http, url.host)),
-				url.path)));
-};
-var $author$project$WebAppsNav$update = F2(
+var $author$project$WebAppsDocument$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'LinkClicked') {
-			var urlRequest = msg.a;
-			if (urlRequest.$ === 'Internal') {
-				var url = urlRequest.a;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$browser$Browser$Navigation$pushUrl,
-						A2($elm$core$Debug$log, 'model-key', model.key),
-						$elm$url$Url$toString(url)));
-			} else {
-				var href = urlRequest.a;
-				return _Utils_Tuple2(
-					model,
-					$elm$browser$Browser$Navigation$load(href));
-			}
-		} else {
-			var url = msg.a;
+		if (msg.$ === 'Increment') {
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{url: url}),
+					{counter: model.counter + 1}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			return (!model.counter) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{counter: model.counter - 1}),
 				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $elm$html$Html$b = _VirtualDom_node('b');
+var $author$project$WebAppsDocument$Decrement = {$: 'Decrement'};
+var $author$project$WebAppsDocument$Increment = {$: 'Increment'};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5269,61 +5237,75 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			$elm$json$Json$Encode$string(string));
 	});
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $author$project$WebAppsNav$viewLink = function (path) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$a,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$href(path)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(path)
-					]))
-			]));
-};
-var $author$project$WebAppsNav$view = function (model) {
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$WebAppsDocument$view = function (model) {
 	return {
 		body: _List_fromArray(
 			[
-				$elm$html$Html$text('The current URL is: '),
 				A2(
-				$elm$html$Html$b,
+				$elm$html$Html$div,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						$elm$url$Url$toString(
-							A2($elm$core$Debug$log, 'model-url', model.url)))
-					])),
-				A2(
-				$elm$html$Html$ul,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$author$project$WebAppsNav$viewLink('/home'),
-						$author$project$WebAppsNav$viewLink('/profile'),
-						$author$project$WebAppsNav$viewLink('/reviews/the-century-of-the-self'),
-						$author$project$WebAppsNav$viewLink('/reviews/public-opinion'),
-						$author$project$WebAppsNav$viewLink('/reviews/shah-of-shahs')
+						A2(
+						$elm$html$Html$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A test document')
+							])),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$elm$core$String$fromInt(model.counter))
+							]),
+						_List_Nil),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$WebAppsDocument$Increment)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('increment')
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$WebAppsDocument$Decrement)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('decrement')
+							]))
 					]))
 			]),
-		title: 'URL Interceptor'
+		title: $elm$core$String$fromInt(model.counter) + 'is the number'
 	};
 };
-var $author$project$WebAppsNav$main = $elm$browser$Browser$application(
-	{init: $author$project$WebAppsNav$init, onUrlChange: $author$project$WebAppsNav$UrlChanged, onUrlRequest: $author$project$WebAppsNav$LinkClicked, subscriptions: $author$project$WebAppsNav$subscriptions, update: $author$project$WebAppsNav$update, view: $author$project$WebAppsNav$view});
-_Platform_export({'WebAppsNav':{'init':$author$project$WebAppsNav$main(
+var $author$project$WebAppsDocument$main = $elm$browser$Browser$document(
+	{init: $author$project$WebAppsDocument$init, subscriptions: $author$project$WebAppsDocument$subscriptions, update: $author$project$WebAppsDocument$update, view: $author$project$WebAppsDocument$view});
+_Platform_export({'WebAppsDocument':{'init':$author$project$WebAppsDocument$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+
+  var app = Elm.WebAppsDocument.init({ node: document.getElementById("elm") });
+}
+catch (e)
+{
+  // display initialization errors (e.g. bad flags, infinite recursion)
+  var header = document.createElement("h1");
+  header.style.fontFamily = "monospace";
+  header.innerText = "Initialization Error";
+  var pre = document.getElementById("elm");
+  document.body.insertBefore(header, pre);
+  pre.innerText = e;
+  throw e;
+}
+</script>
+
+</body>
+</html>
