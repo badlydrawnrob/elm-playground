@@ -4450,7 +4450,10 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
-var $author$project$ToDoSimple$initialModel = {inputText: '', todos: _List_Nil};
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -4474,10 +4477,6 @@ var $elm$json$Json$Decode$OneOf = function (a) {
 };
 var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -4846,6 +4845,8 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5159,249 +5160,611 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
+var $elm$browser$Browser$document = _Browser_document;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$ToDo$emptyModel = {entries: _List_Nil, field: '', uid: 0, visibility: 'All'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$ToDo$init = function (maybeModel) {
+	return _Utils_Tuple2(
+		A2($elm$core$Maybe$withDefault, $author$project$ToDo$emptyModel, maybeModel),
+		$elm$core$Platform$Cmd$none);
+};
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			init: function (_v0) {
-				return _Utils_Tuple2(impl.init, $elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_v1) {
-				return $elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.update, msg, model),
-						$elm$core$Platform$Cmd$none);
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
 				}),
-			view: impl.view
-		});
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
 };
-var $author$project$ToDoSimple$addToList = F2(
-	function (input, todos) {
-		return _Utils_ap(
-			todos,
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$ToDo$setStorage = _Platform_outgoingPort(
+	'setStorage',
+	function ($) {
+		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
-					{completed: false, text: input}
+					_Utils_Tuple2(
+					'entries',
+					$elm$json$Json$Encode$list(
+						function ($) {
+							return $elm$json$Json$Encode$object(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										'completed',
+										$elm$json$Json$Encode$bool($.completed)),
+										_Utils_Tuple2(
+										'description',
+										$elm$json$Json$Encode$string($.description)),
+										_Utils_Tuple2(
+										'editing',
+										$elm$json$Json$Encode$bool($.editing)),
+										_Utils_Tuple2(
+										'id',
+										$elm$json$Json$Encode$int($.id))
+									]));
+						})($.entries)),
+					_Utils_Tuple2(
+					'field',
+					$elm$json$Json$Encode$string($.field)),
+					_Utils_Tuple2(
+					'uid',
+					$elm$json$Json$Encode$int($.uid)),
+					_Utils_Tuple2(
+					'visibility',
+					$elm$json$Json$Encode$string($.visibility))
 				]));
 	});
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
+var $author$project$ToDo$NoOp = {$: 'NoOp'};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
 	});
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
+var $elm$core$Task$onError = _Scheduler_onError;
+var $elm$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return $elm$core$Task$command(
+			$elm$core$Task$Perform(
+				A2(
+					$elm$core$Task$onError,
+					A2(
+						$elm$core$Basics$composeL,
+						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+						$elm$core$Result$Err),
+					A2(
+						$elm$core$Task$andThen,
+						A2(
+							$elm$core$Basics$composeL,
+							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+							$elm$core$Result$Ok),
+						task))));
 	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
-var $author$project$ToDoSimple$removeFromList = F2(
-	function (index, list) {
-		return _Utils_ap(
-			A2($elm$core$List$take, index, list),
-			A2($elm$core$List$drop, index + 1, list));
-	});
-var $elm$core$Basics$not = _Basics_not;
-var $author$project$ToDoSimple$checkIndex = F3(
-	function (indexToToggle, index, todo) {
-		return _Utils_eq(indexToToggle, index) ? _Utils_update(
-			todo,
-			{completed: !todo.completed}) : todo;
-	});
-var $author$project$ToDoSimple$toggleAtIndex = F2(
-	function (indexToToggle, list) {
-		return A2(
-			$elm$core$List$indexedMap,
-			$author$project$ToDoSimple$checkIndex(indexToToggle),
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
 			list);
 	});
-var $author$project$ToDoSimple$update = F2(
-	function (message, model) {
-		switch (message.$) {
-			case 'AddToDo':
-				return _Utils_update(
-					model,
-					{
-						inputText: '',
-						todos: A2($author$project$ToDoSimple$addToList, model.inputText, model.todos)
-					});
-			case 'RemoveToDo':
-				var index = message.a;
-				return _Utils_update(
-					model,
-					{
-						todos: A2($author$project$ToDoSimple$removeFromList, index, model.todos)
-					});
-			case 'ToggleToDo':
-				var index = message.a;
-				return _Utils_update(
-					model,
-					{
-						todos: A2($author$project$ToDoSimple$toggleAtIndex, index, model.todos)
-					});
+var $elm$browser$Browser$Dom$focus = _Browser_call('focus');
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$ToDo$newEntry = F2(
+	function (desc, id) {
+		return {completed: false, description: desc, editing: false, id: id};
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$ToDo$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'NoOp':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'Add':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: $elm$core$String$isEmpty(model.field) ? model.entries : _Utils_ap(
+								model.entries,
+								_List_fromArray(
+									[
+										A2($author$project$ToDo$newEntry, model.field, model.uid)
+									])),
+							field: '',
+							uid: model.uid + 1
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'UpdateField':
+				var str = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{field: str}),
+					$elm$core$Platform$Cmd$none);
+			case 'EditingEntry':
+				var id = msg.a;
+				var isEditing = msg.b;
+				var updateEntry = function (t) {
+					return _Utils_eq(t.id, id) ? _Utils_update(
+						t,
+						{editing: isEditing}) : t;
+				};
+				var focus = $elm$browser$Browser$Dom$focus(
+					'todo-' + $elm$core$String$fromInt(id));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2($elm$core$List$map, updateEntry, model.entries)
+						}),
+					A2(
+						$elm$core$Task$attempt,
+						function (_v1) {
+							return $author$project$ToDo$NoOp;
+						},
+						focus));
+			case 'UpdateEntry':
+				var id = msg.a;
+				var task = msg.b;
+				var updateEntry = function (t) {
+					return _Utils_eq(t.id, id) ? _Utils_update(
+						t,
+						{description: task}) : t;
+				};
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2($elm$core$List$map, updateEntry, model.entries)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'Delete':
+				var id = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2(
+								$elm$core$List$filter,
+								function (t) {
+									return !_Utils_eq(t.id, id);
+								},
+								model.entries)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'DeleteComplete':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2(
+								$elm$core$List$filter,
+								A2(
+									$elm$core$Basics$composeL,
+									$elm$core$Basics$not,
+									function ($) {
+										return $.completed;
+									}),
+								model.entries)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'Check':
+				var id = msg.a;
+				var isCompleted = msg.b;
+				var updateEntry = function (t) {
+					return _Utils_eq(t.id, id) ? _Utils_update(
+						t,
+						{completed: isCompleted}) : t;
+				};
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2($elm$core$List$map, updateEntry, model.entries)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'CheckAll':
+				var isCompleted = msg.a;
+				var updateEntry = function (t) {
+					return _Utils_update(
+						t,
+						{completed: isCompleted});
+				};
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							entries: A2($elm$core$List$map, updateEntry, model.entries)
+						}),
+					$elm$core$Platform$Cmd$none);
 			default:
-				var input = message.a;
-				return _Utils_update(
-					model,
-					{inputText: input});
+				var visibility = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{visibility: visibility}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$ToDoSimple$AddToDo = {$: 'AddToDo'};
-var $author$project$ToDoSimple$ChangeInput = function (a) {
-	return {$: 'ChangeInput', a: a};
+var $author$project$ToDo$updateWithStorage = F2(
+	function (msg, model) {
+		var _v0 = A2($author$project$ToDo$update, msg, model);
+		var newModel = _v0.a;
+		var cmds = _v0.b;
+		return _Utils_Tuple2(
+			newModel,
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						$author$project$ToDo$setStorage(newModel),
+						cmds
+					])));
+	});
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$footer = _VirtualDom_node('footer');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
 };
-var $elm$html$Html$form = _VirtualDom_node('form');
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$ToDo$infoFooter = A2(
+	$elm$html$Html$footer,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('info')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Double-click to edit a todo')
+				])),
+			A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Written by '),
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$href('https://github.com/evancz')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Evan Czaplicki')
+						]))
+				])),
+			A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Part of '),
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$href('http://todomvc.com')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('TodoMVC')
+						]))
+				]))
+		]));
+var $elm$virtual_dom$VirtualDom$lazy = _VirtualDom_lazy;
+var $elm$html$Html$Lazy$lazy = $elm$virtual_dom$VirtualDom$lazy;
+var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
+var $elm$html$Html$Lazy$lazy2 = $elm$virtual_dom$VirtualDom$lazy2;
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$hidden = $elm$html$Html$Attributes$boolProperty('hidden');
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $author$project$ToDo$DeleteComplete = {$: 'DeleteComplete'};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$ToDo$viewControlsClear = function (entriesCompleted) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('clear-completed'),
+				$elm$html$Html$Attributes$hidden(!entriesCompleted),
+				$elm$html$Html$Events$onClick($author$project$ToDo$DeleteComplete)
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				'Clear completed (' + ($elm$core$String$fromInt(entriesCompleted) + ')'))
+			]));
+};
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$html$Html$strong = _VirtualDom_node('strong');
+var $author$project$ToDo$viewControlsCount = function (entriesLeft) {
+	var item_ = (entriesLeft === 1) ? ' item' : ' items';
+	return A2(
+		$elm$html$Html$span,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('todo-count')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(entriesLeft))
+					])),
+				$elm$html$Html$text(item_ + ' left')
+			]));
+};
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$ToDo$ChangeVisibility = function (a) {
+	return {$: 'ChangeVisibility', a: a};
+};
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $author$project$ToDo$visibilitySwap = F3(
+	function (uri, visibility, actualVisibility) {
+		return A2(
+			$elm$html$Html$li,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$ToDo$ChangeVisibility(visibility))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$href(uri),
+							$elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2(
+									'selected',
+									_Utils_eq(visibility, actualVisibility))
+								]))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(visibility)
+						]))
+				]));
+	});
+var $author$project$ToDo$viewControlsFilters = function (visibility) {
+	return A2(
+		$elm$html$Html$ul,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('filters')
+			]),
+		_List_fromArray(
+			[
+				A3($author$project$ToDo$visibilitySwap, '#/', 'All', visibility),
+				$elm$html$Html$text(' '),
+				A3($author$project$ToDo$visibilitySwap, '#/active', 'Active', visibility),
+				$elm$html$Html$text(' '),
+				A3($author$project$ToDo$visibilitySwap, '#/completed', 'Completed', visibility)
+			]));
+};
+var $author$project$ToDo$viewControls = F2(
+	function (visibility, entries) {
+		var entriesCompleted = $elm$core$List$length(
+			A2(
+				$elm$core$List$filter,
+				function ($) {
+					return $.completed;
+				},
+				entries));
+		var entriesLeft = $elm$core$List$length(entries) - entriesCompleted;
+		return A2(
+			$elm$html$Html$footer,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('footer'),
+					$elm$html$Html$Attributes$hidden(
+					$elm$core$List$isEmpty(entries))
+				]),
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Lazy$lazy, $author$project$ToDo$viewControlsCount, entriesLeft),
+					A2($elm$html$Html$Lazy$lazy, $author$project$ToDo$viewControlsFilters, visibility),
+					A2($elm$html$Html$Lazy$lazy, $author$project$ToDo$viewControlsClear, entriesCompleted)
+				]));
+	});
+var $author$project$ToDo$CheckAll = function (a) {
+	return {$: 'CheckAll', a: a};
+};
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+var $elm$html$Html$Attributes$for = $elm$html$Html$Attributes$stringProperty('htmlFor');
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
+	return _VirtualDom_keyedNode(
+		_VirtualDom_noScript(tag));
+};
+var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
+var $elm$html$Html$Keyed$ul = $elm$html$Html$Keyed$node('ul');
+var $author$project$ToDo$Check = F2(
+	function (a, b) {
+		return {$: 'Check', a: a, b: b};
+	});
+var $author$project$ToDo$Delete = function (a) {
+	return {$: 'Delete', a: a};
+};
+var $author$project$ToDo$EditingEntry = F2(
+	function (a, b) {
+		return {$: 'EditingEntry', a: a, b: b};
+	});
+var $author$project$ToDo$UpdateEntry = F2(
+	function (a, b) {
+		return {$: 'UpdateEntry', a: a, b: b};
+	});
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$Events$onBlur = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'blur',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$Events$onDoubleClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'dblclick',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$html$Html$Events$keyCode = A2($elm$json$Json$Decode$field, 'keyCode', $elm$json$Json$Decode$int);
+var $author$project$ToDo$onEnter = function (msg) {
+	var isEnter = function (code) {
+		return (code === 13) ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('not ENTER');
+	};
+	return A2(
+		$elm$html$Html$Events$on,
+		'keydown',
+		A2($elm$json$Json$Decode$andThen, isEnter, $elm$html$Html$Events$keyCode));
+};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -5409,12 +5772,10 @@ var $elm$html$Html$Events$stopPropagationOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$html$Html$Events$targetValue = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
@@ -5429,140 +5790,161 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
-	return _Utils_Tuple2(msg, true);
-};
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $elm$html$Html$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
-var $elm$html$Html$Events$onSubmit = function (msg) {
-	return A2(
-		$elm$html$Html$Events$preventDefaultOn,
-		'submit',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysPreventDefault,
-			$elm$json$Json$Decode$succeed(msg)));
-};
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $author$project$ToDoSimple$isEmptyList = function (list) {
-	return $elm$core$List$isEmpty(list);
-};
-var $elm$html$Html$ol = _VirtualDom_node('ol');
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $author$project$ToDoSimple$RemoveToDo = function (a) {
-	return {$: 'RemoveToDo', a: a};
-};
-var $author$project$ToDoSimple$ToggleToDo = function (a) {
-	return {$: 'ToggleToDo', a: a};
-};
-var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
+var $author$project$ToDo$viewEntry = function (todo) {
 	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
+		$elm$html$Html$li,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$classList(
+				_List_fromArray(
+					[
+						_Utils_Tuple2('completed', todo.completed),
+						_Utils_Tuple2('editing', todo.editing)
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('view')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('toggle'),
+								$elm$html$Html$Attributes$type_('checkbox'),
+								$elm$html$Html$Attributes$checked(todo.completed),
+								$elm$html$Html$Events$onClick(
+								A2($author$project$ToDo$Check, todo.id, !todo.completed))
+							]),
+						_List_Nil),
+						A2(
+						$elm$html$Html$label,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onDoubleClick(
+								A2($author$project$ToDo$EditingEntry, todo.id, true))
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(todo.description)
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('destroy'),
+								$elm$html$Html$Events$onClick(
+								$author$project$ToDo$Delete(todo.id))
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('edit'),
+						$elm$html$Html$Attributes$value(todo.description),
+						$elm$html$Html$Attributes$name('title'),
+						$elm$html$Html$Attributes$id(
+						'todo-' + $elm$core$String$fromInt(todo.id)),
+						$elm$html$Html$Events$onInput(
+						$author$project$ToDo$UpdateEntry(todo.id)),
+						$elm$html$Html$Events$onBlur(
+						A2($author$project$ToDo$EditingEntry, todo.id, false)),
+						$author$project$ToDo$onEnter(
+						A2($author$project$ToDo$EditingEntry, todo.id, false))
+					]),
+				_List_Nil)
+			]));
 };
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $author$project$ToDoSimple$viewTextStyle = function (bool) {
-	return bool ? 'line-through' : 'none';
+var $author$project$ToDo$viewKeyedEntry = function (todo) {
+	return _Utils_Tuple2(
+		$elm$core$String$fromInt(todo.id),
+		A2($elm$html$Html$Lazy$lazy, $author$project$ToDo$viewEntry, todo));
 };
-var $author$project$ToDoSimple$viewToDo = F2(
-	function (index, todo) {
+var $author$project$ToDo$viewEntries = F2(
+	function (visibility, entries) {
+		var isVisible = function (todo) {
+			switch (visibility) {
+				case 'Completed':
+					return todo.completed;
+				case 'Active':
+					return !todo.completed;
+				default:
+					return true;
+			}
+		};
+		var cssVisibility = $elm$core$List$isEmpty(entries) ? 'hidden' : 'visible';
+		var allCompleted = A2(
+			$elm$core$List$all,
+			function ($) {
+				return $.completed;
+			},
+			entries);
 		return A2(
-			$elm$html$Html$li,
+			$elm$html$Html$section,
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$Attributes$style,
-					'text-decoration',
-					$author$project$ToDoSimple$viewTextStyle(todo.completed))
+					$elm$html$Html$Attributes$class('main'),
+					A2($elm$html$Html$Attributes$style, 'visibility', cssVisibility)
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(todo.text),
 					A2(
-					$elm$html$Html$button,
+					$elm$html$Html$input,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$type_('button'),
+							$elm$html$Html$Attributes$class('toggle-all'),
+							$elm$html$Html$Attributes$type_('checkbox'),
+							$elm$html$Html$Attributes$name('toggle'),
+							$elm$html$Html$Attributes$checked(allCompleted),
 							$elm$html$Html$Events$onClick(
-							$author$project$ToDoSimple$ToggleToDo(index))
+							$author$project$ToDo$CheckAll(!allCompleted))
+						]),
+					_List_Nil),
+					A2(
+					$elm$html$Html$label,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$for('toggle-all')
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Toggle')
+							$elm$html$Html$text('Mark all as complete')
 						])),
 					A2(
-					$elm$html$Html$button,
+					$elm$html$Html$Keyed$ul,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$type_('button'),
-							$elm$html$Html$Events$onClick(
-							$author$project$ToDoSimple$RemoveToDo(index))
+							$elm$html$Html$Attributes$class('todo-list')
 						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Delete')
-						]))
+					A2(
+						$elm$core$List$map,
+						$author$project$ToDo$viewKeyedEntry,
+						A2($elm$core$List$filter, isVisible, entries)))
 				]));
 	});
-var $author$project$ToDoSimple$viewList = function (list) {
-	return $author$project$ToDoSimple$isEmptyList(list) ? A2(
-		$elm$html$Html$p,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$elm$html$Html$text('The list is clean 🧘‍♀️')
-			])) : A2(
-		$elm$html$Html$ol,
-		_List_Nil,
-		A2($elm$core$List$indexedMap, $author$project$ToDoSimple$viewToDo, list));
+var $author$project$ToDo$Add = {$: 'Add'};
+var $author$project$ToDo$UpdateField = function (a) {
+	return {$: 'UpdateField', a: a};
 };
-var $author$project$ToDoSimple$view = function (model) {
+var $elm$html$Html$Attributes$autofocus = $elm$html$Html$Attributes$boolProperty('autofocus');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$header = _VirtualDom_node('header');
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $author$project$ToDo$viewInput = function (task) {
 	return A2(
-		$elm$html$Html$form,
+		$elm$html$Html$header,
 		_List_fromArray(
 			[
-				$elm$html$Html$Events$onSubmit($author$project$ToDoSimple$AddToDo)
+				$elm$html$Html$Attributes$class('header')
 			]),
 		_List_fromArray(
 			[
@@ -5571,21 +5953,118 @@ var $author$project$ToDoSimple$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Todos in Elm')
+						$elm$html$Html$text('todos')
 					])),
 				A2(
 				$elm$html$Html$input,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$value(model.inputText),
-						$elm$html$Html$Events$onInput($author$project$ToDoSimple$ChangeInput),
-						$elm$html$Html$Attributes$placeholder('What do you want to do?')
+						$elm$html$Html$Attributes$class('new-todo'),
+						$elm$html$Html$Attributes$placeholder('What needs to be done?'),
+						$elm$html$Html$Attributes$autofocus(true),
+						$elm$html$Html$Attributes$value(task),
+						$elm$html$Html$Attributes$name('newTodo'),
+						$elm$html$Html$Events$onInput($author$project$ToDo$UpdateField),
+						$author$project$ToDo$onEnter($author$project$ToDo$Add)
 					]),
-				_List_Nil),
-				$author$project$ToDoSimple$viewList(model.todos)
+				_List_Nil)
 			]));
 };
-var $author$project$ToDoSimple$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$ToDoSimple$initialModel, update: $author$project$ToDoSimple$update, view: $author$project$ToDoSimple$view});
-_Platform_export({'ToDoSimple':{'init':$author$project$ToDoSimple$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+var $author$project$ToDo$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('todomvc-wrapper'),
+				A2($elm$html$Html$Attributes$style, 'visibility', 'hidden')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$section,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('todoapp')
+					]),
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Lazy$lazy, $author$project$ToDo$viewInput, model.field),
+						A3($elm$html$Html$Lazy$lazy2, $author$project$ToDo$viewEntries, model.visibility, model.entries),
+						A3($elm$html$Html$Lazy$lazy2, $author$project$ToDo$viewControls, model.visibility, model.entries)
+					])),
+				$author$project$ToDo$infoFooter
+			]));
+};
+var $author$project$ToDo$main = $elm$browser$Browser$document(
+	{
+		init: $author$project$ToDo$init,
+		subscriptions: function (_v0) {
+			return $elm$core$Platform$Sub$none;
+		},
+		update: $author$project$ToDo$updateWithStorage,
+		view: function (model) {
+			return {
+				body: _List_fromArray(
+					[
+						$author$project$ToDo$view(model)
+					]),
+				title: 'Elm • TodoMVC'
+			};
+		}
+	});
+_Platform_export({'ToDo':{'init':$author$project$ToDo$main(
+	$elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2(
+				$elm$json$Json$Decode$map,
+				$elm$core$Maybe$Just,
+				A2(
+					$elm$json$Json$Decode$andThen,
+					function (visibility) {
+						return A2(
+							$elm$json$Json$Decode$andThen,
+							function (uid) {
+								return A2(
+									$elm$json$Json$Decode$andThen,
+									function (field) {
+										return A2(
+											$elm$json$Json$Decode$andThen,
+											function (entries) {
+												return $elm$json$Json$Decode$succeed(
+													{entries: entries, field: field, uid: uid, visibility: visibility});
+											},
+											A2(
+												$elm$json$Json$Decode$field,
+												'entries',
+												$elm$json$Json$Decode$list(
+													A2(
+														$elm$json$Json$Decode$andThen,
+														function (id) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (editing) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (description) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (completed) {
+																					return $elm$json$Json$Decode$succeed(
+																						{completed: completed, description: description, editing: editing, id: id});
+																				},
+																				A2($elm$json$Json$Decode$field, 'completed', $elm$json$Json$Decode$bool));
+																		},
+																		A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'editing', $elm$json$Json$Decode$bool));
+														},
+														A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)))));
+									},
+									A2($elm$json$Json$Decode$field, 'field', $elm$json$Json$Decode$string));
+							},
+							A2($elm$json$Json$Decode$field, 'uid', $elm$json$Json$Decode$int));
+					},
+					A2($elm$json$Json$Decode$field, 'visibility', $elm$json$Json$Decode$string)))
+			])))(0)}});}(this));
