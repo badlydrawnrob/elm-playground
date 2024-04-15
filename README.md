@@ -66,6 +66,7 @@ elm reactor
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
+- [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 
 ## Documentation
