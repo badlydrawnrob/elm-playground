@@ -4450,7 +4450,8 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
-var $author$project$ToDoSimple$initialModel = {inputText: '', todos: _List_Nil};
+var $author$project$ToDoSimple$All = {$: 'All'};
+var $author$project$ToDoSimple$initialModel = {filter: $author$project$ToDoSimple$All, inputText: '', todos: _List_Nil};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -5381,11 +5382,16 @@ var $author$project$ToDoSimple$update = F2(
 					{
 						todos: A2($author$project$ToDoSimple$toggleAtIndex, index, model.todos)
 					});
-			default:
+			case 'ChangeInput':
 				var input = message.a;
 				return _Utils_update(
 					model,
 					{inputText: input});
+			default:
+				var filter = message.a;
+				return _Utils_update(
+					model,
+					{filter: filter});
 		}
 	});
 var $author$project$ToDoSimple$AddToDo = {$: 'AddToDo'};
@@ -5463,6 +5469,28 @@ var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProp
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$ToDoSimple$applyFilter = F2(
+	function (filter, todo) {
+		switch (filter.$) {
+			case 'All':
+				return true;
+			case 'Completed':
+				return todo.completed;
+			default:
+				return !todo.completed;
+		}
+	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var $elm$core$List$isEmpty = function (xs) {
 	if (!xs.b) {
 		return true;
@@ -5545,17 +5573,98 @@ var $author$project$ToDoSimple$viewToDo = F2(
 						]))
 				]));
 	});
-var $author$project$ToDoSimple$viewList = function (list) {
-	return $author$project$ToDoSimple$isEmptyList(list) ? A2(
-		$elm$html$Html$p,
+var $author$project$ToDoSimple$viewList = F2(
+	function (list, filter) {
+		return $author$project$ToDoSimple$isEmptyList(list) ? A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('The list is clean 🧘‍♀️')
+				])) : A2(
+			$elm$html$Html$ol,
+			_List_Nil,
+			A2(
+				$elm$core$List$indexedMap,
+				$author$project$ToDoSimple$viewToDo,
+				A2(
+					$elm$core$List$filter,
+					$author$project$ToDoSimple$applyFilter(filter),
+					list)));
+	});
+var $author$project$ToDoSimple$Completed = {$: 'Completed'};
+var $author$project$ToDoSimple$Remaining = {$: 'Remaining'};
+var $elm$html$Html$fieldset = _VirtualDom_node('fieldset');
+var $elm$html$Html$legend = _VirtualDom_node('legend');
+var $author$project$ToDoSimple$ChangeFilter = function (a) {
+	return {$: 'ChangeFilter', a: a};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $author$project$ToDoSimple$viewRadioWithLabel = function (config) {
+	return A2(
+		$elm$html$Html$label,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text('The list is clean 🧘‍♀️')
-			])) : A2(
-		$elm$html$Html$ol,
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('radio'),
+						$elm$html$Html$Attributes$name(config.name),
+						$elm$html$Html$Attributes$checked(config.checked),
+						$elm$html$Html$Events$onClick(
+						$author$project$ToDoSimple$ChangeFilter(config.filter))
+					]),
+				_List_Nil),
+				$elm$html$Html$text(config.label)
+			]));
+};
+var $author$project$ToDoSimple$viewSelectFilter = function (filter) {
+	return A2(
+		$elm$html$Html$fieldset,
 		_List_Nil,
-		A2($elm$core$List$indexedMap, $author$project$ToDoSimple$viewToDo, list));
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$legend,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Current filter')
+					])),
+				$author$project$ToDoSimple$viewRadioWithLabel(
+				{
+					checked: _Utils_eq(filter, $author$project$ToDoSimple$All),
+					filter: $author$project$ToDoSimple$All,
+					label: 'All items',
+					name: 'filter'
+				}),
+				$author$project$ToDoSimple$viewRadioWithLabel(
+				{
+					checked: _Utils_eq(filter, $author$project$ToDoSimple$Completed),
+					filter: $author$project$ToDoSimple$Completed,
+					label: 'Completed items',
+					name: 'filter'
+				}),
+				$author$project$ToDoSimple$viewRadioWithLabel(
+				{
+					checked: _Utils_eq(filter, $author$project$ToDoSimple$Remaining),
+					filter: $author$project$ToDoSimple$Remaining,
+					label: 'Remaining items',
+					name: 'filter'
+				})
+			]));
 };
 var $author$project$ToDoSimple$view = function (model) {
 	return A2(
@@ -5582,7 +5691,8 @@ var $author$project$ToDoSimple$view = function (model) {
 						$elm$html$Html$Attributes$placeholder('What do you want to do?')
 					]),
 				_List_Nil),
-				$author$project$ToDoSimple$viewList(model.todos)
+				$author$project$ToDoSimple$viewSelectFilter(model.filter),
+				A2($author$project$ToDoSimple$viewList, model.todos, model.filter)
 			]));
 };
 var $author$project$ToDoSimple$main = $elm$browser$Browser$sandbox(
