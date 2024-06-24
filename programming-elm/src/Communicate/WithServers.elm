@@ -13,7 +13,7 @@ module Communicate.WithServers exposing (..)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing ( class, disabled, placeholder, src, type_, value )
+import Html.Attributes exposing ( class, classList, disabled, placeholder, src, type_, value )
 import Html.Events exposing (onClick, onInput, onSubmit)
 
 
@@ -43,18 +43,13 @@ initialModel =
 
 viewLoveButton : Model -> Html Msg
 viewLoveButton model =
-    let
-        buttonClass =
-            if model.liked then
-                "fa-heart"
-
-            else
-                "fa-heart-o"
-    in
     div [ class "like-button" ]
         [ i
-            [ class "fa fa-2x"
-            , class buttonClass
+            [ classList
+              [ ("fa fa-2x", True)
+              , ("fa-heart-0", not model.liked)
+              , ("fa-heart", model.liked)
+              ]
             , onClick ToggleLike
             ]
             []

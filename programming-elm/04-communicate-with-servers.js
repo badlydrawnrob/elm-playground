@@ -5398,6 +5398,31 @@ var $author$project$Communicate$WithServers$viewComments = function (model) {
 			]));
 };
 var $author$project$Communicate$WithServers$ToggleLike = {$: 'ToggleLike'};
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -5416,7 +5441,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $author$project$Communicate$WithServers$viewLoveButton = function (model) {
-	var buttonClass = model.liked ? 'fa-heart' : 'fa-heart-o';
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -5429,8 +5453,13 @@ var $author$project$Communicate$WithServers$viewLoveButton = function (model) {
 				$elm$html$Html$i,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('fa fa-2x'),
-						$elm$html$Html$Attributes$class(buttonClass),
+						$elm$html$Html$Attributes$classList(
+						_List_fromArray(
+							[
+								_Utils_Tuple2('fa fa-2x', true),
+								_Utils_Tuple2('fa-heart-0', !model.liked),
+								_Utils_Tuple2('fa-heart', model.liked)
+							])),
 						$elm$html$Html$Events$onClick($author$project$Communicate$WithServers$ToggleLike)
 					]),
 				_List_Nil)
