@@ -16,6 +16,18 @@ module RefactorEnhance.Picshare04 exposing (main)
     (4) Disable the button if the `newComment` field is currently empty.
         This prevents users from submitting empty comments.
 
+    (5) In the book it says this:
+
+          "Even though you disable the Save button when newComment is empty, you
+          can still technically submit with the Enter key. You’ll catch that here
+          and ignore it by just returning the current model. This ensures you
+          don’t accidentally add an empty comment to the comment list."
+
+        But checking an empty string seems unnecessary,
+
+    (6) If you don’t have the empty string, then you use the wildcard to match
+        any other string.
+
 -}
 
 import Browser
@@ -153,9 +165,9 @@ saveNewComment model =
     in
     case comment of
         "" ->
-            model
+            model  -- (5)
 
-        _ ->
+        _ ->  -- (6)
             { model
                 | comments = model.comments ++ [ comment ]
                 , newComment = ""

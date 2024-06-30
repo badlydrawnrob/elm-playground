@@ -11,6 +11,7 @@
 ## Things for Anki
 
 1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` typr variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function.
+2. When to validate forms and if you can rely on only HTML5 field form validators, such as regex and disable.
 
 
 ## Renaming files, folders, script
@@ -19,9 +20,9 @@
 
 ```elm
 // So this ...
-module Picshare01 exposing (main)
+module FileName exposing (main)
 // Becomes this ...
-module RefactorEnhance.Picshare01 exposing (main) element
+module FolderName.FileName exposing (main) element
 ```
 
 You'll also need to rename the script calling the Elm module in the `index.html` file. Something like this:
@@ -29,8 +30,8 @@ You'll also need to rename the script calling the Elm module in the `index.html`
 ```html
 <script>
 // The name of the module
-Elm.RefactorEnhance.Picshare04.init({
-    node: document.getElementById('main') // the HTML element
+Elm.FolderName.FileName.init({
+    node: document.getElementById('selector') // the HTML element
 });
 <!/script>
 ```

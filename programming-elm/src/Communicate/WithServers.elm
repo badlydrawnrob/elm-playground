@@ -137,9 +137,9 @@ saveNewComment model =
     in
     case comment of
         "" ->
-            model
+            model  -- (5)
 
-        _ ->
+        _ ->       -- (6)
             { model
                 | comments = model.comments ++ [ comment ]
                 , newComment = ""
