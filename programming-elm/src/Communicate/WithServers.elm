@@ -9,6 +9,10 @@ module Communicate.WithServers exposing (..)
 
     @ See also page 57 in the PDF
 
+    Elm protects us from the outside world, by making some states impossible.
+    You should never be able to have unexpected JSON break your app. It'll
+    error out, and you'll be able to decide what to do with unexpected JSON.
+
 -}
 
 import Browser
@@ -17,13 +21,19 @@ import Html.Attributes exposing ( class, classList, disabled, placeholder, src, 
 import Html.Events exposing (onClick, onInput, onSubmit)
 
 
-type alias Model =
-    { url : String
+type alias ID = Int
+
+type alias Photo =
+    { id : ID
+    , url : String
     , caption : String
     , liked : Bool
     , comments : List String
     , newComment : String
     }
+
+type alias Model =
+  Photo
 
 
 baseUrl : String
@@ -33,7 +43,8 @@ baseUrl =
 
 initialModel : Model
 initialModel =
-    { url = baseUrl ++ "1.jpg"
+    { id = 1
+    , url = baseUrl ++ "1.jpg"
     , caption = "Surfing"
     , liked = False
     , comments = [ "Cowabunga, dude!" ]
