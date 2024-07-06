@@ -13,12 +13,25 @@ module Communicate.WithServers exposing (..)
     You should never be able to have unexpected JSON break your app. It'll
     error out, and you'll be able to decide what to do with unexpected JSON.
 
+    Decoders are difficult
+    ----------------------
+    Write a simple introduction for a 12 year old.
+    Use images and simple words where possible.
+
+    @ see pg.69 and surrounding pages
+
+    You're basically passing your record down the line through a few decoders,
+    which check the json object `key`s and match them (in the order of the decoders)
+    to the variables in your curried function.
+
 -}
 
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing ( class, classList, disabled, placeholder, src, type_, value )
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
+import Json.Decode.Pipeline exposing (hardcoded, required)
 
 
 type alias ID = Int
@@ -34,6 +47,16 @@ type alias Photo =
 
 type alias Model =
   Photo
+
+photoDecoder : Decoder Photo
+photoDecoder =
+  succeed Photo
+    |> required "id" int
+    |> required "url" string
+    |> required "caption" string
+    |> required "liked" bool
+    |> required "comments" (list string)
+    |> hardcoded ""
 
 
 baseUrl : String
