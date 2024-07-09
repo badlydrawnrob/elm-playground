@@ -18,6 +18,9 @@
     - The string in `required "name" string` decoder is the `key` in the json string.
     - Possibly a good idea to show a _basic_ decoder in the original `Json.Decode` and a more _complex_ decoder with `Json.Decode.Pipeline` as it does seem a little easier to grasp — things like []`hardcoded`](https://package.elm-lang.org/packages/NoRedInk/elm-json-decode-pipeline/latest/Json-Decode-Pipeline#hardcoded) are handy.
     - When showing the `photoDecoder` you should've by now shown that calling the `Photo` type alias is basically the same as creating a record. It's called a `constructor` function.
+    - **Order matters** if you switched the order of the `id` and `url` fields you'd get a compiler error. It follows the order of the arguments for the function (in this case a record) you're passing to the decoder.
+4. Add an example of loading the json from a localhost server (see pg.74)
+5. pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
 4. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
     - Client-side form validation is a good way for enhancing user experience, it also provides some styling that can help to communicate that an input is required.
     - But you will allways still have to validate any data submitted on the server, making sure is clean and safe data. The required attribute can be manipulated by a malicious user.

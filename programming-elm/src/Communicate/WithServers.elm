@@ -1,4 +1,4 @@
-module Communicate.WithServers exposing (..)
+module Communicate.WithServers exposing (main)
 
 {-| Communicating with the servers
     ------------------------------
@@ -24,14 +24,19 @@ module Communicate.WithServers exposing (..)
     which check the json object `key`s and match them (in the order of the decoders)
     to the variables in your curried function.
 
+    Order matters! It follows the order for the `Photo` constructor function
+    arguments. If you accidently passed a required `String` json object to a
+    `Photo` `int`, you're going to have problems!
+
 -}
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing ( class, classList, disabled, placeholder, src, type_, value )
+import Html.Attributes exposing ( class, classList, disabled, placeholder, src, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, required)
+import Http
 
 
 type alias ID = Int
@@ -74,6 +79,12 @@ initialModel =
     , newComment = ""
     }
 
+fetchFeed : Cmd Msg
+fetchFeed =
+  Http.get
+    { url = baseUrl ++ "feel/1"
+    , expect = Http.expectJson LoadFeed photoDecoder
+    }
 
 viewLoveButton : Model -> Html Msg
 viewLoveButton model =
@@ -159,6 +170,7 @@ type Msg
     = ToggleLike
     | UpdateComment String
     | SaveComment
+    | LoadFeed (Result Http.Error String)
 -- END:msg
 
 
