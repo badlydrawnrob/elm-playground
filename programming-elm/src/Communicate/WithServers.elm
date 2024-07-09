@@ -79,10 +79,14 @@ initialModel =
     , newComment = ""
     }
 
+init : () -> ( Model, Cmd Msg )
+init () =
+  ( initialModel, fetchFeed )
+
 fetchFeed : Cmd Msg
 fetchFeed =
   Http.get
-    { url = baseUrl ++ "feel/1"
+    { url = baseUrl ++ "feed/1"
     , expect = Http.expectJson LoadFeed photoDecoder
     }
 
@@ -170,7 +174,7 @@ type Msg
     = ToggleLike
     | UpdateComment String
     | SaveComment
-    | LoadFeed (Result Http.Error String)
+    | LoadFeed (Result Http.Error Photo)
 -- END:msg
 
 
@@ -193,25 +197,36 @@ saveNewComment model =
 -- END:saveNewComment
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 -- START:update
 update msg model =
     case msg of
         ToggleLike ->
-            { model | liked = not model.liked }
+            ( { model | liked = not model.liked }
+            , Cmd.none )
 
         UpdateComment comment ->
-            { model | newComment = comment }
+            ( { model | newComment = comment }
+            , Cmd.none )
 
         SaveComment ->
-            saveNewComment model
+            ( saveNewComment model
+            , Cmd.none )
+
+        LoadFeed _ ->
+            ( model, Cmd.none )
 -- END:update
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 main : Program () Model Msg
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }
