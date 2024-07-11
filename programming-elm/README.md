@@ -27,6 +27,8 @@
     - But you will allways still have to validate any data submitted on the server, making sure is clean and safe data. The required attribute can be manipulated by a malicious user.
 5. Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`? I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**
 6. If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?
+7. Revisit `map`, `filter`, `reduce`. Mostly `map` for now (such as `Result.map`)
+    - Create a list of records, then retrieve one of their values with `List.map .key listOfRecords`
 
 
 ## Renaming files, folders, script
