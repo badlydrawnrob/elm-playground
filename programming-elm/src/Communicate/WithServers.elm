@@ -162,6 +162,14 @@ viewDetailedPhoto photo =
             ]
         ]
 
+viewFeed : Maybe Photo -> Html Msg
+viewFeed maybePhoto =
+    case maybePhoto of
+        Just photo ->
+            viewDetailedPhoto photo
+        Nothing ->
+            text ""
+
 
 view : Model -> Html Msg
 view model =
@@ -169,7 +177,7 @@ view model =
         [ div [ class "header" ]
             [ h1 [] [ text "Picshare" ] ]
         , div [ class "content-flow" ]
-            [ viewDetailedPhoto model ]
+            [ viewFeed model.photo ]
         ]
 
 
