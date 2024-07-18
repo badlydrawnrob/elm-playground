@@ -29,6 +29,14 @@ module Communicate.WithServers exposing (main)
     arguments. If you accidently passed a required `String` json object to a
     `Photo` `int`, you're going to have problems!
 
+    (7) — (More notes)
+    ------------------
+
+    You could've simplified things here by using `Maybe.withDefault`, without
+    the need for a `case` statement:
+
+        `withDefault (text "") model.photo`
+
 -}
 
 import Browser
@@ -177,7 +185,7 @@ view model =
         [ div [ class "header" ]
             [ h1 [] [ text "Picshare" ] ]
         , div [ class "content-flow" ]
-            [ viewFeed model.photo ]
+            [ viewFeed model.photo ]  -- (7)
         ]
 
 
