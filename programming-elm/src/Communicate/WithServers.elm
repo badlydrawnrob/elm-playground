@@ -3,9 +3,10 @@ module Communicate.WithServers exposing (main)
 {-| Communicating with the servers
     ------------------------------
 
-    See `src/RefactorEnhance/Picshare04.elm` for instructions on how
-    our `viewComments` form is handling comment entries and submit.
-    It's reasonably straight forward.
+    (1) — (6) Comment field submission
+    ----------------------------------
+    Go to `src/RefactorEnhance/Picshare04.elm` learn how our `viewComments`
+    form handles our comment entries and submit. It's reasonably straight forward.
 
     @ See also page 57 in the PDF
 

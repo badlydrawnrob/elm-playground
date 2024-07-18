@@ -1,6 +1,6 @@
 # README
 
-> elm make src/Communicate/WithServers.elm --output=04-communicate-with-servers.js
+> `elm make src/Communicate/WithServers.elm --output=04-communicate-with-servers.js`
 
 ## Useful features
 
@@ -11,23 +11,26 @@
 
 ## Things for Anki
 
-1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` typr variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function.
-2. When to validate forms and if you can rely on only HTML5 field form validators, such as regex and disable.
-3. A picture of decoders. See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
+> **Start with the simplest thing possible.** Most of these things I forget and can't remember how to do them unaided. That's a problem. I need to remember all the basic **data types** (`list`, `record`, `tuple`, `set`, `array`, etc) and some sketches to show the flow of information and functions used in the below.
+
+1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).
+2. **Sketch out the flow of a decoder, and `Browser.element` and how things are passed around.** See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
     - You need to write this whole section in language that's easier to understand with imagery.
     - [Order matters](https://discourse.elm-lang.org/t/should-decoder-and-record-be-fields-order-independant/3295/4) in the decoder (it'll populate in the order of the curried function variables), but key/values can be in any order in the json string. It maps in the order of the decoder.
     - The string in `required "name" string` decoder is the `key` in the json string.
     - Possibly a good idea to show a _basic_ decoder in the original `Json.Decode` and a more _complex_ decoder with `Json.Decode.Pipeline` as it does seem a little easier to grasp — things like []`hardcoded`](https://package.elm-lang.org/packages/NoRedInk/elm-json-decode-pipeline/latest/Json-Decode-Pipeline#hardcoded) are handy.
     - When showing the `photoDecoder` you should've by now shown that calling the `Photo` type alias is basically the same as creating a record. It's called a `constructor` function.
     - **Order matters** if you switched the order of the `id` and `url` fields you'd get a compiler error. It follows the order of the arguments for the function (in this case a record) you're passing to the decoder.
-4. Add an example of loading the json from a localhost server (see pg.74)
-5. pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
-4. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
+3. Add an example of loading the json from a localhost server (see pg.74)
+4. Add an example of testing the json decoder `PhotoDecoder`.
+5. Handling _no_ photos. There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.
+6. pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
+7. When to validate forms and if you can rely on only HTML5 field form validators, such as regex and disable. **I think this is a NO. You should validate it?**. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
     - Client-side form validation is a good way for enhancing user experience, it also provides some styling that can help to communicate that an input is required.
     - But you will allways still have to validate any data submitted on the server, making sure is clean and safe data. The required attribute can be manipulated by a malicious user.
-5. Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`? I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**
-6. If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?
-7. Revisit `map`, `filter`, `reduce`. Mostly `map` for now (such as `Result.map`)
+8. Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`? I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**
+9. If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?
+10. Revisit `map`, `filter`, `reduce`. Mostly `map` for now (such as `Result.map`)
     - Create a list of records, then retrieve one of their values with `List.map .key listOfRecords`
 
 
