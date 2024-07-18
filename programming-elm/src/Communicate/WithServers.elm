@@ -94,14 +94,14 @@ fetchFeed =
     , expect = Http.expectJson LoadFeed photoDecoder
     }
 
-viewLoveButton : Model -> Html Msg
-viewLoveButton model =
+viewLoveButton : Photo -> Html Msg
+viewLoveButton photo =
     div [ class "like-button" ]
         [ i
             [ classList
               [ ("fa fa-2x", True)
-              , ("fa-heart-0", not model.liked)
-              , ("fa-heart", model.liked)
+              , ("fa-heart-0", not photo.liked)
+              , ("fa-heart", photo.liked)
               ]
             , onClick ToggleLike
             ]
@@ -130,35 +130,35 @@ viewCommentList comments =
                 ]
 
 
-viewComments : Model -> Html Msg
+viewComments : Photo -> Html Msg
 -- START:viewComments
-viewComments model =
+viewComments photo =
     div []
-        [ viewCommentList model.comments
+        [ viewCommentList photo.comments
         , form [ class "new-comment", onSubmit SaveComment ] -- (1)
             [ input
                 [ type_ "text"
                 , placeholder "Add a comment..."
-                , value model.newComment -- (2)
+                , value photo.newComment -- (2)
                 , onInput UpdateComment -- (3)
                 ]
                 []
             , button
-                [ disabled (String.isEmpty model.newComment) ] -- (4)
+                [ disabled (String.isEmpty photo.newComment) ] -- (4)
                 [ text "Save" ]
             ]
         ]
 -- END:viewComments
 
 
-viewDetailedPhoto : Model -> Html Msg
-viewDetailedPhoto model =
+viewDetailedPhoto : Photo -> Html Msg
+viewDetailedPhoto photo =
     div [ class "detailed-photo" ]
-        [ img [ src model.url ] []
+        [ img [ src photo.url ] []
         , div [ class "photo-info" ]
-            [ viewLoveButton model
-            , h2 [ class "caption" ] [ text model.caption ]
-            , viewComments model
+            [ viewLoveButton photo
+            , h2 [ class "caption" ] [ text photo.caption ]
+            , viewComments photo
             ]
         ]
 
@@ -183,19 +183,19 @@ type Msg
 
 
 -- START:saveNewComment
-saveNewComment : Model -> Model
-saveNewComment model =
+saveNewComment : Photo -> Photo
+saveNewComment photo =
     let
         comment =
-            String.trim model.newComment
+            String.trim photo.newComment
     in
     case comment of
         "" ->
-            model  -- (5)
+            photo  -- (5)
 
         _ ->       -- (6)
-            { model
-                | comments = model.comments ++ [ comment ]
+            { photo
+                | comments = photo.comments ++ [ comment ]
                 , newComment = ""
             }
 -- END:saveNewComment
