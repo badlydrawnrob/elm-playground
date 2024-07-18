@@ -52,7 +52,7 @@ type alias Photo =
     }
 
 type alias Model =
-  Photo
+  { photo: Maybe Photo }
 
 photoDecoder : Decoder Photo
 photoDecoder =
