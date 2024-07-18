@@ -72,12 +72,15 @@ baseUrl =
 
 initialModel : Model
 initialModel =
-    { id = 1
-    , url = baseUrl ++ "1.jpg"
-    , caption = "Surfing"
-    , liked = False
-    , comments = [ "Cowabunga, dude!" ]
-    , newComment = ""
+    { photo =
+        Just
+            { id = 1
+            , url = baseUrl ++ "1.jpg"
+            , caption = "Surfing"
+            , liked = False
+            , comments = [ "Cowabunga, dude!" ]
+            , newComment = ""
+            }
     }
 
 init : () -> ( Model, Cmd Msg )
