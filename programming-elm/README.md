@@ -12,6 +12,8 @@
 ## Things for Anki
 
 > **Start with the simplest thing possible.** Most of these things I forget and can't remember how to do them unaided. That's a problem. I need to remember all the basic **data types** (`list`, `record`, `tuple`, `set`, `array`, etc) and some sketches to show the flow of information and functions used in the below.
+>
+> **There's really a LOT packed in to Chapter 4, so I'm not sure how simply I can write the notes**
 
 1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).
 2. **Sketch out the flow of a decoder, and `Browser.element` and how things are passed around.** See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
@@ -25,7 +27,7 @@
 4. Add an example of testing the json decoder `PhotoDecoder`.
 5. Handling _no_ photos. There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.
     - Give a few examples of areas that you must restructure now we have a `{ photo : Photo }` record (not a direct `Photo` in the model) — anything that consumes this Photo (or it's internal record values) MUST be updated! (see `toggleLike` and `updateComment`). Simplify wherever possible and **only consume the types that you must**. Also remember the `Racket Lang` rules of splitting out into simpler functions (and abstracting where needed)
-    - Add an example for [`Maybe.map`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#map) which does the same job as this.
+    - Add an example for [`Maybe.map`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#map) which does [the same job as this](https://shorturl.at/zy6s8).
     - Make sure to add a note that we're refactoring things (like adding a `Just` and changing type annotations to `Photo`, because now `Model` is wrapping `Photo` in a record.)
     - Gotchas! Once we've changed everything, there's one function in `view` that now needs to take a `photo` (line 172) — **you can't just use `model.photo` because thats a `Maybe Photo`. You'll need it to take a `Photo` and case on the `Maybe`!
         - You could also use [`Maybe.withDefault`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#withDefault) here too (maybe).
