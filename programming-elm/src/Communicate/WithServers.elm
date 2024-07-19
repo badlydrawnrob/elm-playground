@@ -227,11 +227,7 @@ updateComment comment photo =
 
 updateFeed (Photo -> Photo) -> Maybe Photo -> Maybe Photo
 updateFeed updatePhoto maybePhoto =
-    case maybePhoto of
-        Just photo ->
-            (updatePhoto photo)
-        Nothing ->
-            Nothing
+    Maybe.map updatePhoto maybePhoto
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 -- START:update
