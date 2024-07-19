@@ -24,6 +24,7 @@
 3. Add an example of loading the json from a localhost server (see pg.74)
 4. Add an example of testing the json decoder `PhotoDecoder`.
 5. Handling _no_ photos. There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.
+    - Give a few examples of areas that you must restructure now we have a `{ photo : Photo }` record (not a direct `Photo` in the model) — anything that consumes this Photo (or it's internal record values) MUST be updated! (see `toggleLike` and `updateComment`). Simplify wherever possible and **only consume the types that you must**. Also remember the `Racket Lang` rules of splitting out into simpler functions (and abstracting where needed)
     - Make sure to add a note that we're refactoring things (like adding a `Just` and changing type annotations to `Photo`, because now `Model` is wrapping `Photo` in a record.)
     - Gotchas! Once we've changed everything, there's one function in `view` that now needs to take a `photo` (line 172) — **you can't just use `model.photo` because thats a `Maybe Photo`. You'll need it to take a `Photo` and case on the `Maybe`!
         - You could also use [`Maybe.withDefault`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#withDefault) here too (maybe).

@@ -217,21 +217,36 @@ saveNewComment photo =
 -- END:saveNewComment
 
 
+toggleLike : Photo -> Photo
+toggleLike photo =
+    { photo | liked = not photo.liked }
+
+updateComment : String -> Photo -> Photo
+updateComment comment photo =
+    { photo | newComment = comment }
+
+updateFeed (Photo -> Photo) -> Maybe Photo -> Maybe Photo
+updateFeed updatePhoto maybePhoto =
+    case maybePhoto of
+        Just photo ->
+            (updatePhoto photo)
+        Nothing ->
+            Nothing
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 -- START:update
 update msg model =
     case msg of
         ToggleLike ->
-            ( { model | liked = not model.liked }
+            ( { model | liked = toggleLike model.photo }
             , Cmd.none )
 
         UpdateComment comment ->
-            ( { model | newComment = comment }
+            ( { model | newComment = ... }
             , Cmd.none )
 
         SaveComment ->
-            ( saveNewComment model
-            , Cmd.none )
+            ( saveNewComment model, Cmd.none )
 
         LoadFeed _ ->
             ( model, Cmd.none )
