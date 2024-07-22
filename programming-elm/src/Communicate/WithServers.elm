@@ -117,6 +117,10 @@ fetchFeed =
     , expect = Http.expectJson LoadFeed photoDecoder
     }
 
+{-| If you put a comment here, you can add a [link](http://docs.com)
+    and _italics_ or **bold** and the plugin we're using will add it
+    as "documentation" when you hover over the function where it's
+    being used! Quite useful. -}
 viewLoveButton : Photo -> Html Msg
 viewLoveButton photo =
     div [ class "like-button" ]
