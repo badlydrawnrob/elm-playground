@@ -9,9 +9,26 @@
 3. [`onInput`](https://package.elm-lang.org/packages/elm/html/latest/Html-Events#onInput) Html event (pass to a `Update String` message)
 
 
+## The sad (but real) truth
+
+> **Do what you're good at.** Much of the algorithms, puzzles and strategies that learned in my "college course" i'd need to revise and rejig for quite a bit of time.
+
+There are people who make good developers, and there are people who don't. I'm in the latter camp. Good at following instruction and basic educational level, but I forget all the time, and my logic mind isn't setup for it!
+
+That's OK. I can do basic stuff and fix my mind to more high-level design-thinking etc. I'm happy to do simple forms, simple json, and then number crunch with Numbers (MacOS) or use other tools and convertors to get the job done.
+
+Most of these things I can't remember how to do unaided. I can follow documentation and tutorials, and cobble together some examples and basic websites, but that's all I'll be able to do.
+
+**I have no need or wish to become a good programmer!**
+
+
 ## Things for Anki
 
-> **Start with the simplest thing possible.** Most of these things I forget and can't remember how to do them unaided. That's a problem. I need to remember all the basic **data types** (`list`, `record`, `tuple`, `set`, `array`, etc) and some sketches to show the flow of information and functions used in the below.
+> **Start with the simplest thing possible. If you don't practice, you'll forget.** For me, that's possibly ok because most of the college stuff is pre-built in Elm/Lisp and others can be scavenged.
+>
+> I'm not looking to become a master developer. That job I have no desire for. If others are looking to pursue this path, they really _must_ practice, practice, practice ... and keep at it or else they will forget.
+>
+> I need to at least remember all the basic **data types** (`list`, `record`, `tuple`, `set`, `array`, etc) and some sketches to show the flow of information and functions used in the below.
 >
 > **There's really a LOT packed in to Chapter 4, so I'm not sure how simply I can write the notes**
 
@@ -58,6 +75,9 @@ Order matters! It follows the order for the `Photo` constructor function argumen
 9. If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?
 10. **Revisit `map`, `filter`, `reduce`.** Mostly `map` for now (such as `Result.map`)
     - Create a list of records, then retrieve one of their values with `List.map .key listOfRecords`
+11. **Recursive lists are useful to know only on a cursory level (for me at least)** as you'll most likely be using the above higher order functions where everything is pretty much done for you. I find them a little easier with Lisp, but you can get used to the Elm syntax also.
+    - Recursive lists are a bit of a PITA, especially sorting algorithms, as you need to be aware of both the shape of the data flow (flat and triangular) and making sure all cases are dealt with.
+    - For instance, it's easy to sort some lists, but others you'd need to keep looping until everything is sorted in order. Writing a recursive function for that becomes quite tricky.
 
 
 ## Renaming files, folders, script
