@@ -32,13 +32,19 @@ module Communicate.WithServers exposing (main)
     (7) — (More notes)
     ------------------
 
+    We're essentially doing the same things as we were in Chapter 3, which you
+    can view in `src/RefactorEnhance/Picshare04.elm`, but we've changed to using
+    a `Maybe Photo` and we're now pulling in json from the server.
+
     (7) You could've simplified things here by using `Maybe.withDefault`, without
         the need for a `case` statement:
 
             `withDefault (text "") model.photo`
 
     (8) Remember that this uses a curried function (the function is partially
-        applied) and uses the `comment`
+        applied) and uses the `comment`. Note also that we're using a `Maybe.map`
+        so that we can properly handle a `Maybe Photo` type, which will either
+        be a `Nothing` or a `Just Photo`!
 
 -}
 
@@ -245,7 +251,8 @@ update msg model =
             , Cmd.none )
 
         SaveComment ->
-            ( saveNewComment model, Cmd.none )
+            ( { model | photo = updateFeed saveNewComment model.photo }
+            , Cmd.none )
 
         LoadFeed _ ->
             ( model, Cmd.none )
