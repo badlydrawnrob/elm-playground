@@ -32,10 +32,13 @@ module Communicate.WithServers exposing (main)
     (7) — (More notes)
     ------------------
 
-    You could've simplified things here by using `Maybe.withDefault`, without
-    the need for a `case` statement:
+    (7) You could've simplified things here by using `Maybe.withDefault`, without
+        the need for a `case` statement:
 
-        `withDefault (text "") model.photo`
+            `withDefault (text "") model.photo`
+
+    (8) Remember that this uses a curried function (the function is partially
+        applied) and uses the `comment`
 
 -}
 
@@ -148,7 +151,7 @@ viewComments photo =
                 [ type_ "text"
                 , placeholder "Add a comment..."
                 , value photo.newComment -- (2)
-                , onInput UpdateComment -- (3)
+                , onInput UpdateComment  -- (3)
                 ]
                 []
             , button
@@ -234,11 +237,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleLike ->
-            ( { model | liked = toggleLike model.photo }
+            ( { model | photo = updateFeed toggleLike model.photo }
             , Cmd.none )
 
         UpdateComment comment ->
-            ( { model | newComment = ... }
+            ( { model | photo = updateFeed (updateComment comment) model.photo }  -- (8)
             , Cmd.none )
 
         SaveComment ->
