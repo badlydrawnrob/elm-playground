@@ -32,6 +32,7 @@
     - Gotchas! Once we've changed everything, there's one function in `view` that now needs to take a `photo` (line 172) — **you can't just use `model.photo` because thats a `Maybe Photo`. You'll need it to take a `Photo` and case on the `Maybe`!
         - You could also use [`Maybe.withDefault`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#withDefault) here too (maybe).
         - Don't do this do it _[this](https://shorturl.at/rSTa7)_ way.
+    - Remember we can use a curried function that supplies it's other argument when consumed by `Maybe.map`.
 6. pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
 7. When to validate forms and if you can rely on only HTML5 field form validators, such as regex and disable. **I think this is a NO. You should validate it?**. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
     - Client-side form validation is a good way for enhancing user experience, it also provides some styling that can help to communicate that an input is required.

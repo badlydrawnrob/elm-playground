@@ -234,7 +234,7 @@ updateComment : String -> Photo -> Photo
 updateComment comment photo =
     { photo | newComment = comment }
 
-updateFeed (Photo -> Photo) -> Maybe Photo -> Maybe Photo
+updateFeed : (Photo -> Photo) -> Maybe Photo -> Maybe Photo
 updateFeed updatePhoto maybePhoto =
     Maybe.map updatePhoto maybePhoto
 
