@@ -6556,7 +6556,16 @@ var $author$project$Communicate$WithServers$viewFeed = function (maybePhoto) {
 		var photo = maybePhoto.a;
 		return $author$project$Communicate$WithServers$viewDetailedPhoto(photo);
 	} else {
-		return $elm$html$Html$text('');
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('loading-feed')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Loading Feed ...')
+				]));
 	}
 };
 var $author$project$Communicate$WithServers$view = function (model) {

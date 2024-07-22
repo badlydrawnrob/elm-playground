@@ -40,9 +40,9 @@ Order matters! It follows the order for the `Photo` constructor function argumen
     - Possibly a good idea to show a _basic_ decoder in the original `Json.Decode` and a more _complex_ decoder with `Json.Decode.Pipeline` as it does seem a little easier to grasp — things like []`hardcoded`](https://package.elm-lang.org/packages/NoRedInk/elm-json-decode-pipeline/latest/Json-Decode-Pipeline#hardcoded) are handy.
     - When showing the `photoDecoder` you should've by now shown that calling the `Photo` type alias is basically the same as creating a record. It's called a `constructor` function.
     - **Order matters** if you switched the order of the `id` and `url` fields you'd get a compiler error. It follows the order of the arguments for the function (in this case a record) you're passing to the decoder.
-3. Add an example of loading the json from a localhost server (see pg.74)
-4. Add an example of testing the json decoder `PhotoDecoder`.
-5. Handling _no_ photos. There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.
+3. **Add an example of loading the json** from a localhost server (see pg.74)
+4. **Add an example of testing the json decoder** `PhotoDecoder`.
+5. **Handling _no_ photos.** There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.
     - Give a few examples of areas that you must restructure now we have a `{ photo : Photo }` record (not a direct `Photo` in the model) — anything that consumes this Photo (or it's internal record values) MUST be updated! (see `toggleLike` and `updateComment`). Simplify wherever possible and **only consume the types that you must**. Also remember the `Racket Lang` rules of splitting out into simpler functions (and abstracting where needed)
     - Add an example for [`Maybe.map`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#map) which does [the same job as this](https://shorturl.at/zy6s8).
     - Make sure to add a note that we're refactoring things (like adding a `Just` and changing type annotations to `Photo`, because now `Model` is wrapping `Photo` in a record.)
@@ -50,13 +50,13 @@ Order matters! It follows the order for the `Photo` constructor function argumen
         - You could also use [`Maybe.withDefault`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#withDefault) here too (maybe).
         - Don't do this do it _[this](https://shorturl.at/rSTa7)_ way.
     - Remember we can use a curried function that supplies it's other argument when consumed by `Maybe.map`.
-6. pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
-7. When to validate forms and if you can rely on only HTML5 field form validators, such as regex and disable. **I think this is a NO. You should validate it?**. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
+6. **pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript** — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).
+7. **When to validate forms** and if you can rely on only HTML5 field form validators, such as regex and disable. **I think this is a NO. You should validate it?**. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
     - Client-side form validation is a good way for enhancing user experience, it also provides some styling that can help to communicate that an input is required.
     - But you will allways still have to validate any data submitted on the server, making sure is clean and safe data. The required attribute can be manipulated by a malicious user.
-8. Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`? I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**
+8. **Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`?** I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**
 9. If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?
-10. Revisit `map`, `filter`, `reduce`. Mostly `map` for now (such as `Result.map`)
+10. **Revisit `map`, `filter`, `reduce`.** Mostly `map` for now (such as `Result.map`)
     - Create a list of records, then retrieve one of their values with `List.map .key listOfRecords`
 
 
