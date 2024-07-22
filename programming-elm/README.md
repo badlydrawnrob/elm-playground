@@ -19,6 +19,17 @@
 
 It seems to be a technique to **start with a data model that we can use** _instead of the json_ that we're going to expect from the server. Do that first so you can set up the structure of your app, and then worry about loading the JSON.
 
+### Decoders are difficult
+
+> Write a simple introduction for a 12 year old.
+> Use images and simple words where possible. Do one for the simplest thing possible (`Json.Decode.map2`) and one using the `Json.Decode.Pipeline`. Take a look at Beginning Elm and other resources to get your head around it.
+>
+> @ see pg.69 and surrounding pages
+
+You're basically passing your record down the line through a few decoders, which check the json object `key`s and match them (in the order of the decoders) to the variables in your curried function.
+
+Order matters! It follows the order for the `Photo` constructor function arguments. If you accidently passed a required `String` json object to a `Photo` `int`, you're going to have problems!
+
 ## Now set to `Nothing` and pull in the `json`
 
 1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).

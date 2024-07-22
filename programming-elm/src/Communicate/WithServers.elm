@@ -3,8 +3,31 @@ module Communicate.WithServers exposing (main)
 {-| Communicating with the servers
     ------------------------------
 
+    Our process in Chapter 4 has been as follows:
+
+    1. Create the `Model` you'd expect to see if everything validates:
+        @ https://shorturl.at/L39Zm
+
+    2. Create our `decoder` and our `fetchFeed` stuff with a `Msg` type,
+       but don't bother to unpack or use it just yet.
+       - At this point you could build out your tests for the decoder.
+
+    3. Using our `Model` (which we convert to a `Maybe` type), build out all
+       the functionality we need to consume and use it.
+
+    4. Finally, once all that's done, we can load and validate the `json` from
+       our server.
+
+    Decoders are difficult!
+    -----------------------
+    Here is a visual introduction to our decoders, and how things get verified
+    and passed around:
+
+        @ link
+
+
     (1) — (6) Comment field submission
-    ----------------------------------
+    -----------------------------------
     Go to `src/RefactorEnhance/Picshare04.elm` learn how our `viewComments`
     form handles our comment entries and submit. It's reasonably straight forward.
 
@@ -14,23 +37,9 @@ module Communicate.WithServers exposing (main)
     You should never be able to have unexpected JSON break your app. It'll
     error out, and you'll be able to decide what to do with unexpected JSON.
 
-    Decoders are difficult
-    ----------------------
-    Write a simple introduction for a 12 year old.
-    Use images and simple words where possible.
-
-    @ see pg.69 and surrounding pages
-
-    You're basically passing your record down the line through a few decoders,
-    which check the json object `key`s and match them (in the order of the decoders)
-    to the variables in your curried function.
-
-    Order matters! It follows the order for the `Photo` constructor function
-    arguments. If you accidently passed a required `String` json object to a
-    `Photo` `int`, you're going to have problems!
 
     (7) — (More notes)
-    ------------------
+    -------------------
 
     We're essentially doing the same things as we were in Chapter 3, which you
     can view in `src/RefactorEnhance/Picshare04.elm`, but we've changed to using
