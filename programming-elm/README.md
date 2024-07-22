@@ -15,6 +15,12 @@
 >
 > **There's really a LOT packed in to Chapter 4, so I'm not sure how simply I can write the notes**
 
+## The simplest thing first
+
+It seems to be a technique to **start with a data model that we can use** _instead of the json_ that we're going to expect from the server. Do that first so you can set up the structure of your app, and then worry about loading the JSON.
+
+## Now set to `Nothing` and pull in the `json`
+
 1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).
 2. **Sketch out the flow of a decoder, and `Browser.element` and how things are passed around.** See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
     - You need to write this whole section in language that's easier to understand with imagery.
