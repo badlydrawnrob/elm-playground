@@ -55,6 +55,12 @@ module Communicate.WithServers exposing (main)
         so that we can properly handle a `Maybe Photo` type, which will either
         be a `Nothing` or a `Just Photo`!
 
+    (9) It's pretty simple to validate your server's `json` by using pattern
+        matching in the two branches. For `Err`ors you can get really specific
+        and even try again if there's some problem with the server:
+
+        @ https://package.elm-lang.org/packages/elm/http/latest/Http#Error
+
 -}
 
 import Browser
@@ -254,8 +260,12 @@ update msg model =
             ( { model | photo = updateFeed saveNewComment model.photo }
             , Cmd.none )
 
-        LoadFeed _ ->
-            ( model, Cmd.none )
+        LoadFeed (Ok photo) ->
+            ( { model | photo = Just photo }  -- (9)
+            , Cmd.none )
+
+        LoadFeed (Err _) ->
+            ( model, Cmd.none )               -- (9)
 -- END:update
 
 subscriptions : Model -> Sub Msg
