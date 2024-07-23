@@ -1,67 +1,36 @@
-module Communicate.WithServers exposing (main)
+module WebSockets.RealTime exposing (..)
 
 {-| Communicating with the servers
     ------------------------------
 
-    Our process in Chapter 4 has been as follows:
+    Using Elm Tooling, you can write a comment above a function with `{-|-}`. You
+    can write it as you would Markdown. When you come to use that function, you
+    can select it and the "documentation" will show up under it's type signature.
 
-    1. Create the `Model` you'd expect to see if everything validates:
-        @ https://shorturl.at/L39Zm
+    Might be an idea to use both `(1)` numbers with comments for a run-down of
+    what the module is all about, plus documentation comments for more in-depth
+    function analysis.
 
-    2. Create our `decoder` and our `fetchFeed` stuff with a `Msg` type,
-       but don't bother to unpack or use it just yet.
-       - At this point you could build out your tests for the decoder.
+    So far we've:
 
-    3. Using our `Model` (which we convert to a `Maybe` type), build out all
-       the functionality we need to consume and use it.
+    1. Got a `Maybe Photo` we're pulling in with `json` from a server,
+    2. Liking or unliking this photo, and adding a `List comment` with a form,
+    3. We've got a `Loading` state and a `Loaded` state in our `view`.
 
-    4. Finally, once all that's done, we can load and validate the `json` from
-       our server.
+    All quite straight forward, but quite a bit of code to make that happen!
 
-    Decoders are difficult!
-    -----------------------
-    Here is a visual introduction to our decoders, and how things get verified
-    and passed around:
+        Go see the files `src/RefactorEnhance/Picshare04.elm` and
+        `src/Communicate/WithServers.elm` to view all comments and the different
+        stages of development so far.
 
-        @ link
+    You'll need to be familiar with `Maybe`, `Result`, `Json.Decode.Pipeline`,
+    `Browser.element`, `List.map`, `Html.Attributes`, `Html.events`, and other
+    minor functions to read this file. We're also doing some interesting things
+    with a simple form, including `disabled` which prevents the form submission
+    for an empty string. You still need to validate the data _after_ submission!
 
-
-    (1) — (6) Comment field submission
-    -----------------------------------
-    Go to `src/RefactorEnhance/Picshare04.elm` learn how our `viewComments`
-    form handles our comment entries and submit. It's reasonably straight forward.
-
-    @ See also page 57 in the PDF
-
-    Elm protects us from the outside world, by making some states impossible.
-    You should never be able to have unexpected JSON break your app. It'll
-    error out, and you'll be able to decide what to do with unexpected JSON.
-
-
-    (7) — (More notes)
-    -------------------
-
-    We're essentially doing the same things as we were in Chapter 3, which you
-    can view in `src/RefactorEnhance/Picshare04.elm`, but we've changed to using
-    a `Maybe Photo` and we're now pulling in json from the server.
-
-    (7) You could've simplified things here by using `Maybe.withDefault`, without
-        the need for a `case` statement, but the following won't work! It needs
-        to return the same type. `text` is a `Html Msg` and `model.photo` is `Photo`.
-
-            `withDefault (text "") model.photo`
-
-    (8) Remember that this uses a curried function (the function is partially
-        applied) and uses the `comment`. Note also that we're using a `Maybe.map`
-        so that we can properly handle a `Maybe Photo` type, which will either
-        be a `Nothing` or a `Just Photo`!
-
-    (9) It's pretty simple to validate your server's `json` by using pattern
-        matching in the two branches. For `Err`ors you can get really specific
-        and even try again if there's some problem with the server:
-
-        @ https://package.elm-lang.org/packages/elm/http/latest/Http#Error
-
+    Notice we're adding a `newComment` temporarily (which can be validated),
+    then saving it on form button submit as a `List comment` :)
 -}
 
 import Browser
@@ -118,10 +87,6 @@ fetchFeed =
     , expect = Http.expectJson LoadFeed photoDecoder
     }
 
-{-| If you put a comment here, you can add a [link](http://docs.com)
-    and _italics_ or **bold** and the plugin we're using will add it
-    as "documentation" when you hover over the function where it's
-    being used! Quite useful. -}
 viewLoveButton : Photo -> Html Msg
 viewLoveButton photo =
     div [ class "like-button" ]
@@ -163,16 +128,16 @@ viewComments : Photo -> Html Msg
 viewComments photo =
     div []
         [ viewCommentList photo.comments
-        , form [ class "new-comment", onSubmit SaveComment ] -- (1)
+        , form [ class "new-comment", onSubmit SaveComment ]
             [ input
                 [ type_ "text"
                 , placeholder "Add a comment..."
-                , value photo.newComment -- (2)
-                , onInput UpdateComment  -- (3)
+                , value photo.newComment
+                , onInput UpdateComment
                 ]
                 []
             , button
-                [ disabled (String.isEmpty photo.newComment) ] -- (4)
+                [ disabled (String.isEmpty photo.newComment) ]
                 [ text "Save" ]
             ]
         ]
@@ -206,7 +171,7 @@ view model =
         [ div [ class "header" ]
             [ h1 [] [ text "Picshare" ] ]
         , div [ class "content-flow" ]
-            [ viewFeed model.photo ]  -- (7)
+            [ viewFeed model.photo ]
         ]
 
 
@@ -228,9 +193,9 @@ saveNewComment photo =
     in
     case comment of
         "" ->
-            photo  -- (5)
+            photo
 
-        _ ->       -- (6)
+        _ ->
             { photo
                 | comments = photo.comments ++ [ comment ]
                 , newComment = ""
@@ -267,11 +232,11 @@ update msg model =
             , Cmd.none )
 
         LoadFeed (Ok photo) ->
-            ( { model | photo = Just photo }  -- (9)
+            ( { model | photo = Just photo }
             , Cmd.none )
 
         LoadFeed (Err _) ->
-            ( model, Cmd.none )               -- (9)
+            ( model, Cmd.none )
 -- END:update
 
 subscriptions : Model -> Sub Msg

@@ -32,7 +32,10 @@ Most of these things I can't remember how to do unaided. I can follow documentat
 >
 > **There's really a LOT packed in to Chapter 4, so I'm not sure how simply I can write the notes**
 
-## The simplest thing first
+
+## Chapter 4
+
+### The simplest thing first
 
 It seems to be a technique to **start with a data model that we can use** _instead of the json_ that we're going to expect from the server. Do that first so you can set up the structure of your app, and then worry about loading the JSON.
 
@@ -47,7 +50,7 @@ You're basically passing your record down the line through a few decoders, which
 
 Order matters! It follows the order for the `Photo` constructor function arguments. If you accidently passed a required `String` json object to a `Photo` `int`, you're going to have problems!
 
-## Now set to `Nothing` and pull in the `json`
+### Now set to `Nothing` and pull in the `json`
 
 1. `onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).
 2. **Sketch out the flow of a decoder, and `Browser.element` and how things are passed around.** See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
@@ -78,6 +81,13 @@ Order matters! It follows the order for the `Photo` constructor function argumen
 11. **Recursive lists are useful to know only on a cursory level (for me at least)** as you'll most likely be using the above higher order functions where everything is pretty much done for you. I find them a little easier with Lisp, but you can get used to the Elm syntax also.
     - Recursive lists are a bit of a PITA, especially sorting algorithms, as you need to be aware of both the shape of the data flow (flat and triangular) and making sure all cases are dealt with.
     - For instance, it's easy to sort some lists, but others you'd need to keep looping until everything is sorted in order. Writing a recursive function for that becomes quite tricky.
+
+
+## Chapter 5
+
+
+
+
 
 
 ## Renaming files, folders, script
