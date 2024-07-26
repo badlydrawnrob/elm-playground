@@ -1,6 +1,37 @@
 # README
 
-> `elm make src/Communicate/WithServers.elm --output=04-communicate-with-servers.js`
+## Elm Commands
+
+```terminal
+> elm --help
+
+> elm init
+
+> elm install elm/json
+
+> elm make src/Folder/ModuleName.elm --output=00-folder-module-name.js
+
+> elm reactor
+```
+
+## Do the simplest thing first!
+
+> Got a narly piece of `json` to decode? Start "as if" you've already imported it. Do the simple things first and leave the difficult stuff to the end (like catching errors).
+>
+> **<u>Whiteboard that shit out first:</u> Spend 80% of your time thinking about how to code, then code with confidence!**
+
+- Harcode your `Model`. Decide how data should look.
+- Do you _really_ need all that data? Can you simplify?
+- Do we _really_ need a `Maybe` type?
+- Is `type Custom` a better choice?
+
+Build out your functions "as-if" the data is already there. Once you're happy with the `Model` and the data it consumes, work backwords and test out the bits of the `json` you'll need.
+
+- Is it always in the same shape?
+- Are there some bits of data missing sometimes?
+- Is there a better source for the data?
+
+Someone says to put of things like `Maybe.withDefault` to the very end, and start with the data so that you get saner results. Do you need a `non-empty List`? Are some `json` objects fields optional? How are you going to validate the data that's coming from, or sending to the server?
 
 
 ## The sad (but real) truth
@@ -97,58 +128,9 @@ A little like learning Mandarin! Don't do it!!! Admire the caligraphy, learn a f
 12. Have a little go at `map`, `filter`, `reduce` in Elm lang.
 
 
+## Chapter 5
 
-## Chapter 4
-
-### The simplest thing first
-
-It seems to be a technique to **start with a data model that we can use** _instead of the json_ that we're going to expect from the server. Do that first so you can set up the structure of your app, and then worry about loading the JSON.
-
-### Decoders are difficult
-
-><s>Write a simple introduction for a 12 year old.
-> Use images and simple words where possible. Do one for the simplest thing possible (`Json.Decode.map2`) and one using the `Json.Decode.Pipeline`. Take a look at Beginning Elm and other resources to get your head around it.</s>
->
-> @ see pg.69 and surrounding pages
-
-<s>You're basically passing your record down the line through a few decoders, which check the json object `key`s and match them (in the order of the decoders) to the variables in your curried function.
-
-Order matters! It follows the order for the `Photo` constructor function arguments. If you accidently passed a required `String` json object to a `Photo` `int`, you're going to have problems!</s>
-
-### Now set to `Nothing` and pull in the `json`
-
-1. <s>`onInput : (String -> msg) -> Attribute msg` within a form, takes a function that returns a `msg` type variable. So `UpdateComment String` is a function and also a `Msg` type. The DOM event handler will pass the `event.target.value` as a `String` argument. Every time the value changes in the input field. See (3) in the `viewComments` function. (see also `(7)`).</s>
-2. <s>**Sketch out the flow of a decoder, and `Browser.element` and how things are passed around.** See pg.69 and earlier pages. How is `succeed` decoder passed into another decoder?
-    - You need to write this whole section in language that's easier to understand with imagery.
-    - [Order matters](https://discourse.elm-lang.org/t/should-decoder-and-record-be-fields-order-independant/3295/4) in the decoder (it'll populate in the order of the curried function variables), but key/values can be in any order in the json string. It maps in the order of the decoder.
-    - The string in `required "name" string` decoder is the `key` in the json string.
-    - Possibly a good idea to show a _basic_ decoder in the original `Json.Decode` and a more _complex_ decoder with `Json.Decode.Pipeline` as it does seem a little easier to grasp — things like [][`hardcoded`](https://package.elm-lang.org/packages/NoRedInk/elm-json-decode-pipeline/latest/Json-Decode-Pipeline#hardcoded) are handy.
-    - When showing the `photoDecoder` you should've by now shown that calling the `Photo` type alias is basically the same as creating a record. It's called a `constructor` function.
-    - **Order matters** if you switched the order of the `id` and `url` fields you'd get a compiler error. It follows the order of the arguments for the function (in this case a record) you're passing to the decoder.</s>
-3. <s>**Add an example of loading the json** from a localhost server (see pg.74)</s>
-4. <s>**Add an example of testing the json decoder** `PhotoDecoder`.</s>
-5. <s>**Handling _no_ photos.** There's two possibilities: the json hasn't loaded yet, or the json contains no photos. You could start the initial state as `Waiting` message type, or something like that. You'll want to use a `Maybe` type if there's a chance of no photos from the json.</s>
-    <s>- Give a few examples of areas that you must restructure now we have a `{ photo : Photo }` record (not a direct `Photo` in the model) — anything that consumes this Photo (or it's internal record values) MUST be updated! (see `toggleLike` and `updateComment`). Simplify wherever possible and **only consume the types that you must**. Also remember the `Racket Lang` rules of splitting out into simpler functions (and abstracting where needed)
-    - Add an example for [`Maybe.map`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#map) which does [the same job as this](https://shorturl.at/zy6s8).
-    - Make sure to add a note that we're refactoring things (like adding a `Just` and changing type annotations to `Photo`, because now `Model` is wrapping `Photo` in a record.)</s>
-    <s>- Gotchas! Once we've changed everything, there's one function in `view` that now needs to take a `photo` (line 172) — **you can't just use `model.photo` because thats a `Maybe Photo`. You'll need it to take a `Photo` and case on the `Maybe`!
-        - You could also use [`Maybe.withDefault`](https://package.elm-lang.org/packages/elm/core/latest/Maybe#withDefault) here too (maybe).
-        - Don't do this do it _[this](https://shorturl.at/rSTa7)_ way.
-    - Remember we can use a curried function that supplies it's other argument when consumed by `Maybe.map`.</s>
-6. <s>**pg. 75 (and check [Beginning Elm](https://elmprogramming.com/who-this-book-is-for.html) also) for a diagram of how different functional programming is from javascript** — it's pure with no [side-effects](https://elmprogramming.com/side-effects.html).</s>
-7. <s>**When to validate forms** and if you can rely on only HTML5 field form validators, such as regex and disable. **I think this is a NO. You should validate it?**. Validating data: Is HTML5 form validation enough? If you're using json encoder (to post) it might well be.
-    - Client-side form validation is a good way for enhancing user experience, it also provides some styling that can help to communicate that an input is required.
-    - But you will allways still have to validate any data submitted on the server, making sure is clean and safe data. The required attribute can be manipulated by a malicious user.</s>
-8. <s>**Should I consign the `() -> ( Model, Cmd )` setup for `Browser.element`?** I have one already in the Anki cards, but I'll _never_ remember exactly what to put. Only roughly. **That's where good notes or good documentation comes into play!**</s>
-9. <s>If you're fetching from the server right away (on page load) why do you need the initial model as well? Is there a better way to do this? A blank initial model?</s>
-10. **Revisit `map`, `filter`, `reduce`.** Mostly `map` for now (such as `Result.map`)
-    - Create a list of records, then retrieve one of their values with `List.map .key listOfRecords`</s>
-11. <s>**Recursive lists are useful to know only on a cursory level (for me at least)** as you'll most likely be using the above higher order functions where everything is pretty much done for you. I find them a little easier with Lisp, but you can get used to the Elm syntax also.
-    - Recursive lists are a bit of a PITA, especially sorting algorithms, as you need to be aware of both the shape of the data flow (flat and triangular) and making sure all cases are dealt with.
-    - For instance, it's easy to sort some lists, but others you'd need to keep looping until everything is sorted in order. Writing a recursive function for that becomes quite tricky.</s>
-
-
-## Chapter 5
+...
 
 
 
