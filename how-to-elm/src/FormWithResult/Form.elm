@@ -41,13 +41,6 @@ type Entries
     = NoEntries
     | List Entry
 
-isEntry : Entries -> Bool
-isEntry entries =
-    if not entries == NoEntries then
-        False
-    else
-        True
-
 type alias Model =
     { id : Int
     , entries : Entries
