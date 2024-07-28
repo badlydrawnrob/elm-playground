@@ -130,7 +130,7 @@ saveEntries model =
             { model
                 | entries = model.entries ++ [ Entry id entry ]
                 , currentEntry = ""
-                , id = id + 1
+                , id = model.id + 1
             }
 
 
@@ -141,4 +141,4 @@ update msg model =
             { model | currentEntry = entry }
 
         SaveEntry ->
-            { model | saveEntries model }
+            saveEntries model
