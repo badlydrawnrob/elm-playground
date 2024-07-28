@@ -64,7 +64,7 @@ type Msg
 {-| Pull in a record, output a `li` -}
 viewEntryItem : Entry -> Html Msg
 viewEntryItem entry =
-    li [] [ text .text ]
+    li [] [ text entry.text ]
 
 viewEntries : Entries -> Html Msg
 viewEntries entries =
@@ -85,15 +85,18 @@ user to submit ... see `update` and our `FormValidate` module.
 -}
 viewWrapper : String -> List Entry -> Html Msg
 viewWrapper currentEntry entries =
-    div [] [
-        if isEntry entries then
-            ul [ class "entry-list" ]
-                viewEntries entries
-            , viewForm currentEntry
-        else
-            div [] [ text "You need to add an entry first!" ]
-            , viewForm currentEntry
-        ]
+        case entries of
+            NoEntries ->
+                div [] [
+                    div [] [ text "You need to add an entry first!" ]
+                    , viewForm currentEntry
+                ]
+            Entries listOfEntries ->
+                div [] [
+                    ul [ class "entry-list" ]
+                        viewEntries listOfEntries
+                    , viewForm currentEntry
+                ]
 
 viewForm : String -> Html Msg
 viewForm currentEntry =
