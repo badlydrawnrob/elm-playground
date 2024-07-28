@@ -32,8 +32,10 @@ import Html exposing (..)
 import Html.Attributes exposing (class, classList, disabled, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 
+type alias Id =
+    Int
 type alias Entry =
-    { id : Int
+    { id : Id
     , text : String
     }
 
@@ -42,7 +44,7 @@ type Entries
     | Entries (List Entry)
 
 type alias Model =
-    { id : Int
+    { id : Id
     , entries : Entries
     , currentEntry : String
     }
@@ -62,6 +64,11 @@ type Msg
 -- View ------------------------------------------------------------------------
 
 
+{-| Pull in a record, output a `li` -}
+viewEntryItem : Entry -> Html Msg
+viewEntryItem entry =
+    li [ class (String.fromInt entry.id)] [ text entry.text ]
+
 {-| Our simple form field, which we'll have to validate before allowing the
 user to submit ... see `update` and our `FormValidate` module.
 
@@ -70,26 +77,6 @@ user to submit ... see `update` and our `FormValidate` module.
     (c) Handover to our `Msg` on `update`
     (d) Run a check and disable the button if `String` is empty `""`!
 -}
-viewWrapper : String -> List Entry -> Html Msg
-viewWrapper currentEntry entries =
-        case entries of
-            NoEntries ->
-                div [] [
-                    div [] [ text "You need to add an entry first!" ]
-                    , viewForm currentEntry
-                ]
-            Entries listOfEntries ->
-                div [] [
-                    ul [ class "entry-list" ]
-                        (List.map viewEntryItem listOfEntries)
-                    , viewForm currentEntry
-                ]
-
-{-| Pull in a record, output a `li` -}
-viewEntryItem : Entry -> Html Msg
-viewEntryItem entry =
-    li [ class String.fromInt entry.id] [ text entry.text ]
-
 viewForm : String -> Html Msg
 viewForm currentEntry =
     form [ class "new-entry", onSubmit SaveEntry ]          -- (a)
@@ -99,6 +86,7 @@ viewForm currentEntry =
                 , value currentEntry                        -- (b)
                 , onInput UpdateCurrentEntry                -- (c)
                 ]
+                []
             , button
                 [ disabled (String.isEmpty currentEntry) ]  -- (d)
                 [ text "Save" ]
@@ -106,17 +94,28 @@ viewForm currentEntry =
 
 view : Model -> Html Msg
 view model =
-    main_ []
-        [ div [ class "wrapper" ]
-            [ h1 [] [ text "Testing a simple form" ] ]
-        , section [ class "form" ]
-            [ viewForm model.currentEntry model.entries ]
-        ]
+        case model.entries of
+            NoEntries ->
+                div [] [
+                    div [] [ text "You need to add an entry first!" ]
+                    , viewForm model.currentEntry
+                ]
+            Entries listOfEntries ->
+                div [] [
+                    ul [ class "entry-list" ]
+                        (List.map viewEntryItem listOfEntries)
+                    , viewForm model.currentEntry
+                ]
+
 
 
 -- Update ----------------------------------------------------------------------
 
-{-| Strip the front and back of `currentEntry`, and check if empty -}
+{-| Strip the front and back of `currentEntry`, and check if empty
+
+    (a) Return our state to an empty entry
+    (b) increment the model.id for our next entry
+-}
 saveEntries : Model -> Model
 saveEntries model =
     let
@@ -128,11 +127,25 @@ saveEntries model =
 
         _ ->
             { model
-                | entries = model.entries ++ [ Entry id entry ]
-                , currentEntry = ""
-                , id = model.id + 1
+                | entries = updateEntriesList model.id entry model.entries
+                , currentEntry = ""  -- (a)
+                , id = model.id + 1  -- (b)
             }
 
+{-| Because our `List Entry` are wrapped now in `Entries`, we've got
+to work some magic to add a new `comment` (as an `Entry`) to our list:
+
+1. If there's currently `NoEntries`, then create one ...
+2. If there's already `Entries`, add one to the list.
+-}
+updateEntriesList : Id -> String -> Entries -> Entries
+updateEntriesList id currentEntry entries =
+    case entries of
+        NoEntries ->
+            Entries [Entry id currentEntry]
+
+        Entries list ->
+            Entries (list ++ [Entry id currentEntry])
 
 update : Msg -> Model -> Model
 update msg model =
@@ -142,3 +155,14 @@ update msg model =
 
         SaveEntry ->
             saveEntries model
+
+
+-- Main ------------------------------------------------------------------------
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = initialModel
+        , view = view
+        , update = update
+        }
