@@ -14,6 +14,26 @@
 > elm reactor
 ```
 
+## The best way to learn (redux)
+
+> It really depends on how _deep_ you want the learning to be. Is it something I can look up in the documentation later? Will that be clear enough for me to do the job? Do I need proper examples to help me in the future?
+
+1. Lazy loading of cards, then chunk/consolidate learning points
+    - This is more time consuming with intermediate learning.
+2. Isolate the learning point into a single file or module
+3. Show it working _within_ the program (with comments in-place)
+4. For _some_ learning points, add Anki Cards
+5. It's sometimes helpful to write a summary book too.
+6. Create some drawings, perhaps storify the learning point
+    - Add some memorable examples that are your own.
+7. Now, from time to time, refresh your knowledge
+    - Watch a video, write an example, read an article, or another book on the subject. You've always got the documentation to fall back on too.
+8. It's really all about practice. Memory will only get you so far.
+
+There's often a lot packed in to a book, and you don't want to be rewriting the damn thing too much, as that's time consuming, but for _deep_ learning, this seems to be the way to go. You've got Anki to drill your memory, you've got summary notes (or a book) for reference, and you've practiced a few examples to consolidate your learning.
+
+The problem with Elm is sometimes there's documentation but not enough tutorials or examples of how to _use_ these tools.
+
 ## Do the simplest thing first!
 
 > Got a narly piece of `json` to decode? Start "as if" you've already imported it. Do the simple things first and leave the difficult stuff to the end (like catching errors).
@@ -31,20 +51,18 @@ Build out your functions "as-if" the data is already there. Once you're happy wi
 - Are there some bits of data missing sometimes?
 - Is there a better source for the data?
 
-Someone says to put of things like `Maybe.withDefault` to the very end, and start with the data so that you get saner results. Do you need a `non-empty List`? Are some `json` objects fields optional? How are you going to validate the data that's coming from, or sending to the server?
+Someone says to put off things like `Maybe.withDefault` to the very end, and start with the data so that you get saner results. Do you need a `non-empty List`? Are some `json` objects fields optional? How are you going to validate the data that's coming from, or sending to the server?
 
 
 ## The sad (but real) truth
 
 > **Do what you're good at.** I'll repeat. Do what you're good at!!! **You've got one life, so don't waste time.**
 >
-> Learning to program (properly) is such a _huge_ investment in time. I only really want to be able to use it for simple prototypes, proof-of-concepts, until their turning over a profit and I can find someone better than me to work with.
+> Learning to program (properly) is such a _huge_ investment in time — just look how much one chapter covers!!! I only really want to be able to use it for simple prototypes, proof-of-concepts, until they're turning over a profit and I can find someone better than me to work with.
 >
 > **Remind yourself of that, and don't get bogged down with research for CompSci.** Only do it for fun or necessity (or for quick brain training).
 
-I've forgotten at least 60% of what I learned during HTDP (the college-level course) and recursive algorithms would probably take a good deal of rejigging in my mindbox to get right (they can get very difficult!).
-
-I don't think I have that kind of time at my disposal. There's lots of other things I'd rather be doing; high-level thought, a bit of design, learning the piano, writing a book; all of which are a considerable investment in time themselves.
+I've forgotten at least 60% of what I learned during HTDP (the college-level course) and recursive algorithms would probably take a good deal of rejigging in my mindbox to get right (they can get very difficult!). I don't think I have that kind of time at my disposal. There's lots of other things I'd rather be doing; high-level thought, a bit of design, learning the piano, writing a book; all of which are a considerable investments in time themselves.
 
 - Some people make great developers
 - Some people's mind is a finely-tuned logic machine
@@ -52,21 +70,25 @@ I don't think I have that kind of time at my disposal. There's lots of other thi
 
 I'm not one of those people. Purely practical, or good to keep the grey matter alive. And that's OK. I'm happy to do simple forms, simple json, spreadsheets for a bit of data, AI for help, and GUI tools to do the rest.
 
-No data base admin, no heavy lifting, no racking my brains for maths or difficult algorithms. Fuck that. I'll learn enough to teach, enough to get by, enough to make some money. I can follow documentation and tutorials, cobble together some basic websites, and that's enough.
+**No data base admin, no heavy lifting, no racking my brains for maths or difficult algorithms. Fuck that.** I'll learn enough to teach, enough to get by, enough to make some money. I can follow documentation and tutorials, cobble together some basic websites, and that's enough.
 
-The Structure and Interpretation of Computer Programs is a nice _theoretical_ dream to complete, but it's _such_ and investment in time that would have diminishing returns.
+- Some light `sql` would be fine but ...
+- Setting up a `postgres` db with a linux server is an effort ...
+- Learning the ropes of even light DBA stuff is time consuming.
 
-A little like learning Mandarin! Don't do it!!! Admire the caligraphy, learn a few characters and stock phrases; move on to saner, better pursuits (for me!).
+The Structure and Interpretation of Computer Programs is a nice _theoretical_ dream to complete, and is intellectually stimulating, but it's _such_ an investment in time that would have diminishing returns. Furthermore, learning one language is a challenge but in most jobs you'll have to master multiple languages and _keep on learning_ which can be trying. Things move especially fast in the javascript world.
+
+It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy, learn a few characters and stock phrases; move on to saner, better pursuits (for me!).
 
 
 ## Timesinks
 
-> Get better at focusing in on the essentials.
+> Get better at focusing on the essentials, and speeding up these tasks:
 
 - Writing notes on books or adding issues to Github
 - Asking questions and figuring things out on forums
 - Adding unecessary complexity ...
-- Which I always end up simplifying anyway!
+- ... Which I always end up simplifying anyway!
 - Flip-flopping between tasks or learning goals
 - Consuming too many books, articles, videos
     - Often trying to flip between them when I should full-ass one thing.
@@ -80,8 +102,16 @@ A little like learning Mandarin! Don't do it!!! Admire the caligraphy, learn a f
 > - Without practice you'll forget lots of stuff
 > - If you _really_ want to become a good programmer, it's lots and lots of hours of practice.
 >
-> For most of us who just want to _think_ like a programmer, learning about data (`set` theory, `arrays`, or [`the array I used that isn't an array!`]), algorithms, simple functions (that could be ported to Excel), and problem solvers.
+> For most of us who just want to _think_ like a programmer, learning about data (`set` theory, `arrays`, subsitute functions for `arrays`, `index` lists, and so on)**^**, algorithms, simple functions (that could be ported to Excel), and problem solvers. It's helpful to know which data to use at any one time.
 
+```
+^ See elm-in-action folder 03, line 80 and folder 04, line 231.
+  We use a `Random` function in two different ways, one with an
+  Array, and one with a `Random` function in place of an Array.
+
+  I think there also a way to use an indexed list, so you can do
+  things like delete at an index. That's quite Pythonistic way.
+```
 
 ## To-Dos
 
@@ -96,7 +126,7 @@ A little like learning Mandarin! Don't do it!!! Admire the caligraphy, learn a f
     - Each decoder passes it's information into one of the `Photo` decoder's record fields. **page 69** and **Beginning Elm** or other sources.
     - Show a basic decoder first (from `Json.Decode`) probably `map2`.
     - **[Order matters:](https://discourse.elm-lang.org/t/should-decoder-and-record-be-fields-order-independant/3295/4)** the order you stack up the mini-decoders within our `photoDecoder` function should mirror our `Photo` constructor function's argument's order `<function> : Int -> String -> Int -> Photo`.
-    - You can potentially order the decoders in any order, so long as they use the correct `"key"` and `data` types (such as `required "id" int`) but **beware that this will screw up our `Photo` model if they're ordered incorrectly.
+    - You can potentially order the decoders in any order, so long as they use the correct `"key"` and `data` types (such as `required "id" int`) but **beware that this will screw up our `Photo` model if they're ordered incorrectly.**
     - Remember `Photo` can be a curried function, or a partially applied function.
     - The decoder type signatures can be a bit confusing, but just picture it as passing your `Photo` record down the line, with each mini-decoder filling in one of the fields.
     - Briefly explain `succeed` and how this works.
@@ -126,6 +156,15 @@ A little like learning Mandarin! Don't do it!!! Admire the caligraphy, learn a f
     - Perhaps you could leave the validation to HTML5 forms, but make sure it's a `String` before saving it as `json`?
 11. You don't need to add this to an Anki card as it's hard to remember! But the `()` unitless type is used for `Browser.element` and also requires `Sub.none` and `Cmd.none`. It also wraps the model and the command in a tuple: `( model, Cmd.none )`.
 12. Have a little go at `map`, `filter`, `reduce` in Elm lang.
+
+
+## To-Dos (perhaps)
+
+> (2) and (3) have been deleted from the repository, as they're too difficult or not needed.
+
+1. **Empty `div`s:** Elm seems to need adding quite a lot of empty divs, but I'm sure this could be reduced and cleaned up somehow.
+2. It could be useful to know how to parse a url segment, for instance `/:uuid`. I've tried figuring out [Korban](https://shorturl.at/5bhAv)'s tutorials (there's a few articles), but the way they're written is a tad complex. Search out other simple examples. His book is a bit too advanced as far as I can tell.
+3. See also "virtual room: super high tech room app" which is an interesting demo of using types, but it also uses a lot of fluff and extras that make it look bigger (and harder) than it probably is.
 
 
 ## Chapter 5
