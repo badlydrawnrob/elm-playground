@@ -61,19 +61,6 @@ type Msg
 
 -- View ------------------------------------------------------------------------
 
-{-| Pull in a record, output a `li` -}
-viewEntryItem : Entry -> Html Msg
-viewEntryItem entry =
-    li [] [ text entry.text ]
-
-viewEntries : Entries -> Html Msg
-viewEntries entries =
-    case entries of
-        NoEntries ->
-            text ""
-
-        Entries list ->
-            (List.map viewEntryItem list )
 
 {-| Our simple form field, which we'll have to validate before allowing the
 user to submit ... see `update` and our `FormValidate` module.
@@ -94,9 +81,14 @@ viewWrapper currentEntry entries =
             Entries listOfEntries ->
                 div [] [
                     ul [ class "entry-list" ]
-                        viewEntries listOfEntries
+                        (List.map viewEntryItem listOfEntries)
                     , viewForm currentEntry
                 ]
+
+{-| Pull in a record, output a `li` -}
+viewEntryItem : Entry -> Html Msg
+viewEntryItem entry =
+    li [ class String.fromInt entry.id] [ text entry.text ]
 
 viewForm : String -> Html Msg
 viewForm currentEntry =
