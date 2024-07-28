@@ -39,7 +39,7 @@ type alias Entry =
 
 type Entries
     = NoEntries
-    | List Entry
+    | Entries (List Entry)
 
 type alias Model =
     { id : Int
@@ -66,23 +66,22 @@ viewEntryItem : Entry -> Html Msg
 viewEntryItem entry =
     li [] [ text .text ]
 
-viewEntries : List Entry -> Html Msg
+viewEntries : Entries -> Html Msg
 viewEntries entries =
-    case entries
+    case entries of
+        NoEntries ->
+            text ""
 
-    _ ->
-        (List.map viewEntryItem entryList )
+        Entries list ->
+            (List.map viewEntryItem list )
 
 {-| Our simple form field, which we'll have to validate before allowing the
 user to submit ... see `update` and our `FormValidate` module.
 
-    (a) In this version we don't care if `entryList` is empty `[]` ...
-    - "/programming-elm/RefactorEnhance/Picshare04.elm" on line 95  has an
-      example function which output `text ""` if `[]`. It's quite easy.
-
-    `onSubmit SaveEntry` passes a `Msg` we can `case` on ...
-    `value comment` takes our `model.entry` as a value, and updates as our
-    model updates with our `onInput Comment` message.
+    (a) We run some checks `onSubmit` too
+    (b) This simply keeps the value updated with the user input (from our model)
+    (c) Handover to our `Msg` on `update`
+    (d) Run a check and disable the button if `String` is empty `""`!
 -}
 viewWrapper : String -> List Entry -> Html Msg
 viewWrapper currentEntry entries =
@@ -90,22 +89,24 @@ viewWrapper currentEntry entries =
         if isEntry entries then
             ul [ class "entry-list" ]
                 viewEntries entries
-            , viewForm entries
+            , viewForm currentEntry
         else
             div [] [ text "You need to add an entry first!" ]
-
-        ,
+            , viewForm currentEntry
         ]
 
 viewForm : String -> Html Msg
 viewForm currentEntry =
-    form [ class "new-entry", onSubmit SaveEntry ]  -- (a)
+    form [ class "new-entry", onSubmit SaveEntry ]          -- (a)
             [ input
                 [ type_ "text"
                 , placeholder "Add your cool entry here ..."
-                , value entry                             -- (b)
-                , onInput UpdateCurrentEntry              -- (c)
+                , value currentEntry                        -- (b)
+                , onInput UpdateCurrentEntry                -- (c)
                 ]
+            , button
+                [ disabled (String.isEmpty currentEntry) ]  -- (d)
+                [ text "Save" ]
             ]
 
 view : Model -> Html Msg
@@ -120,6 +121,7 @@ view model =
 
 -- Update ----------------------------------------------------------------------
 
+{-| Strip the front and back of `currentEntry`, and check if empty -}
 saveEntries : Model -> Model
 saveEntries model =
     let
