@@ -156,6 +156,7 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
     - Perhaps you could leave the validation to HTML5 forms, but make sure it's a `String` before saving it as `json`?
 11. You don't need to add this to an Anki card as it's hard to remember! But the `()` unitless type is used for `Browser.element` and also requires `Sub.none` and `Cmd.none`. It also wraps the model and the command in a tuple: `( model, Cmd.none )`.
 12. Have a little go at `map`, `filter`, `reduce` in Elm lang.
+13. For simple `String` you can `(List.map (\_ -> li [] [ text _ ]) entryList)` so long as it's wrapped in a `ul []` — you _could_ output a different value (such as `text ""`) if `[]` empty list, but you don't have to (there'll just be an empty `li` item)
 
 
 ## To-Dos (perhaps)
