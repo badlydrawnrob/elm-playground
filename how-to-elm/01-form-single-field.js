@@ -4370,8 +4370,8 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$FormWithResult$Form$NoEntries = {$: 'NoEntries'};
-var $author$project$FormWithResult$Form$initialModel = {currentEntry: '', entries: $author$project$FormWithResult$Form$NoEntries, id: 0};
+var $author$project$Form$SingleField$NoEntries = {$: 'NoEntries'};
+var $author$project$Form$SingleField$initialModel = {currentEntry: '', entries: $author$project$Form$SingleField$NoEntries, id: 0};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5183,33 +5183,33 @@ var $elm$browser$Browser$sandbox = function (impl) {
 		});
 };
 var $elm$core$String$trim = _String_trim;
-var $author$project$FormWithResult$Form$Entries = function (a) {
+var $author$project$Form$SingleField$Entries = function (a) {
 	return {$: 'Entries', a: a};
 };
-var $author$project$FormWithResult$Form$Entry = F2(
+var $author$project$Form$SingleField$Entry = F2(
 	function (id, text) {
 		return {id: id, text: text};
 	});
-var $author$project$FormWithResult$Form$updateEntriesList = F3(
+var $author$project$Form$SingleField$updateEntriesList = F3(
 	function (id, currentEntry, entries) {
 		if (entries.$ === 'NoEntries') {
-			return $author$project$FormWithResult$Form$Entries(
+			return $author$project$Form$SingleField$Entries(
 				_List_fromArray(
 					[
-						A2($author$project$FormWithResult$Form$Entry, id, currentEntry)
+						A2($author$project$Form$SingleField$Entry, id, currentEntry)
 					]));
 		} else {
 			var list = entries.a;
-			return $author$project$FormWithResult$Form$Entries(
+			return $author$project$Form$SingleField$Entries(
 				_Utils_ap(
 					list,
 					_List_fromArray(
 						[
-							A2($author$project$FormWithResult$Form$Entry, id, currentEntry)
+							A2($author$project$Form$SingleField$Entry, id, currentEntry)
 						])));
 		}
 	});
-var $author$project$FormWithResult$Form$saveEntries = function (model) {
+var $author$project$Form$SingleField$saveEntries = function (model) {
 	var entry = $elm$core$String$trim(model.currentEntry);
 	if (entry === '') {
 		return model;
@@ -5218,12 +5218,12 @@ var $author$project$FormWithResult$Form$saveEntries = function (model) {
 			model,
 			{
 				currentEntry: '',
-				entries: A3($author$project$FormWithResult$Form$updateEntriesList, model.id, entry, model.entries),
+				entries: A3($author$project$Form$SingleField$updateEntriesList, model.id, entry, model.entries),
 				id: model.id + 1
 			});
 	}
 };
-var $author$project$FormWithResult$Form$update = F2(
+var $author$project$Form$SingleField$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'UpdateCurrentEntry') {
 			var entry = msg.a;
@@ -5231,7 +5231,7 @@ var $author$project$FormWithResult$Form$update = F2(
 				model,
 				{currentEntry: entry});
 		} else {
-			return $author$project$FormWithResult$Form$saveEntries(model);
+			return $author$project$Form$SingleField$saveEntries(model);
 		}
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5248,7 +5248,7 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$li = _VirtualDom_node('li');
-var $author$project$FormWithResult$Form$viewEntryItem = function (entry) {
+var $author$project$Form$SingleField$viewEntryItem = function (entry) {
 	return A2(
 		$elm$html$Html$li,
 		_List_fromArray(
@@ -5261,8 +5261,8 @@ var $author$project$FormWithResult$Form$viewEntryItem = function (entry) {
 				$elm$html$Html$text(entry.text)
 			]));
 };
-var $author$project$FormWithResult$Form$SaveEntry = {$: 'SaveEntry'};
-var $author$project$FormWithResult$Form$UpdateCurrentEntry = function (a) {
+var $author$project$Form$SingleField$SaveEntry = {$: 'SaveEntry'};
+var $author$project$Form$SingleField$UpdateCurrentEntry = function (a) {
 	return {$: 'UpdateCurrentEntry', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5336,13 +5336,13 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$FormWithResult$Form$viewForm = function (currentEntry) {
+var $author$project$Form$SingleField$viewForm = function (currentEntry) {
 	return A2(
 		$elm$html$Html$form,
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class('new-entry'),
-				$elm$html$Html$Events$onSubmit($author$project$FormWithResult$Form$SaveEntry)
+				$elm$html$Html$Events$onSubmit($author$project$Form$SingleField$SaveEntry)
 			]),
 		_List_fromArray(
 			[
@@ -5353,7 +5353,7 @@ var $author$project$FormWithResult$Form$viewForm = function (currentEntry) {
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Add your cool entry here ...'),
 						$elm$html$Html$Attributes$value(currentEntry),
-						$elm$html$Html$Events$onInput($author$project$FormWithResult$Form$UpdateCurrentEntry)
+						$elm$html$Html$Events$onInput($author$project$Form$SingleField$UpdateCurrentEntry)
 					]),
 				_List_Nil),
 				A2(
@@ -5369,7 +5369,7 @@ var $author$project$FormWithResult$Form$viewForm = function (currentEntry) {
 					]))
 			]));
 };
-var $author$project$FormWithResult$Form$view = function (model) {
+var $author$project$Form$SingleField$view = function (model) {
 	var _v0 = model.entries;
 	if (_v0.$ === 'NoEntries') {
 		return A2(
@@ -5384,7 +5384,7 @@ var $author$project$FormWithResult$Form$view = function (model) {
 						[
 							$elm$html$Html$text('You need to add an entry first!')
 						])),
-					$author$project$FormWithResult$Form$viewForm(model.currentEntry)
+					$author$project$Form$SingleField$viewForm(model.currentEntry)
 				]));
 	} else {
 		var listOfEntries = _v0.a;
@@ -5399,12 +5399,12 @@ var $author$project$FormWithResult$Form$view = function (model) {
 						[
 							$elm$html$Html$Attributes$class('entry-list')
 						]),
-					A2($elm$core$List$map, $author$project$FormWithResult$Form$viewEntryItem, listOfEntries)),
-					$author$project$FormWithResult$Form$viewForm(model.currentEntry)
+					A2($elm$core$List$map, $author$project$Form$SingleField$viewEntryItem, listOfEntries)),
+					$author$project$Form$SingleField$viewForm(model.currentEntry)
 				]));
 	}
 };
-var $author$project$FormWithResult$Form$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$FormWithResult$Form$initialModel, update: $author$project$FormWithResult$Form$update, view: $author$project$FormWithResult$Form$view});
-_Platform_export({'FormWithResult':{'Form':{'init':$author$project$FormWithResult$Form$main(
+var $author$project$Form$SingleField$main = $elm$browser$Browser$sandbox(
+	{init: $author$project$Form$SingleField$initialModel, update: $author$project$Form$SingleField$update, view: $author$project$Form$SingleField$view});
+_Platform_export({'Form':{'SingleField':{'init':$author$project$Form$SingleField$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));

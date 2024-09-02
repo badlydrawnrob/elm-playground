@@ -1,4 +1,4 @@
-module FormWithResult.FormNotes exposing (..)
+module Form.SingleFieldNotes exposing (..)
 
 {-| A simple form that's validated with `Result`
     ============================================
