@@ -42,7 +42,7 @@ elm reactor
 1. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
 2. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U)
 3. [Scaling Elm apps](https://www.youtube.com/watch?v=DoA4Txr4GUs)
-4. [Making impossible states possible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^1]
+4. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^1]
 5. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
 6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
 
@@ -54,6 +54,7 @@ elm reactor
 
 ## Some tools
 
+- [Elm Doc Preview](https://github.com/dmy/elm-doc-preview) (great for offline documentation)
 - [Elm land](https://elm.land)
 - [Everything else](https://github.com/sporto/awesome-elm) (massive list)
 
