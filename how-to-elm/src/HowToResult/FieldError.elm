@@ -168,6 +168,7 @@ module HowToResult.FieldError exposing (..)
 -}
 import Html.Attributes exposing (..)
 import String exposing (split)
+import Html exposing (s)
 
 {- I started out by using types for the fields,
 but it's going to change from a `String` to a `Float`,
@@ -183,12 +184,12 @@ so this might just cause problems ... -}
 --     = Int
 
 {- This might be overkill, but we need some way to return the type of error
-it is, otherwise we've only got chained `Bool` to work with, so as I see it we
-could use `Bool`, or `String`, or a custom type. We could also simply run
-everything within the `case` statement, rather
-than using the `runErrorCheck` function. -}
+it is, ideally ALL of our errors, but for now might just have to step through
+each error and spit out the last one. The alternative way to do this is just
+use a simple `case` statement like:
+@ https://guide.elm-lang.org/error_handling/result. -}
 type FieldError
-    = Empty | OverCharLimit | NotTwoDecimals
+    = Empty | NotFloat | OverNumber | NotTwoDecimals
 
 checkForErrors : Field -> Result FieldErr Field
 checkForErrors f =
@@ -205,26 +206,46 @@ checkEmptyString s =
     else
         Ok s
 
+{- This is probably a dumb way to check this, as I could just
+convert `String.toFloat` and somehow round down to two decimals -}
 checkTwoDecimals : String -> Result FieldError String
 checkTwoDecimals s =
     let
         split = String.split "."
-        decimals = List.tail split
-
-        if (checkDecimals)
+        decimals = extractDecimals (List.tail split)
+        countDecimals = String.length decimals <= 2
     in
-    case (checkDecimals decimals) of
+    case countDecimals of
+        True -> Ok s
+        False -> Err NotTwoDecimals
 
 {- Here it's a good idea to list the possible states of your
 decimals. They could be `Nothing`, `""` (empty), or "123+" of
 any number of decimals. You could also have used the `String.toFloat`
 and `Round` down to two decimals. This is a bit laborious -}
-checkDecimals : Maybe (List String) -> Bool
-checkDecimals l =
+extractDecimals : Maybe (List String) -> String
+extractDecimals l =
     case m of
-        Nothing   -> False
-        Just [""] -> False
-        Just _    -> True
+        Nothing   -> ""
+        Just [""] -> ""
+        Just l    -> l
+
+{- The order of this is important. It should return an `Int` and
+NOT a `String` ... here we're converting it to a `Float` and check if it's
+higher than an abitrary number. We probably should've done this FIRST?! -}
+isLowerThan : String -> Result FieldError Float
+isLowerThan s =
+    let
+        number = String.toFloat
+        number |> String.toLower |> ((<=))
+    case String.toFloat s of
+        Nothing -> Err NotFloat
+        Just n  ->
+
+isLowerThanHelper : Float -> Result FieldError Float
+isLowerThanHelper f ->
+    if f <= 5 then
+        Field
 
 
 
