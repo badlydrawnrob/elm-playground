@@ -181,13 +181,14 @@ module HowToResult.FieldError exposing (..)
     (perhaps a simple `List Error`?) and chain `if/else` statements.
 
 
-    Using `.map` and `.andThen`
-    ---------------------------
+    Using `.map`, `.andThen`, and `toMaybe`
+    ---------------------------------------
 
-    `andThen` is useful if you want to chain two `Result` types, so the
-    first one succeeds (without `Err` message), but the second one doesn't, giving
-    you a more SPECIFIC error message for that field. `.map` allows us to use a
-    function on an `Ok a` result value.
+    `Result` has some useful functions that it can be used with. `andThen` is
+    useful if you want to chain two `Result` types, so the first one succeeds
+    (without `Err` message), but the second one doesn't, giving you a more
+    SPECIFIC error message for that field. `.map` allows us to use a function
+    on an `Ok a` result value.
 
     I'm not sure that these solve the multiple fields problem though.
 
@@ -311,7 +312,7 @@ checkNumbersInRange s =
         isInRange = checkInRange floatList
     in
     case isInRange of
-        True  -> Ok String.toFloat s  -- Finally, we output the Float
+        True  -> Ok (String.toFloat s)  -- Finally, we output the Float
         False -> Err NumbersTooHigh
 
 {- Thankfully we can cheat and do this WITHOUT having to deal with `Maybe`
@@ -325,10 +326,18 @@ checkInRange l =
         [_] -> False
 
         [first,second] ->
-            (checkMinutesInRange (String.toInt first))
-                && (checkSecondsInRange (String.toInt second))
+            (checkMinutesInRange (extractInt first))
+                && (checkSecondsInRange (extractInt second))
 
         _ -> False
+
+{- These fucking `Maybe` types are a pain in the ass. They're type-safe,
+but it adds a lot of extra checking ... -}
+extractInt : String -> Int
+extractInt s =
+    case String.toInt s of
+        Nothing -> 11  -- A nasty hack, but it'll return `False`
+        Just i  -> i
 
 {- If it's in range we want this test to pass `True` -}
 checkMinutesInRange : Int -> Bool
