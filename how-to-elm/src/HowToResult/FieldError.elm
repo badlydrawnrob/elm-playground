@@ -17,73 +17,98 @@ module HowToResult.FieldError exposing (..)
     The core problem
     ----------------
 
+    > Simple is better.
+    > If your logic becomes too complex or too many steps in the process,
+    > there's probably a simpler way you haven't thought about.
+    > eg: Two `Int` inputs (minutes, seconds) is simpler.
+
     Can we show ALL errors that a `String` contains at the same time?
     That way a visitor can see exactly what needs to be changed. We're
     only concerned with a SINGLE field right now:
 
-        A `String` value (of some length, is a float/int)
+        A `String` value (of specific length)
+        Is a `Float`, not an `Int` ...
+        Has a `minutes` part and a `seconds` part
+        e.g: A song runtime.
 
     We're doing some basic error checks on the `String`, adding your own
     error checking functions to this module might be possible, but not
     preferable (see "a module probably isn't the answer") as unless it's a very
     generic String, such as an email, it's likely to be quite specific to that
-    project. You might want to check a `Float` has only two decimal points:
+    project and could be hard to retro-fit.
 
-        "This field requires two decimal points"
+    I'm sure there's easier ways of handling this data type, but I'm using
+    `Result` and chaining them together. I'm also assuming that only the
+    following problems have to be dealt with (I'm sure there'd be more):
 
-    I'm assuming a good number of things here, this is just an example, and
-    may not be the ideal way to handle this data type:
-
-        - Either an `Int` or a `Float` is entered
-        - If a `Float` it only has one decimal point
+        - `String` is empty or not a `Float`
+        - An `Int` is entered rather than a "proper" `Float`
+        - The decimal point is too long (more than two)
+        - ~~The string entered shouldn't have more than one decimal point~~
         - ...
+
+    There is actually a package that could handle the decimal point issue
+    better:
+
+        @ https://package.elm-lang.org/packages/myrho/elm-round/latest/
 
 
     Order is important
     ------------------
     If we need to check that the `Float` has two decimal points, we might want
-    to check that _before_ the `String` is converted to an `Int`. There's other
-    ways to do this, but you must consider the chaining order.
+    to check that _before_ the `String` is converted to an `Int`. A
+    cursory glance in the docs and I can't find a better way — other than using
+    Round, Floor or Ceil to convert to an `Int`.
+
+    Whatever way you do it, you must consider the chaining order.
+
+
+    WRITE IT DOWN FIRST! List ALL possible states
+    ---------------------------------------------
+    Remember the practice you did in "How To Design Programs", before you
+    generated a function you provided "tests" or data that you're likely to
+    see, such as typos, wrong data, wrong format, so on. You might need to
+    use fuzz tests for this. A good example is here:
+
+        @ https://discourse.elm-lang.org/t/handling-nested-conditional-logic/2163/5
+
+    Figure out, upfront, what kind of computations you'll need to do on the data
+    before you start! Some things will be generic (limit length) and others
+    might need a bunch of `Result` errors depending on it's state.
+
+    I've said it once, so I'll say it again: SIMPLE IS BETTER, use the
+    5 steps to reduce code (Elon Musk). If your state is too hard to reason
+    about, maybe your form is too complex.
 
 
     Gotchas and problems
     --------------------
     Even for a single field, there's a few problems that make life difficult. And
     with a real form, you'd likely want to check more than one field at once.
-    So, if we're using this as a module, we need to be aware of:
+    If we _were_ using this as a generic module (we're not) we'd consider:
 
     1. ⚠️ It's difficult for a module to be a catch-all:
         - The data type we're checking is important to know up-front
         - Is it a required field? Which errors are we checking for, exactly?
         - Is our API flexible enough to deal with all these potentials?
-        - Does it just make life harder than if we'd created it specific to our
-          program form fields?
+        - Is this making life harder than it needs to be? Is it easier to just
+          write a program and use errors specific to that program?
     2. ⚠️ If this field is optional, how do we deal with this?
         - A `Maybe` type?
         - If its `Nothing`, do we ignore the field completely?
         - Do we handle that in this module, or in the main program?!
-    3. ⚠️ How do we accept our "two decimal points" function as an extra check?
+    3. ⚠️ How might we add extra error checks to the module?
         - Or any other function for that matter?
 
     As you can see, it's going to get complicated quickly. Remember the hassle
-    you had with form logic in WeWeb no code .. it can compound. There's also
+    you had with form logic in WeWeb no-code .. it can compound. There's also
     this article (for Javascript, so might not apply in Elm) on `number` input:
 
         https://stackoverflow.blog/2022/12/26/why-the-number-input-is-the-worst-input/
 
 
-    List ALL POSSIBLE STATES
-    ------------------------
-    Remember the practice you did in "How To Design Programs", before you
-    generated a function you provided "tests" or data that you're likely to
-    see, such as typos, email types, so on. You might need to use fuzz tests
-    for this. A good example is here:
-
-        @ https://discourse.elm-lang.org/t/handling-nested-conditional-logic/2163/5
-
-
-    A simple error checking method
-    ------------------------------
+    Simple error checking methods
+    -----------------------------
 
     We need to chain conditional functions, somehow. We also need some way to
     represent the errors. A simple way would be to use `Bool` and chain them,
@@ -116,8 +141,8 @@ module HowToResult.FieldError exposing (..)
     field they need to fix.
 
 
-    This could get complex quite quickly
-    ------------------------------------
+    Again, this could all get complex quite quickly
+    -----------------------------------------------
     It might be fine to generate a `List String` for ONLY the errors the string
     contains, but compound that 10x for 10 different fields and that's A LOT
     of complexity you probably don't want.
@@ -132,9 +157,10 @@ module HowToResult.FieldError exposing (..)
         @ https://discourse.elm-lang.org/t/handling-nested-conditional-logic/2163
 
 
-    A MODULE IS PROBABLY NOT THE ANSWER
-    -----------------------------------
-    See Richard Feldmans answer to the following question. It's very difficult
+    ---------------------------------------
+    ⚠️ A MODULE IS PROBABLY NOT THE ANSWER!
+    ---------------------------------------
+    See Richard Feldman's answer to the following question. It's very difficult
     to create a "catch all" module that will handle all eventualities. DON'T
     SEARCH FOR A UNICORN that'll solve all your problems. Treat each form like
     a mini-program:
@@ -189,7 +215,7 @@ each error and spit out the last one. The alternative way to do this is just
 use a simple `case` statement like:
 @ https://guide.elm-lang.org/error_handling/result. -}
 type FieldError
-    = Empty | NotFloat | OverNumber | NotTwoDecimals
+    = Empty | NotFloat | NumberTooHigh | NotTwoDecimals
 
 checkForErrors : Field -> Result FieldErr Field
 checkForErrors f =
@@ -198,26 +224,89 @@ checkForErrors f =
 
 -- Error checks ----------------------------------------------------------------
 
-{- Here we're using point-free style, without arguments -}
-checkEmptyString : String -> Result FieldError String
-checkEmptyString s =
-    if String.isEmpty s then
-        Err Empty
-    else
-        Ok s
+-- First we'll list the possible states of the form field.
+-- Note that `String.toFloat` renders `"2"` as a float, when
+-- we want it to create an error. I can't think of a better
+-- way than using string functions for this use case.
+--
+-- ""
+-- "isn't a number"
+-- "2"               (an `Int`)
+-- "2.3456"          (too many decimal points)
+-- "2.35"            (perfect)
+-- "2.3.4"           (this isn't SemVer! We need a `Float`!)
+-- "11.35"           (too high a `minutes` number)
+-- "2.61"            (too high a `seconds` number)
+-- "2.00"            (out of scope for our requirements)
+-- "-1"              (out of scope for negative numbers)
+
+
+{- This isn't required as `String.toFloat` will spit out `Nothing`
+if it's empty string. Here we're using point-free style, without arguments -}
+-- checkEmptyString : String -> Result FieldError String
+-- checkEmptyString s =
+--     if String.isEmpty s then
+--         Err Empty
+--     else
+--         Ok s
+
+
+{- Check if it's not empty, or isn't a number first. This will
+also come back as `Nothing` if a SemVer number is given. -}
+checkIfFloat : String -> Result FieldError String
+checkIfFloat s =
+    case String.toFloat of
+        Nothing -> Err "Either not a number or an empty string"
+        Just f  -> Ok f
+
+{- Next, we'll check if it's a "proper" `Float` (decimal point)
+We know we have a number, but if that number is an `Int` then the
+`tail` call will come back empty. That's not what we're looking for! -}
+checkTwoDecimals : String -> Result FieldError String
+checkTwoDecimals s =
+    let
+        split = String.split "." s
+        rest = List.tail split
+    in
+    case rest of
+        Nothing -> Err "There's nothing there"
+        Just [] -> Err "The number must contain a decimal point"
+        Just f  -> Ok s -- Return the string, as we still need it ...
+
+{- Finally, we want to check that both sides are in range, I'm not
+bothering to check if they're positive numbers, but that could happen -}
+checkNumbersInRange : String -> Result FieldError String
+
+
+{-| ... To check both sides are }
 
 {- This is probably a dumb way to check this, as I could just
 convert `String.toFloat` and somehow round down to two decimals -}
 checkTwoDecimals : String -> Result FieldError String
 checkTwoDecimals s =
     let
-        split = String.split "."
+        float = String.toFloat s  -- Returns a `Maybe Float`
+        Maybe.map somefunc float
+
+        split = String.split "." s
         decimals = extractDecimals (List.tail split)
         countDecimals = String.length decimals <= 2
     in
     case countDecimals of
         True -> Ok s
         False -> Err NotTwoDecimals
+
+checkIsInt : String -> Result FieldError String
+checkIsInt s =
+    case String.toFloat s of
+        Nothing -> ""
+        Just
+
+
+checkIfFloat : Maybe Float -> Bool
+checkIfFloat f =
+    case f of
+
 
 {- Here it's a good idea to list the possible states of your
 decimals. They could be `Nothing`, `""` (empty), or "123+" of
