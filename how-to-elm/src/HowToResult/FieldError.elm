@@ -192,9 +192,8 @@ module HowToResult.FieldError exposing (..)
     I'm not sure that these solve the multiple fields problem though.
 
 -}
-import Html.Attributes exposing (..)
-import String exposing (split)
-import Html exposing (s)
+
+import Html exposing (text)
 
 {- I started out by using types for the fields,
 but it's going to change from a `String` to a `Float`,
@@ -209,17 +208,11 @@ so this might just cause problems ... -}
 -- type alias FieldValid
 --     = Int
 
-{- This might be overkill, but we need some way to return the type of error
-it is, ideally ALL of our errors, but for now might just have to step through
-each error and spit out the last one. The alternative way to do this is just
-use a simple `case` statement like:
-@ https://guide.elm-lang.org/error_handling/result. -}
+{- We could just use a `String` for our `Result` errors, which might be
+the easier thing to do. For our purposes though, I'm going to use a type
+and this can be converted to an error message in the view. Might be overkill! -}
 type FieldError
-    = Empty | NotFloat | NumberTooHigh | NotTwoDecimals
-
-checkForErrors : Field -> Result FieldErr Field
-checkForErrors f =
-    Debug.todo
+    = EmptyOrNotString | NotProperFloat | NumbersTooHigh | NotTwoDecimals
 
 
 -- Error checks ----------------------------------------------------------------
@@ -251,100 +244,117 @@ if it's empty string. Here we're using point-free style, without arguments -}
 --         Ok s
 
 
+-- Step 1 ----------------------------------------------------------------------
+
 {- Check if it's not empty, or isn't a number first. This will
 also come back as `Nothing` if a SemVer number is given. -}
 checkIfFloat : String -> Result FieldError String
 checkIfFloat s =
     case String.toFloat of
-        Nothing -> Err "Either not a number or an empty string"
+        Nothing -> Err EmptyOrNotString
         Just f  -> Ok f
+
+
+-- Step 2 ----------------------------------------------------------------------
 
 {- Next, we'll check if it's a "proper" `Float` (decimal point)
 We know we have a number, but if that number is an `Int` then the
-`tail` call will come back empty. That's not what we're looking for! -}
+`tail` call will come back empty. `String.toFloat` converts a `2.00` to
+a `2`, That's not what we're looking for! It's probably NOT an issue however,
+as in this thread: @ https://github.com/elm/core/issues/964 but for our
+purposes I'm going to treat it as it is. -}
 checkTwoDecimals : String -> Result FieldError String
 checkTwoDecimals s =
     let
-        split = String.split "." s
-        rest = List.tail split
+        rest = splitNumberTail s
     in
     case rest of
-        Nothing -> Err "There's nothing there"
-        Just [] -> Err "The number must contain a decimal point"
-        Just f  -> Ok s -- Return the string, as we still need it ...
+        Nothing -> Err EmptyOrNotString
+        Just [] -> Err NotProperFloat
+        Just f  -> (countTwoDecimals f s) -- Return string or error
 
-{- Finally, we want to check that both sides are in range, I'm not
-bothering to check if they're positive numbers, but that could happen -}
-checkNumbersInRange : String -> Result FieldError String
+{- Split out the two sides of the `Float` if they have them. We use special
+syntax `>>` for point-free style @ https://tinyurl.com/elm-lang-point-free-style-eg -}
+splitNumberTail : String -> Maybe (List String)
+splitNumberTail =
+    String.split "." >> List.tail
 
-
-{-| ... To check both sides are }
-
-{- This is probably a dumb way to check this, as I could just
-convert `String.toFloat` and somehow round down to two decimals -}
-checkTwoDecimals : String -> Result FieldError String
-checkTwoDecimals s =
+countTwoDecimals : List String -> String -> Result FieldError String
+countTwoDecimals m string =
     let
-        float = String.toFloat s  -- Returns a `Maybe Float`
-        Maybe.map somefunc float
-
-        split = String.split "." s
-        decimals = extractDecimals (List.tail split)
-        countDecimals = String.length decimals <= 2
+        check =
+            case m of
+                []  -> False
+                [s] -> String.length s <= 2
+                _   -> False
     in
-    case countDecimals of
-        True -> Ok s
+    case check of
         False -> Err NotTwoDecimals
-
-checkIsInt : String -> Result FieldError String
-checkIsInt s =
-    case String.toFloat s of
-        Nothing -> ""
-        Just
+        True  -> Ok string
 
 
-checkIfFloat : Maybe Float -> Bool
-checkIfFloat f =
-    case f of
+-- Step 3 ----------------------------------------------------------------------
 
+{- Check numbers are in range. We've already checked that we've got a `head`
+and `tail` and that there is two decimal points available.
 
-{- Here it's a good idea to list the possible states of your
-decimals. They could be `Nothing`, `""` (empty), or "123+" of
-any number of decimals. You could also have used the `String.toFloat`
-and `Round` down to two decimals. This is a bit laborious -}
-extractDecimals : Maybe (List String) -> String
-extractDecimals l =
-    case m of
-        Nothing   -> ""
-        Just [""] -> ""
-        Just l    -> l
-
-{- The order of this is important. It should return an `Int` and
-NOT a `String` ... here we're converting it to a `Float` and check if it's
-higher than an abitrary number. We probably should've done this FIRST?! -}
-isLowerThan : String -> Result FieldError Float
-isLowerThan s =
+AVOID USING THE FUNCITON THAT RETURNS ANOTHER `MAYBE`!
+------------------------------------------------------
+That means more unpacking and more headaches. We can simply loop the list or
+use a `case` statement and destructure the list instead. We've already run the
+checks we need to make sure it's valid data. Haskell uses `&&` and `||` for
+`AND`/`OR` ... ugh -}
+checkNumbersInRange : String -> Result FieldError Float
+checkNumbersInRange s =
     let
-        number = String.toFloat
-        number |> String.toLower |> ((<=))
-    case String.toFloat s of
-        Nothing -> Err NotFloat
-        Just n  ->
+        floatList = String.split "." s
+        isInRange = checkInRange floatList
+    in
+    case isInRange of
+        True  -> Ok String.toFloat s  -- Finally, we output the Float
+        False -> Err NumbersTooHigh
 
-isLowerThanHelper : Float -> Result FieldError Float
-isLowerThanHelper f ->
-    if f <= 5 then
-        Field
+{- Thankfully we can cheat and do this WITHOUT having to deal with `Maybe`
+and unpacking all those bloody `Just a` returns. It can only ever really be
+a `[first, second]` as we've checked it, but we have to be specific or Elm
+complains when compiling -}
+checkInRange : List String -> Bool
+checkInRange l =
+    case l of
+        []  -> False
+        [_] -> False
 
+        [first,second] ->
+            (checkMinutesInRange (String.toInt first))
+                && (checkSecondsInRange (String.toInt second))
+
+        _ -> False
+
+{- If it's in range we want this test to pass `True` -}
+checkMinutesInRange : Int -> Bool
+checkMinutesInRange =
+    ((>=) 10)
+
+{- Again if it's in range it'll return `True` -}
+checkSecondsInRange : Int -> Bool
+checkSecondsInRange =
+    ((>=) 60)
 
 
 -- Our main Error Checker function ---------------------------------------------
 
-runErrorCheck : Field -> Result FieldErrorType Field
-runErrorCheck f =
-    if checkEmptyString f then
-        Err "This field must not be empty"
-    else
-        case f of
-            checkEmptyString
+{- For now might just have to step through each error and spit out the last one.
+The alternative way to do this is just use a simple `case` statement like:
+@ https://guide.elm-lang.org/error_handling/result. -}
+runErrorCheck : String -> Result FieldError Float
+runErrorCheck s =
+    checkIfFloat s
+        |> Result.andThen checkTwoDecimals
+            |> Result.andThen checkNumbersInRange
 
+
+
+-- Model -----------------------------------------------------------------------
+
+-- view model =
+--     text (runError)
