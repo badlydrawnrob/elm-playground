@@ -14,6 +14,22 @@ module HowToResult.FieldError exposing (..)
     ONE ERROR would be shown to the user at a time.
 
 
+    I should've sketched out the problem first!
+    ------------------------------------------
+
+    > This is a great example of OVER ENGINEERING!
+
+    We're making extra work for ourselves here, as we could've just treat the
+    inputs as two boxes, each as an `Int`, rather than wrestling with maths
+    or `String` manipulations:
+
+        input 2 mins 30 seconds
+
+    It's also easier to contain each field's errors within ONE result type, as
+    you'll potentially have a lot of errors. Or use a different data type, such
+    as a `List a`.
+
+
     The core problem
     ----------------
 
@@ -27,13 +43,13 @@ module HowToResult.FieldError exposing (..)
     only concerned with a SINGLE field right now:
 
         A `String` value (of specific length)
-        Is a `Float`, not an `Int` ...
+        Is a "proper" `Float`, not an `Int` ...
         Has a `minutes` part and a `seconds` part
         e.g: A song runtime.
 
     We're doing some basic error checks on the `String`, adding your own
     error checking functions to this module might be possible, but not
-    preferable (see "a module probably isn't the answer") as unless it's a very
+    preferable (see "A MODULE PROBABLY ISN'T THE ANSWER") as unless it's a very
     generic String, such as an email, it's likely to be quite specific to that
     project and could be hard to retro-fit.
 
@@ -44,13 +60,43 @@ module HowToResult.FieldError exposing (..)
         - `String` is empty or not a `Float`
         - An `Int` is entered rather than a "proper" `Float`
         - The decimal point is too long (more than two)
+        - Both sides of the decimal point are within range of x/y
         - ~~The string entered shouldn't have more than one decimal point~~
         - ...
 
-    There is actually a package that could handle the decimal point issue
-    better:
+    Unpacking `Maybe` types
+
+        It turns out having to keep checking the number in this way leads to a
+        lot of unpacking of `Maybe` types (i.e: `String.toInt`) all over our
+        program — which is far from ideal!
+
+        Perhaps a better way is to convert the `Float` first and keep that around,
+        as well as the original `String`, to perform operations on?
+
+    Switching types
+
+        Our `Result _ VALUE` switches (at some point in the chain) from a `String`
+        to a `Float`, which might also be a bad idea.
+
+    Packages that could help
+
+        To make life simpler, we could simply truncate the decimal point,
+        rather checking with a `String`. But that requires maths (oh no!):
+
+        @ https://stackoverflow.com/a/31952975
+
+        Luckily there's an Elm package that can help us:
 
         @ https://package.elm-lang.org/packages/myrho/elm-round/latest/
+
+    Finally, if we convert `String.toFloat` and that number includes zero
+    decimal points, we get back something that looks like an `Int` but has
+    a type of `Float`:
+
+        @ https://github.com/elm/core/issues/964
+
+    We don't want that.
+
 
 
     Order is important
@@ -143,9 +189,9 @@ module HowToResult.FieldError exposing (..)
 
     Again, this could all get complex quite quickly
     -----------------------------------------------
-    It might be fine to generate a `List String` for ONLY the errors the string
-    contains, but compound that 10x for 10 different fields and that's A LOT
-    of complexity you probably don't want.
+    It might be fine to generate a `List String` for our errors, but compound
+    that 10x for 10 different fields and that could create A LOT of complexity
+    you probably don't want.
 
     You can read this thread for "which method do I use?"
 
@@ -157,9 +203,9 @@ module HowToResult.FieldError exposing (..)
         @ https://discourse.elm-lang.org/t/handling-nested-conditional-logic/2163
 
 
-    ---------------------------------------
+    ----------------------------------------------------------------------------
     ⚠️ A MODULE IS PROBABLY NOT THE ANSWER!
-    ---------------------------------------
+    ----------------------------------------------------------------------------
     See Richard Feldman's answer to the following question. It's very difficult
     to create a "catch all" module that will handle all eventualities. DON'T
     SEARCH FOR A UNICORN that'll solve all your problems. Treat each form like
@@ -231,8 +277,12 @@ type FieldError
 -- "2.3.4"           (this isn't SemVer! We need a `Float`!)
 -- "11.35"           (too high a `minutes` number)
 -- "2.61"            (too high a `seconds` number)
--- "2.00"            (out of scope for our requirements)
--- "-1"              (out of scope for negative numbers)
+--
+-- Out of scope for our purposes
+-- "2.1"             (only one decimal point)
+-- "2.10"            (Elm removes zeros)
+-- "2.00"            (Elm removes zeros)
+-- "-1"              (negative numbers)
 
 
 {- This isn't required as `String.toFloat` will spit out `Nothing`
@@ -251,9 +301,9 @@ if it's empty string. Here we're using point-free style, without arguments -}
 also come back as `Nothing` if a SemVer number is given. -}
 checkIfFloat : String -> Result FieldError String
 checkIfFloat s =
-    case String.toFloat of
+    case String.toFloat s of
         Nothing -> Err EmptyOrNotString
-        Just f  -> Ok f
+        Just f  -> Ok s
 
 
 -- Step 2 ----------------------------------------------------------------------
@@ -312,7 +362,7 @@ checkNumbersInRange s =
         isInRange = checkInRange floatList
     in
     case isInRange of
-        True  -> Ok (String.toFloat s)  -- Finally, we output the Float
+        True  -> Ok (extractFloat s)  -- Finally, we output the Float
         False -> Err NumbersTooHigh
 
 {- Thankfully we can cheat and do this WITHOUT having to deal with `Maybe`
@@ -339,6 +389,16 @@ extractInt s =
         Nothing -> 11  -- A nasty hack, but it'll return `False`
         Just i  -> i
 
+{- We already KNOW it's a float as it's been tested at the start .. so
+in retrospect, unpacking this more than once is probably a dumb idea. We've
+now got a LOT of `Maybe` types cropping up all over the program -}
+extractFloat : String -> Float
+extractFloat s =
+    case String.toFloat s of
+        Nothing -> 0
+        Just f -> f
+
+
 {- If it's in range we want this test to pass `True` -}
 checkMinutesInRange : Int -> Bool
 checkMinutesInRange =
@@ -363,7 +423,22 @@ runErrorCheck s =
 
 
 
+-- View ------------------------------------------------------------------------
+
+{- It depends if we're needing to notify the user or the devs to how specific
+we're being with our error. For the user, we can covert our `FieldError` to
+a `String` -}
+
+convertError : FieldError -> String
+convertError fe =
+    case fe of
+        EmptyOrNotString -> "Please enter a float string"
+        NotProperFloat   -> "This isn't a proper float"
+        NumbersTooHigh   -> "Please keep numbers in range"
+        NotTwoDecimals   -> "Too many decimal points"
+
+
 -- Model -----------------------------------------------------------------------
 
 -- view model =
---     text (runError)
+--     text (runErrorCheck "2.55")
