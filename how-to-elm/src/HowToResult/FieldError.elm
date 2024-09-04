@@ -262,7 +262,8 @@ so this might just cause problems ... -}
 the easier thing to do. For our purposes though, I'm going to use a type
 and this can be converted to an error message in the view. Might be overkill! -}
 type FieldError
-    = EmptyOrNotString
+    = YayNoErrors
+    | EmptyOrNotString
     | NotProperFloat
     | NumbersTooHigh
     | NotTwoDecimals
@@ -429,20 +430,22 @@ runErrorCheck s =
             |> Result.andThen checkNumbersInRange
 
 
-
--- View ------------------------------------------------------------------------
-
 {- It depends if we're needing to notify the user or the devs to how specific
 we're being with our error. For the user, we can covert our `FieldError` to
-a `String` -}
+a `String` — probably best to be specific about the error! -}
 
 convertError : FieldError -> String
 convertError fe =
     case fe of
+        YayNoErrors      -> ""  -- #! I'm not sure if this is correct ^
         EmptyOrNotString -> "Please enter a float string"
         NotProperFloat   -> "This isn't a proper float"
         NumbersTooHigh   -> "Please keep numbers in range"
         NotTwoDecimals   -> "Too many decimal points"
+
+{- We're going to store the field error somewhere in the model, so how do we
+cater for ZERO errors? The `Ok _` is the success case for this, so am I doing
+this wrong? -}
 
 
 
@@ -483,35 +486,35 @@ checkAndSave model =
         Err fieldError -> { model | fieldError = fieldError }
         Ok float       -> { model
                             | userInput = "" -- reset
-                            , fieldError = Ok float
-                            , saveInput = float
+                            , fieldError = YayNoErrors
+                            , savedInput = float
                             }
 
 
--- View -----------------------------------------------------------------------
+-- View ------------------------------------------------------------------------
+
+-- See `Form/SingleField.elm` for notes on this form!
 
 view : Model -> Html Msg
 view model =
-    form [ class "float-input", onSubmit SaveInput ]          -- (a)
+    form [ class "float-input", onSubmit SaveInput ]            -- (a)
             [ input
                 [ type_ "text"
                 , placeholder "Please add a number ..."
                 , value model.userInput                        -- (b)
-                , onInput UpdateInput                -- (c)
+                , onInput UpdateInput                          -- (c)
                 ]
                 []
             , p [ class "field-error" ]
-                [ viewErrorOrNothing model.fieldError ]
+                [ text (convertError model.fieldError) ]
             , button [] [ text "Save" ]
+            , div [ class "display-result" ]
+                [ p [] [
+                    strong [] [ text "Success: " ]
+                    , text (String.fromFloat model.savedInput)
+                    ]
+                ]
             ]
-
-{- We could've wrapped the whole of view and conditional loading dependent
-on if we've got any errors, but we'll just add a bit of text -}
-viewErrorOrNothing : FieldError -> Html Msg
-viewErrorOrNothing fe =
-    case fe of
-        Err error -> text (convertError fe)
-        Ok _      -> text ""
 
 
 -- Main ------------------------------------------------------------------------
