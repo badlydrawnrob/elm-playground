@@ -1,8 +1,16 @@
 module CustomTypes.Songs exposing (..)
 
-{-| Creating A Simple Custom Type
-    =============================
-    Always ask **"Do we _really_ need this?"**
+{-| ----------------------------------------------------------------------------
+    Creating A Simple Custom Type
+    ============================================================================
+
+    > Always ask:
+    > - "Do we _really_ need this feature?"
+    > - "Is this as simple as it can be?"
+    > - "Have I scoped the problem out well enough?"
+    > - "Have I written it down and sketched it out?"
+    > - "Have I followed '5 steps to reduce code'?"
+
 
     First up a few rules:
     ---------------------
