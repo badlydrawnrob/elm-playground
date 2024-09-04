@@ -34,6 +34,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 
 type alias Id =
     Int
+
 type alias Entry =
     { id : Id
     , text : String
