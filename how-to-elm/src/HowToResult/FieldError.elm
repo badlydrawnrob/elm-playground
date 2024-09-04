@@ -240,7 +240,10 @@ module HowToResult.FieldError exposing (..)
 
 -}
 
-import Html exposing (text)
+import Browser
+import Html exposing (..)
+import Html.Attributes exposing (class, placeholder, type_, value)
+import Html.Events exposing (onInput, onSubmit)
 
 {- I started out by using types for the fields,
 but it's going to change from a `String` to a `Float`,
@@ -259,7 +262,11 @@ so this might just cause problems ... -}
 the easier thing to do. For our purposes though, I'm going to use a type
 and this can be converted to an error message in the view. Might be overkill! -}
 type FieldError
-    = EmptyOrNotString | NotProperFloat | NumbersTooHigh | NotTwoDecimals
+    = EmptyOrNotString
+    | NotProperFloat
+    | NumbersTooHigh
+    | NotTwoDecimals
+
 
 
 -- Error checks ----------------------------------------------------------------
@@ -303,7 +310,7 @@ checkIfFloat : String -> Result FieldError String
 checkIfFloat s =
     case String.toFloat s of
         Nothing -> Err EmptyOrNotString
-        Just f  -> Ok s
+        Just f  -> Ok s  -- We want to keep the float to run string tests later
 
 
 -- Step 2 ----------------------------------------------------------------------
@@ -438,7 +445,81 @@ convertError fe =
         NotTwoDecimals   -> "Too many decimal points"
 
 
--- Model -----------------------------------------------------------------------
 
--- view model =
---     text (runErrorCheck "2.55")
+-- Update ----------------------------------------------------------------------
+
+-- I can't be bothered using another `Maybe` right now, so I'm just going to
+-- default the savedInput to zero.
+
+type alias Model =
+    { userInput : String
+    , fieldError : FieldError
+    , savedInput : Float -- I can't be bothered to use a `Maybe` here today!
+    }
+
+type Msg
+    = UpdateInput String
+    | SaveInput
+
+initialModel =
+    { userInput = ""
+    , fieldError = EmptyOrNotString
+    , savedInput = 0 -- This should really be a `Nothing` but hey-ho.
+    }
+
+{- We need to pass the info through to the model -}
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        UpdateInput str -> { model | userInput = str }
+        SaveInput     -> checkAndSave model
+
+checkAndSave : Model -> Model
+checkAndSave model =
+    let
+        checkErrors = runErrorCheck model.userInput
+    in
+    case checkErrors of
+        Err fieldError -> { model | fieldError = fieldError }
+        Ok float       -> { model
+                            | userInput = "" -- reset
+                            , fieldError = Ok float
+                            , saveInput = float
+                            }
+
+
+-- View -----------------------------------------------------------------------
+
+view : Model -> Html Msg
+view model =
+    form [ class "float-input", onSubmit SaveInput ]          -- (a)
+            [ input
+                [ type_ "text"
+                , placeholder "Please add a number ..."
+                , value model.userInput                        -- (b)
+                , onInput UpdateInput                -- (c)
+                ]
+                []
+            , p [ class "field-error" ]
+                [ viewErrorOrNothing model.fieldError ]
+            , button [] [ text "Save" ]
+            ]
+
+{- We could've wrapped the whole of view and conditional loading dependent
+on if we've got any errors, but we'll just add a bit of text -}
+viewErrorOrNothing : FieldError -> Html Msg
+viewErrorOrNothing fe =
+    case fe of
+        Err error -> text (convertError fe)
+        Ok _      -> text ""
+
+
+-- Main ------------------------------------------------------------------------
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = initialModel
+        , view = view
+        , update = update
+        }
