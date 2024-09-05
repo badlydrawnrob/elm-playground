@@ -53,8 +53,18 @@ module HowToResult.FieldErrorRevisited exposing (..)
 
     Errors
     ------
+    Elm Lang compiler erros are FAR more helpful than the ones I've seen in
+    Purescript so far, when you're tired you make LOTS of silly mistakes.
+
     #! Here I could probably be more efficient (we're converting `String.toInt`
     in two places)
+
+
+    Learning from mistakes
+    ----------------------
+    At first I had the `checkAndSave` function using `Ok (f,s)` as if the
+    `Result` gave out a `Tuple String String`, but it DOESN'T, it gives
+    out a record!
 
 -}
 
@@ -108,14 +118,15 @@ checkErrors tuple =
 -- I forgot to do this!
 extractMinsAndSecs : Input -> SongRunTime
 extractMinsAndSecs i =
-    { minutes = String.toInt (Tuple.first i)
-    , seconds = String.toInt (Tuple.second i)
+    { minutes = extractInt (Tuple.first i)
+    , seconds = extractInt (Tuple.second i)
     }
 
-extractInt : Maybe Int -> Int
+extractInt : String -> Int
 extractInt i =
-    Nothing -> 100 -- #! What on earth do I put here? Make sure it fails.
-    Just i  -> i
+    case String.toInt i of
+        Nothing -> 100 -- #! What on earth do I put here? Make sure it fails.
+        Just int  -> int
 
 -- Now for our `Boolean` statements
 -- (0, 10] or [0, 60] (intervals)
@@ -177,11 +188,11 @@ checkAndSave model =
     in
     case errors of
         Err str  -> { model | fieldError = str }
-        Ok (f,s) -> { model
+        Ok srt   -> { model
                     | userInput = ("", "") -- reset
                     , fieldError = ""       -- reset
-                    , savedInput = { minutes = f, seconds = s }
-                }
+                    , savedInput = srt
+                    }
 
 
 -- View ------------------------------------------------------------------------
