@@ -264,8 +264,9 @@ grabMinutesAndSeconds : SongRunTime -> Html Msg
 grabMinutesAndSeconds srt =
     text (String.concat
             [ (String.fromInt srt.minutes)
-            , "."
+            , "m"
             , (String.fromInt srt.seconds)
+            , "s"
             ])
 
 

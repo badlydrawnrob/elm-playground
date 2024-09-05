@@ -5333,8 +5333,9 @@ var $author$project$HowToResult$FieldErrorRevisited$grabMinutesAndSeconds = func
 			_List_fromArray(
 				[
 					$elm$core$String$fromInt(srt.minutes),
-					'.',
-					$elm$core$String$fromInt(srt.seconds)
+					'm',
+					$elm$core$String$fromInt(srt.seconds),
+					's'
 				])));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
