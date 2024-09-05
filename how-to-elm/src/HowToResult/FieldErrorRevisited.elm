@@ -3,6 +3,8 @@ module HowToResult.FieldErrorRevisited exposing (..)
 {-| Field Error
     ===========
 
+    You need to SKETCH OUT THINGS better and show the flow of data.
+
     All the original notes are in `FieldError.elm` and should be left in.
     It's quite amazing how small decisions can make a massive difference to
     the ease and comprehension of a code base. I want it as simple as possible,
@@ -53,18 +55,22 @@ module HowToResult.FieldErrorRevisited exposing (..)
 
     Errors
     ------
-    Elm Lang compiler erros are FAR more helpful than the ones I've seen in
-    Purescript so far, when you're tired you make LOTS of silly mistakes.
-
     #! Here I could probably be more efficient (we're converting `String.toInt`
     in two places)
 
 
     Learning from mistakes
     ----------------------
+    Elm Lang compiler erros are FAR more helpful than the ones I've seen in
+    Purescript so far, when you're tired you make LOTS of silly mistakes. I'd
+    be pretty stuck without it.
+
+
     At first I had the `checkAndSave` function using `Ok (f,s)` as if the
     `Result` gave out a `Tuple String String`, but it DOESN'T, it gives
-    out a record!
+    out a record! See this commit for some glaring errors:
+
+        @ https://tinyurl.com/e0d9643
 
 -}
 
@@ -148,13 +154,13 @@ checkSeconds seconds =
 -- You could use a `Maybe Int` here if you wanted for `mins` and `seconds` but
 -- I can't be bothered. They can default to zero for now.
 
+type alias Input =
+    (String, String)
+
 type alias SongRunTime =
     { minutes : Int
     , seconds : Int
     }
-
-type alias Input =
-    (String, String)
 
 type alias Model =
     { userInput : (String, String)
@@ -166,20 +172,30 @@ type Msg
     = UpdateInput String String  -- An ID and the VALUE
     | SaveInput
 
-
-
 initialModel =
     { userInput = ("", "")
     , fieldError = ""
-    , savedInput = SongRunTime -- Could be `Maybe Int`
+    , savedInput = { minutes = 0, seconds = 0} -- Could be `Maybe Int`
     }
+
+
+
+-- Update ----------------------------------------------------------------------
 
 {- We need to pass the info through to the model -}
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        UpdateInput _ str -> { model | userInput = str }
-        SaveInput         -> checkAndSave model
+        UpdateInput "minutes" str
+            -> { model | userInput = Tuple.mapFirst (\_ -> str) model.userInput }
+
+        UpdateInput "seconds" str
+            -> { model | userInput = Tuple.mapSecond (\_ -> str) model.userInput }
+
+        UpdateInput _ _ -> model
+
+        SaveInput
+            -> checkAndSave model
 
 checkAndSave : Model -> Model
 checkAndSave model =
@@ -195,6 +211,7 @@ checkAndSave model =
                     }
 
 
+
 -- View ------------------------------------------------------------------------
 
 -- See `Form/SingleField.elm` for notes on this form!
@@ -208,7 +225,7 @@ view model =
                 [ type_ "text"
                 , placeholder "Please add minutes ..."
                 , value (Tuple.first model.userInput)           -- (b)
-                , onInput (UpdateInput  "minutes")             -- (c)
+                , onInput (UpdateInput "minutes")             -- (c)
                 ]
                 []
             , input
