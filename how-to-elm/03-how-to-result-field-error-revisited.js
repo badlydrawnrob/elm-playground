@@ -5193,6 +5193,15 @@ var $author$project$HowToResult$FieldErrorRevisited$checkMinutes = function (min
 		return (mins <= 10) && (mins > 0);
 	}
 };
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$HowToResult$FieldErrorRevisited$checkSeconds = function (seconds) {
+	if (seconds.$ === 'Nothing') {
+		return false;
+	} else {
+		var sec = seconds.a;
+		return (sec <= 60) && (sec >= 0);
+	}
+};
 var $author$project$HowToResult$FieldErrorRevisited$extractInt = function (i) {
 	var _v0 = $elm$core$String$toInt(i);
 	if (_v0.$ === 'Nothing') {
@@ -5217,7 +5226,7 @@ var $author$project$HowToResult$FieldErrorRevisited$checkErrors = function (tupl
 		var f = tuple.a;
 		var s = tuple.b;
 		return $author$project$HowToResult$FieldErrorRevisited$checkMinutes(
-			$elm$core$String$toInt(f)) && $author$project$HowToResult$FieldErrorRevisited$checkMinutes(
+			$elm$core$String$toInt(f)) && $author$project$HowToResult$FieldErrorRevisited$checkSeconds(
 			$elm$core$String$toInt(s));
 	}();
 	if (checkNumbers) {

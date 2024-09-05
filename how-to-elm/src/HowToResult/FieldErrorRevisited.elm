@@ -14,6 +14,11 @@ module HowToResult.FieldErrorRevisited exposing (..)
     It probably doesn't solve everything, but it's most the way there.
 
 
+    TO DO
+    -----
+    #! Add an error case for `String.toInt` `Nothing` (not a string)
+
+
     Surprise!
     --------
 
@@ -41,8 +46,10 @@ module HowToResult.FieldErrorRevisited exposing (..)
     ------------
     > SIMPLIFY!
 
-    This seems to make life a bit more difficult too. Simplify! You can simply
-    use two individual fields or a record type, and it'll probs be easier.
+    What seems easy to start may not be easy in the long run ... TUPLE makes it
+    more difficult than it needs to be here. A simple record field for each input
+    might be easier? Or a record type, and it'll probs be easier.
+
     Leave as-is for now.
 
 
@@ -87,6 +94,8 @@ import Html.Events exposing (onInput, onSubmit)
 No Elm `Float` "zero decimal" errors. No multiple changing of data.
 Very few `Maybe` types.
 
+#! These still haven't been done yet!
+-------------------------------------
 ""  (invalid `Int`)
 "s" (invalid `Int`)
 
@@ -115,7 +124,7 @@ checkErrors tuple =
             case tuple of
                 (f,s) ->
                     (checkMinutes (String.toInt f))
-                        && (checkMinutes (String.toInt s))
+                        && (checkSeconds (String.toInt s))
     in
     case checkNumbers of
         True  -> Ok (extractMinsAndSecs tuple)
@@ -134,6 +143,7 @@ extractInt i =
         Nothing -> 100 -- #! What on earth do I put here? Make sure it fails.
         Just int  -> int
 
+-- #!
 -- Now for our `Boolean` statements
 -- (0, 10] or [0, 60] (intervals)
 checkMinutes : Maybe Int -> Bool
