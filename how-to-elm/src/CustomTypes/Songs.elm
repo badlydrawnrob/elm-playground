@@ -5,6 +5,9 @@ module CustomTypes.Songs exposing (..)
     ============================================================================
     Questions raised in this test:
 
+    ONE Data type per `Result` would make life easier (with one function to
+    check each data type's errors)
+
         1. We're converting `String.toInt` in more than one place.
             - Convert this into a helper function?
             - Should we only convert each field ONCE?
@@ -23,11 +26,17 @@ module CustomTypes.Songs exposing (..)
             - Which leads to kind of verbose code
             - When is a `Tuple` absolutely necessary?
             - Where does it excel?
-        5. (This is hard to explain) How do we pass state around in `Update`?
-            - Narrowing types to only take song variables
-            - So that we can check them with an error function
-            - Which returns a `Msg` telling `Update` to `SaveSong`
-            - Is this the wrong way to do things?
+        5. (This is hard to explain) In general how do we pass state around?
+            - In which functions do we check it?
+            - In which functions do we modify it?
+            - Can we pass another `Msg` like `SaveSong` after `ClickedSave`?
+            - Can we narrow the types in `Update` so we're only taking in
+              the song variables required to validate the fields?
+            - Should this happen in a helper function _BEFORE_ we click save?
+            - Result seems a bit unwieldy for lots of possible error messages
+        6. How do we start narrowing our data types?
+            - Splitting out our `Msg` for a `Form` messages
+            - Giving our functions ONLY what they really need.
 
     Always ask:
     -----------
@@ -177,11 +186,6 @@ module CustomTypes.Songs exposing (..)
     2. Edit the Album Song order
     3. We're currently converting `Album` to a list ...
        - Might we need a ONE Song view?
-    4. Error checks (keeping it simple)
-       - Non-empty `SongTitle`
-       - `SongTime` must be positive number
-       - `00` for minutes must be rendered as a string
-       - `SongId` must be unique (package for `UUID`?)
 
     Nice to have but not important:
 
@@ -195,8 +199,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, type_, value, placeholder)
 import Html.Events exposing (onInput, onSubmit)
 import Debug
-import Json.Decode exposing (int)
-import HowToResult.FieldError exposing (runErrorCheck)
 
 type SongID
   = SongID Int
@@ -284,17 +286,24 @@ update msg model =
             { model | currentSecs = secs }
 
         ClickedSave ->
-            runErrorChecks model.currentSong model.currentMins model.currentSecs
-
-        SaveSong ->
-            { model
-            | currentID = (createID model.currentID)
-            , currentSong = ""
-            , currentMins = ""
-            , currentSecs = ""
-            , fieldError = ""
-            , album = updateAlbum model model.album
-            }
+            case (runErrorChecks model.currentSong model.currentMins model.currentSecs) of
+                Err str ->
+                    { model | fieldError = str }
+                Ok _ ->
+                    {- Here we're only saving the album (with a helper function)
+                    if all errors have come back clean. We're building the Song
+                    within that helper function. It might've been better to do
+                    that with `Result`? -}
+                    { model
+                    | currentID = (createID model.currentID)
+                    , currentSong = ""
+                    , currentMins = ""
+                    , currentSecs = ""
+                    , fieldError = ""
+                    {- I feel here should be entering the data we ACTUALLY need
+                    in a way that's been unpacked (`Maybe Int`) -}
+                    , album = updateAlbum model model.album
+                    }
 
 
 updateAlbum : Model -> Album -> Album
@@ -313,6 +322,28 @@ updateAlbum model album =
                 ((Tuple.pair
                     (String.toInt model.currentMins) (String.toInt model.currentSecs)
                     |> (Song model.currentID model.currentSong)) :: rest)
+
+
+
+
+
+
+
+
+-- HERE IS WHERE I STOP AND RETHING THINGS!!! ----------------------------------
+-- This should really only happen in ONE place in the program?
+unpackMaybeInt : Maybe Int -> Int
+unpackMaybeInt int =
+    case int of
+        Nothing -> Debug.todo "Surely there's a better way ..."
+        Just _  -> Debug.todo "To unpack these in a single location?"
+
+--------------------------------------------------------------------------------
+
+
+
+
+
 
 
 -- Error checking --
@@ -334,33 +365,50 @@ checkSeconds : Int -> Bool
 checkSeconds secs =
     secs >= 0
 
-{- I think this function is less than ideal. We're checking 3 errors here: for
-an empty string, for a number, and range of number. One error is a simple `Bool`
-in an if statement, the other two are chaining errors in a `Result.andThen`.
-Unfortunately there's many ways to do forms, but what would be the easiest route
+{- I decided to NOT return the values (or a Song) and simply to return a `String`
+for both `Err` and `Ok`. If we have LOTS of values, the only way I can see this
+working is to have a record field for each `Ok data` per input.
+
+This function is less than ideal. We're checking 3 errors here: for
+an empty string (`Bool`), for a number (`Result`), and range of numbers (`Result`).
+We're mixing methods here. `Result.andThen` is useless as it's best for dealing
+with ONE (and only one?) data type with multiple error checking.
+
+Unfortunately there's many ways to do forms. What would be the easiest route
 to check errors and build a `Song` type if error free? -}
-runErrorChecks : SongTitle -> String -> String -> Result String Song
+runErrorChecks : SongTitle -> String -> String -> Result String String
 runErrorChecks title mins secs =
     let
         checkErrors =
             if checkEmpty title then
-                checkTime checkMinutes mins
-                    |> Result.andThen (checkTime checkSeconds secs)
+                runTimeErrorChecks mins secs
             else
                 Err "Song field must not be empty"
     in
+    {- #! I think I'm chaining these `Result` types together wrong -}
     case checkErrors of
-        Err str -> str
-        {- Is it OK to do this? We discard the `Result` payload and send a new
-        message. This probably wouldn't work if we started narrowing the types
-        within our update function. -}
-        Ok _ -> SaveSong
+        Err str -> Err str
+        {- Rather than return data, we're returning a `String` here -}
+        Ok str -> Ok str
+
+runTimeErrorChecks : String -> String -> Result String String
+runTimeErrorChecks mins secs =
+    let
+        minutes = checkTime checkMinutes mins
+        seconds = checkTime checkSeconds secs
+    in
+    {- #! This is awful, but will stick with it for now! -}
+    case (minutes, seconds) of
+        (Err _, Err _) -> Err "Minutes and seconds fields are broken"
+        (Err _, Ok _)  -> Err "Minutes is broken"
+        (Ok _, Err _)  -> Err "Seconds is broken"
+        (Ok _, Ok _)   -> Ok "All is well" -- We could've data here (Tuple)
 
 
-{- Because are time `Result` are almost identical, let's abstract the func.
+{- Because both the time `Result`s are almost identical, let's abstract the func.
 In real life, this might not be so helpful without a distinct error message,
 but we could always add an argument for that later ... -}
-checkTime : Int -> (Int -> Bool) -> Result String Int
+checkTime : (Int -> Bool) -> String -> Result String String
 checkTime func int =
     case String.toInt int of
         Nothing ->
@@ -368,7 +416,7 @@ checkTime func int =
 
         Just num ->
             if func num then
-                Ok num
+                Ok "Number is OK"
             else
                 Err "Number is not in range"
 
@@ -389,14 +437,16 @@ view model =
         Album first rest ->
             div [ class "album" ]
                 [ h1 [] [ text "An album with no name" ]
-                , viewForm model.currentID model.currentSong model.currentMins model.currentSecs
+                , viewForm model.fieldError model.currentID model.currentSong model.currentMins model.currentSecs
                 , viewSongs first rest
                 ]
 
-viewForm : SongID -> SongTitle -> String -> String -> Html Msg
-viewForm _ title mins secs =
+viewForm : String -> SongID -> SongTitle -> String -> String -> Html Msg
+viewForm error _ title mins secs =
     form [ class "form-songs", onSubmit ClickedSave ]
-            [ input
+            [ p [ class "form-errors"]
+                [ text error ]
+            , input
                 [ type_ "text"
                 , placeholder "Add a song title"
                 , value title
@@ -433,8 +483,6 @@ viewSongs song lsong =
 
 viewSong : Bool -> Song -> Html Msg
 viewSong _ song =
-    Debug.todo "create if/else edit state"
-
     li [ class "album-s-song" ]
         [ text (song.songTitle ++ "(time: " ++ song.songTime ++ ")") ]
 
