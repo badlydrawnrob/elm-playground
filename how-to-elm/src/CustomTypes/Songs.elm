@@ -37,6 +37,8 @@ module CustomTypes.Songs exposing (..)
         6. How do we start narrowing our data types?
             - Splitting out our `Msg` for a `Form` messages
             - Giving our functions ONLY what they really need.
+        7. See "What messages are for" here:
+            - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
 
     Always ask:
     -----------
