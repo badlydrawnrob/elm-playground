@@ -1,7 +1,7 @@
 module HowToEncode.Simple exposing (..)
 
-{-| A nested object with a list
-    ===========================
+{-| ✅ A nested object with a list
+    ==============================
 
     This is easier than I thought. You simply create atoms, blocks, and
     combine them together like legos.

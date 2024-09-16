@@ -1,32 +1,31 @@
 module Form.SingleFieldNotes exposing (..)
 
-{-| A simple form that's validated with `Result`
-    ============================================
+{-| ✅ A simple form that's validated with `Result`
+    ===============================================
 
     Notes on `Maybe` and `type Custom`
     ----------------------------------
 
     I tried to make a custom type that's similar to, but more specific
-    than `Maybe`s `Just (List entryRecord)` or `Nothing`. Here's the gist:
+    than a `Maybe` (`Just (List entryRecord)` or `Nothing`). Here's the gist:
 
     1. `Maybe` requires using `Maybe.map entryFieldFunc model.entry`, which
        unwraps the `Maybe (List Entry)` to let us edit it's fields.
     2. `Entries` custom type does much the same thing, but it's a little more
        specific by calling it either `NoEntries` or `Entries (List Entry)`
 
-    The second option doesn't really help us _that_ much, as it's almost the
-    same as `[]` (`NoEntries`) which an empty list covers, but it could also
-    be "one of", i.e `[Entry]` or "many of" `[Entry1, Entry2, ...]`.
+    The second option doesn't really help us _that_ much, as `NoEntries` is
+    almost the same as `[]` which an empty list covers. A list can also be a
+    singleton, i.e `[Entry]` or "many" `[Entry1, Entry2, ...]`.
 
-    What it _does_ allow for though, is to check we have an Entry type in
-    our json, but it's likely (as someone mentioned here) that we'd want to
-    indicate somewhere in our json that it's a `Collection` of `List Entry`.
+    So either `Maybe List` or `Entries` allow us to check if a list exists in
+    our `json` and provide us with a datatype that covers this. We might also
+    want to wrap this in a `Collection` (which would be a `Maybe` instead of
+    the `List`)
 
-    Questions
-    ---------
-
-    1. Is there a quicker way to extract the number from `Id Int`?
-
+    Extracting from `ID`
+    --------------------
+    extractID (ID num) = num
 -}
 
 
@@ -121,7 +120,8 @@ view model =
 
 -- Update ----------------------------------------------------------------------
 
-{-| If we are simply using `List Entry`, our `update` function is pretty simple -}
+{-| If we are simply using `List Entry`, our `update` function is pretty simple.
+We're NOT adding any field error checks here though -}
 
 update : Msg -> Model -> Model
 update msg model =

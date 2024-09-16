@@ -1,7 +1,16 @@
 module Form.SingleField exposing (..)
 
-{-| A simple form that's validated with `Result`
-    ============================================
+{-| ⚠️ A simple form that's validated with `Result`
+    ===============================================
+
+    This example is using the WRONG custom type format, and is no better
+    than using a `List` (or `Maybe List`) in it's current form. A preferred
+    way might be:
+
+        Entries = NoEntries | Entries Entry (List Entry)
+
+    It's a subtle difference, but it accounts for only ONE list item. See
+
 
     Questions to be answered
     ------------------------
