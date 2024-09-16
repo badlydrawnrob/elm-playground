@@ -1,7 +1,7 @@
 module CustomTypes.Songs exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Creating A Simple Custom Type
+    Creating A Simple Custom Type (see `CustomTypes.md` for notes)
     ============================================================================
     Questions raised in this test:
 
@@ -40,55 +40,19 @@ module CustomTypes.Songs exposing (..)
         7. See "What messages are for" here:
             - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
 
-    Always ask:
-    -----------
-    1. Have I scoped the problem and sketched it out?
-    2. What problems have I discovered? What routes?
-    3. Do we _really_ need this feature?
-    4. Is this as simple as it can be? ('5 steps to reduce code')
-        - We need to convert `Album` to a list ...
-        - So we're not differentiating a single `Song` in our view
-        - We _might_ want to enforce a singleton if saving to json
-        - It's likely this could've been simplified to a `List Song`
-    6. Have I accounted for ALL POSSIBLE STATES of my data?
-        - An `Album Song []` for example.
-        - We MUST make sure at least an empty list is provided there
-        - A `SongTime` uses a `Tuple` ONLY when form is saved. This makes our
-          inputs a bit easier to deal with.
 
-    Don't use a custom type unless it's:
-    ------------------------------------
-    a) More explicit and better described data
-    b) Easier to work with (make impossible states impossible)
-    c) Better shaped than simple data (easier to reason about)
+    Things to consider
+    ------------------
+    1. TIME YOURSELF! How long did the thing take?
+    2. Do we handle joining the `first` and `rest` of `Album` in ONE single func?
+    3. Is the `Tuple Int` for song runtime necessary, or just use two record fields?
 
 
-    First up a few rules:
-    ---------------------
-    1. Don't store default data or `null` in json
-       - Simply handle it with `Maybe` in your application
-       - Default data hides potential issues and mute errors
-    2. `Maybe`s are just fine to use, but ...
-       - Sometimes your own custom descriptive type is better
-       - ONLY if it improves on simple data ..
-       - Or makes impossible states (impossible)
-    3. Reach for `Maybe.withDefault` LATE (at the very end)
-       - For example, at the last moment in your `view`.
-    4. For other custom types, you can reach for a codec ...
-       - Codecs are fine for _transmitting_ the data. But you probably
-         don't want to store it as is ...
-       - Your custom types and `json` data can get out of sync VERY quickly,
-         if you store them directly.
-       - You'd have to version your custom types if you saved them as json.
+    Is this Custom Type really a benefit over regular data?
+    ------------------------------------------------------
+    Only action what you really need, right now.
 
-
-    What's the benefit of a custom type over regular data?
-    -----------------------------------------------------
-    First it's best to really think about the type of data you
-    actually need, and the best way to represent this. Only action what
-    you REALLY need, right now (YAGNI):
-
-        - It's a list of song titles (which are strings)
+        - A list of song titles (which are strings)
         - The only extra information I need is the song time and an ID
         - They're not part of anything more (could've used an Album collection)
         - We _might_ be able to get away without an ID (use an Array?)
@@ -98,91 +62,13 @@ module CustomTypes.Songs exposing (..)
     `List String` if we didn't need to edit them. What I've ended up with is
     something similar to `Random.Uniform` which is a bit different from a `List`.
 
-    What exactly is a `List`?
-    -------------------------
-    > A list is either empty, a single item, or many items.
-
-        ["Get Back", "Afraid", "Californication"]
-
-    Often, we'll only have to worry whether the item is empty or full,
-    without having to concern ourselves with _how many_ items it holds.
-
-    Sometimes, however, we might want to treat the list differently
-    if it holds _only one_ item. A good example might be within our
-    view. It's an `<ul>` if there's many items, but we might use a
-    different element if it's just one item.
-
-    What happens if we don't get a list at all?
-    -------------------------------------------
-    We're using `NoAlbum` with a custom type. Perhaps we have a `json` document,
-    and we don't know ahead of time if this list is available. We could use
-    `NoAlbum` for this possiblity, but we could've used `Maybe` too.
-
-    - If there's no list in the `json` doc, we can set it to `Nothing`.
-    - If there's a list there, we can set it to `Just []` (or a full list)
-
-    The problem with either of these is that before we can deal with our list,
-    we have to "climb the wall" so to speak, to "lift" or unpack the list. Only
-    then can we check for empty, single, or a full list and start working with
-    the data. `Maybe` gives us some ready made functions for this purpose. If we
-    use a custom type, we have to write our own functions.
-
-    Either way, all that lifting adds up and creates quite a bit of work for
-    ourselves. I feel the best way is to unpack it in ONE place where possible.
-
-
-    A couple of alternatives
-    ------------------------
-
-    We could use a Collection, which is a good case for a custom type.
-    For instance, an `Album` with an ID could look like this:
-
-        ```
-        {
-          "Album"        : "Californication",
-          "album_id"     : 1,
-          "album_tracks" : ["Californication", "..."]
-        }
-        ```
-
-    We'd still need to figure out the eventuality of "Album not found", which
-    may also call for a `Maybe` type. But if the album is found, we could
-    generally predict it wouldn't have an empty list. We'd have to make
-    sure we have control over our data to remove that possibility.
-
-
-    A (failed) simpler version
-    --------------------------
-
-    The original custom type I tried looked like this:
-
-        type Entries = NoEntries | Entries (List Entry)
-
-    Where `Entry` is a record. This took much trial and error to get right!
-    The problem is IT DOES NOT HELP US THAT MUCH!
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    We still have to do everything we'd do with a `Maybe` (check for `Nothing`,
-    unwrap the `Just`, etc) and we don't have the added benefit of all those
-    helper functions that `Maybe` gives us (we'd have to create them):
-
-        `Maybe.withDefault` and `Maybe.map runSomeFunction (Just "String")`
-
-
-    ----------------------------------------------------------------------------
-    Things to consider
-    ----------------------------------------------------------------------------
-    1. TIME YOURSELF! How long did the thing take?
-    2. Do we handle joining the `first` and `rest` of `Album` in ONE single func?
-    3. Is the `Tuple Int` for song runtime necessary, or just use two record fields?
-
 
     ----------------------------------------------------------------------------
     Wishlist
     ----------------------------------------------------------------------------
-    Before you start coding — sketch the damn thing out! Follow the rules and
-    questions above! The general rule seems to be: use `Maybe` for data that is
-    optional, but DON'T store default data in json, just leave it out.
+    Before you start coding — sketch the damn thing out! The general rule seems
+    to be: use `Maybe` for data that is optional, but DON'T store default data
+    in json, just leave it out.
 
     1. Edit a Song with a form
     2. Edit the Album Song order
