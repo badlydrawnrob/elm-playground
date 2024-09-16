@@ -345,7 +345,7 @@ runErrorChecks title mins secs =
         checkErrors =
             if checkEmpty title then
                 checkTime checkMinutes mins
-                -- |> Result.andThen (checkTime checkSeconds secs)
+                    |> Result.andThen (checkTime checkSeconds secs)
             else
                 Err "Song field must not be empty"
     in
