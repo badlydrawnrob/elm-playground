@@ -210,27 +210,6 @@ updateAlbum model album =
 
 
 
-
-
-
-
-
--- HERE IS WHERE I STOP AND RETHING THINGS!!! ----------------------------------
--- This should really only happen in ONE place in the program?
-unpackMaybeInt : Maybe Int -> Int
-unpackMaybeInt int =
-    case int of
-        Nothing -> Debug.todo "Surely there's a better way ..."
-        Just _  -> Debug.todo "To unpack these in a single location?"
-
---------------------------------------------------------------------------------
-
-
-
-
-
-
-
 -- Error checking --------------------------------------------------------------
 -- I'm using `HowToResult.FieldErrorRevisited` as an example.
 
