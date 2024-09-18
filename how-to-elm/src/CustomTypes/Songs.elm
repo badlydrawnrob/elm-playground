@@ -7,6 +7,8 @@ module CustomTypes.Songs exposing (..)
         @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
     See also "What messages are for":
         @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
+    Unpack (or "lift") `Maybe`s etc in ONE place:
+        @ https://tinyurl.com/stop-unpacking-maybe-too-often
 
 
     What we're looking to achieve:
@@ -48,13 +50,15 @@ module CustomTypes.Songs exposing (..)
            an input field), but ONLY when button clicked.
 
 
-    Things I don't know about
-    -------------------------
+    Things I don't know yet ...
+    ---------------------------
 
-        1. Is having a type alias with `Result String a` bad?
-        2. Is `Result` a poor choice for a form with lots of fields?
-        3. Can I split our the form `Msg` so it's self-contained?
-        4. Handling `first` and `rest` of `Album` in a single function?
+        1. Are nested records undesirable?
+        2. Is having a type alias with `Result String a` bad?
+        3. Is `Result` a poor choice for a form with lots of fields?
+        4. Can I split our the form `Msg` so it's self-contained?
+        5. Handling `first` and `rest` of `Album` in a single function?
+        6. Better data "flow" and usage of functions
 
 
     ----------------------------------------------------------------------------
@@ -116,7 +120,8 @@ type Album
     | Album Song (List Song)
 
 {- #! We're using `Result` to gather errors and unpack data, but
-that data can come in many forms, so use a type variable. -}
+that data can come in many forms, so use a type variable. Is this going
+to potentially cause problems in future? -}
 type alias Validate
     = Result String a
 
@@ -162,56 +167,105 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         EnteredInput "song" title ->
-            { model | currentSong = title }
+            { model | currentSong = { title }
 
-        EnteredInput "time (minutes)" mins ->
+        EnteredInput "minutes" mins ->
             { model | currentMins = mins }
 
-        EnteredInput "time (seconds)" secs ->
+        EnteredInput "seconds" secs ->
             { model | currentSecs = secs }
 
         ClickedSave ->
-            case (runErrorChecks model.currentSong model.currentMins model.currentSecs) of
-                Err str ->
-                    { model | fieldError = str }
-                Ok _ ->
-                    {- Here we're only saving the album (with a helper function)
-                    if all errors have come back clean. We're building the Song
-                    within that helper function. It might've been better to do
-                    that with `Result`? -}
+            -- 1. Check each input
+            -- 2. Each input has it's own error checking function
+            -- 3. Now check if there's any errors in each `.valid`
+            -- 4. Where do I add `Ok data` to? `.valid`?
+            -- 5. If everything comes back clean, use the data ...
+            -- 6. To create a `Song` ...
+            -- 7. And add it to an `Album` :)
+
+            -- You could perhaps run a higher order function and pass in the
+            -- error checking function for each data type?
+
+            case Debug.todo "run error checks" of
+                errors -> -- Return model with `.valid` errors
+                noerrors ->
+                    {- All `.valid` fields have come back without any errors.
+                    we can now build our `Song` and pass it over to `updateAlbum`,
+                    and reset all the things, ready for a new form. -}
                     { model
                     | currentID = (createID model.currentID)
-                    , currentSong = ""
-                    , currentMins = ""
-                    , currentSecs = ""
-                    , fieldError = ""
-                    {- I feel here should be entering the data we ACTUALLY need
-                    in a way that's been unpacked (`Maybe Int`) -}
-                    , album = updateAlbum model model.album
+                    , currentSong = { input = "", valid = Err "Field is empty" }
+                    , currentMins = { input = "", valid = Err "Field is empty" }
+                    , currentSecs = { input = "", valid = Err "Field is empty" }
+                    {- #! I'm sure I could narrow the types here better? How do
+                    we provide lots of arguments in a nicer way? -}
+                    , album =
+                        updateAlbum model model.album
                     }
 
 
-updateAlbum : Model -> Album -> Album
-updateAlbum model album =
+--------------------------------------------------------------
+{- #! Grab our valid fields.
+
+I DON'T THINK THIS WILL WORK AS OUR `List.map` EXPECTS LIST WITH SAME TYPES.
+VALID IS GOING TO BE DIFFERENT DEPENDING ON THE INPUT!!! -}
+unpackValidFields : Model -> List UserInput
+unpackValidFields {currentSong, currentMins, currentSecs} =
+    List.map .valid [currentSong, currentMins, currenSecs]
+---------------------------------------------------------------
+
+
+updateAlbum : SongId -> SongTitle -> Int -> Int -> Album -> Album
+updateAlbum id validSong validMins validSecs album =
     case album of
         NoAlbum ->
             Album
-                (Tuple.pair
-                    (String.toInt model.currentMins) (String.toInt model.currenSongTimeSecs)
-                    |> (Song model.currentID model.currentSong))
+                (Tuple.pair validMins validSecs |> (Song id validSong))
                 []
         {- Do you want to add to the front, or end of the list? You could check
         here that the list isn't empty by using (first :: rest) but I ain't! -}
         Album first rest ->
             Album first
-                ((Tuple.pair
-                    (String.toInt model.currentMins) (String.toInt model.currentSecs)
-                    |> (Song model.currentID model.currentSong)) :: rest)
+                (Tuple.pair validMins validSecs |> (Song id validSong)) :: rest
+
+
+{- The ONLY reason I'm using this function is because it tidies up our code a
+little bit. Our arguments would be quite long otherwise.
+
+#! I'm not sure if I'm doing this correctly ... -}
+runErrorCheck : (a -> UserInput) -> UserInput
+runErrorCheck func ({input, valid} as field) =
+     case (func field.input) of
+        Err str ->
+            { input = input, valid = Err str }
+        Ok data ->
+            { input = input, valid = Ok data }
+
+
+-- 1.
+-- Run through each input and validate it
+-- 2.
+-- Check if all fields are error free
+-- 3.
+-- If all error free, build a `Song`
+-- 4
+-- If all error free, add `Song` to `Album`.
+
+
+
+
+-- UserInput -> Validate
+-- It's either spit out one of these for each input
+-- { input = "", valid = Err "Field is empty" }
+-- Or spit out a `Song` and reset everything
 
 
 
 -- Error checking --------------------------------------------------------------
--- I'm using `HowToResult.FieldErrorRevisited` as an example.
+-- This is WAY easier than trying to nest `Result`s inside each other.
+-- ONE `Result` for each input data.
+-- See also `HowToResult.FieldErrorRevisited` for a reference.
 
 {- Non negative numbers -}
 checkMinutes : Int -> Bool
@@ -225,8 +279,11 @@ checkSeconds secs =
 
 {- My first attempt at this was to use ONE function to handle all errors with
 `Result`. You could've potentially returned a `Ok Song` at the end of it ...
-but it felt messy, so this time around, each input gets it's own `Result`. -}
-checkSong : String -> Result String SongTitle
+but it felt messy, so this time around, each input gets it's own `Result`.
+
+#! I'm using `Validate` type alias rather than `Result String SongTitle` here ...
+is that going to cause problems? -}
+checkSong : String -> Validate
 checkSong s =
     case String.isEmpty s of
         True  -> Err "Field cannot be empty"
@@ -235,7 +292,7 @@ checkSong s =
 {- Let's abstract the function as both minutes and seconds are similar errors.
 `String.toInt` will also check if empty as `Nothing`. We're also using the
 `Result` to unpack the `Maybe Int` that we'd get from the string function! -}
-checkTime : String -> Result String Int
+checkTime : String -> Validate
 checkTime func s =
     case String.toInt s of
         Nothing -> "Field cannot be empty, or not a number"
@@ -282,14 +339,14 @@ viewForm _ title mins secs =
                     [ type_ "text"
                     , placeholder "Add a song time (minutes)"
                     , value mins.input
-                    , onInput (EnteredInput "time (minutes)")
+                    , onInput (EnteredInput "minutes")
                     ] []
                 , viewFormError mins.valid
                 , input
                     [ type_ "text"
                     , placeholder "Add a song time (seconds)"
                     , value secs.input
-                    , onInput (EnteredInput "time (seconds)")
+                    , onInput (EnteredInput "seconds")
                     ] []
                 , viewFormError secs.valid
                 ]
