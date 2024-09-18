@@ -3,83 +3,72 @@ module CustomTypes.Songs exposing (..)
 {-| ----------------------------------------------------------------------------
     Creating A Simple Custom Type (see `CustomTypes.md` for notes)
     ============================================================================
-    Questions raised in this test:
-
-    ONE Data type per `Result` would make life easier (with one function to
-    check each data type's errors)
-
-        1. We're converting `String.toInt` in more than one place.
-            - Convert this into a helper function?
-            - Should we only convert each field ONCE?
-            - Example:
-                - Convert at the point of error check
-                - Store the `Int` someplace (or pass it with `Result.andThen`)
-                - Retrieve our `Int` in a record (or an `Ok Int`)
-        2. Our error messages aren't stored, only ONE is shown:
-            - We'll only get an error for ONE of the fields.
-            - What happens if we have TWO fields with an error?
-        3. The `runErrorChecks` is a bit of a mess:
-            - We're using a `Bool` in one place and `Result` in another
-            - Better to be consistant with our field errors?
-        4. Our `Tuple` may be overkill
-            - It requires unpacking or `Tuple.pair`
-            - Which leads to kind of verbose code
-            - When is a `Tuple` absolutely necessary?
-            - Where does it excel?
-        5. (This is hard to explain) In general how do we pass state around?
-            - In which functions do we check it?
-            - In which functions do we modify it?
-            - Can we pass another `Msg` like `SaveSong` after `ClickedSave`?
-            - Can we narrow the types in `Update` so we're only taking in
-              the song variables required to validate the fields?
-            - Should this happen in a helper function _BEFORE_ we click save?
-            - Result seems a bit unwieldy for lots of possible error messages
-        6. How do we start narrowing our data types?
-            - Splitting out our `Msg` for a `Form` messages
-            - Giving our functions ONLY what they really need.
-        7. See "What messages are for" here:
-            - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
+    Original attempt:
+        @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
+    See also "What messages are for":
+        @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
 
 
-    Things to consider
-    ------------------
-    1. TIME YOURSELF! How long did the thing take?
-    2. Do we handle joining the `first` and `rest` of `Album` in ONE single func?
-    3. Is the `Tuple Int` for song runtime necessary, or just use two record fields?
+    What we're looking to achieve:
+    ------------------------------
+
+        1. An alternative to a `Maybe List`
+        2. Preparing ready to save a form to `json`
+        3. Store `Err` messages with `Result`
+        4. Display these in-place on the form
+        5. To NOT store optional data as `json`
+           - I've been told that's better. Just use a `Maybe` in your app.
 
 
-    Is this Custom Type really a benefit over regular data?
-    ------------------------------------------------------
-    Only action what you really need, right now.
+    Solving other problems that arose in last attempt
+    -------------------------------------------------
 
-        - A list of song titles (which are strings)
-        - The only extra information I need is the song time and an ID
-        - They're not part of anything more (could've used an Album collection)
-        - We _might_ be able to get away without an ID (use an Array?)
-        - But an ID can be added as a `class` and sifted.
+        1. Unpack `Maybe` types in ONE place (`String.toInt`)
+        2. ONE data type per `Result` (not chaining 3 different types)
+        3. Store that data type (so we convert it in ONE place)
+        4. We can show EVERY input's error (but only ONE error per input)
+        5. `runErrorChecks` was messy. Tidy up our code.
+            - We were mixing error handling strategies (if `Bool` and `Result`)
+        6. We create a `Tuple` ONCE and only once in our program
+            - When is a `Tuple` needed? When is it not?
+        7. Our data and state flow wasn't so easy to follow before.
+            - Where in the code do we create a `Song`?
+            - Where do we check for errors? How?
+            - Could we pass two `Msg`: `ClickedSave` and `SaveSong`?
+            - Can we narrow our types? In `Msg` too?
+                - Only taking in the types needed to validate the fields
 
-    From this description, a `List Record` might've been enough. Even a
-    `List String` if we didn't need to edit them. What I've ended up with is
-    something similar to `Random.Uniform` which is a bit different from a `List`.
+
+    Things we don't care about (for this attempt)
+    ---------------------------------------------
+
+        1. Displaying ALL errors for each data type
+           - I don't think this is possible with `Result`
+        2. We're not checking for errors on input (or `onBlur` when leaving
+           an input field), but ONLY when button clicked.
+
+
+    Things I don't know about
+    -------------------------
+
+        1. Is having a type alias with `Result String a` bad?
+        2. Is `Result` a poor choice for a form with lots of fields?
+        3. Can I split our the form `Msg` so it's self-contained?
+        4. Handling `first` and `rest` of `Album` in a single function?
 
 
     ----------------------------------------------------------------------------
     Wishlist
     ----------------------------------------------------------------------------
-    Before you start coding — sketch the damn thing out! The general rule seems
-    to be: use `Maybe` for data that is optional, but DON'T store default data
-    in json, just leave it out.
+    Sketch out the flow of the program BEFORE you start coding.
+    How might it be simplified?
 
-    1. Edit a Song with a form
-    2. Edit the Album Song order
-    3. We're currently converting `Album` to a list ...
-       - Might we need a ONE Song view?
-
-    Nice to have but not important:
-
-    1. Album title
-    2. Youtube or audio of the song (like a playlist)
-
+    1. Edit a `Song` with a form (but not the ID)
+    2. Delete a `Song`
+    3. Edit the `Album` `Song` order
+    4. Potentially change the view if only ONE `Song` ...
+    5. `Album` title?
+    6. YouTube or audio of the song?
 -}
 
 import Browser
@@ -88,6 +77,7 @@ import Html.Attributes exposing (class, type_, value, placeholder)
 import Html.Events exposing (onInput, onSubmit)
 import Debug
 
+{- An ID comes in handy if you want to edit or delete a `Song` -}
 type SongID
   = SongID Int
 
@@ -103,8 +93,7 @@ createID (SongID num) =
 type alias SongTitle
     = String
 
-{- This represents `minutes` and `seconds`.
-A Tuple requires unpacking, so might not be the best representation -}
+{- Represents `minutes` and `seconds`. Is a `Tuple` necessary? -}
 type alias SongTime
     = (Int,Int)
 
@@ -121,34 +110,42 @@ type alias Song
       , songTime  : SongTime
       }
 
-{- The big difference with this custom type is that
-it caters for a singleton, as well as "does not exist" -}
+{- Custom type caters for empty, one, many -}
 type Album
     = NoAlbum
     | Album Song (List Song)
 
-{- Some caveats here. A Song doesn't really need an ID,
-but I might want to delete a Song, so we have to have some
-way of referencing the correct song to delete! -}
+{- #! We're using `Result` to gather errors and unpack data, but
+that data can come in many forms, so use a type variable. -}
+type alias Validate
+    = Result String a
+
+{- #! I'm not sure how best to write this. For now it's only `String` types,
+but what if there's different types? Use `a` type variable? -}
+type alias UserInput
+    = { input : String
+      , valid : Validate
+      }
+
+{- For now I'm not using aliases for user input -}
 type alias Model
-    = { currentID : SongID -- for keeping ID up-to-date
-      , currentSong : SongTitle
-      , currentMins : String
-      , currentSecs : String
-      , fieldError : String
+    = { currentID : SongID -- The only field that isn't a record
+      , currentSong : UserInput
+      , currentMins : UserInput
+      , currentSecs : UserInput
       , album : Album
       }
 
-{- It might be better to use `Maybe` here rather than default data.
-In any event, we've got to sanitise the data first. What checks do we need?
--}
+{- #! Would it be better to use a bunch of `Maybe` here instead of default data?
+I don't really like the idea of too many `Maybe`s as that's a lot to "lift". We
+sanitise the data anyway, I guess. I'm keeping `SongTime` entries simple record
+fields rather than a `Tuple`. It's easier to manage. -}
 init : Model
 init =
     { currentID = SongID 0
-    , currentSong = ""
-    , currentMins = ""  -- Stick to simple data until `Result`
-    , currentSecs = ""  -- Stick to simple data until `Result`
-    , fieldError = ""    -- We're ONLY checking for errors in `SongTime`
+    , currentSong = { input = "", valid = Err "Field is empty" }
+    , currentMins = { input = "", valid = Err "Field is empty" }
+    , currentSecs = { input = "", valid = Err "Field is empty" }
     , album = NoAlbum
     }
 
@@ -156,21 +153,21 @@ init =
 -- Update ----------------------------------------------------------------------
 
 type Msg
-    = UpdateCurrentInput String String
+    = EnteredInput String String
     | ClickedSave
-    | SaveSong
+    -- | SaveSong
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        UpdateCurrentInput "song" title ->
+        EnteredInput "song" title ->
             { model | currentSong = title }
 
-        UpdateCurrentInput "time (minutes)" mins ->
+        EnteredInput "time (minutes)" mins ->
             { model | currentMins = mins }
 
-        UpdateCurrentInput "time (seconds)" secs ->
+        EnteredInput "time (seconds)" secs ->
             { model | currentSecs = secs }
 
         ClickedSave ->
@@ -234,15 +231,8 @@ unpackMaybeInt int =
 
 
 
--- Error checking --
--- We're using the example from `HowToResult.FieldErrorRevisited`, but we're
--- NOT storing our user input as a `Tuple` because it requires more work (having
--- to unpack and pack the `Tuple` everytime the value is changed). Let's ONLY
--- zip it as a tuple if (and ONLY if) the `Result` comes back as `Ok`.
-
-checkEmpty : String -> Bool
-checkEmpty =
-    String.isEmpty
+-- Error checking --------------------------------------------------------------
+-- I'm using `HowToResult.FieldErrorRevisited` as an example.
 
 {- Non negative numbers -}
 checkMinutes : Int -> Bool
@@ -253,58 +243,26 @@ checkSeconds : Int -> Bool
 checkSeconds secs =
     secs >= 0
 
-{- I decided to NOT return the values (or a Song) and simply to return a `String`
-for both `Err` and `Ok`. If we have LOTS of values, the only way I can see this
-working is to have a record field for each `Ok data` per input.
 
-This function is less than ideal. We're checking 3 errors here: for
-an empty string (`Bool`), for a number (`Result`), and range of numbers (`Result`).
-We're mixing methods here. `Result.andThen` is useless as it's best for dealing
-with ONE (and only one?) data type with multiple error checking.
+{- My first attempt at this was to use ONE function to handle all errors with
+`Result`. You could've potentially returned a `Ok Song` at the end of it ...
+but it felt messy, so this time around, each input gets it's own `Result`. -}
+checkSong : String -> Result String SongTitle
+checkSong s =
+    case String.isEmpty s of
+        True  -> Err "Field cannot be empty"
+        False -> Ok s
 
-Unfortunately there's many ways to do forms. What would be the easiest route
-to check errors and build a `Song` type if error free? -}
-runErrorChecks : SongTitle -> String -> String -> Result String String
-runErrorChecks title mins secs =
-    let
-        checkErrors =
-            if checkEmpty title then
-                runTimeErrorChecks mins secs
-            else
-                Err "Song field must not be empty"
-    in
-    {- #! I think I'm chaining these `Result` types together wrong -}
-    case checkErrors of
-        Err str -> Err str
-        {- Rather than return data, we're returning a `String` here -}
-        Ok str -> Ok str
-
-runTimeErrorChecks : String -> String -> Result String String
-runTimeErrorChecks mins secs =
-    let
-        minutes = checkTime checkMinutes mins
-        seconds = checkTime checkSeconds secs
-    in
-    {- #! This is awful, but will stick with it for now! -}
-    case (minutes, seconds) of
-        (Err _, Err _) -> Err "Minutes and seconds fields are broken"
-        (Err _, Ok _)  -> Err "Minutes is broken"
-        (Ok _, Err _)  -> Err "Seconds is broken"
-        (Ok _, Ok _)   -> Ok "All is well" -- We could've data here (Tuple)
-
-
-{- Because both the time `Result`s are almost identical, let's abstract the func.
-In real life, this might not be so helpful without a distinct error message,
-but we could always add an argument for that later ... -}
-checkTime : (Int -> Bool) -> String -> Result String String
-checkTime func int =
-    case String.toInt int of
-        Nothing ->
-            Err "Input requires a number"
-
-        Just num ->
-            if func num then
-                Ok "Number is OK"
+{- Let's abstract the function as both minutes and seconds are similar errors.
+`String.toInt` will also check if empty as `Nothing`. We're also using the
+`Result` to unpack the `Maybe Int` that we'd get from the string function! -}
+checkTime : String -> Result String Int
+checkTime func s =
+    case String.toInt s of
+        Nothing -> "Field cannot be empty, or not a number"
+        Just i  ->
+            if func i then
+                Ok i
             else
                 Err "Number is not in range"
 
@@ -329,31 +287,32 @@ view model =
                 , viewSongs first rest
                 ]
 
-viewForm : String -> SongID -> SongTitle -> String -> String -> Html Msg
-viewForm error _ title mins secs =
+viewForm : SongID -> UserInput -> UserInput -> UserInput -> Html Msg
+viewForm _ title mins secs =
     form [ class "form-songs", onSubmit ClickedSave ]
-            [ p [ class "form-errors"]
-                [ text error ]
-            , input
+            [ input
                 [ type_ "text"
                 , placeholder "Add a song title"
-                , value title
-                , onInput (UpdateCurrentInput "song")
+                , value title.input
+                , onInput (EnteredInput "song")
                 ]
                 []
+            , viewFormError title.valid
             , div [ class "input-group" ]
                 [ input
                     [ type_ "text"
                     , placeholder "Add a song time (minutes)"
-                    , value mins
-                    , onInput (UpdateCurrentInput "time (minutes)")
+                    , value mins.input
+                    , onInput (EnteredInput "time (minutes)")
                     ] []
+                , viewFormError mins.valid
                 , input
                     [ type_ "text"
                     , placeholder "Add a song time (seconds)"
-                    , value secs
-                    , onInput (UpdateCurrentInput "time (seconds)")
+                    , value secs.input
+                    , onInput (EnteredInput "time (seconds)")
                     ] []
+                , viewFormError secs.valid
                 ]
             {- We could add disable to the button until ALL errors are fixed,
             but this would mean constantly checking our `Result` on every key
@@ -361,10 +320,16 @@ viewForm error _ title mins secs =
             , button [] [ text "Save" ]
             ]
 
+viewFormError : Validate -> Html Msg
+viewFormError valid =
+    case valid of
+        Err str -> p [ class "form-error" ] [ text str ]
+        Ok _ -> text ""
+
 {- A `Song` is a record. If our `List Song` is empty, just show an empty
 list item. We're not interested in using a `Maybe` here. We could split out
-our function to handle both our `Song` SINGLETON and our `List Song`, but for
-now, let's simply concatonate them into a single list! -}
+our function to handle both our `Album Song []` (singleton) and
+`Album Song (List Song)` but for now, just concatonate into one list! -}
 viewSongs : Song -> List Song -> Html Msg
 viewSongs song lsong =
     ul [ class "album-songs" ] List.map viewSong (song :: lsong)
