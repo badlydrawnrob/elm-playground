@@ -114,6 +114,10 @@ extractID : SongID -> Int
 extractID (SongID num) =
     num
 
+{- Using functional composition `<<` operator -}
+songIDtoString : SongID -> String
+songIDtoString = String.fromInt << extractID
+
 createID : SongID -> SongID
 createID (SongID num) =
     SongID (num + 1)
@@ -222,7 +226,7 @@ update msg model =
 
         EnteredInput "seconds" secs ->
             { model
-                | currentMins =
+                | currentSecs =
                     updateInput model.currentSecs secs (checkTime checkSeconds secs) }
 
         EnteredInput _ _ ->
@@ -284,7 +288,7 @@ checkMinutes mins =
 
 checkSeconds : Int -> Bool
 checkSeconds secs =
-    secs >= 0
+    secs >= 0 && secs <= 60
 
 
 {- My first attempt at this was to use ONE function to handle all errors with
@@ -305,7 +309,7 @@ checkSong s =
 checkTime : (Int -> Bool) -> String -> Validate Int
 checkTime func s =
     case String.toInt s of
-        Nothing -> Err "Field cannot be empty, or not a number"
+        Nothing -> Err "Field cannot be empty, must be a number"
         Just i  ->
             if func i then
                 Ok i
@@ -332,16 +336,21 @@ view : Model -> Html Msg
 view model =
     case model.album of
         NoAlbum ->
-            h1 [] [ text "No album has been added" ]
-
+            div [ class "wrapper empty"]
+                [ h1 [] [ text "No album has been added" ]
+                , initForm model
+                ]
         {- If this was a `Maybe List` you could unpack the list
         by using destructuring, like: `Just (first :: rest)` -}
         Album first rest ->
-            div [ class "album" ]
+            div [ class "wrapper" ]
                 [ h1 [] [ text "An album with no name" ]
-                , viewForm model.currentID model.currentSong model.currentMins model.currentSecs
+                , initForm model
                 , viewSongs first rest
                 ]
+
+initForm : Model -> Html Msg
+initForm model = viewForm model.currentID model.currentSong model.currentMins model.currentSecs
 
 viewForm : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Html Msg
 viewForm _ title mins secs =
@@ -355,20 +364,25 @@ viewForm _ title mins secs =
                 []
             , viewFormError title.valid
             , div [ class "input-group" ]
-                [ input
-                    [ type_ "text"
-                    , placeholder "Add a song time (minutes)"
-                    , value mins.input
-                    , onInput (EnteredInput "minutes")
-                    ] []
-                , viewFormError mins.valid
-                , input
-                    [ type_ "text"
-                    , placeholder "Add a song time (seconds)"
-                    , value secs.input
-                    , onInput (EnteredInput "seconds")
-                    ] []
-                , viewFormError secs.valid
+                [
+                    div [ class "collapse" ]
+                        [ input
+                            [ type_ "text"
+                            , placeholder "Add a song time (minutes)"
+                            , value mins.input
+                            , onInput (EnteredInput "minutes")
+                            ] []
+                        , viewFormError mins.valid
+                        ]
+                ,   div [ class "collapse" ]
+                        [ input
+                            [ type_ "text"
+                            , placeholder "Add a song time (seconds)"
+                            , value secs.input
+                            , onInput (EnteredInput "seconds")
+                            ] []
+                        , viewFormError secs.valid
+                        ]
                 ]
             {- We could add disable to the button until ALL errors are fixed,
             but this would mean constantly checking our `Result` on every key
@@ -388,13 +402,13 @@ our function to handle both our `Album Song []` (singleton) and
 `Album Song (List Song)` but for now, just concatonate into one list! -}
 viewSongs : Song -> List Song -> Html Msg
 viewSongs song lsong =
-    ul [ class "album-songs" ] (List.map viewSong (song :: lsong))
+    ul [ class "album" ] (List.map viewSong (song :: lsong))
 
 {- #! We need to build an EDIT function into this later -}
 viewSong : Song -> Html Msg
 viewSong song =
-    li [ class "album-s-song", class (String.fromInt (extractID song.songID)) ]
-        [ text (song.songTitle ++ "(time: " ++ (songTimeToString song.songTime) ++ ")") ]
+    li [ class "album-song", class ("id-" ++ (songIDtoString song.songID)) ]
+        [ text (song.songTitle ++ " (time: " ++ (songTimeToString song.songTime) ++ ")") ]
 
 
 
