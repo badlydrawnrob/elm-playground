@@ -289,26 +289,15 @@ getValid id song mins secs =
             Nothing
 
 -- Error checking --------------------------------------------------------------
--- This is WAY easier than trying to nest `Result`s inside each other.
--- ONE `Result` for each input data.
--- See also `HowToResult.FieldErrorRevisited` for a reference.
-
-{- Non negative numbers -}
-checkMinutes : Int -> Bool
-checkMinutes mins =
-    mins > 0 && mins <= 10
-
-checkSeconds : Int -> Bool
-checkSeconds secs =
-    secs >= 0 && secs <= 60
+-- Previously using ONE function to handle all errors and chaining `Result`,
+-- thinking that I could output `Ok Song` at the end of it. It was a mess.
+--
+-- This version is WAY easier to think about than that. ONE `Result` for each
+-- input data. See also `HowToResult.FieldErrorRevisited` for a reference.
 
 
-{- My first attempt at this was to use ONE function to handle all errors with
-`Result`. You could've potentially returned a `Ok Song` at the end of it ...
-but it felt messy, so this time around, each input gets it's own `Result`.
-
-#! I'm using `Validate` type alias rather than `Result String SongTitle` here ...
-is that going to cause problems? -}
+{- #! I'm using `Validate a` type alias rather than `Result String SongTitle`
+here ... is that going to cause problems? -}
 checkSong : String -> Validate String
 checkSong s =
     case String.isEmpty s of
@@ -327,6 +316,16 @@ checkTime func s =
                 Ok i
             else
                 Err "Number is not in range"
+
+{- Non negative numbers -}
+checkMinutes : Int -> Bool
+checkMinutes mins =
+    mins > 0 && mins <= 10
+
+checkSeconds : Int -> Bool
+checkSeconds secs =
+    secs >= 0 && secs <= 60
+
 
 {- Finally, if there are NO errors, we can add the `Song` to the album! -}
 updateAlbum : Album -> Song -> Album
