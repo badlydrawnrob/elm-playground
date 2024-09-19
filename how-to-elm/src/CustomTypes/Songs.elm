@@ -111,9 +111,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, type_, value, placeholder)
 import Html.Events exposing (onInput, onSubmit)
 import Debug
-import HowToResult.FieldError exposing (checkMinutesInRange)
-import HowToResult.FieldErrorRevisited exposing (checkSeconds)
-import HowToResult.FieldErrorRevisited exposing (SongRunTime)
 
 {- An ID comes in handy if you want to edit or delete a `Song` -}
 type SongID
