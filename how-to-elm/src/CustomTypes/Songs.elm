@@ -18,6 +18,8 @@ module CustomTypes.Songs exposing (..)
     3. And have an `updateAlbum` action (if there's a `Song`) ...
     4. Than combining those actions into ONE `updateAlbum` function
        - @ 5d419efd9740fd891a21b299f7468a133c61bf64
+    5. Updating nested records (prefer a flatter model)
+       - @ "Updating Nested Records, Again" (add link)
 
 
     What we're looking to achieve:
@@ -144,6 +146,8 @@ type alias UserInput
       , valid : Validate
       }
 
+initUserInput = { input = "", valid = Err "Field cannot be empty" }
+
 {- For now I'm not using aliases for user input -}
 type alias Model
     = { currentID : SongID -- The only field that isn't a record
@@ -177,39 +181,41 @@ type Msg
 
 update : Msg -> Model -> Model
 update msg model =
+    let
+        {- #! NESTED RECORDS is a problem. I think Elm
+        discourages this. See the notes and links at the
+        top of this file. You can't update in the way you'd
+        think you could :( -}
+        updateInput record input valid =
+            { record | input = input, valid = valid }
+    in
     case msg of
         EnteredInput "song" title ->
             { model
                 | currentSong =
-                    { input = title
-                    , valid = checkSong title
-                    }
+                    updateInput model.currentSong title (checkSong title) }
 
         EnteredInput "minutes" mins ->
             { model
                 | currentMins =
-                    { input = mins
-                    , valid = checkTime checkMinutes mins
-                    }
+                    updateInput model.currentMins mins (checkTime checkMinutes mins) }
 
         EnteredInput "seconds" secs ->
             { model
-                | currentSecs =
-                    { input = secs
-                    , valid = checkTime checkSeconds secs
-                    }
+                | currentMins =
+                    updateInput model.currentSecs secs (checkTime checkSeconds secs) }
 
         ClickedSave ->
             -- 1. [x] Check each input
             -- 2. [x] Each input has it's own error checking function
-            -- 3. Now check if there's any errors in each `.valid`
-            -- 4. Where do I add `Ok data` to? `.valid`?
-            -- 5. If everything comes back clean, use the data ...
-            -- 6. To create a `Song` ...
+            -- 3. [x] Now check if there's any errors in each `.valid`
+            -- 4. [x] Where do I add `Ok data` to? `.valid`?
+            --    - We add it to the valid record field for each UserInput
+            -- 5. [x] If everything comes back clean, use the data ...
+            --    - Handled in the case statement function
+            --    - 6. To create a `Song` ...
             -- 7. And add it to an `Album` :)
-
-            -- You could perhaps run a higher order function and pass in the
-            -- error checking function for each data type?
+            --    - Handled in the `Just song` branch with update helper
 
             case runErrorsAndBuildSong model of
                 Nothing ->
@@ -220,9 +226,9 @@ update msg model =
                     and reset all the things, ready for a new form. -}
                     { model
                     | currentID = (createID model.currentID) -- Add one
-                    , currentSong = { input = "", valid = Err "Field is empty" }
-                    , currentMins = { input = "", valid = Err "Field is empty" }
-                    , currentSecs = { input = "", valid = Err "Field is empty" }
+                    , currentSong = initUserInput
+                    , currentMins = initUserInput
+                    , currentSecs = initUserInput
                     {- #! I'm sure I could narrow the types here better? How do
                     we provide lots of arguments in a nicer way? -}
                     , album = (updateAlbum song model.album)
