@@ -32,6 +32,16 @@ module CustomTypes.Songs exposing (..)
         5. To NOT store optional data as `json`
            - I've been told that's better. Just use a `Maybe` in your app.
 
+        Here's the steps:
+
+        1. User inputs form field data
+        2. On input, check for errors
+        3. Save `Result` to `UserInput` record
+        4. When save button is clicked ...
+        5. Check if all errors are clean
+        6. If so, create a `Song` ...
+        7. And create (or update) our `Album`.
+
 
     Solving other problems that arose in last attempt
     -------------------------------------------------
@@ -121,6 +131,15 @@ extractMinutes (m,_) = m
 extractSeconds : SongTime -> Int
 extractSeconds (_,s) = s
 
+songTimeToString : SongTime -> String
+songTimeToString (m,s) =
+    String.concat
+        [ String.fromInt m
+        , "mins "
+        , String.fromInt s
+        , "secs"
+        ]
+
 {- We're adding more data than we need here -}
 type alias Song
     = { songID : SongID
@@ -136,14 +155,15 @@ type Album
 {- #! We're using `Result` to gather errors and unpack data, but
 that data can come in many forms, so use a type variable. Is this going
 to potentially cause problems in future? -}
-type alias Validate
+type alias Validate a
     = Result String a
 
-{- #! I'm not sure how best to write this. For now it's only `String` types,
+{- #! What the fuck is an "unbound" type variable?
+   #! I'm not sure how best to write this. For now it's only `String` types,
 but what if there's different types? Use `a` type variable? -}
-type alias UserInput
+type alias UserInput a
     = { input : String
-      , valid : Validate
+      , valid : Validate a
       }
 
 initUserInput = { input = "", valid = Err "Field cannot be empty" }
@@ -151,9 +171,9 @@ initUserInput = { input = "", valid = Err "Field cannot be empty" }
 {- For now I'm not using aliases for user input -}
 type alias Model
     = { currentID : SongID -- The only field that isn't a record
-      , currentSong : UserInput
-      , currentMins : UserInput
-      , currentSecs : UserInput
+      , currentSong : UserInput String
+      , currentMins : UserInput Int
+      , currentSecs : UserInput Int
       , album : Album
       }
 
@@ -225,19 +245,29 @@ update msg model =
                     we can now build our `Song` and pass it over to `updateAlbum`,
                     and reset all the things, ready for a new form. -}
                     { model
-                    | currentID = (createID model.currentID) -- Add one
+                    | currentID = (createID song.songID) -- Add one
                     , currentSong = initUserInput
                     , currentMins = initUserInput
                     , currentSecs = initUserInput
                     {- #! I'm sure I could narrow the types here better? How do
                     we provide lots of arguments in a nicer way? -}
-                    , album = (updateAlbum song model.album)
+                    , album = (updateAlbum model.album song)
                     }
 
 
-runErrorsAndBuildSong : SongID -> Model -> Maybe Song
-runErrorsAndBuildSong id model =
-    getValid id model.currentSong model.currentMins model.currentSecs
+runErrorsAndBuildSong : Model -> Maybe Song
+runErrorsAndBuildSong model =
+    getValid model.currentID model.currentSong model.currentMins model.currentSecs
+
+{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
+#! What happens if we have lots of fields? That's too many inputs! -}
+getValid : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Maybe Song
+getValid id song mins secs =
+    case (song.valid, mins.valid, secs.valid) of
+        (Ok songTitle, Ok minutes, Ok seconds) ->
+            Just (Song id songTitle (minutes, seconds))
+        _ ->
+            Nothing
 
 -- Error checking --------------------------------------------------------------
 -- This is WAY easier than trying to nest `Result`s inside each other.
@@ -260,7 +290,7 @@ but it felt messy, so this time around, each input gets it's own `Result`.
 
 #! I'm using `Validate` type alias rather than `Result String SongTitle` here ...
 is that going to cause problems? -}
-checkSong : String -> Validate
+checkSong : String -> Validate String
 checkSong s =
     case String.isEmpty s of
         True  -> Err "Field cannot be empty"
@@ -269,25 +299,15 @@ checkSong s =
 {- Let's abstract the function as both minutes and seconds are similar errors.
 `String.toInt` will also check if empty as `Nothing`. We're also using the
 `Result` to unpack the `Maybe Int` that we'd get from the string function! -}
-checkTime : String -> Validate
+checkTime : (Int -> Bool) -> String -> Validate Int
 checkTime func s =
     case String.toInt s of
-        Nothing -> "Field cannot be empty, or not a number"
+        Nothing -> Err "Field cannot be empty, or not a number"
         Just i  ->
             if func i then
                 Ok i
             else
                 Err "Number is not in range"
-
-{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
-#! What happens if we have lots of fields? That's too many inputs! -}
-getValid : SongID -> UserInput -> UserInput -> UserInput -> Maybe Song
-getValid id song mins secs =
-    case (song.valid, mins.valid, secs.valid) of
-        (Ok songTitle, Ok minutes, Ok seconds) ->
-            Just (Song id songTitle, (minutes, seconds))
-        _ -> Nothing
-
 
 {- Finally, if there are NO errors, we can add the `Song` to the album! -}
 updateAlbum : Album -> Song -> Album
@@ -316,11 +336,11 @@ view model =
         Album first rest ->
             div [ class "album" ]
                 [ h1 [] [ text "An album with no name" ]
-                , viewForm model.fieldError model.currentID model.currentSong model.currentMins model.currentSecs
+                , viewForm model.currentID model.currentSong model.currentMins model.currentSecs
                 , viewSongs first rest
                 ]
 
-viewForm : SongID -> UserInput -> UserInput -> UserInput -> Html Msg
+viewForm : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Html Msg
 viewForm _ title mins secs =
     form [ class "form-songs", onSubmit ClickedSave ]
             [ input
@@ -353,7 +373,7 @@ viewForm _ title mins secs =
             , button [] [ text "Save" ]
             ]
 
-viewFormError : Validate -> Html Msg
+viewFormError : Validate a -> Html Msg
 viewFormError valid =
     case valid of
         Err str -> p [ class "form-error" ] [ text str ]
@@ -365,13 +385,13 @@ our function to handle both our `Album Song []` (singleton) and
 `Album Song (List Song)` but for now, just concatonate into one list! -}
 viewSongs : Song -> List Song -> Html Msg
 viewSongs song lsong =
-    ul [ class "album-songs" ] List.map viewSong (song :: lsong)
+    ul [ class "album-songs" ] (List.map viewSong (song :: lsong))
 
 {- #! We need to build an EDIT function into this later -}
 viewSong : Song -> Html Msg
 viewSong song =
-    li [ class "album-s-song", class (String.fromInt song.songID ]
-        [ text (song.songTitle ++ "(time: " ++ song.songTime ++ ")") ]
+    li [ class "album-s-song", class (String.fromInt (extractID song.songID)) ]
+        [ text (song.songTitle ++ "(time: " ++ (songTimeToString song.songTime) ++ ")") ]
 
 
 
