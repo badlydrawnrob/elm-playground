@@ -11,6 +11,15 @@ module CustomTypes.Songs exposing (..)
         @ https://tinyurl.com/stop-unpacking-maybe-too-often
 
 
+    What I learned
+    --------------
+    1. Unpack `Maybe` in ONE place
+    2. It's easier to split the `Song` creation (if no errors) ...
+    3. And have an `updateAlbum` action (if there's a `Song`) ...
+    4. Than combining those actions into ONE `updateAlbum` function
+       - @ 5d419efd9740fd891a21b299f7468a133c61bf64
+
+
     What we're looking to achieve:
     ------------------------------
 
@@ -202,10 +211,10 @@ update msg model =
             -- You could perhaps run a higher order function and pass in the
             -- error checking function for each data type?
 
-            case runErrorChecks model of
+            case runErrorsAndBuildSong model of
                 Nothing ->
                      model
-                Just Song ->
+                Just song ->
                     {- All `.valid` fields have come back without any errors.
                     we can now build our `Song` and pass it over to `updateAlbum`,
                     and reset all the things, ready for a new form. -}
@@ -216,18 +225,12 @@ update msg model =
                     , currentSecs = { input = "", valid = Err "Field is empty" }
                     {- #! I'm sure I could narrow the types here better? How do
                     we provide lots of arguments in a nicer way? -}
-                    , album =
-                        (updateAlbum
-                            currentId
-                            currentSong.valid
-                            currentMins.valid
-                            currentSecs.valid
-                            model.album)
+                    , album = (updateAlbum song model.album)
                     }
 
 
-runErrorChecks : SongID -> Model -> Maybe Song
-runErrorChecks id model =
+runErrorsAndBuildSong : SongID -> Model -> Maybe Song
+runErrorsAndBuildSong id model =
     getValid id model.currentSong model.currentMins model.currentSecs
 
 {- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
@@ -252,50 +255,6 @@ updateAlbum id validSong validMins validSecs album =
         Album first rest ->
             Album first
                 (Tuple.pair validMins validSecs |> (Song id validSong)) :: rest
-
-
-
---------------------------------------------------------------------------------
--- THIS NEEDS WORK!
-
-
-{- The ONLY reason I'm using this function is because it tidies up our code a
-little bit. Our arguments would be quite long otherwise.
-
-#! I'm not sure if I'm doing this correctly ... -}
-runErrorCheck : (a -> UserInput) -> UserInput
-runErrorCheck func ({input, valid} as field) =
-     case (func field.valid) of
-        Err str ->
-            { input = input, valid = Err str }
-        Ok data ->
-            { input = input, valid = Ok data }
-
-
--- 1.
--- Run through each input and validate it
--- 2.
--- Check if all fields are error free
--- 3.
--- If all error free, build a `Song`
--- 4
--- If all error free, add `Song` to `Album`.
--- 5
--- Worry about adding to json later
-
-
-
-
--- UserInput -> Validate
--- It's either spit out one of these for each input
--- { input = "", valid = Err "Field is empty" }
--- Or spit out a `Song` and reset everything
-
---------------------------------------------------------------------------------
-
-
-
-
 
 
 
