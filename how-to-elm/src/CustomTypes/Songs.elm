@@ -225,6 +225,9 @@ update msg model =
                 | currentMins =
                     updateInput model.currentSecs secs (checkTime checkSeconds secs) }
 
+        EnteredInput _ _ ->
+            model
+
         ClickedSave ->
             -- 1. [x] Check each input
             -- 2. [x] Each input has it's own error checking function
