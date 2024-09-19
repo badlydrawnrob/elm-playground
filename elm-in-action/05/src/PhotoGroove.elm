@@ -14,6 +14,7 @@ port module PhotoGroove exposing (main)
           - @ http://tinyurl.com/safari-hard-refresh
       2. Ellie App requires `https` (or it won't load `json`)
       3. Prepended view functions with `view`
+          - Probably anything that returns a `Html Msg`.
           - No need to do this with helper functions.
           - All functions that return `Html Msg` do need this.
 
