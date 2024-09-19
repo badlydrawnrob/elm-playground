@@ -219,7 +219,7 @@ update msg model =
                     we can now build our `Song` and pass it over to `updateAlbum`,
                     and reset all the things, ready for a new form. -}
                     { model
-                    | currentID = (createID model.currentID)
+                    | currentID = (createID model.currentID) -- Add one
                     , currentSong = { input = "", valid = Err "Field is empty" }
                     , currentMins = { input = "", valid = Err "Field is empty" }
                     , currentSecs = { input = "", valid = Err "Field is empty" }
@@ -232,31 +232,6 @@ update msg model =
 runErrorsAndBuildSong : SongID -> Model -> Maybe Song
 runErrorsAndBuildSong id model =
     getValid id model.currentSong model.currentMins model.currentSecs
-
-{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
-#! What happens if we have lots of fields? That's too many inputs! -}
-getValid : SongID -> UserInput -> UserInput -> UserInput -> Maybe Song
-getValid id song mins secs =
-    case (song.valid, mins.valid, secs.valid) of
-        (Ok songTitle, Ok minutes, Ok seconds) ->
-            Just (Song id songTitle, (minutes, seconds))
-        _ -> Nothing
-
-
-updateAlbum : SongId -> SongTitle -> Int -> Int -> Album -> Album
-updateAlbum id validSong validMins validSecs album =
-    case album of
-        NoAlbum ->
-            Album
-                (Tuple.pair validMins validSecs |> (Song id validSong))
-                []
-        {- Do you want to add to the front, or end of the list? You could check
-        here that the list isn't empty by using (first :: rest) but I ain't! -}
-        Album first rest ->
-            Album first
-                (Tuple.pair validMins validSecs |> (Song id validSong)) :: rest
-
-
 
 -- Error checking --------------------------------------------------------------
 -- This is WAY easier than trying to nest `Result`s inside each other.
@@ -297,6 +272,27 @@ checkTime func s =
                 Ok i
             else
                 Err "Number is not in range"
+
+{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
+#! What happens if we have lots of fields? That's too many inputs! -}
+getValid : SongID -> UserInput -> UserInput -> UserInput -> Maybe Song
+getValid id song mins secs =
+    case (song.valid, mins.valid, secs.valid) of
+        (Ok songTitle, Ok minutes, Ok seconds) ->
+            Just (Song id songTitle, (minutes, seconds))
+        _ -> Nothing
+
+
+{- Finally, if there are NO errors, we can add the `Song` to the album! -}
+updateAlbum : Album -> Song -> Album
+updateAlbum album song =
+    case album of
+        NoAlbum ->
+            Album song []
+        {- Do you want to add to the front, or end of the list? You could check
+        here that the list isn't empty by using (first :: rest) but I ain't! -}
+        Album first rest ->
+            Album first (song :: rest)
 
 
 -- View ------------------------------------------------------------------------
@@ -365,9 +361,10 @@ viewSongs : Song -> List Song -> Html Msg
 viewSongs song lsong =
     ul [ class "album-songs" ] List.map viewSong (song :: lsong)
 
-viewSong : Bool -> Song -> Html Msg
-viewSong _ song =
-    li [ class "album-s-song" ]
+{- #! We need to build an EDIT function into this later -}
+viewSong : Song -> Html Msg
+viewSong song =
+    li [ class "album-s-song", class (String.fromInt song.songID ]
         [ text (song.songTitle ++ "(time: " ++ song.songTime ++ ")") ]
 
 
