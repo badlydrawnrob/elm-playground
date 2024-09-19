@@ -13,13 +13,19 @@ module CustomTypes.Songs exposing (..)
 
     What I learned
     --------------
-    1. Unpack `Maybe` in ONE place
-    2. It's easier to split the `Song` creation (if no errors) ...
-    3. And have an `updateAlbum` action (if there's a `Song`) ...
-    4. Than combining those actions into ONE `updateAlbum` function
-       - @ 5d419efd9740fd891a21b299f7468a133c61bf64
-    5. Updating nested records (prefer a flatter model)
-       - @ "Updating Nested Records, Again" (add link)
+    It's way easier to check errors in one place, build a `Song` in one place,
+    and `updateAlbum` without creating a `Song` in that function. It's way easier
+    to just use a simple `String` in `UserInput` rather than a `Tuple`. At times
+    I'm not sure which function should do which action, and where in the program
+    these functions should be. There's a LOT of approaches to forms and validation.
+
+        1. Unpack `Maybe` in ONE place
+        2. It's easier to split the `Song` creation (if no errors) ...
+        3. And have an `updateAlbum` action (if there's a `Song`) ...
+        4. Than combining those actions into ONE `updateAlbum` function
+        - @ 5d419efd9740fd891a21b299f7468a133c61bf64
+        5. Updating nested records (prefer a flatter model)
+        - @ "Updating Nested Records, Again" (add link)
 
 
     What we're looking to achieve:
@@ -33,6 +39,7 @@ module CustomTypes.Songs exposing (..)
            - I've been told that's better. Just use a `Maybe` in your app.
 
         Here's the steps:
+        -----------------
 
         1. User inputs form field data
         2. On input, check for errors
@@ -50,9 +57,9 @@ module CustomTypes.Songs exposing (..)
         2. ONE data type per `Result` (not chaining 3 different types)
         3. Store that data type (so we convert it in ONE place)
         4. We can show EVERY input's error (but only ONE error per input)
-        5. `runErrorChecks` was messy. Tidy up our code.
+        5. `runErrorChecks` was messy in the last version. Tidy up our code.
             - We were mixing error handling strategies (if `Bool` and `Result`)
-        6. We create a `Tuple` ONCE and only once in our program
+        6. We create a `Tuple` ONCE and ONLY ONCE in our program
             - When is a `Tuple` needed? When is it not?
         7. Our data and state flow wasn't so easy to follow before.
             - Where in the code do we create a `Song`?
@@ -67,8 +74,10 @@ module CustomTypes.Songs exposing (..)
 
         1. Displaying ALL errors for each data type
            - I don't think this is possible with `Result`
-        2. We're not checking for errors on input (or `onBlur` when leaving
-           an input field), but ONLY when button clicked.
+        2. We probably should only check errors ON CLICK BUTTON,
+           especially if there's lots of fields?
+        3. `SongTitle` can be absolutely anything. We're also
+           not stripping empty space.
 
 
     Things I don't know yet ...
@@ -92,8 +101,9 @@ module CustomTypes.Songs exposing (..)
     2. Delete a `Song`
     3. Edit the `Album` `Song` order
     4. Potentially change the view if only ONE `Song` ...
-    5. `Album` title?
+    5. `Album` title? (perhaps use a Collection)
     6. YouTube or audio of the song?
+    7. Count number of songs and display in heading
 -}
 
 import Browser
