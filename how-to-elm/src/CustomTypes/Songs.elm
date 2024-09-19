@@ -19,13 +19,18 @@ module CustomTypes.Songs exposing (..)
     I'm not sure which function should do which action, and where in the program
     these functions should be. There's a LOT of approaches to forms and validation.
 
-        1. Unpack `Maybe` in ONE place
-        2. It's easier to split the `Song` creation (if no errors) ...
-        3. And have an `updateAlbum` action (if there's a `Song`) ...
-        4. Than combining those actions into ONE `updateAlbum` function
-        - @ 5d419efd9740fd891a21b299f7468a133c61bf64
-        5. Updating nested records (prefer a flatter model)
-        - @ "Updating Nested Records, Again" (add link)
+        1. Stupid (data) decisions upfront have HORRID artifacts:
+           - @ https://tinyurl.com/songs-v1-possible-states (commit c25d389)
+           - If there's LOTS OF STATE then FUCKING CHANGE IT!
+        2. Unpack `Maybe` in ONE place
+        3. It's easier to split the `Song` creation (if no errors) ...
+        4. And have an `updateAlbum` action (if there's a `Song`) ...
+        5. Than combining those actions into ONE `updateAlbum` function
+           - @ 5d419efd9740fd891a21b299f7468a133c61bf64
+        6. Updating nested records (prefer a flatter model)
+           - @ https://discourse.elm-lang.org/t/updating-nested-records-again/1488
+           - See @rtfeldman's response to the above thread
+
 
 
     What we're looking to achieve:
