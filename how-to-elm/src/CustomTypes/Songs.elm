@@ -80,6 +80,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class, type_, value, placeholder)
 import Html.Events exposing (onInput, onSubmit)
 import Debug
+import HowToResult.FieldError exposing (checkMinutesInRange)
+import HowToResult.FieldErrorRevisited exposing (checkSeconds)
+import HowToResult.FieldErrorRevisited exposing (SongRunTime)
 
 {- An ID comes in handy if you want to edit or delete a `Song` -}
 type SongID
@@ -167,17 +170,29 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         EnteredInput "song" title ->
-            { model | currentSong = { title }
+            { model
+                | currentSong =
+                    { input = title
+                    , valid = checkSong title
+                    }
 
         EnteredInput "minutes" mins ->
-            { model | currentMins = mins }
+            { model
+                | currentMins =
+                    { input = mins
+                    , valid = checkTime checkMinutes mins
+                    }
 
         EnteredInput "seconds" secs ->
-            { model | currentSecs = secs }
+            { model
+                | currentSecs =
+                    { input = secs
+                    , valid = checkTime checkSeconds secs
+                    }
 
         ClickedSave ->
-            -- 1. Check each input
-            -- 2. Each input has it's own error checking function
+            -- 1. [x] Check each input
+            -- 2. [x] Each input has it's own error checking function
             -- 3. Now check if there's any errors in each `.valid`
             -- 4. Where do I add `Ok data` to? `.valid`?
             -- 5. If everything comes back clean, use the data ...
@@ -187,9 +202,10 @@ update msg model =
             -- You could perhaps run a higher order function and pass in the
             -- error checking function for each data type?
 
-            case Debug.todo "run error checks" of
-                errors -> -- Return model with `.valid` errors
-                noerrors ->
+            case runErrorChecks model of
+                Nothing ->
+                     model
+                Just Song ->
                     {- All `.valid` fields have come back without any errors.
                     we can now build our `Song` and pass it over to `updateAlbum`,
                     and reset all the things, ready for a new form. -}
@@ -201,19 +217,27 @@ update msg model =
                     {- #! I'm sure I could narrow the types here better? How do
                     we provide lots of arguments in a nicer way? -}
                     , album =
-                        updateAlbum model model.album
+                        (updateAlbum
+                            currentId
+                            currentSong.valid
+                            currentMins.valid
+                            currentSecs.valid
+                            model.album)
                     }
 
 
---------------------------------------------------------------
-{- #! Grab our valid fields.
+runErrorChecks : SongID -> Model -> Maybe Song
+runErrorChecks id model =
+    getValid id model.currentSong model.currentMins model.currentSecs
 
-I DON'T THINK THIS WILL WORK AS OUR `List.map` EXPECTS LIST WITH SAME TYPES.
-VALID IS GOING TO BE DIFFERENT DEPENDING ON THE INPUT!!! -}
-unpackValidFields : Model -> List UserInput
-unpackValidFields {currentSong, currentMins, currentSecs} =
-    List.map .valid [currentSong, currentMins, currenSecs]
----------------------------------------------------------------
+{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
+#! What happens if we have lots of fields? That's too many inputs! -}
+getValid : SongID -> UserInput -> UserInput -> UserInput -> Maybe Song
+getValid id song mins secs =
+    case (song.valid, mins.valid, secs.valid) of
+        (Ok songTitle, Ok minutes, Ok seconds) ->
+            Just (Song id songTitle, (minutes, seconds))
+        _ -> Nothing
 
 
 updateAlbum : SongId -> SongTitle -> Int -> Int -> Album -> Album
@@ -230,13 +254,18 @@ updateAlbum id validSong validMins validSecs album =
                 (Tuple.pair validMins validSecs |> (Song id validSong)) :: rest
 
 
+
+--------------------------------------------------------------------------------
+-- THIS NEEDS WORK!
+
+
 {- The ONLY reason I'm using this function is because it tidies up our code a
 little bit. Our arguments would be quite long otherwise.
 
 #! I'm not sure if I'm doing this correctly ... -}
 runErrorCheck : (a -> UserInput) -> UserInput
 runErrorCheck func ({input, valid} as field) =
-     case (func field.input) of
+     case (func field.valid) of
         Err str ->
             { input = input, valid = Err str }
         Ok data ->
@@ -251,6 +280,8 @@ runErrorCheck func ({input, valid} as field) =
 -- If all error free, build a `Song`
 -- 4
 -- If all error free, add `Song` to `Album`.
+-- 5
+-- Worry about adding to json later
 
 
 
@@ -259,6 +290,12 @@ runErrorCheck func ({input, valid} as field) =
 -- It's either spit out one of these for each input
 -- { input = "", valid = Err "Field is empty" }
 -- Or spit out a `Song` and reset everything
+
+--------------------------------------------------------------------------------
+
+
+
+
 
 
 
@@ -301,7 +338,6 @@ checkTime func s =
                 Ok i
             else
                 Err "Number is not in range"
-
 
 
 -- View ------------------------------------------------------------------------
