@@ -363,6 +363,7 @@ view model =
 initForm : Model -> Html Msg
 initForm model = viewForm model.currentID model.currentSong model.currentMins model.currentSecs
 
+{- #! I could probably reduce duplication here and create `viewInput` func -}
 viewForm : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Html Msg
 viewForm _ title mins secs =
     form [ class "form-songs", onSubmit ClickedSave ]
