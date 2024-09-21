@@ -62,6 +62,7 @@ elm reactor
 
 - [Elm community FAQs](https://faq.elm-community.org)
 - [Why do I have to use Json decoders?](https://gist.github.com/evancz/1c5f2cf34939336ecb79b97bb89d9da6)
+- [What, exactly, is a `Msg` for?](https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5) (no state please!)
 
 ## Some nice examples
 
