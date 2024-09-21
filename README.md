@@ -69,6 +69,7 @@ elm reactor
 - [Built with Elm](https://www.builtwithelm.co)
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
+- [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
 ## Documentation
 
