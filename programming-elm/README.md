@@ -120,6 +120,7 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
 
 1. Sometimes we can temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when updating our `Model` (now a `List Photo` feed) so that we can load it.
 2. At first I thought that `List.filter` was the way to go, but it's more graceful using `List.map` and adding in the `updatePhoto` function etc.
+    - [Updating minimally, with fewer arguments](https://tinyurl.com/elm-playground-a677d5e) is BETTER
 3. A `List.filter` function and using `Id` in form, click events, and `Msg` to update a particular `Photo`.
     - When to use `List.filter` over `List.map`?
     - What if your records contain different data?

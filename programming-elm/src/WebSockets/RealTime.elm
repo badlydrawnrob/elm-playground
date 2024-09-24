@@ -255,7 +255,7 @@ update msg model =
     case msg of
         ToggleLike id ->
             ( { model
-                | feed = updateFeed id model.feed }  -- This is more succinct!
+                | feed = updateFeed toggleLike id model.feed }  -- This is more succinct!
             , Cmd.none )
 
         UpdateComment id comment ->
