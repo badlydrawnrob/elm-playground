@@ -17,6 +17,9 @@ module WebSockets.RealTime exposing (..)
     ---------------------------------
 
     We're passing through an `Id` to our `Msg`!
+    We're still using `List.map` (as we want to return a `Feed`)
+      - we could've used `List.filter` @ https://tinyurl.com/elm-playground-4d7819c
+      - but we'd need to rejoin the resulting `Photo` with `List Photo`
 
 
     Commenting
@@ -229,36 +232,39 @@ updateComment : Id -> String -> Photo -> Photo
 updateComment id comment photo =
     { photo | newComment = comment }
 
-updateFeed : (Photo -> Photo) -> Maybe Photo -> Maybe Photo
-updateFeed updatePhoto maybePhoto =
-    Maybe.map updatePhoto maybePhoto
+updateFeed : (Photo -> Photo) -> Id -> Maybe Feed -> Maybe Feed
+updateFeed updatePhoto id maybeFeed =
+    Maybe.map (updatePhotoById updatePhoto id) maybeFeed
 
-{- Gets passed to `List.filter` -}
-isPhotoId : Id -> Photo -> Boolean
-isPhotoId id photo =
-    if id == photo.id then True else False
-
-{- Takes a list and returns a Photo with `Id` -}
-updatePhotoById : List Photo -> Photo
-updatePhotoById id photoList =
-    List.filter (filterFeed id) photoList
-
+{- We add the `updatePhoto` function first, then the `Id`.
+The anonymous function looks a bit ugly here, we could probably
+do better. `List.filter` would only return a `Photo`, not a
+the `Feed` that we'd need -}
+updatePhotoById : (Photo -> Photo) -> Id -> Feed -> Feed
+updatePhotoById updatePhoto id feed =
+    List.map (\photo ->
+                if photo.id == id then
+                    updatePhoto photo
+                else
+                    photo
+            )
+            feed
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleLike id ->
             ( { model
-                | feed = updatePhotoById id model.feed |> (updateFeed toggleLike) }
+                | feed = updateFeed id model.feed }  -- This is more succinct!
             , Cmd.none )
 
-        -- UpdateComment id comment ->
-        --     ( { model | photo = updateFeed (updateComment comment) model.photo }  -- (8)
-        --     , Cmd.none )
+        UpdateComment id comment ->
+            ( { model | photo = updatePhotoById (updateComment comment) id model.feed }  -- (8)
+            , Cmd.none )
 
-        -- SaveComment id ->
-        --     ( { model | photo = updateFeed saveNewComment model.photo }
-        --     , Cmd.none )
+        SaveComment id ->
+            ( { model | photo = updatePhotoById saveNewComment id model.photo }
+            , Cmd.none )
 
         LoadFeed (Ok photoList) ->
             ( { model | feed = Just photoList }
