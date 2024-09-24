@@ -62,6 +62,7 @@ elm reactor
 
 - [Elm community FAQs](https://faq.elm-community.org)
 - [Why do I have to use Json decoders?](https://gist.github.com/evancz/1c5f2cf34939336ecb79b97bb89d9da6)
+- [What, exactly, is a `Msg` for?](https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5) (no state please!)
 
 ## Some nice examples
 
@@ -69,6 +70,7 @@ elm reactor
 - [Built with Elm](https://www.builtwithelm.co)
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
+- [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
 ## Documentation
 
