@@ -93,7 +93,7 @@ fetchFeed : Cmd Msg
 fetchFeed =
   Http.get
     { url = baseUrl ++ "feed/1"
-    , expect = Http.expectJson LoadFeed photoDecoder
+    , expect = Http.expectJson LoadFeed (list photoDecoder)
     }
 
 viewLoveButton : Photo -> Html Msg
