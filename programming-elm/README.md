@@ -118,6 +118,8 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
 >     - Reinforce them with a project
 >     - Reinforce with videos, exercises, tuts, etc
 
+1. Sometimes we can temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when updating our `Model` (now a `List Photo` feed) so that we can load it.
+
 
 
 ## Maybe add
