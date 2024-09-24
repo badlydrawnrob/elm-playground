@@ -233,11 +233,23 @@ updateFeed : (Photo -> Photo) -> Maybe Photo -> Maybe Photo
 updateFeed updatePhoto maybePhoto =
     Maybe.map updatePhoto maybePhoto
 
+{- Gets passed to `List.filter` -}
+isPhotoId : Id -> Photo -> Boolean
+isPhotoId id photo =
+    if id == photo.id then True else False
+
+{- Takes a list and returns a Photo with `Id` -}
+updatePhotoById : List Photo -> Photo
+updatePhotoById id photoList =
+    List.filter (filterFeed id) photoList
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleLike id ->
-            ( { model | feed = updateFeed toggleLike model.photo }
+            ( { model
+                | feed = updatePhotoById id model.feed |> (updateFeed toggleLike) }
             , Cmd.none )
 
         -- UpdateComment id comment ->
