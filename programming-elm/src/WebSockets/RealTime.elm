@@ -48,6 +48,8 @@ import Json.Decode.Pipeline exposing (hardcoded, required)
 import Http
 
 
+-- Model -----------------------------------------------------------------------
+
 type alias ID = Int
 
 type alias Photo =
@@ -89,12 +91,16 @@ init : () -> ( Model, Cmd Msg )
 init () =
   ( initialModel, fetchFeed )
 
+{- We're now using a `List Photo`, so our decoder is `list` -}
 fetchFeed : Cmd Msg
 fetchFeed =
   Http.get
-    { url = baseUrl ++ "feed/1"
+    { url = baseUrl ++ "feed"
     , expect = Http.expectJson LoadFeed (list photoDecoder)
     }
+
+
+-- View ------------------------------------------------------------------------
 
 viewLoveButton : Photo -> Html Msg
 viewLoveButton photo =
@@ -118,7 +124,6 @@ viewComment comment =
         , text (" " ++ comment)
         ]
 
-
 viewCommentList : List String -> Html Msg
 viewCommentList comments =
     case comments of
@@ -131,9 +136,7 @@ viewCommentList comments =
                     (List.map viewComment comments)
                 ]
 
-
 viewComments : Photo -> Html Msg
--- START:viewComments
 viewComments photo =
     div []
         [ viewCommentList photo.comments
@@ -150,7 +153,6 @@ viewComments photo =
                 [ text "Save" ]
             ]
         ]
--- END:viewComments
 
 
 viewDetailedPhoto : Photo -> Html Msg
@@ -184,13 +186,13 @@ view model =
         ]
 
 
--- START:msg
+-- Update ----------------------------------------------------------------------
+-- 1. Now provides a `List Photo` from `.json`
 type Msg
     = ToggleLike
     | UpdateComment String
     | SaveComment
-    | LoadFeed (Result Http.Error Photo)
--- END:msg
+    | LoadFeed (Result Http.Error (List Photo)) -- (1)
 
 
 -- START:saveNewComment
@@ -225,7 +227,6 @@ updateFeed updatePhoto maybePhoto =
     Maybe.map updatePhoto maybePhoto
 
 update : Msg -> Model -> ( Model, Cmd Msg )
--- START:update
 update msg model =
     case msg of
         ToggleLike ->
@@ -246,7 +247,9 @@ update msg model =
 
         LoadFeed (Err _) ->
             ( model, Cmd.none )
--- END:update
+
+
+-- Main ------------------------------------------------------------------------
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
