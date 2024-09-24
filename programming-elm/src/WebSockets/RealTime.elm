@@ -59,8 +59,11 @@ type alias Photo =
     , newComment : String
     }
 
+type alias Feed =
+    List Photo
+
 type alias Model =
-  { photo: Maybe Photo }
+  { photo: Maybe Feed }
 
 photoDecoder : Decoder Photo
 photoDecoder =
@@ -80,7 +83,7 @@ baseUrl =
 
 initialModel : Model
 initialModel =
-    { photo = Nothing }
+    { feed = Nothing }
 
 init : () -> ( Model, Cmd Msg )
 init () =
