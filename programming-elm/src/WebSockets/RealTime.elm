@@ -13,6 +13,11 @@ module WebSockets.RealTime exposing (..)
     5. Create a real-time stream of `List Photo` (websockets)
     6. Search the feed to like or comment a `Photo`
 
+    Using an ID to update the comment
+    ---------------------------------
+
+    We're passing through an `Id` to our `Msg`!
+
 
     Commenting
     ----------
@@ -65,7 +70,7 @@ type alias Feed =
     List Photo
 
 type alias Model =
-  { photo: Maybe Feed }
+  { feed : Maybe Feed }
 
 photoDecoder : Decoder Photo
 photoDecoder =
@@ -111,7 +116,7 @@ viewLoveButton photo =
               , ("fa-heart-0", not photo.liked)
               , ("fa-heart", photo.liked)
               ]
-            -- , onClick ToggleLike
+            , onClick (ToggleLike photo.id) -- Now using an Id
             ]
             []
         ]
@@ -136,16 +141,17 @@ viewCommentList comments =
                     (List.map viewComment comments)
                 ]
 
+{- We're now saving a specific `Photo` using it's `Id` -}
 viewComments : Photo -> Html Msg
 viewComments photo =
     div []
         [ viewCommentList photo.comments
-        , form [ class "new-comment"{- , onSubmit SaveComment -} ]
+        , form [ class "new-comment", onSubmit (SaveComment photo.id) ] -- Id
             [ input
                 [ type_ "text"
                 , placeholder "Add a comment..."
                 , value photo.newComment
-                -- , onInput UpdateComment
+                , onInput (UpdateComment photo.id) -- Id
                 ]
                 []
             , button
@@ -166,11 +172,11 @@ viewDetailedPhoto photo =
             ]
         ]
 
-viewFeed : Maybe Photo -> Html Msg
+viewFeed : Maybe Feed -> Html Msg
 viewFeed maybePhoto =
     case maybePhoto of
-        Just photo ->
-            viewDetailedPhoto photo
+        Just feed ->
+            div [] (List.map viewDetailedPhoto feed)
         Nothing ->
             div [ class "loading-feed" ]
                 [ text "Loading Feed ..."]
@@ -182,17 +188,18 @@ view model =
         [ div [ class "header" ]
             [ h1 [] [ text "Picshare" ] ]
         , div [ class "content-flow" ]
-            [ viewFeed model.photo ]
+            [ viewFeed model.feed ]
         ]
 
 
 -- Update ----------------------------------------------------------------------
--- 1. Now provides a `List Photo` from `.json`
+-- 1. We're now using an `Id` to update a specific `Photo`!
+-- 2. Now provides a `List Photo` from `.json`
 type Msg
-    = ToggleLike
-    | UpdateComment String
-    | SaveComment
-    | LoadFeed (Result Http.Error (List Photo)) -- (1)
+    = ToggleLike Id -- (1)
+    | UpdateComment Id String
+    | SaveComment Id
+    | LoadFeed (Result Http.Error (List Photo)) -- (2)
 
 
 -- START:saveNewComment
@@ -218,8 +225,8 @@ toggleLike : Photo -> Photo
 toggleLike photo =
     { photo | liked = not photo.liked }
 
-updateComment : String -> Photo -> Photo
-updateComment comment photo =
+updateComment : Id -> String -> Photo -> Photo
+updateComment id comment photo =
     { photo | newComment = comment }
 
 updateFeed : (Photo -> Photo) -> Maybe Photo -> Maybe Photo
@@ -229,15 +236,15 @@ updateFeed updatePhoto maybePhoto =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        -- ToggleLike ->
-        --     ( { model | photo = updateFeed toggleLike model.photo }
-        --     , Cmd.none )
+        ToggleLike id ->
+            ( { model | feed = updateFeed toggleLike model.photo }
+            , Cmd.none )
 
-        -- UpdateComment comment ->
+        -- UpdateComment id comment ->
         --     ( { model | photo = updateFeed (updateComment comment) model.photo }  -- (8)
         --     , Cmd.none )
 
-        -- SaveComment ->
+        -- SaveComment id ->
         --     ( { model | photo = updateFeed saveNewComment model.photo }
         --     , Cmd.none )
 
