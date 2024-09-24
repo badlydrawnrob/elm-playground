@@ -3,6 +3,20 @@ module WebSockets.RealTime exposing (..)
 {-| Communicating with the servers
     ------------------------------
 
+    What we're gonna do
+    -------------------
+
+    1. Disable the form if `String.empty` for `newComment`
+    2. Validate the form after clicked button
+    3. Store a `List String` of comments
+    4. Use more than one `Photo`
+    5. Create a real-time stream of `List Photo` (websockets)
+    6. Search the feed to like or comment a `Photo`
+
+
+    Commenting
+    ----------
+
     Using Elm Tooling, you can write a comment above a function with `{-|-}`. You
     can write it as you would Markdown. When you come to use that function, you
     can select it and the "documentation" will show up under it's type signature.
@@ -11,26 +25,18 @@ module WebSockets.RealTime exposing (..)
     what the module is all about, plus documentation comments for more in-depth
     function analysis.
 
-    So far we've:
+    For previous versions of this app ...
+    -------------------------------------
+    @ src/RefactorEnhance/Picshare04.elm
+    @ src/Communicate/WithServers.elm
 
     1. Got a `Maybe Photo` we're pulling in with `json` from a server,
     2. Liking or unliking this photo, and adding a `List comment` with a form,
     3. We've got a `Loading` state and a `Loaded` state in our `view`.
 
-    All quite straight forward, but quite a bit of code to make that happen!
+    These cover things like `Maybe`, `Result`, `Json.Decode.Pipeline`,
+    `Browser.element`, `List.map`, `Html.Attributes`, `Html.events`.
 
-        Go see the files `src/RefactorEnhance/Picshare04.elm` and
-        `src/Communicate/WithServers.elm` to view all comments and the different
-        stages of development so far.
-
-    You'll need to be familiar with `Maybe`, `Result`, `Json.Decode.Pipeline`,
-    `Browser.element`, `List.map`, `Html.Attributes`, `Html.events`, and other
-    minor functions to read this file. We're also doing some interesting things
-    with a simple form, including `disabled` which prevents the form submission
-    for an empty string. You still need to validate the data _after_ submission!
-
-    Notice we're adding a `newComment` temporarily (which can be validated),
-    then saving it on form button submit as a `List comment` :)
 -}
 
 import Browser

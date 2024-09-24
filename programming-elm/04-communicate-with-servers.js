@@ -6504,7 +6504,7 @@ var $author$project$Communicate$WithServers$viewLoveButton = function (photo) {
 						_List_fromArray(
 							[
 								_Utils_Tuple2('fa fa-2x', true),
-								_Utils_Tuple2('fa-heart-0', !photo.liked),
+								_Utils_Tuple2('fa-heart-o', !photo.liked),
 								_Utils_Tuple2('fa-heart', photo.liked)
 							])),
 						$elm$html$Html$Events$onClick($author$project$Communicate$WithServers$ToggleLike)

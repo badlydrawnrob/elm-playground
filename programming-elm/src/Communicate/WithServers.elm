@@ -128,7 +128,7 @@ viewLoveButton photo =
         [ i
             [ classList
               [ ("fa fa-2x", True)
-              , ("fa-heart-0", not photo.liked)
+              , ("fa-heart-o", not photo.liked)
               , ("fa-heart", photo.liked)
               ]
             , onClick ToggleLike
