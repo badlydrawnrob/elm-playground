@@ -111,7 +111,7 @@ viewLoveButton photo =
               , ("fa-heart-0", not photo.liked)
               , ("fa-heart", photo.liked)
               ]
-            , onClick ToggleLike
+            -- , onClick ToggleLike
             ]
             []
         ]
@@ -140,12 +140,12 @@ viewComments : Photo -> Html Msg
 viewComments photo =
     div []
         [ viewCommentList photo.comments
-        , form [ class "new-comment", onSubmit SaveComment ]
+        , form [ class "new-comment"{- , onSubmit SaveComment -} ]
             [ input
                 [ type_ "text"
                 , placeholder "Add a comment..."
                 , value photo.newComment
-                , onInput UpdateComment
+                -- , onInput UpdateComment
                 ]
                 []
             , button
@@ -229,23 +229,26 @@ updateFeed updatePhoto maybePhoto =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ToggleLike ->
-            ( { model | photo = updateFeed toggleLike model.photo }
-            , Cmd.none )
+        -- ToggleLike ->
+        --     ( { model | photo = updateFeed toggleLike model.photo }
+        --     , Cmd.none )
 
-        UpdateComment comment ->
-            ( { model | photo = updateFeed (updateComment comment) model.photo }  -- (8)
-            , Cmd.none )
+        -- UpdateComment comment ->
+        --     ( { model | photo = updateFeed (updateComment comment) model.photo }  -- (8)
+        --     , Cmd.none )
 
-        SaveComment ->
-            ( { model | photo = updateFeed saveNewComment model.photo }
-            , Cmd.none )
+        -- SaveComment ->
+        --     ( { model | photo = updateFeed saveNewComment model.photo }
+        --     , Cmd.none )
 
-        LoadFeed (Ok photo) ->
-            ( { model | photo = Just photo }
+        LoadFeed (Ok photoList) ->
+            ( { model | feed = Just photoList }
             , Cmd.none )
 
         LoadFeed (Err _) ->
+            ( model, Cmd.none )
+
+        _ ->
             ( model, Cmd.none )
 
 
