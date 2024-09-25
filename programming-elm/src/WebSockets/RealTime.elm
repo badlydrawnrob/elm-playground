@@ -116,7 +116,7 @@ viewLoveButton photo =
         [ i
             [ classList
               [ ("fa fa-2x", True)
-              , ("fa-heart-0", not photo.liked)
+              , ("fa-heart-o", not photo.liked)
               , ("fa-heart", photo.liked)
               ]
             , onClick (ToggleLike photo.id) -- Now using an Id
@@ -144,7 +144,7 @@ viewCommentList comments =
                     (List.map viewComment comments)
                 ]
 
-{- We're now saving a specific `Photo` using it's `Id` -}
+{- We're now saving a specific `Photo` using it's `ID` -}
 viewComments : Photo -> Html Msg
 viewComments photo =
     div []
@@ -154,7 +154,7 @@ viewComments photo =
                 [ type_ "text"
                 , placeholder "Add a comment..."
                 , value photo.newComment
-                , onInput (UpdateComment photo.id) -- Id
+                , onInput (UpdateComment photo.id) -- ID
                 ]
                 []
             , button
@@ -196,12 +196,13 @@ view model =
 
 
 -- Update ----------------------------------------------------------------------
--- 1. We're now using an `Id` to update a specific `Photo`!
+-- 1. We're now using an `ID` to update a specific `Photo`!
 -- 2. Now provides a `List Photo` from `.json`
+
 type Msg
-    = ToggleLike Id -- (1)
-    | UpdateComment Id String
-    | SaveComment Id
+    = ToggleLike ID -- (1)
+    | UpdateComment ID String
+    | SaveComment ID
     | LoadFeed (Result Http.Error (List Photo)) -- (2)
 
 
@@ -228,19 +229,19 @@ toggleLike : Photo -> Photo
 toggleLike photo =
     { photo | liked = not photo.liked }
 
-updateComment : Id -> String -> Photo -> Photo
-updateComment id comment photo =
+updateComment : String -> Photo -> Photo
+updateComment comment photo =
     { photo | newComment = comment }
 
-updateFeed : (Photo -> Photo) -> Id -> Maybe Feed -> Maybe Feed
+updateFeed : (Photo -> Photo) -> ID -> Maybe Feed -> Maybe Feed
 updateFeed updatePhoto id maybeFeed =
     Maybe.map (updatePhotoById updatePhoto id) maybeFeed
 
-{- We add the `updatePhoto` function first, then the `Id`.
+{- We add the `updatePhoto` function first, then the `ID`.
 The anonymous function looks a bit ugly here, we could probably
 do better. `List.filter` would only return a `Photo`, not a
 the `Feed` that we'd need -}
-updatePhotoById : (Photo -> Photo) -> Id -> Feed -> Feed
+updatePhotoById : (Photo -> Photo) -> ID -> Feed -> Feed
 updatePhotoById updatePhoto id feed =
     List.map (\photo ->
                 if photo.id == id then
@@ -259,11 +260,11 @@ update msg model =
             , Cmd.none )
 
         UpdateComment id comment ->
-            ( { model | photo = updatePhotoById (updateComment comment) id model.feed }  -- (8)
+            ( { model | feed = updateFeed (updateComment comment) id model.feed }  -- (8)
             , Cmd.none )
 
         SaveComment id ->
-            ( { model | photo = updatePhotoById saveNewComment id model.photo }
+            ( { model | feed = updateFeed saveNewComment id model.feed }
             , Cmd.none )
 
         LoadFeed (Ok photoList) ->
@@ -271,9 +272,6 @@ update msg model =
             , Cmd.none )
 
         LoadFeed (Err _) ->
-            ( model, Cmd.none )
-
-        _ ->
             ( model, Cmd.none )
 
 

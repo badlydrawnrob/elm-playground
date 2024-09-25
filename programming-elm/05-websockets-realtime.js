@@ -6186,23 +6186,109 @@ var $author$project$WebSockets$RealTime$subscriptions = function (model) {
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$String$trim = _String_trim;
+var $author$project$WebSockets$RealTime$saveNewComment = function (photo) {
+	var comment = $elm$core$String$trim(photo.newComment);
+	if (comment === '') {
+		return photo;
+	} else {
+		return _Utils_update(
+			photo,
+			{
+				comments: _Utils_ap(
+					photo.comments,
+					_List_fromArray(
+						[comment])),
+				newComment: ''
+			});
+	}
+};
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$WebSockets$RealTime$toggleLike = function (photo) {
+	return _Utils_update(
+		photo,
+		{liked: !photo.liked});
+};
+var $author$project$WebSockets$RealTime$updateComment = F2(
+	function (comment, photo) {
+		return _Utils_update(
+			photo,
+			{newComment: comment});
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$WebSockets$RealTime$updatePhotoById = F3(
+	function (updatePhoto, id, feed) {
+		return A2(
+			$elm$core$List$map,
+			function (photo) {
+				return _Utils_eq(photo.id, id) ? updatePhoto(photo) : photo;
+			},
+			feed);
+	});
+var $author$project$WebSockets$RealTime$updateFeed = F3(
+	function (updatePhoto, id, maybeFeed) {
+		return A2(
+			$elm$core$Maybe$map,
+			A2($author$project$WebSockets$RealTime$updatePhotoById, updatePhoto, id),
+			maybeFeed);
+	});
 var $author$project$WebSockets$RealTime$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'LoadFeed') {
-			if (msg.a.$ === 'Ok') {
-				var photoList = msg.a.a;
+		switch (msg.$) {
+			case 'ToggleLike':
+				var id = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							feed: $elm$core$Maybe$Just(photoList)
+							feed: A3($author$project$WebSockets$RealTime$updateFeed, $author$project$WebSockets$RealTime$toggleLike, id, model.feed)
 						}),
 					$elm$core$Platform$Cmd$none);
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
-		} else {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'UpdateComment':
+				var id = msg.a;
+				var comment = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							feed: A3(
+								$author$project$WebSockets$RealTime$updateFeed,
+								$author$project$WebSockets$RealTime$updateComment(comment),
+								id,
+								model.feed)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'SaveComment':
+				var id = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							feed: A3($author$project$WebSockets$RealTime$updateFeed, $author$project$WebSockets$RealTime$saveNewComment, id, model.feed)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				if (msg.a.$ === 'Ok') {
+					var photoList = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								feed: $elm$core$Maybe$Just(photoList)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -6226,6 +6312,13 @@ var $elm$html$Html$Attributes$src = function (url) {
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
+var $author$project$WebSockets$RealTime$SaveComment = function (a) {
+	return {$: 'SaveComment', a: a};
+};
+var $author$project$WebSockets$RealTime$UpdateComment = F2(
+	function (a, b) {
+		return {$: 'UpdateComment', a: a, b: b};
+	});
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
@@ -6238,6 +6331,60 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $elm$html$Html$form = _VirtualDom_node('form');
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
+	return _Utils_Tuple2(msg, true);
+};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $elm$html$Html$Events$onSubmit = function (msg) {
+	return A2(
+		$elm$html$Html$Events$preventDefaultOn,
+		'submit',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysPreventDefault,
+			$elm$json$Json$Decode$succeed(msg)));
+};
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
@@ -6290,7 +6437,9 @@ var $author$project$WebSockets$RealTime$viewComments = function (photo) {
 				$elm$html$Html$form,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('new-comment')
+						$elm$html$Html$Attributes$class('new-comment'),
+						$elm$html$Html$Events$onSubmit(
+						$author$project$WebSockets$RealTime$SaveComment(photo.id))
 					]),
 				_List_fromArray(
 					[
@@ -6300,7 +6449,9 @@ var $author$project$WebSockets$RealTime$viewComments = function (photo) {
 							[
 								$elm$html$Html$Attributes$type_('text'),
 								$elm$html$Html$Attributes$placeholder('Add a comment...'),
-								$elm$html$Html$Attributes$value(photo.newComment)
+								$elm$html$Html$Attributes$value(photo.newComment),
+								$elm$html$Html$Events$onInput(
+								$author$project$WebSockets$RealTime$UpdateComment(photo.id))
 							]),
 						_List_Nil),
 						A2(
@@ -6316,6 +6467,9 @@ var $author$project$WebSockets$RealTime$viewComments = function (photo) {
 							]))
 					]))
 			]));
+};
+var $author$project$WebSockets$RealTime$ToggleLike = function (a) {
+	return {$: 'ToggleLike', a: a};
 };
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -6343,7 +6497,22 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
 var $elm$html$Html$i = _VirtualDom_node('i');
-var $elm$core$Basics$not = _Basics_not;
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $author$project$WebSockets$RealTime$viewLoveButton = function (photo) {
 	return A2(
 		$elm$html$Html$div,
@@ -6361,9 +6530,11 @@ var $author$project$WebSockets$RealTime$viewLoveButton = function (photo) {
 						_List_fromArray(
 							[
 								_Utils_Tuple2('fa fa-2x', true),
-								_Utils_Tuple2('fa-heart-0', !photo.liked),
+								_Utils_Tuple2('fa-heart-o', !photo.liked),
 								_Utils_Tuple2('fa-heart', photo.liked)
-							]))
+							])),
+						$elm$html$Html$Events$onClick(
+						$author$project$WebSockets$RealTime$ToggleLike(photo.id))
 					]),
 				_List_Nil)
 			]));
