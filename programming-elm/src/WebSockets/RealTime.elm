@@ -55,7 +55,8 @@ module WebSockets.RealTime exposing (..)
     ----------------------------------------------------------------------------
     Wishlist
     ----------------------------------------------------------------------------
-
+    1. Tests are bit of a pain in the arse. But for important things, such as
+       potential `Http.Error` of `Http.BadBody`, use `elm-test` or similar.
 
 -}
 
