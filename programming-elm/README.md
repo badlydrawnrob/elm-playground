@@ -127,6 +127,15 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
     - What if your records contain different data?
     - You can't use `List.map` or `List.filter` in this case?
     - In fact, you won't even be able to use `List` if data isn't all the same types.
+3. **Sketch out how the Http command works:**
+    - Visualise the flow of information ...
+    - Initial fetch (or click a button and send a `Cmd`)
+    - `Result` is returned with an `Http.Error` or `Ok`
+    - We pass the `Ok data` or `Err error` in `Msg`
+    - We handle it in the update function
+    - We also handle the `view` function if either:
+        - Http error
+        - No json data (no `Feed`)
 
 
 

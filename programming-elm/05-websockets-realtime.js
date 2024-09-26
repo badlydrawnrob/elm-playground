@@ -6175,7 +6175,7 @@ var $author$project$WebSockets$RealTime$fetchFeed = $elm$http$Http$get(
 			$elm$json$Json$Decode$list($author$project$WebSockets$RealTime$photoDecoder)),
 		url: $author$project$WebSockets$RealTime$baseUrl + 'feed'
 	});
-var $author$project$WebSockets$RealTime$initialModel = {feed: $elm$core$Maybe$Nothing};
+var $author$project$WebSockets$RealTime$initialModel = {error: $elm$core$Maybe$Nothing, feed: $elm$core$Maybe$Nothing};
 var $author$project$WebSockets$RealTime$init = function (_v0) {
 	return _Utils_Tuple2($author$project$WebSockets$RealTime$initialModel, $author$project$WebSockets$RealTime$fetchFeed);
 };
@@ -6287,7 +6287,14 @@ var $author$project$WebSockets$RealTime$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var error = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								error: $elm$core$Maybe$Just(error)
+							}),
+						$elm$core$Platform$Cmd$none);
 				}
 		}
 	});
@@ -6304,6 +6311,13 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$WebSockets$RealTime$errorMessage = function (error) {
+	if (error.$ === 'BadBody') {
+		return 'Sorry, we couldn\'t process your feed at this time.\n            We\'re working on it!';
+	} else {
+		return 'Sorry, we couldn\'t load your feed at this time.\n            Please try again later.';
+	}
+};
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$html$Html$Attributes$src = function (url) {
@@ -6598,6 +6612,25 @@ var $author$project$WebSockets$RealTime$viewFeed = function (maybePhoto) {
 				]));
 	}
 };
+var $author$project$WebSockets$RealTime$viewContent = function (model) {
+	var _v0 = model.error;
+	if (_v0.$ === 'Just') {
+		var error = _v0.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('feed-error')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					$author$project$WebSockets$RealTime$errorMessage(error))
+				]));
+	} else {
+		return $author$project$WebSockets$RealTime$viewFeed(model.feed);
+	}
+};
 var $author$project$WebSockets$RealTime$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -6628,7 +6661,7 @@ var $author$project$WebSockets$RealTime$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$WebSockets$RealTime$viewFeed(model.feed)
+						$author$project$WebSockets$RealTime$viewContent(model)
 					]))
 			]));
 };

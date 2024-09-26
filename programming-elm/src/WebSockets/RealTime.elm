@@ -3,8 +3,18 @@ module WebSockets.RealTime exposing (..)
 {-| Communicating with the servers
     ------------------------------
 
-    What we're gonna do
-    -------------------
+    Previous versions of this app ...
+    ---------------------------------
+    @ src/RefactorEnhance/Picshare04.elm
+    @ src/Communicate/WithServers.elm
+
+
+    This version's tasks
+    --------------------
+    We have two loading states in our view: one for the `Maybe Feed`, one for the
+    `Maybe Http.Error`. We're covering knowledge such as: `Maybe`, `Result`,
+    `Json.Decode.Pipeline`, `json`, `Browser.element`, `List.map`, `Html.Attributes`,
+    `Html.events` ...
 
     1. Disable the form if `String.empty` for `newComment`
     2. Validate the form after clicked button (with `photo.id`)
@@ -27,34 +37,25 @@ module WebSockets.RealTime exposing (..)
           rejoin it to the main `List Photo` (our `Feed`)
 
 
-    Commenting
-    ----------
+    Testing JSON without server ...
+    -------------------------------
+    You can test a sample string of JSON like this:
+        @ https://ellie-app.com/9MqcYmv6JPga1
 
-    Using Elm Tooling, you can write a comment above a function with `{-|-}`. You
-    can write it as you would Markdown. When you come to use that function, you
-    can select it and the "documentation" will show up under it's type signature.
 
-    Might be an idea to use both `(1)` numbers with comments for a run-down of
-    what the module is all about, plus documentation comments for more in-depth
-    function analysis.
+    How to write function comments
+    ------------------------------
+    Elm Tooling must be installed
 
-    For previous versions of this app ...
-    -------------------------------------
-    @ src/RefactorEnhance/Picshare04.elm
-    @ src/Communicate/WithServers.elm
-
-    1. Got a `Maybe Photo` we're pulling in with `json` from a server,
-    2. Liking or unliking this photo, and adding a `List comment` with a form,
-    3. We've got a `Loading` state and a `Loaded` state in our `view`.
-
-    These cover things like `Maybe`, `Result`, `Json.Decode.Pipeline`,
-    `Browser.element`, `List.map`, `Html.Attributes`, `Html.events`.
-
+    `{-|-}` above a function allows you to write Markdown, and hovering over the
+    function will show it's "documentation", with other stuff. I quite like
+    shorthand comments (1), (2), for some things but having in-place
+    documentation is quite helpful.
 
     ----------------------------------------------------------------------------
     Wishlist
     ----------------------------------------------------------------------------
-    1. Create `errorMessage` function
+
 
 -}
 
@@ -114,7 +115,9 @@ init : () -> ( Model, Cmd Msg )
 init () =
   ( initialModel, fetchFeed )
 
-{- We're now using a `List Photo`, so our decoder is `list` -}
+{- We're now using a `List Photo`, so our decoder is `list`
+#! We're also using a `LoadFeed` message which accepts a
+`Result` type and handles our `Err` if any. -}
 fetchFeed : Cmd Msg
 fetchFeed =
   Http.get
@@ -200,6 +203,19 @@ viewFeed maybePhoto =
                 [ text "Loading Feed ..."]
 
 
+{- Right now we're not handling the errors properly, just adding
+some default text to handle the main cases -}
+errorMessage : Http.Error -> String
+errorMessage error =
+    case error of
+        Http.BadBody _ ->
+            """Sorry, we couldn't process your feed at this time.
+            We're working on it!"""
+
+        _ ->
+            """Sorry, we couldn't load your feed at this time.
+            Please try again later."""
+
 viewContent : Model -> Html Msg
 viewContent model =
     case model.error of
@@ -222,7 +238,9 @@ view model =
 
 -- Update ----------------------------------------------------------------------
 -- 1. We're now using an `ID` to update a specific `Photo`!
--- 2. Now provides a `List Photo` from `.json`
+-- 2. Now provides a `List Photo` from `.json`. We also handle the
+--   `Result` we get back from our `Http` response and handle any errors
+--    in the update function.
 
 type Msg
     = ToggleLike ID -- (1)
@@ -296,8 +314,9 @@ update msg model =
             ( { model | feed = Just photoList }
             , Cmd.none )
 
-        LoadFeed (Err _) ->
-            ( model, Cmd.none )
+        -- #! We're handling any returned errors from our Http response here
+        LoadFeed (Err error) ->
+            ( { model | error = Just error }, Cmd.none )
 
 
 -- Main ------------------------------------------------------------------------
