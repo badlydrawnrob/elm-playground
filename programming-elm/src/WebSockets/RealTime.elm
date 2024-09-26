@@ -7,19 +7,24 @@ module WebSockets.RealTime exposing (..)
     -------------------
 
     1. Disable the form if `String.empty` for `newComment`
-    2. Validate the form after clicked button
+    2. Validate the form after clicked button (with `photo.id`)
     3. Store a `List String` of comments
     4. Use more than one `Photo`
     5. Create a real-time stream of `List Photo` (websockets)
     6. Search the feed to like or comment a `Photo`
+    7. Add any `Err`ors to our `Model` (with `Maybe` type)
 
     Using an ID to update the comment
     ---------------------------------
 
-    We're passing through an `Id` to our `Msg`!
-    We're still using `List.map` (as we want to return a `Feed`)
-      - we could've used `List.filter` @ https://tinyurl.com/elm-playground-4d7819c
-      - but we'd need to rejoin the resulting `Photo` with `List Photo`
+    1. We're passing through an `Id` to our `Msg`!
+    2. We're still using `List.map`, but our `Maybe.map` is now "lifting" a
+      `Maybe Feed` rather than a `Maybe Photo`. Our main update function must
+      return a `Feed` (which is a `List Photo`)
+        - It's also possible to use `List.filter`
+          @ https://tinyurl.com/elm-playground-4d7819c
+          but that'd only filter a single `Photo` (with `ID`) so we'd have to
+          rejoin it to the main `List Photo` (our `Feed`)
 
 
     Commenting
@@ -44,6 +49,12 @@ module WebSockets.RealTime exposing (..)
 
     These cover things like `Maybe`, `Result`, `Json.Decode.Pipeline`,
     `Browser.element`, `List.map`, `Html.Attributes`, `Html.events`.
+
+
+    ----------------------------------------------------------------------------
+    Wishlist
+    ----------------------------------------------------------------------------
+    1. Create `errorMessage` function
 
 -}
 
@@ -73,7 +84,9 @@ type alias Feed =
     List Photo
 
 type alias Model =
-  { feed : Maybe Feed }
+  { feed : Maybe Feed
+  , error : Maybe Http.Error
+  }
 
 photoDecoder : Decoder Photo
 photoDecoder =
@@ -93,7 +106,9 @@ baseUrl =
 
 initialModel : Model
 initialModel =
-    { feed = Nothing }
+    { feed = Nothing
+    , error = Nothing
+    }
 
 init : () -> ( Model, Cmd Msg )
 init () =
@@ -185,13 +200,23 @@ viewFeed maybePhoto =
                 [ text "Loading Feed ..."]
 
 
+viewContent : Model -> Html Msg
+viewContent model =
+    case model.error of
+        Just error ->
+            div [ class "feed-error" ]
+                [ text (errorMessage error) ]
+
+        Nothing ->
+            viewFeed model.feed
+
 view : Model -> Html Msg
 view model =
     div []
         [ div [ class "header" ]
             [ h1 [] [ text "Picshare" ] ]
         , div [ class "content-flow" ]
-            [ viewFeed model.feed ]
+            [ viewContent model ]
         ]
 
 
