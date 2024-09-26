@@ -127,7 +127,7 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
     - What if your records contain different data?
     - You can't use `List.map` or `List.filter` in this case?
     - In fact, you won't even be able to use `List` if data isn't all the same types.
-3. **Sketch out how the [Http command works](https://github.com/badlydrawnrob/elm-playground/blob/cfe1c7a39d4829c35552ec4252c97dd5975dde2b/programming-elm/src/WebSockets/RealTime.elm#L249):** It's actually quite hard to describe as the [`Http.expectJson`](https://elmprogramming.com/decoding-json-part-1.html#replacing-expectstring-with-expectjson) type signature isn't very easy to understand.
+3. **Sketch out how the [Http command works](https://github.com/badlydrawnrob/elm-playground/blob/cfe1c7a39d4829c35552ec4252c97dd5975dde2b/programming-elm/src/WebSockets/RealTime.elm#L249):** It's actually quite hard to describe as the [`Http.expectJson`](https://elmprogramming.com/decoding-json-part-1.html#replacing-expectstring-with-expectjson) type signature isn't very easy to understand. **The [simple version in the Elm Guide](https://guide.elm-lang.org/effects/json), however is much easier to understand**
     - Visualise the flow of information ...
     - Initial fetch (or click a button and send a `Cmd`)
     - `Result` is returned with an `Http.Error` or `Ok`
