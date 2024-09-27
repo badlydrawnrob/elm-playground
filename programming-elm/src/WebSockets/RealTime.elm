@@ -138,7 +138,7 @@ viewLoveButton photo =
               , ("fa-heart-o", not photo.liked)
               , ("fa-heart", photo.liked)
               ]
-            , onClick (ToggleLike photo.id) -- Now using an Id
+            , onClick (ToggleLike photo.id) -- Now using an `ID`
             ]
             []
         ]
@@ -168,7 +168,7 @@ viewComments : Photo -> Html Msg
 viewComments photo =
     div []
         [ viewCommentList photo.comments
-        , form [ class "new-comment", onSubmit (SaveComment photo.id) ] -- Id
+        , form [ class "new-comment", onSubmit (SaveComment photo.id) ] -- ID
             [ input
                 [ type_ "text"
                 , placeholder "Add a comment..."
@@ -277,6 +277,8 @@ updateComment : String -> Photo -> Photo
 updateComment comment photo =
     { photo | newComment = comment }
 
+{- Our model is a `Maybe Feed`, so we need a way to "lift" the `Feed`,
+grab a `Photo` by it's `ID`, and use an update function on it's attributes -}
 updateFeed : (Photo -> Photo) -> ID -> Maybe Feed -> Maybe Feed
 updateFeed updatePhoto id maybeFeed =
     Maybe.map (updatePhotoById updatePhoto id) maybeFeed
@@ -304,7 +306,7 @@ update msg model =
             , Cmd.none )
 
         UpdateComment id comment ->
-            ( { model | feed = updateFeed (updateComment comment) id model.feed }  -- (8)
+            ( { model | feed = updateFeed (updateComment comment) id model.feed }
             , Cmd.none )
 
         SaveComment id ->
