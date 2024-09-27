@@ -137,6 +137,10 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
         - Http error
         - No json data (no `Feed`)
 4. Explain succinctly what `Http.BadBody` error is. Are there other errors I need to remember?
+5. How do subscriptions and commands differ?
+    - commands tell the Elm Architecture to do something to the outside world
+    - subscriptions tell the Elm Architecture to receive information from the outside world.
+6. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
 
 
 

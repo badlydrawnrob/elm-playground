@@ -21,9 +21,21 @@
 
   <script src="05-websockets-realtime.js"></script>
   <script>
-    Elm.WebSockets.RealTime.init({
-      node: document.getElementById('main')
-    });
+    (function() {
+      var app = Elm.WebSockets.RealTime.init({
+        node: document.getElementById('main')
+      });
+
+      app.ports.listen.subscribe(listen);
+
+      function listen(url) {
+        var socket = new WebSocket(url);
+
+        socket.onmessage = function(event) {
+          app.ports.receive.send(event.data);
+        };
+      }
+    })(); // Fucking tiny mistakes cause massive fails (`()` missing)
   </script>
 </body>
 </html>

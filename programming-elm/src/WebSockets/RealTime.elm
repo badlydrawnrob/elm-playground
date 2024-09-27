@@ -7,6 +7,7 @@ module WebSockets.RealTime exposing (..)
     ---------------------------------
     @ src/RefactorEnhance/Picshare04.elm
     @ src/Communicate/WithServers.elm
+    @ https://tinyurl.com/programming-elm-4e21a56 (without WebSockets)
 
 
     This version's tasks
@@ -23,6 +24,13 @@ module WebSockets.RealTime exposing (..)
     5. Create a real-time stream of `List Photo` (websockets)
     6. Search the feed to like or comment a `Photo`
     7. Add any `Err`ors to our `Model` (with `Maybe` type)
+
+    We're also
+
+    1. Connect to a url that's a `WebSocket` (a `Cmd` that calls ports)
+    2. Use a module that exposes ports (to interop with javascript)
+    3. A javascript function in the `html` doc that does the business.
+
 
     Using an ID to update the comment
     ---------------------------------
@@ -67,6 +75,8 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, required)
 import Http
+import WebSockets.WebSocket as WS exposing (listen, receive)
+import Debug
 
 
 -- Model -----------------------------------------------------------------------
@@ -105,6 +115,10 @@ baseUrl : String
 baseUrl =
     "https://programming-elm.com/"
 
+{- #! WebSocket url -}
+wsUrl : String
+wsUrl =
+    "wss://programming-elm.com"
 
 initialModel : Model
 initialModel =
@@ -242,12 +256,14 @@ view model =
 -- 2. Now provides a `List Photo` from `.json`. We also handle the
 --   `Result` we get back from our `Http` response and handle any errors
 --    in the update function.
+-- 3. Here we load a `WebSocket` stream of photos
 
 type Msg
     = ToggleLike ID -- (1)
     | UpdateComment ID String
     | SaveComment ID
     | LoadFeed (Result Http.Error (List Photo)) -- (2)
+    | LoadStreamPhoto String -- (3)
 
 
 -- START:saveNewComment
@@ -313,20 +329,34 @@ update msg model =
             ( { model | feed = updateFeed saveNewComment id model.feed }
             , Cmd.none )
 
+        {- We handle our initial `Cmd` for `Http` here. It's a `Result` type,
+        so we'll get `Ok` or `Err`. If we get our initial feed from our url,
+        we then call our `WebSocket` port for more photos. -}
         LoadFeed (Ok photoList) ->
             ( { model | feed = Just photoList }
-            , Cmd.none )
+            , WS.listen wsUrl -- A `Cmd` that turns into a `Msg`?
+            )
 
-        -- #! We're handling any returned errors from our Http response here
+        {- #! Handle any errors from our `Http` request here -}
         LoadFeed (Err error) ->
             ( { model | error = Just error }, Cmd.none )
+
+        {- #! Here we handle our WebSockets subscriptions, it's basically just
+        a `json` string that we get from `event.data` (in the html js code) -}
+        LoadStreamPhoto data ->
+            let
+                _ =
+                    Debug.log "WebSocket data" data
+            in
+            ( model, Cmd.none )
 
 
 -- Main ------------------------------------------------------------------------
 
+{- Now using `WebSockets` -}
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    WS.receive LoadStreamPhoto
 
 
 main : Program () Model Msg

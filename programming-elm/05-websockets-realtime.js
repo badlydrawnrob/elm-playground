@@ -6179,11 +6179,16 @@ var $author$project$WebSockets$RealTime$initialModel = {error: $elm$core$Maybe$N
 var $author$project$WebSockets$RealTime$init = function (_v0) {
 	return _Utils_Tuple2($author$project$WebSockets$RealTime$initialModel, $author$project$WebSockets$RealTime$fetchFeed);
 };
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$WebSockets$RealTime$subscriptions = function (model) {
-	return $elm$core$Platform$Sub$none;
+var $author$project$WebSockets$RealTime$LoadStreamPhoto = function (a) {
+	return {$: 'LoadStreamPhoto', a: a};
 };
+var $author$project$WebSockets$WebSocket$receive = _Platform_incomingPort('receive', $elm$json$Json$Decode$string);
+var $author$project$WebSockets$RealTime$subscriptions = function (model) {
+	return $author$project$WebSockets$WebSocket$receive($author$project$WebSockets$RealTime$LoadStreamPhoto);
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$WebSockets$WebSocket$listen = _Platform_outgoingPort('listen', $elm$json$Json$Encode$string);
+var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$String$trim = _String_trim;
@@ -6241,6 +6246,7 @@ var $author$project$WebSockets$RealTime$updateFeed = F3(
 			A2($author$project$WebSockets$RealTime$updatePhotoById, updatePhoto, id),
 			maybeFeed);
 	});
+var $author$project$WebSockets$RealTime$wsUrl = 'wss://programming-elm.com';
 var $author$project$WebSockets$RealTime$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6276,7 +6282,7 @@ var $author$project$WebSockets$RealTime$update = F2(
 							feed: A3($author$project$WebSockets$RealTime$updateFeed, $author$project$WebSockets$RealTime$saveNewComment, id, model.feed)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'LoadFeed':
 				if (msg.a.$ === 'Ok') {
 					var photoList = msg.a.a;
 					return _Utils_Tuple2(
@@ -6285,7 +6291,7 @@ var $author$project$WebSockets$RealTime$update = F2(
 							{
 								feed: $elm$core$Maybe$Just(photoList)
 							}),
-						$elm$core$Platform$Cmd$none);
+						$author$project$WebSockets$WebSocket$listen($author$project$WebSockets$RealTime$wsUrl));
 				} else {
 					var error = msg.a.a;
 					return _Utils_Tuple2(
@@ -6296,9 +6302,12 @@ var $author$project$WebSockets$RealTime$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			default:
+				var data = msg.a;
+				var _v1 = A2($elm$core$Debug$log, 'WebSocket data', data);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
