@@ -25,11 +25,24 @@ module WebSockets.RealTime exposing (..)
     6. Search the feed to like or comment a `Photo`
     7. Add any `Err`ors to our `Model` (with `Maybe` type)
 
-    We're also
+    We're also adding a stream of photos
 
     1. Connect to a url that's a `WebSocket` (a `Cmd` that calls ports)
     2. Use a module that exposes ports (to interop with javascript)
     3. A javascript function in the `html` doc that does the business.
+    4. Our websocket feed IS NOT A MAYBE. So we've got to assure it's working.
+
+    We queue up photos so we don't disrupt users if they're already looking
+    at a photo. Rather than push old photos down, we'll provide a banner to
+    notify users that they can view new photos.
+
+    Decoding JSON
+    -------------
+    1. We're using `expectJson` with `Json.Decode.Pipeline` and a `Decoder`.
+        - We automatically decode `json` with our decoder
+    2. We're also using `decodeString` for our websockets feed.
+        - We need to manually decode this ...
+        - We use the same `photoDecoder` function that `expectJson` uses!
 
 
     Using an ID to update the comment
@@ -72,7 +85,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing ( class, classList, disabled, placeholder, src, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
+import Json.Decode exposing (Decoder, bool, decodeString, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, required)
 import Http
 import WebSockets.WebSocket as WS exposing (listen, receive)
@@ -98,6 +111,7 @@ type alias Feed =
 type alias Model =
   { feed : Maybe Feed
   , error : Maybe Http.Error
+  , streamQueue : Feed  -- #! Not a `Maybe`
   }
 
 photoDecoder : Decoder Photo
@@ -124,6 +138,7 @@ initialModel : Model
 initialModel =
     { feed = Nothing
     , error = Nothing
+    , streamQueue = []
     }
 
 init : () -> ( Model, Cmd Msg )
@@ -256,14 +271,17 @@ view model =
 -- 2. Now provides a `List Photo` from `.json`. We also handle the
 --   `Result` we get back from our `Http` response and handle any errors
 --    in the update function.
--- 3. Here we load a `WebSocket` stream of photos
+-- 3. Here we load a `WebSocket` stream of photos. It used to simply hold a
+--    a `String` (the `event.data`), but now holds a `Result`.
+-- 4. Does what it says ... deletes the stream data.
 
 type Msg
     = ToggleLike ID -- (1)
     | UpdateComment ID String
     | SaveComment ID
     | LoadFeed (Result Http.Error (List Photo)) -- (2)
-    | LoadStreamPhoto String -- (3)
+    | LoadStreamPhoto (Result Json.Decode.Error Photo) -- (3)
+    | FlushStreamQueue -- (4)
 
 
 -- START:saveNewComment
@@ -353,10 +371,13 @@ update msg model =
 
 -- Main ------------------------------------------------------------------------
 
-{- Now using `WebSockets` -}
+{- Now using `WebSockets`. Here we manually decode our `event.data` with the
+`decodeString` method: https://tinyurl.com/elm-json-decodeString — we're also
+using the `<<` function compose operator -}
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    WS.receive LoadStreamPhoto
+    WS.receive
+        (LoadStreamPhoto << decodeString photoDecoder)
 
 
 main : Program () Model Msg

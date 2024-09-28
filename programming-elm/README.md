@@ -141,6 +141,9 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
     - commands tell the Elm Architecture to do something to the outside world
     - subscriptions tell the Elm Architecture to receive information from the outside world.
 6. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
+7. I know how `decodeString photoDecoder` is working (takes a json string), but not sure about the compose function passed through to `WebSocket.receive` in the subscriptions.
+    - **Add `how-function-to-msg-works` to Anki**
+    - The simple string, and the `Result`.
 
 
 
