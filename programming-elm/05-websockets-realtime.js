@@ -6175,20 +6175,38 @@ var $author$project$WebSockets$RealTime$fetchFeed = $elm$http$Http$get(
 			$elm$json$Json$Decode$list($author$project$WebSockets$RealTime$photoDecoder)),
 		url: $author$project$WebSockets$RealTime$baseUrl + 'feed'
 	});
-var $author$project$WebSockets$RealTime$initialModel = {error: $elm$core$Maybe$Nothing, feed: $elm$core$Maybe$Nothing};
+var $author$project$WebSockets$RealTime$initialModel = {error: $elm$core$Maybe$Nothing, feed: $elm$core$Maybe$Nothing, streamQueue: _List_Nil};
 var $author$project$WebSockets$RealTime$init = function (_v0) {
 	return _Utils_Tuple2($author$project$WebSockets$RealTime$initialModel, $author$project$WebSockets$RealTime$fetchFeed);
 };
 var $author$project$WebSockets$RealTime$LoadStreamPhoto = function (a) {
 	return {$: 'LoadStreamPhoto', a: a};
 };
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
 var $author$project$WebSockets$WebSocket$receive = _Platform_incomingPort('receive', $elm$json$Json$Decode$string);
 var $author$project$WebSockets$RealTime$subscriptions = function (model) {
-	return $author$project$WebSockets$WebSocket$receive($author$project$WebSockets$RealTime$LoadStreamPhoto);
+	return $author$project$WebSockets$WebSocket$receive(
+		A2(
+			$elm$core$Basics$composeL,
+			$author$project$WebSockets$RealTime$LoadStreamPhoto,
+			$elm$json$Json$Decode$decodeString($author$project$WebSockets$RealTime$photoDecoder)));
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$WebSockets$WebSocket$listen = _Platform_outgoingPort('listen', $elm$json$Json$Encode$string);
-var $elm$core$Debug$log = _Debug_log;
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$String$trim = _String_trim;
@@ -6219,16 +6237,6 @@ var $author$project$WebSockets$RealTime$updateComment = F2(
 		return _Utils_update(
 			photo,
 			{newComment: comment});
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
 	});
 var $author$project$WebSockets$RealTime$updatePhotoById = F3(
 	function (updatePhoto, id, feed) {
@@ -6302,10 +6310,31 @@ var $author$project$WebSockets$RealTime$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'LoadStreamPhoto':
+				if (msg.a.$ === 'Ok') {
+					var photo = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								streamQueue: A2($elm$core$List$cons, photo, model.streamQueue)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			default:
-				var data = msg.a;
-				var _v1 = A2($elm$core$Debug$log, 'WebSocket data', data);
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							feed: A2(
+								$elm$core$Maybe$map,
+								$elm$core$Basics$append(model.streamQueue),
+								model.feed),
+							streamQueue: _List_Nil
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -6621,6 +6650,26 @@ var $author$project$WebSockets$RealTime$viewFeed = function (maybePhoto) {
 				]));
 	}
 };
+var $author$project$WebSockets$RealTime$FlushStreamQueue = {$: 'FlushStreamQueue'};
+var $author$project$WebSockets$RealTime$viewStreamNotification = function (queue) {
+	if (!queue.b) {
+		return $elm$html$Html$text('');
+	} else {
+		var content = 'View new photos:' + $elm$core$String$fromInt(
+			$elm$core$List$length(queue));
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('stream-notification'),
+					$elm$html$Html$Events$onClick($author$project$WebSockets$RealTime$FlushStreamQueue)
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(content)
+				]));
+	}
+};
 var $author$project$WebSockets$RealTime$viewContent = function (model) {
 	var _v0 = model.error;
 	if (_v0.$ === 'Just') {
@@ -6637,7 +6686,14 @@ var $author$project$WebSockets$RealTime$viewContent = function (model) {
 					$author$project$WebSockets$RealTime$errorMessage(error))
 				]));
 	} else {
-		return $author$project$WebSockets$RealTime$viewFeed(model.feed);
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$author$project$WebSockets$RealTime$viewStreamNotification(model.streamQueue),
+					$author$project$WebSockets$RealTime$viewFeed(model.feed)
+				]));
 	}
 };
 var $author$project$WebSockets$RealTime$view = function (model) {

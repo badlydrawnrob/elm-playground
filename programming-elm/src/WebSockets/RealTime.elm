@@ -270,7 +270,11 @@ viewContent model =
                 [ text (errorMessage error) ]
 
         Nothing ->
-            viewFeed model.feed
+            div []
+                [ viewStreamNotification model.streamQueue
+                , viewFeed model.feed
+                ]
+
 
 view : Model -> Html Msg
 view model =
@@ -347,10 +351,6 @@ updatePhotoById updatePhoto id feed =
             )
             feed
 
-addNewPhotos : Feed -> Maybe Feed -> Maybe Feed
-addNewPhotos streamQueue maybeFeed =
-    Maybe.map (List.append streamQueue) maybeFeed
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -392,10 +392,11 @@ update msg model =
         LoadStreamPhoto (Err _) ->
             ( model, Cmd.none )
 
+        {- Append any new photos to the list, and reset `streamQueue` -}
         FlushStreamQueue ->
             ( { model
-                | streamQueue = []
-                , feed = addNewPhotos model.streamQueue
+                | feed = Maybe.map ((++) model.streamQueue) model.feed
+                , streamQueue = []
             }
             , Cmd.none )
 
