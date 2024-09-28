@@ -118,6 +118,9 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
 >     - Reinforce them with a project
 >     - Reinforce with videos, exercises, tuts, etc
 
+**First run through the app** and make sure you know how all the bits are working (even if it's a vague idea).
+Sketch it out, make it visual. Add in some useful videos or links that help.
+
 1. Sometimes we can temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when updating our `Model` (now a `List Photo` feed) so that we can load it.
 2. At first I thought that `List.filter` was the way to go, but it's more graceful using `List.map` and adding in the `updatePhoto` function etc.
     - [Updating minimally, with fewer arguments](https://tinyurl.com/elm-playground-f54b4f6) is BETTER (see the `Msg` branches update functions)
