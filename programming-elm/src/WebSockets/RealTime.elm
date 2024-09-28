@@ -31,10 +31,9 @@ module WebSockets.RealTime exposing (..)
     2. Use a module that exposes ports (to interop with javascript)
     3. A javascript function in the `html` doc that does the business.
     4. Our websocket feed IS NOT A MAYBE. So we've got to assure it's working.
+    5. We display a banner and queue new photos until the user is ready to
+       see them. that way we don't interrupt their viewing.
 
-    We queue up photos so we don't disrupt users if they're already looking
-    at a photo. Rather than push old photos down, we'll provide a banner to
-    notify users that they can view new photos.
 
     Decoding JSON
     -------------
@@ -246,6 +245,23 @@ errorMessage error =
             """Sorry, we couldn't load your feed at this time.
             Please try again later."""
 
+viewStreamNotification : Feed -> Html Msg
+viewStreamNotification queue =
+    case queue of
+        [] ->
+            text ""
+
+        _ ->
+            let
+                content =
+                    "View new photos:"
+                        ++ String.fromInt (List.length queue)
+            in
+            div [ class "stream-notification"
+                , onClick FlushStreamQueue
+                ]
+                [ text content ]
+
 viewContent : Model -> Html Msg
 viewContent model =
     case model.error of
@@ -331,6 +347,10 @@ updatePhotoById updatePhoto id feed =
             )
             feed
 
+addNewPhotos : Feed -> Maybe Feed -> Maybe Feed
+addNewPhotos streamQueue maybeFeed =
+    Maybe.map (List.append streamQueue) maybeFeed
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -359,15 +379,25 @@ update msg model =
         LoadFeed (Err error) ->
             ( { model | error = Just error }, Cmd.none )
 
-        {- #! Here we handle our WebSockets subscriptions, it's basically just
-        a `json` string that we get from `event.data` (in the html js code) -}
-        LoadStreamPhoto data ->
-            let
-                _ =
-                    Debug.log "WebSocket data" data
-            in
+        {- #! Here we handle our WebSockets subscriptions, we now convert
+        our `json` string with our `subscriptions` function, which we receive
+        from `event.data` (in the html js code) -}
+        LoadStreamPhoto (Ok photo) ->
+            ( { model | streamQueue = photo :: model.streamQueue }
+            , Cmd.none
+            )
+
+        {- If there's a problem with our data for whatever reason, we could
+        print out the errors here -}
+        LoadStreamPhoto (Err _) ->
             ( model, Cmd.none )
 
+        FlushStreamQueue ->
+            ( { model
+                | streamQueue = []
+                , feed = addNewPhotos model.streamQueue
+            }
+            , Cmd.none )
 
 -- Main ------------------------------------------------------------------------
 
