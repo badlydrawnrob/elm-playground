@@ -122,14 +122,18 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
 Sketch it out, make it visual. Add in some useful videos or links that help.
 
 1. Sometimes we can temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when updating our `Model` (now a `List Photo` feed) so that we can load it.
-2. At first I thought that `List.filter` was the way to go, but it's more graceful using `List.map` and adding in the `updatePhoto` function etc.
+
+
+2. I think the basic difference between `List.filter` and `List.map` is that `.filter` limits the amount of values returned, whereas `.map` provides ALL the values, changed in some way. It's more graceful using `List.map` and adding in the `updatePhoto` function etc. (in this particular program).
     - [Updating minimally, with fewer arguments](https://tinyurl.com/elm-playground-f54b4f6) is BETTER (see the `Msg` branches update functions)
     - You MUST lift the `Maybe Feed`, hence why the `Id` mapping function is placed there.
-3. A `List.filter` function and using `Id` in form, click events, and `Msg` to update a particular `Photo`.
+3. A `List.filter` function and using `ID` in form, click events, and `Msg` to update a particular `Photo`.
     - When to use `List.filter` over `List.map`?
     - What if your records contain different data?
     - You can't use `List.map` or `List.filter` in this case?
     - In fact, you won't even be able to use `List` if data isn't all the same types.
+
+
 3. **Sketch out how the [Http command works](https://github.com/badlydrawnrob/elm-playground/blob/cfe1c7a39d4829c35552ec4252c97dd5975dde2b/programming-elm/src/WebSockets/RealTime.elm#L249):** It's actually quite hard to describe as the [`Http.expectJson`](https://elmprogramming.com/decoding-json-part-1.html#replacing-expectstring-with-expectjson) type signature isn't very easy to understand. **The [simple version in the Elm Guide](https://guide.elm-lang.org/effects/json), however is much easier to understand**
     - Visualise the flow of information ...
     - Initial fetch (or click a button and send a `Cmd`)
@@ -139,14 +143,14 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - We also handle the `view` function if either:
         - Http error
         - No json data (no `Feed`)
-4. Explain succinctly what `Http.BadBody` error is. Are there other errors I need to remember?
+4. <s>Explain succinctly what `Http.BadBody` error is. Are there other errors I need to remember?</s>
 5. How do subscriptions and commands differ?
     - commands tell the Elm Architecture to do something to the outside world
     - subscriptions tell the Elm Architecture to receive information from the outside world.
 6. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
-7. I know how `decodeString photoDecoder` is working (takes a json string), but need to make it clearer to myself what's happening with the function composition (and the fact that you've GOT to change from `msg String` to `msg Result` in the subscriptions function.
+7. <s>I know how `decodeString photoDecoder` is working (takes a json string), but need to make it clearer to myself what's happening with the function composition (and the fact that you've GOT to change from `msg String` to `msg Result` in the subscriptions function.
     - **Add `how-function-to-msg-works` to Anki**
-    - The simple string, and the `Result`.
+    - The simple string, and the `Result`.</s>
 
 
 

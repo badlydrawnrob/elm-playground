@@ -1,4 +1,4 @@
-module WebSockets.RealTime exposing (..)
+module LargerApps.PicShare exposing (..)
 
 {-| Communicating with the servers
     ------------------------------
@@ -8,32 +8,27 @@ module WebSockets.RealTime exposing (..)
     @ src/RefactorEnhance/Picshare04.elm
     @ src/Communicate/WithServers.elm
     @ https://tinyurl.com/programming-elm-4e21a56 (without WebSockets)
+    @ src/WebSockets/RealTime.elm (with WebSockets)
 
 
-    This version's tasks
-    --------------------
-    We have two loading states in our view: one for the `Maybe Feed`, one for the
-    `Maybe Http.Error`. We're covering knowledge such as: `Maybe`, `Result`,
-    `Json.Decode.Pipeline`, `json`, `Browser.element`, `List.map`, `Html.Attributes`,
-    `Html.events` ...
+    What we've done so far ...
+    --------------------------
+    Two loading states in our view, a `Maybe feed` and `Maybe Http.Error`.
+    We've also got a live stream `Feed` (that's not a `Maybe`) which is an empty
+    list or full.
 
-    1. Disable the form if `String.empty` for `newComment`
-    2. Validate the form after clicked button (with `photo.id`)
-    3. Store a `List String` of comments
-    4. Use more than one `Photo`
-    5. Create a real-time stream of `List Photo` (websockets)
-    6. Search the feed to like or comment a `Photo`
-    7. Add any `Err`ors to our `Model` (with `Maybe` type)
-
-    We're also adding a stream of photos
-
-    1. Connect to a url that's a `WebSocket` (a `Cmd` that calls ports)
-    2. Use a module that exposes ports (to interop with javascript)
-    3. A javascript function in the `html` doc that does the business.
-    4. Our websocket feed IS NOT A MAYBE. So we've got to assure it's working.
-    5. We display a banner and queue new photos until the user is ready to
-       see them. that way we don't interrupt their viewing.
-
+    1. Comments form with a disabled button if `String.empty` for each `Photo`
+        - Uses an `ID` to update the correct `Photo`
+    2. Validate each `Photo`s comments form if clicked submit
+    3. Store the comments in `List comment` and reset the `newComment`.
+    4. Show multiple `Photo`, as well as a WebSocket's `Feed` of `Photo`s
+    5. Handle `Err`ors for our `LoadFeed` and `LoadStreamPhoto` branches
+        - We have views for each with success and errors
+    6. Use `ports` and some javascript in our `Html` form to allow us to send
+       and receive information from our WebSockets setup.
+    7. Display a banner and queue new photos for WebSockets which can be
+       updated and integrated into our `Maybe Feed` by the visitor.
+        - This means the user's experience isn't interupted when viewing photos.
 
     Decoding JSON
     -------------
@@ -43,25 +38,22 @@ module WebSockets.RealTime exposing (..)
         - We need to manually decode this ...
         - We use the same `photoDecoder` function that `expectJson` uses!
 
-
     Using an ID to update the comment
     ---------------------------------
 
-    1. We're passing through an `Id` to our `Msg`!
+    1. We're passing through an `ID` to our `Msg`!
     2. We're still using `List.map`, but our `Maybe.map` is now "lifting" a
       `Maybe Feed` rather than a `Maybe Photo`. Our main update function must
       return a `Feed` (which is a `List Photo`)
-        - It's also possible to use `List.filter`
-          @ https://tinyurl.com/elm-playground-4d7819c
-          but that'd only filter a single `Photo` (with `ID`) so we'd have to
-          rejoin it to the main `List Photo` (our `Feed`)
+    3. `List.filter` should be used when you want to LIMIT the number of `Photo`
+       returned by the function. `List.map` is better when you want to keep ALL
+       photos but edit one of them.
 
 
     Testing JSON without server ...
     -------------------------------
     You can test a sample string of JSON like this:
         @ https://ellie-app.com/9MqcYmv6JPga1
-
 
     How to write function comments
     ------------------------------
@@ -87,7 +79,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Json.Decode exposing (Decoder, bool, decodeString, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, required)
 import Http
-import WebSockets.WebSocket as WS exposing (listen, receive)
+import LargerApps.WebSocket as WS exposing (listen, receive)
 
 
 -- Model -----------------------------------------------------------------------
