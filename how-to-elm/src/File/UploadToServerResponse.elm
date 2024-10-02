@@ -1,0 +1,111 @@
+module File.UploadToServerResponse exposing (..)
+
+{-| An example response from https://freeimage.host/
+    ------------------------------------------------
+
+    You can test the server with an API key and Curl:
+
+        @ https://linuxize.com/post/curl-post-request/
+        @ https://www.browserling.com/tools/strip-slashes
+
+    You can use `-d` with a long `'key=...&source=...'` or split them
+    into separate `-d`s like so:
+
+    curl -d 'key=[YOUR-API-KEY]'
+         -d 'source=[IMAGE-URL]'
+         -d 'format=json' https://freeimage.host/api/1/upload
+
+    Any image will do:
+
+        https://www.boredpanda.com/blog/wp-content/uploads/2021/02/602e5c7474580_dipqm35gir161__700.jpg
+
+
+    Things I learned
+    ----------------
+
+    1. Take care of naming conflicts, like `elm/file` and naming your module
+       `File.Whatever` — throws an error (thinks you're importing `elm/file`)
+
+-}
+
+import Json.Decode exposing (at, decodeString, Decoder, Error, string)
+
+exampleResponse : String
+exampleResponse =
+    """
+    {
+        "status_code": 200,
+        "success": {
+            "message": "image uploaded",
+            "code": 200
+        },
+        "image": {
+            "name": "602e5c7474580 dipqm35gir161 700",
+            "extension": "jpg",
+            "width": 700,
+            "height": 698,
+            "size": 146802,
+            "time": 1727874343,
+            "expiration": 0,
+            "likes": 0,
+            "description": null,
+            "original_filename": "602e5c7474580_dipqm35gir161__700.jpg",
+            "is_animated": 0,
+            "nsfw": 0,
+            "id_encoded": "dDUV9d7",
+            "size_formatted": "146.8 KB",
+            "filename": "dDUV9d7.jpg",
+            "url": "https://iili.io/dDUV9d7.jpg",
+            "url_short": "https://freeimage.host/",
+            "url_seo": "https://freeimage.host/i/602e5c7474580-dipqm35gir161-700.dDUV9d7",
+            "url_viewer": "https://freeimage.host/i/dDUV9d7",
+            "url_viewer_preview": "https://freeimage.host/i/dDUV9d7",
+            "url_viewer_thumb": "https://freeimage.host/i/dDUV9d7",
+            "image": {
+            "filename": "dDUV9d7.jpg",
+            "name": "dDUV9d7",
+            "mime": "image/jpeg",
+            "extension": "jpg",
+            "url": "https://iili.io/dDUV9d7.jpg",
+            "size": 146802
+            },
+            "thumb": {
+            "filename": "dDUV9d7.th.jpg",
+            "name": "dDUV9d7.th",
+            "mime": "image/jpeg",
+            "extension": "jpg",
+            "url": "https://iili.io/dDUV9d7.th.jpg"
+            },
+            "medium": {
+            "filename": "dDUV9d7.md.jpg",
+            "name": "dDUV9d7.md",
+            "mime": "image/jpeg",
+            "extension": "jpg",
+            "url": "https://iili.io/dDUV9d7.md.jpg"
+            },
+            "display_url": "https://iili.io/dDUV9d7.md.jpg",
+            "display_width": 700,
+            "display_height": 698,
+            "views_label": "views",
+            "likes_label": "likes",
+            "how_long_ago": "1 second ago",
+            "date_fixed_peer": "2024-10-02 13:05:43",
+            "title": "602e5c7474580 dipqm35gir161 700",
+            "title_truncated": "602e5c7474580 dipqm35gir1...",
+            "title_truncated_html": "602e5c7474580 dipqm35gir1...",
+            "is_use_loader": false
+        },
+        "status_txt": "OK"
+    }
+    """
+
+type alias ImageUrl =
+    String
+
+decodeImage : Decoder ImageUrl
+decodeImage =
+    (at ["image", "url"] string)
+
+grabImage : String -> Result Error ImageUrl
+grabImage json =
+    decodeString decodeImage json
