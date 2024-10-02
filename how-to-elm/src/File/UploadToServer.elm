@@ -51,7 +51,8 @@ init _ =
 type Msg
   = ImageRequested
   | ImageSelected File
---   | ImageLoaded String
+--   | GotImage (Result Http.Error )
+  | ImageLoaded String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -67,7 +68,7 @@ update msg model =
       , Task.perform ImageLoaded (File.toString file)
       )
 
-    CsvLoaded content ->
+    ImageLoaded content ->
       ( { model | image = Just content }
       , Cmd.none
       )
@@ -79,9 +80,9 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  case model.csv of
+  case model.image of
     Nothing ->
-      button [ onClick ImageRequested ] [ text "Load CSV" ]
+      button [ onClick ImageRequested ] [ text "Load Image" ]
 
     Just content ->
       p [ style "white-space" "pre" ] [ text content ]
