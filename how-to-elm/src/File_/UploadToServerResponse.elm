@@ -112,7 +112,7 @@ exampleResponse =
 
 freeImageUrl : String
 freeImageUrl =
-    "http://freeimage.host/api/1/upload/?key="
+    "https://freeimage.host/api/1/upload/?key="  -- Is the `/` required?
 
 decodeImage : Decoder String
 decodeImage =
@@ -126,8 +126,15 @@ grabImage json =
 postImage : String -> String -> Cmd Msg
 postImage key file =
     Http.post
-        { url = freeImageUrl ++ key ++ "&source=" ++ file
+        { url = freeImageUrl ++ key ++ "&source=" ++ file ++ "&format=json"
         , body = Http.emptyBody
         , expect = Http.expectJson SentImage decodeImage
         }
+
+-- postImage : String -> String -> Cmd Msg
+-- postImage key file =
+--     Http.get
+--         { url = freeImageUrl ++ key ++ "&source=" ++ file ++ "&format=json"
+--         , expect = Http.expectJson SentImage decodeImage
+--         }
 
