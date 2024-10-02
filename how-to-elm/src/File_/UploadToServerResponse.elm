@@ -110,7 +110,8 @@ exampleResponse =
     }
     """
 
-{- This definitely works (without a trailing slash) -}
+{- This definitely works (without a trailing slash) — if you upload the same
+image url twice, it's the same URL in the `json` response! -}
 testImageUrl : String
 testImageUrl =
     "https://freeimage.host/api/1/upload?key=6d207e02198a847aa98d0a2a901485a5&source=https://cdsassets.apple.com/live/7WUAS350/images/macos/sonoma/macos-sonoma-recovery-disk-utility.png&format=json"
