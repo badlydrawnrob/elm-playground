@@ -122,9 +122,10 @@ It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy,
 Sketch it out, make it visual. Add in some useful videos or links that help.
 
 1. Sometimes we can temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when updating our `Model` (now a `List Photo` feed) so that we can load it.
+2. **Advantages or disadvantages of using a custom type** (over a record, say) - you have to build your own functions for getters (rather than simply accessing values with `.keys` for example).
 
 
-2. I think the basic difference between `List.filter` and `List.map` is that `.filter` limits the amount of values returned, whereas `.map` provides ALL the values, changed in some way. It's more graceful using `List.map` and adding in the `updatePhoto` function etc. (in this particular program).
+2. I think the basic difference between `List.filter` and `List.map` is that `.filter` limits the amount of values returned, whereas `.map` provides ALL the values, changed in some way. It's more graceful using `List.map` and adding in the `updatePhoto` function etc. (in this particular program)
     - [Updating minimally, with fewer arguments](https://tinyurl.com/elm-playground-f54b4f6) is BETTER (see the `Msg` branches update functions)
     - You MUST lift the `Maybe Feed`, hence why the `Id` mapping function is placed there.
 3. A `List.filter` function and using `ID` in form, click events, and `Msg` to update a particular `Photo`.

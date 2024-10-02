@@ -1,7 +1,8 @@
-module File.UploadToServerResponse exposing (..)
+module File_.UploadToServerResponse exposing (..)
 
 {-| An example response from https://freeimage.host/
     ------------------------------------------------
+    ⚠️ I think Elm doesn't like modules and package name clashes (like `File`)
 
     You can test the server with an API key and Curl:
 
@@ -28,7 +29,11 @@ module File.UploadToServerResponse exposing (..)
 
 -}
 
-import Json.Decode exposing (at, decodeString, Decoder, Error, string)
+import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
+import File exposing (File)
+import File_.UploadToServerModel exposing (..)
+import Http
+
 
 exampleResponse : String
 exampleResponse =
@@ -99,13 +104,24 @@ exampleResponse =
     }
     """
 
-type alias ImageUrl =
-    String
+freeImageUrl : String
+freeImageUrl =
+    "http://freeimage.host/api/1/upload/?key="
 
 decodeImage : Decoder ImageUrl
 decodeImage =
-    (at ["image", "url"] string)
+    (D.at ["image", "url"] D.string)
 
+{- Helpful for testing in `elm repl` -}
 grabImage : String -> Result Error ImageUrl
 grabImage json =
     decodeString decodeImage json
+
+postImage : String -> String -> Cmd Msg
+postImage key file =
+    Http.post
+        { url = freeImageUrl ++ key ++ "&source=" ++ file
+        , body = Http.emptyBody
+        , expect = Http.expectJson SentImage decodeImage
+        }
+
