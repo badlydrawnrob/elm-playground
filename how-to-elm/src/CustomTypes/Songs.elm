@@ -119,7 +119,7 @@ import Debug
 
 {- An ID comes in handy if you want to edit or delete a `Song` -}
 type SongID
-  = SongID Int
+    = SongID Int
 
 {- A simpler way to unpack the `Int` than using `case` -}
 extractID : SongID -> Int
