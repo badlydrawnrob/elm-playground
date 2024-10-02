@@ -1,5 +1,5 @@
 module File_.UploadToServerModel exposing
-    ( ImageUrl
+    ( ImageUrl(..)
     , ImageName
     , init
     , Msg(..)
@@ -21,8 +21,9 @@ import File exposing (File)
 import Http
 
 
-type alias ImageUrl =
-    String
+type ImageUrl
+    = ImageNotAskedFor
+    | Image (Result Http.Error String)
 
 type alias ImageName =
     String
@@ -32,14 +33,14 @@ type Msg
   | ImageSelected File
   | ImageLoaded ImageName String
   | SendToServer
-  | SentImage (Result Http.Error ImageUrl)
+  | SentImage (Result Http.Error String)
 
 type alias Model =
   { image : Maybe String
   , imageName : ImageName
-  , imageUrl : Maybe ImageUrl
+  , imageUrl : ImageUrl
   }
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model Nothing "" Nothing, Cmd.none )
+  ( Model Nothing "" ImageNotAskedFor, Cmd.none )

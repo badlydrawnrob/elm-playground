@@ -27,6 +27,12 @@ module File_.UploadToServerResponse exposing (..)
     1. Take care of naming conflicts, like `elm/file` and naming your module
        `File.Whatever` — throws an error (thinks you're importing `elm/file`)
 
+
+    Questions
+    ---------
+    1. Initially I had `ImageUrl` was a `String` ... but `decodeImage`
+       will complain. How do you `map` a decoder to a type alias?
+
 -}
 
 import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
@@ -108,12 +114,12 @@ freeImageUrl : String
 freeImageUrl =
     "http://freeimage.host/api/1/upload/?key="
 
-decodeImage : Decoder ImageUrl
+decodeImage : Decoder String
 decodeImage =
     (D.at ["image", "url"] D.string)
 
 {- Helpful for testing in `elm repl` -}
-grabImage : String -> Result Error ImageUrl
+grabImage : String -> Result Error String
 grabImage json =
     decodeString decodeImage json
 

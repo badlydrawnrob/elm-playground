@@ -13,7 +13,7 @@ module File_.UploadToServer exposing (..)
     1. Upload file
     2. Convert it into a `base64` string (`File.toString`)
     3. When button clicked, send `base64` string to server
-    4. Collect the URL in the response.
+    4. Collect the URL in the response (it's a `Result` type)
 
     Questions
     ---------
@@ -25,10 +25,13 @@ module File_.UploadToServer exposing (..)
         - We deal with that in a `view` with `case`
         - When it comes to pinging the server, we must "lift" the
           maybe. We know it exists.
-    3. Our `view` is chaining `case` expressions:
+    3. **How do I handle the `imageUrl` in the model better?
+        - It's one of
+    4. Our `view` is chaining `case` expressions:
         - We have a `Maybe String` for our `image` upload
-        - And a `Maybe String` for our `imageUrl` (server)
+        - And a `Result` for our `imageUrl` (server)
         - How might we improve the structure of our view?
+
 -}
 
 import Browser
@@ -39,6 +42,7 @@ import File_.UploadToServerResponse exposing (postImage)
 import Html exposing (Html, button, div, p, text)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
+import Http exposing (..)
 import Task
 
 
@@ -84,23 +88,19 @@ update msg model =
       )
 
     {- #! Here we KNOW that there's a `base64` string ready, but we still
-    need to unpack the bloody `Maybe`. -}
+    need to unpack the bloody `Maybe`. For now I'm doing a dirty and using
+    `Maybe.withDefault`. -}
     SendToServer ->
-        ( model, postImage "6d207e02198a847aa98d0a2a901485a5" model.image )
+        ( model
+        , postImage "6d207e02198a847aa98d0a2a901485a5" (Maybe.withDefault "" model.image) )
 
-    SentImage (Ok url) ->
-        ( { model | imageUrl = Just url }
+    {- #! See the custom type for `imageUrl` -}
+    SentImage payload ->
+        ( { model | imageUrl = Image payload }
         , Cmd.none
         )
 
-    SentImage (Err _) ->
-        ( { model | error = "There's been a problem sending to the server" }
-        , Cmd.none
-        )
 
-liftMaybe : Maybe String -> String
-liftMaybe maybeString =
-    if maybeStringNothing ->
 
 -- View ------------------------------------------------------------------------
 
@@ -108,11 +108,28 @@ liftMaybe maybeString =
 view : Model -> Html Msg
 view model =
   case model.imageUrl of
-    Nothing ->
+    ImageNotAskedFor ->
         viewUploaded model
 
-    Just url ->
-        p [] [ text "image: " ++ url ++ "is ready to add to the form!" ]
+    Image (Ok url) ->
+        p [] [ text ("image: " ++ url ++ "is ready to add to the form!") ]
+
+    Image (Err error) ->
+        case error of
+            BadUrl str ->
+                p [] [ text str ]
+
+            Timeout ->
+                p [] [ text "Oops! There's been a TIMEOUT. Start again?" ]
+
+            NetworkError ->
+                p [] [ text "Oops! There's been a NETWORK ERROR. Start again?" ]
+
+            BadStatus num ->
+                p [] [ text ("Oops! There's been a" ++ (String.fromInt num) ++ ". Start again?") ]
+
+            BadBody str ->
+                p [] [ text str ]
 
 viewUploaded : Model -> Html Msg
 viewUploaded model =
