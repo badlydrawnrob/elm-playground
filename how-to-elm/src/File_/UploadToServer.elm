@@ -71,7 +71,8 @@ update msg model =
         , Select.file ["image/jpg", "image/png"] ImageSelected
         )
 
-    {- #! Should `File.name` function be the second param to `Task.perform`? -}
+    {- #! Should `File.name` function be the second param to `Task.perform`?
+    Should `File.toString` be `File.toUrl`? -}
     ImageSelected file ->
       ( model
       , Task.perform (ImageLoaded (File.name file)) (File.toString file)

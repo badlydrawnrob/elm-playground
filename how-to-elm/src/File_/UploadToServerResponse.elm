@@ -110,9 +110,14 @@ exampleResponse =
     }
     """
 
+{- This definitely works (without a trailing slash) -}
+testImageUrl : String
+testImageUrl =
+    "https://freeimage.host/api/1/upload?key=6d207e02198a847aa98d0a2a901485a5&source=https://cdsassets.apple.com/live/7WUAS350/images/macos/sonoma/macos-sonoma-recovery-disk-utility.png&format=json"
+
 freeImageUrl : String
 freeImageUrl =
-    "https://freeimage.host/api/1/upload/?key="  -- Is the `/` required?
+    "https://freeimage.host/api/1/upload?key="  -- I don't think trailing slash `/` is required?
 
 decodeImage : Decoder String
 decodeImage =
