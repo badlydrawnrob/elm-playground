@@ -1,4 +1,4 @@
-module File_.UploadToServerModel exposing
+module File_.UploadImageToServerModel exposing
     ( ImageUrl(..)
     , ImageName
     , init

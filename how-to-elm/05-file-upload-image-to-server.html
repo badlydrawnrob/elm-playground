@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Forms</title>
+  <link href="./style/04-custom-types-songs.css" rel="stylesheet">
+</head>
+<body>
+  <div id="main" class="main"></div>
+
+  <script src="05-file-upload-image-to-server.js"></script>
+  <script>
+    Elm.File_.UploadImageToServer.init({
+      node: document.getElementById('main')
+    });
+  </script>
+</body>
+</html>

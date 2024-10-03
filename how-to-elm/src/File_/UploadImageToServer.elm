@@ -1,4 +1,4 @@
-module File_.UploadToServer exposing (..)
+module File_.UploadImageToServer exposing (..)
 
 {-| Uploading an image file to a server
     ----------------------------------
@@ -6,6 +6,9 @@ module File_.UploadToServer exposing (..)
 
     See `UploadToServerModel` and `UploadToServerResponse`.
     Original script @ https://package.elm-lang.org/packages/elm/file/latest/
+
+    See @ https://www.base64-image.de/ to ENCODE an image as `base64` url
+    See @ https://base64.guru/converter/decode/image to DECODE a `base64` url
 
 
     The file
@@ -32,15 +35,25 @@ module File_.UploadToServer exposing (..)
         - And a `Result` for our `imageUrl` (server)
         - How might we improve the structure of our view?
 
+
+    ----------------------------------------------------------------------------
+    Wishlist
+    ----------------------------------------------------------------------------
+    1. I think `File.toString` just ONLY that: a `txt` or `csv` file to a string.
+    2. Make `File.toUrl` work with a POST `base64` image server!
+    3. Should `File.name` function be the second param to `Task.perform`?
+    4. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
+       easier to work with? Find a good plugin
+
 -}
 
 import Browser
 import File exposing (File)
 import File.Select as Select
-import File_.UploadToServerModel exposing (..)
-import File_.UploadToServerResponse exposing (postImage)
-import Html exposing (Html, button, div, p, text)
-import Html.Attributes exposing (style)
+import File_.UploadImageToServerModel exposing (..)
+import File_.UploadImageToServerResponse exposing (postImage)
+import Html exposing (Html, button, div, p, strong, text)
+import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Http exposing (..)
 import Task
@@ -71,11 +84,12 @@ update msg model =
         , Select.file ["image/jpg", "image/png"] ImageSelected
         )
 
-    {- #! Should `File.name` function be the second param to `Task.perform`?
-    Should `File.toString` be `File.toUrl`? -}
+    {- #! I'm fairly sure that `File.toUrl` (not `File.toString`) is converting
+    into a `base64` url that a server like `freeimage.host` requires. See the notes
+    for other services that encode/decode base64. -}
     ImageSelected file ->
       ( model
-      , Task.perform (ImageLoaded (File.name file)) (File.toString file)
+      , Task.perform (ImageLoaded (File.name file)) (File.toUrl file)
       )
 
     {- #! I'm not sure if our `filename` should be a `Maybe` too?
@@ -113,7 +127,9 @@ view model =
         viewUploaded model
 
     Image (Ok url) ->
-        p [] [ text ("image: " ++ url ++ "is ready to add to the form!") ]
+        div [ class "wrapper" ]
+            [ p [] [ text ("image: " ++ url ++ "is ready to add to the form!") ] ]
+
 
     Image (Err error) ->
         case error of
@@ -138,10 +154,12 @@ viewUploaded model =
         Nothing ->
             button [ onClick ImageRequested ] [ text "Load Image" ]
 
-        Just _ ->
-            div []
-                [ p [ style "white-space" "pre" ] [ text model.imageName ]
-                , button [onClick SendToServer] [ text "Upload Image to Server!"]
+        Just url ->
+            div [ class "wrapper" ]
+                [ p [] [ strong [] [ text ("filename: " ++ model.imageName) ] ]
+                , p [] [ strong [] [ text " / url: "], text url ]
+                , button [ onClick SendToServer ]
+                    [ text "Upload Image to Server!"]
                 ]
 
 
