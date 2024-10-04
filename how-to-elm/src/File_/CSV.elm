@@ -1,4 +1,4 @@
-module File_.UploadCSVExample exposing (..)
+module File_.CSV exposing (..)
 
 {-| This is the example that `elm/file` package gives.
     -------------------------------------------------

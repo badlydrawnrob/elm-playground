@@ -162,7 +162,13 @@ fine for now, because we're using `Validate` type signature in some places. -}
 type UserInput a =
     UserInput String (Validate a)
 
--- get
+getInput : String
+getInput (UserInput string _) =
+    string
+
+getValid : Validate a
+getValid (UserInput _ result) =
+    result
 
 initUserInput = UserInput "" (Err "Field is be empty")
 

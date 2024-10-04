@@ -1,6 +1,5 @@
-module File_.UploadImageToServerModel exposing
+module File_.ImageModel exposing
     ( ImageUrl(..)
-    , ImageName
     , init
     , Msg(..)
     , Model
@@ -25,19 +24,19 @@ type ImageUrl
     = ImageNotAskedFor
     | Image (Result Http.Error String)
 
-type alias ImageName =
+type alias Base24 =
     String
 
 type Msg
   = ImageRequested
   | ImageSelected File
-  | ImageLoaded ImageName String
-  | SendToServer
+  | ImageLoaded String
+  | SendToServer Base24
   | SentImage (Result Http.Error String)
 
 type alias Model =
   { image : Maybe String
-  , imageName : ImageName
+  , imageName : String
   , imageUrl : ImageUrl
   }
 
