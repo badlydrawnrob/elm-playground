@@ -1,5 +1,6 @@
-module File_.ImageModel exposing
+module File.ImageModel exposing
     ( ImageUrl(..)
+    , Base24
     , init
     , Msg(..)
     , Model

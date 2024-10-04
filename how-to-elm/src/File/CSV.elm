@@ -1,4 +1,4 @@
-module File_.CSV exposing (..)
+module File.CSV exposing (..)
 
 {-| This is the example that `elm/file` package gives.
     -------------------------------------------------

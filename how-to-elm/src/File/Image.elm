@@ -1,4 +1,4 @@
-module File_.Image exposing (..)
+module File.Image exposing (..)
 
 {-| ----------------------------------------------------------------------------
     Uploading an image file to a server
@@ -71,25 +71,30 @@ module File_.Image exposing (..)
     ----------------------------------------------------------------------------
     Wishlist
     ----------------------------------------------------------------------------
-    1. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
+    1. WRITE BASIC UNIT TESTS!! There was one instance where I didn't export
+       `Base24` type (`String` that `Msg` consumed) in my `Model` module and the
+       compiler DID NOT CATCH IT.
+    2. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
        easier to work with? Find a good plugin
-    2. It might be nice to hold on to the `data:` meta, just strip it for now.
-    3. Write some basic tests? (`List.drop` and other areas)
+    3. It might be nice to hold on to the `data:` meta, just strip it for now.
     4. Version `js` and `css` files to force fresh reload (sometimes seems to get
        stuck at a previous version)
+    5. Check image FILE SIZE might also be very useful
+        - Avoid images that are too large.
 
 -}
 
 import Browser
 import File exposing (File)
 import File.Select as Select
-import File_.ImageModel exposing (..)
-import File_.ImageResponse exposing (postImage)
+import File.ImageModel exposing (..)
+import File.ImageResponse exposing (postImage)
 import Html exposing (Html, button, div, p, strong, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Http exposing (..)
 import Task
+import Debug exposing (..)
 
 
 

@@ -1,4 +1,4 @@
-module File_.ImageResponse exposing (..)
+module File.ImageResponse exposing (..)
 
 {-| An example response from https://freeimage.host/
     ------------------------------------------------
@@ -37,7 +37,7 @@ module File_.ImageResponse exposing (..)
 
 import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
 import File exposing (File)
-import File_.ImageModel exposing (..)
+import File.ImageModel exposing (..)
 import Http
 
 
