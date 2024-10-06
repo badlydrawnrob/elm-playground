@@ -24,8 +24,6 @@ module File.ImageResponse exposing (..)
     2. A simple `Http.post` IS NOT ENOUGH it seems, because of CORS errors:
         @ https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors
 
-
-
 -}
 
 import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
