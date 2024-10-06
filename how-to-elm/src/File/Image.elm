@@ -8,6 +8,7 @@ module File.Image exposing (..)
     You can allow multiple image types (MIME) in `File.toUrl` as a list.
 
     See @ issue #43 for detailed notes on `base64`.
+    See @ https://tinyurl.com/simplest-way-to-upload-img for help
     See `elm/file` package for example csv upload program.
 
     Technical tasks

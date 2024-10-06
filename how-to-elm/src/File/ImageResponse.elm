@@ -21,19 +21,17 @@ module File.ImageResponse exposing (..)
 
     1. Take care of naming conflicts, like `elm/file` and naming your module
        `File.Whatever` — throws an error (thinks you're importing `elm/file`)
+    2. A simple `Http.post` IS NOT ENOUGH it seems, because of CORS errors:
+        @ https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors
 
 
-    Questions
-    ---------
-    1. Initially I had `ImageUrl` was a `String` ... but `decodeImage`
-       will complain. How do you `map` a decoder to a type alias?
 
 -}
 
 import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
 import File exposing (File)
 import File.ImageModel exposing (..)
-import Http
+import Http exposing (..)
 import Url.Builder as UB exposing (crossOrigin, string)
 
 
@@ -114,14 +112,15 @@ testImageUrl =
 
 freeImageUrl : String
 freeImageUrl =
-    "https://freeimage.host/api/1/upload"  -- I don't think trailing slash `/` is required?
+    "https://freeimage.host"  -- I don't think trailing slash `/` is required?
 
+{- #! How do you map this to a `type alias` that's also a `String`? -}
 decodeImage : Decoder String
 decodeImage =
     (D.at ["image", "url"] D.string)
 
 {- Helpful for testing in `elm repl` -}
-grabImage : String -> Result Error String
+grabImage : String -> Result D.Error String
 grabImage json =
     decodeString decodeImage json
 
@@ -130,18 +129,33 @@ buildUrl : String -> String -> String
 buildUrl key file =
     UB.crossOrigin
         freeImageUrl
-        []
+        [ "api", "1", "upload" ]
         [ UB.string "key" key
         , UB.string "source" file
         , UB.string "format" "json"
         ]
 
+{- If your image server is on the SAME domain, you can use this -}
+-- postImage : String -> String -> Cmd Msg
+-- postImage key file =
+--     Http.post
+--         { url = buildUrl key file
+--         -- { url = testImageUrl
+--         , body = Http.emptyBody
+--         , expect = Http.expectJson SentImage decodeImage
+--         }
+
+{- If your image server is on a DIFFERENT domain, you'll likely need this -}
+
 postImage : String -> String -> Cmd Msg
 postImage key file =
-    Http.post
-        -- { url = buildUrl key file
-        { url = testImageUrl
-        , body = Http.emptyBody
-        , expect = Http.expectJson SentImage decodeImage
-        }
-
+  request
+    { method = "POST"
+    , headers = [ Http.header "Access-Control-Allow-Origin" "https://freeimage.host" ]
+    , url = buildUrl key file
+    -- , url = testImageUrl
+    , body = Http.emptyBody
+    , expect = Http.expectJson SentImage decodeImage
+    , timeout = Nothing
+    , tracker = Nothing
+    }
