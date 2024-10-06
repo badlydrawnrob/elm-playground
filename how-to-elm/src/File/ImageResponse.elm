@@ -110,7 +110,7 @@ testImageUrl =
 
 freeImageUrl : String
 freeImageUrl =
-    "https://freeimage.host"  -- I don't think trailing slash `/` is required?
+    "http://freeimage.host"  -- I don't think trailing slash `/` is required?
 
 {- #! How do you map this to a `type alias` that's also a `String`? -}
 decodeImage : Decoder String
@@ -134,26 +134,31 @@ buildUrl key file =
         ]
 
 {- If your image server is on the SAME domain, you can use this -}
--- postImage : String -> String -> Cmd Msg
--- postImage key file =
---     Http.post
---         { url = buildUrl key file
---         -- { url = testImageUrl
---         , body = Http.emptyBody
---         , expect = Http.expectJson SentImage decodeImage
---         }
-
-{- If your image server is on a DIFFERENT domain, you'll likely need this -}
-
 postImage : String -> String -> Cmd Msg
 postImage key file =
-  request
-    { method = "POST"
-    , headers = [ Http.header "Access-Control-Allow-Origin" "https://freeimage.host" ]
-    , url = buildUrl key file
-    -- , url = testImageUrl
-    , body = Http.emptyBody
-    , expect = Http.expectJson SentImage decodeImage
-    , timeout = Nothing
-    , tracker = Nothing
-    }
+    Http.post
+        -- { url = buildUrl key file
+        { url = testImageUrl
+        , body = Http.emptyBody
+        , expect = Http.expectJson SentImage decodeImage
+        }
+
+{- ----------------------------------------------------------------------------
+ CORS errors: I'm not sure that there's any way around this for `freeimage.host`,
+--------------------------------------------------------------------------------
+- I tried to allow by setting `header` so it'll allow a DIFFERENT domain, but
+- so far this just doesn't seem to work. See issue #43 for more detail.
+-}
+
+-- postImage : String -> String -> Cmd Msg
+-- postImage key file =
+--   Http.request
+--     { method = "POST"
+--     , headers = [ Http.header "Access-Control-Allow-Origin" "http://freeimage.host/api/1/upload/" ]
+--     , url = buildUrl key file
+--     -- , url = testImageUrl
+--     , body = Http.emptyBody
+--     , expect = Http.expectJson SentImage decodeImage
+--     , timeout = Nothing
+--     , tracker = Nothing
+--     }
