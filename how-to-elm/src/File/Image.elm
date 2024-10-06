@@ -1,71 +1,72 @@
 module File.Image exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Uploading an image file to a server
+    The Image Module: uploading a file to the server (a URL in response)
     ============================================================================
     ⚠️ Try to avoid naming clashes with elm packages.
+    ⚠️ Avoid large files. Read notes on `data:` urls.
+    You can allow multiple image types (MIME) in `File.toUrl` as a list.
+
+    See @ issue #43 for detailed notes on `base64`.
     See `elm/file` package for example csv upload program.
 
-    ----------------------------------------------------------------------------
-    The problem with `base64`
-    ----------------------------------------------------------------------------
-    Elm Lang uses `elm/file` `File.toUrl` to encode it's uploaded image with
-    `base64`. However, if you look at the output:
+    Technical tasks
+    ---------------
 
-        data:image/jpeg;base64,<string>
-
-    It prepends the `base64` string (or url) with `data:`. Our handy tools below
-    handle it just fine. Our Image Server APIs DO NOT!!! They expect everything
-    _after_ the `,` comma.
-
-        <string>
-
-    So we need to `String.split "," url` and use it's `tail`. It's an added hassle
-    but that's what the `NETWORK ERROR` problems were. The API is not expecting
-    the metadata in the call.
-
+    1. Upload a file (based on allowed `MIME` types)
+    2. Convert `file` to `File.toUrl`.
+    3. Strip the `data:[<mediatype>][;base64],` part.
+    4. Store it in the `Model`.
+    5. URL encode the `<data-string>` part (`freeimage.host` only)
+    6. Send to server with POST (or `--form`) (with `onClick` message)
+    7. AVOID LARGE FILES (both `curl` and POST will crash, load slow, or error)
+        - `200kb` is fine, `1mb` isn't
+    8. Collect the image url from the server response ...
+    9. Repeat for multiple files (or send multiple `Task`s perhaps?)
 
     Handy tools:
     ------------
 
     1. Encode an image as `base64` string
         @ https://www.base64-image.de/
+        `base64 image.jpg > base64.txt` with terminal
     2. Decode an image from `base64` string
         @ https://base64.guru/converter/decode/image
+        `pbpaste | base64 -d > image.jpg` with terminal
+        (copy from clipboard)  (file format)
     3. Strip slashes from `json` `"url"` value:
         @ https://www.browserling.com/tools/strip-slashes
 
 
     ----------------------------------------------------------------------------
-    Our Image module
+    The UI and customer journey ...
     ----------------------------------------------------------------------------
-    `File.toUrl` seems to work fine with multiple image types, but you've got to
-    be careful as sometimes it's NOT SHOWING in the browser. It's there if you
-    inspect element though.
+    For some reason in certain cases the module is NOT SHOWING this in the
+    browser (it's there if you inspect element). That could be a CSS issue.
 
-    Uploading an Image file (`.jpg`, `.jpeg`)
-    ----------------------------------------
-    1. Upload file (after clicking button)
-    2. Convert it into a `base64` string (`File.toString`)
-    3. Split the string at the `","` to remove `data:image/jpeg;base64`
-    4. Store in the model ...
-    5. Show "Send to server" button.
-    6. Click button -> send `base64` string to server
-    7. Collect the URL in the response (it's a `Result` type)
+    What it looks like to a visitor
+    -------------------------------
+    1. Click a button (and select an acceptable image file)
+    2. Upload the file. Returns the file name (and the `<data-string>`)
+        - You'll likely want to hide the data string from user.
+    3. "Send to image server" button is now available
+        - You could use `Task.sequence` here to store multiple files?
+        - We're only allowing ONE file right now ...
+        - But your form might have 2-3 image fields available
+        - They're only image urls! Step (2) does the hard work.
+    4. If our `Task` is successful, user sees "Image ready"
+        - Our image is simply a URL ...
+        - Which we can post to our `json` server with a form.
+        - Your form might have 2-3 image fields available, (step 3) is doing
+          the hard work here.
 
     Questions
     ---------
     1. Our `Task.perform` can NEVER fail. Why?
         - `Never` means just that. It can never fail?
-    2. Our `Maybe` is causing problems.
+    2. We don't want to unpack `Maybe` more than ONCE:
         - Rather than "lift" the `Maybe`, send it along in the `Msg`.
         - We know it's not `Nothing` so this should be safe.
-    3. **How do I handle the `imageUrl` in the model better?**
-        - ...
-    4. Our `view` is chaining `case` expressions:
-        - We have a `Maybe String` for our `image` upload
-        - And a `Result` for our `imageUrl` (server)
-        - How might we improve the structure of our view?
 
 
     ----------------------------------------------------------------------------
@@ -74,13 +75,15 @@ module File.Image exposing (..)
     1. WRITE BASIC UNIT TESTS!! There was one instance where I didn't export
        `Base24` type (`String` that `Msg` consumed) in my `Model` module and the
        compiler DID NOT CATCH IT.
-    2. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
+    2. Check image FILE SIZE ... over ___ takes way too long
+    3. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
        easier to work with? Find a good plugin
-    3. It might be nice to hold on to the `data:` meta, just strip it for now.
-    4. Version `js` and `css` files to force fresh reload (sometimes seems to get
+    4. It might be nice to hold on to the `data:` meta, just strip it for now.
+    5. Version `js` and `css` files to force fresh reload (sometimes seems to get
        stuck at a previous version)
-    5. Check image FILE SIZE might also be very useful
-        - Avoid images that are too large.
+    6. Could we handle the `imageUrl` in the model a bit better?
+        - Right now we're chaining `case` statements for our possible image
+          states. Could we improve the STRUCTURE OF OUR VIEW?
 
 -}
 

@@ -2,18 +2,13 @@ module File.ImageResponse exposing (..)
 
 {-| An example response from https://freeimage.host/
     ------------------------------------------------
-    ⚠️ I think Elm doesn't like modules and package name clashes (like `File`)
+    ⚠️ Using `File` as a module name is fine, but it could clash with
+       other Elm packages, like `elm/file`.
 
-    You can test the server with an API key and Curl:
-
-        @ https://linuxize.com/post/curl-post-request/
-        @ https://www.browserling.com/tools/strip-slashes
-
-    You can use `-d` with a long `'key=...&source=...'` or split them
-    into separate `-d`s like so:
+    See @ issue #43 for notes on `base64` and Curl examples.
 
     curl -d 'key=[YOUR-API-KEY]'
-         -d 'source=[IMAGE-URL]'
+         -d 'source=[DATA-STRING|HTTP-IMAGE-URL]'
          -d 'format=json' https://freeimage.host/api/1/upload
 
     Any image will do:
@@ -39,6 +34,7 @@ import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
 import File exposing (File)
 import File.ImageModel exposing (..)
 import Http
+import Url.Builder as UB exposing (crossOrigin, string)
 
 
 exampleResponse : String
@@ -118,7 +114,7 @@ testImageUrl =
 
 freeImageUrl : String
 freeImageUrl =
-    "https://freeimage.host/api/1/upload?key="  -- I don't think trailing slash `/` is required?
+    "https://freeimage.host/api/1/upload"  -- I don't think trailing slash `/` is required?
 
 decodeImage : Decoder String
 decodeImage =
@@ -129,18 +125,23 @@ grabImage : String -> Result Error String
 grabImage json =
     decodeString decodeImage json
 
+{- This helps us percent encode our `<data-string>` (file) -}
+buildUrl : String -> String -> String
+buildUrl key file =
+    UB.crossOrigin
+        freeImageUrl
+        []
+        [ UB.string "key" key
+        , UB.string "source" file
+        , UB.string "format" "json"
+        ]
+
 postImage : String -> String -> Cmd Msg
 postImage key file =
     Http.post
-        { url = freeImageUrl ++ key ++ "&source=" ++ file ++ "&format=json"
+        -- { url = buildUrl key file
+        { url = testImageUrl
         , body = Http.emptyBody
         , expect = Http.expectJson SentImage decodeImage
         }
-
--- postImage : String -> String -> Cmd Msg
--- postImage key file =
---     Http.get
---         { url = freeImageUrl ++ key ++ "&source=" ++ file ++ "&format=json"
---         , expect = Http.expectJson SentImage decodeImage
---         }
 
