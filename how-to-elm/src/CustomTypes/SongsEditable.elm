@@ -293,9 +293,10 @@ allValid id song mins secs =
 here ... is that going to cause problems? -}
 checkSong : String -> Validate String
 checkSong s =
-    case String.isEmpty s of
-        True  -> Err "Field cannot be empty"
-        False -> Ok s
+    if String.isEmpty s then
+        Err "Field cannot be empty"
+    else
+        Ok s
 
 {- Let's abstract the function as both minutes and seconds are similar errors.
 `String.toInt` will also check if empty as `Nothing`. We're also using the
