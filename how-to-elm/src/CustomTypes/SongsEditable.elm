@@ -13,6 +13,11 @@ module CustomTypes.SongsEditable exposing (..)
         @ Songs.elm
 
 
+    Problems
+    --------
+    1. `UserInput a` is kind of vague for our type signatures
+       - The `Result`s value is either a `String` or an `Int`.
+
     What I learned
     --------------
 
@@ -162,11 +167,11 @@ fine for now, because we're using `Validate` type signature in some places. -}
 type UserInput a =
     UserInput String (Validate a)
 
-getInput : String
+getInput : UserInput a -> String
 getInput (UserInput string _) =
     string
 
-getValid : Validate a
+getValid : UserInput a -> Validate a
 getValid (UserInput _ result) =
     result
 
