@@ -17,6 +17,8 @@ module CustomTypes.SongsEditable exposing (..)
     --------
     1. `UserInput a` is kind of vague for our type signatures
        - The `Result`s value is either a `String` or an `Int`.
+    2. `allValid` deconstructs values into a Tuple, which isn't ideal as the
+       number of `UserInput` increases. Perhaps a `map` function would be better.
 
     What I learned
     --------------
@@ -252,6 +254,7 @@ update msg model =
             case runErrorsAndBuildSong model of
                 Nothing ->
                      model
+
                 Just song ->
                     {- All `.valid` fields have come back without any errors.
                     we can now build our `Song` and pass it over to `updateAlbum`,
@@ -271,15 +274,20 @@ runErrorsAndBuildSong : Model -> Maybe Song
 runErrorsAndBuildSong model =
     allValid model.currentID model.currentSong model.currentMins model.currentSecs
 
-{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
-#! What happens if we have lots of fields? That's too many inputs! -}
+{- We check all fields are error free and CREATE THE SONG HERE!
+
+#! Deconstruct all `Result` values into a `Tuple`. Check these are valid in one go.
+`Tuple` maxes out at 3 items, so if we have more `UserInput` fields, we'd have to
+change this (using a `map` function?) -}
 allValid : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Maybe Song
 allValid id song mins secs =
-    case (song.valid, mins.valid, secs.valid) of
-        (Ok songTitle, Ok minutes, Ok seconds) ->
-            Just (Song id songTitle (minutes, seconds))
+    case ((getValid song), (getValid mins), (getValid secs)) of
+        (Ok title, Ok minutes, Ok seconds) ->
+            Just (Song id title (minutes, seconds))
         _ ->
             Nothing
+
+
 
 -- Error checking --------------------------------------------------------------
 -- Previously using ONE function to handle all errors and chaining `Result`,
@@ -327,8 +335,9 @@ updateAlbum album song =
     case album of
         NoAlbum ->
             Album song []
-        {- Do you want to add to the front, or end of the list? You could check
-        here that the list isn't empty by using (first :: rest) but I ain't! -}
+        {- We're currently adding the song to the front of the list, although
+        you could just as well add it to the end. I don't think we need to check
+        if the list is empty here. -}
         Album first rest ->
             Album first (song :: rest)
 
