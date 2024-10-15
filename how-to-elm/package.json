@@ -1,0 +1,11 @@
+{
+  "name": "how-to-elm",
+  "version": "1.0.0",
+  "description": "Exploring Elm's Capabilities (and mine!)",
+  "main": "README.md",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rob",
+  "license": "ISC"
+}
