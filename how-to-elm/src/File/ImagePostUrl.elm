@@ -1,28 +1,24 @@
-module File.ImageResponse exposing (..)
+module File.ImagePostUrl exposing (..)
 
 {-| An example response from https://freeimage.host/
     ------------------------------------------------
-    ⚠️ Using `File` as a module name is fine, but it could clash with
-       other Elm packages, like `elm/file`.
+    ⚠️ Take care when using a module name that could conflict with another,
+       for example, `elm/file`.
 
-    See @ issue #43 for notes on `base64` and Curl examples.
+    See @ issue #43 for notes on `base64`, Curl examples, and CORS errors.
+    This module is the correct way to do things, but `freeimage.host` does not
+    allow origin with different domain. I don't entirely understand how that works,
+    but your image server MUST allow POST from different domains.
 
-    curl -d 'key=[YOUR-API-KEY]'
-         -d 'source=[DATA-STRING|HTTP-IMAGE-URL]'
-         -d 'format=json' https://freeimage.host/api/1/upload
+    Curl does work, however:
+
+        curl -d 'key=[YOUR-API-KEY]'
+             -d 'source=[DATA-STRING|HTTP-IMAGE-URL]'
+             -d 'format=json' https://freeimage.host/api/1/upload
 
     Any image will do:
 
-        https://www.boredpanda.com/blog/wp-content/uploads/2021/02/602e5c7474580_dipqm35gir161__700.jpg
-
-
-    Things I learned
-    ----------------
-
-    1. Take care of naming conflicts, like `elm/file` and naming your module
-       `File.Whatever` — throws an error (thinks you're importing `elm/file`)
-    2. A simple `Http.post` IS NOT ENOUGH it seems, because of CORS errors:
-        @ https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors
+        @ https://www.boredpanda.com/blog/wp-content/uploads/2021/02/602e5c7474580_dipqm35gir161__700.jpg
 
 -}
 
@@ -137,28 +133,8 @@ buildUrl key file =
 postImage : String -> String -> Cmd Msg
 postImage key file =
     Http.post
-        -- { url = buildUrl key file
-        { url = testImageUrl
+        { url = buildUrl key file
+        -- { url = testImageUrl
         , body = Http.emptyBody
         , expect = Http.expectJson SentImage decodeImage
         }
-
-{- ----------------------------------------------------------------------------
- CORS errors: I'm not sure that there's any way around this for `freeimage.host`,
---------------------------------------------------------------------------------
-- I tried to allow by setting `header` so it'll allow a DIFFERENT domain, but
-- so far this just doesn't seem to work. See issue #43 for more detail.
--}
-
--- postImage : String -> String -> Cmd Msg
--- postImage key file =
---   Http.request
---     { method = "POST"
---     , headers = [ Http.header "Access-Control-Allow-Origin" "http://freeimage.host/api/1/upload/" ]
---     , url = buildUrl key file
---     -- , url = testImageUrl
---     , body = Http.emptyBody
---     , expect = Http.expectJson SentImage decodeImage
---     , timeout = Nothing
---     , tracker = Nothing
---     }

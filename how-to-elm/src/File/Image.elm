@@ -7,8 +7,8 @@ module File.Image exposing (..)
     ⚠️ Avoid large files. Read notes on `data:` urls.
     You can allow multiple image types (MIME) in `File.toUrl` as a list.
 
-    See @ issue #43 for detailed notes on `base64`.
-    See @ https://tinyurl.com/simplest-way-to-upload-img for help
+    See @ issue #43 for detailed notes on `base64` (freeimage.host CORS error).
+    See @ https://tinyurl.com/simplest-way-to-upload-img for help.
     See `elm/file` package for example csv upload program.
 
     Technical tasks
@@ -93,7 +93,7 @@ import Browser
 import File exposing (File)
 import File.Select as Select
 import File.ImageModel exposing (..)
-import File.ImageResponse exposing (postImage)
+import File.ImagePostUrl exposing (postImage)
 import Html exposing (Html, button, div, p, strong, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -153,7 +153,7 @@ update msg model =
     for another "lifting" of the `Maybe` type. Just send it along! -}
     SendToServer base24 ->
         ( model
-        , postImage "6d207e02198a847aa98d0a2a901485a5" base24 )
+        , postImage "104e88f54082d98be7ac1d3649ba21d1" base24 )
 
     {- #! See the custom type for `imageUrl` -}
     SentImage payload ->
