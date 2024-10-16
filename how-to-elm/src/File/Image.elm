@@ -93,7 +93,7 @@ import Browser
 import File exposing (File)
 import File.Select as Select
 import File.ImageModel exposing (..)
-import File.ImagePostUrl exposing (postImage)
+import File.ImageMultiPart exposing (postImage)
 import Html exposing (Html, button, div, p, strong, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
