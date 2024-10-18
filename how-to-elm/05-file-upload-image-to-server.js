@@ -4550,6 +4550,23 @@ function _File_toUrl(blob)
 
 
 
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return $elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+}
+
 
 // SEND REQUEST
 
@@ -5512,30 +5529,30 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$File$ImageModel$ImageNotAskedFor = {$: 'ImageNotAskedFor'};
-var $author$project$File$ImageModel$Model = F3(
+var $author$project$File$ImageForm$ImageNotAskedFor = {$: 'ImageNotAskedFor'};
+var $author$project$File$ImageForm$Model = F3(
 	function (image, imageName, imageUrl) {
 		return {image: image, imageName: imageName, imageUrl: imageUrl};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$File$ImageModel$init = function (_v0) {
+var $author$project$File$ImageForm$init = function (_v0) {
 	return _Utils_Tuple2(
-		A3($author$project$File$ImageModel$Model, $elm$core$Maybe$Nothing, '', $author$project$File$ImageModel$ImageNotAskedFor),
+		A3($author$project$File$ImageForm$Model, $elm$core$Maybe$Nothing, '', $author$project$File$ImageForm$ImageNotAskedFor),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$File$Image$subscriptions = function (_v0) {
+var $author$project$File$ImageForm$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$File$ImageModel$Image = function (a) {
+var $author$project$File$ImageForm$Image = function (a) {
 	return {$: 'Image', a: a};
 };
-var $author$project$File$ImageModel$ImageLoaded = function (a) {
+var $author$project$File$ImageForm$ImageLoaded = function (a) {
 	return {$: 'ImageLoaded', a: a};
 };
-var $author$project$File$ImageModel$ImageSelected = function (a) {
+var $author$project$File$ImageForm$ImageSelected = function (a) {
 	return {$: 'ImageSelected', a: a};
 };
 var $elm$core$List$drop = F2(
@@ -5571,20 +5588,66 @@ var $elm$file$File$Select$file = F2(
 			_File_uploadOne(mimes));
 	});
 var $elm$file$File$name = _File_name;
-var $author$project$File$ImageModel$SentImage = function (a) {
+var $author$project$File$ImageForm$SentImage = function (a) {
 	return {$: 'SentImage', a: a};
 };
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$crossOrigin = F3(
+	function (prePath, pathSegments, parameters) {
+		return prePath + ('/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters)));
+	});
+var $author$project$File$ImageForm$serverUrl = 'https://api.imgbb.com';
+var $elm$url$Url$Builder$QueryParameter = F2(
+	function (a, b) {
+		return {$: 'QueryParameter', a: a, b: b};
+	});
+var $elm$url$Url$percentEncode = _Url_percentEncode;
+var $elm$url$Url$Builder$string = F2(
+	function (key, value) {
+		return A2(
+			$elm$url$Url$Builder$QueryParameter,
+			$elm$url$Url$percentEncode(key),
+			$elm$url$Url$percentEncode(value));
+	});
+var $author$project$File$ImageForm$buildUrl = F2(
+	function (expiration, key) {
+		return A3(
+			$elm$url$Url$Builder$crossOrigin,
+			$author$project$File$ImageForm$serverUrl,
+			_List_fromArray(
+				['1', 'upload']),
+			_List_fromArray(
+				[
+					A2($elm$url$Url$Builder$string, 'expiration', expiration),
+					A2($elm$url$Url$Builder$string, 'key', key)
+				]));
+	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$File$ImageResponse$decodeImage = A2(
+var $author$project$File$ImageForm$decodeImage = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
-		['image', 'url']),
+		['data', 'image', 'url']),
 	$elm$json$Json$Decode$string);
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
 		return {$: 'BadStatus_', a: a, b: b};
@@ -6127,8 +6190,6 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $elm$http$Http$emptyBody = _Http_emptyBody;
-var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -6200,6 +6261,12 @@ var $elm$http$Http$expectJson = F2(
 						A2($elm$json$Json$Decode$decodeString, decoder, string));
 				}));
 	});
+var $elm$http$Http$multipartBody = function (parts) {
+	return A2(
+		_Http_pair,
+		'',
+		_Http_toFormData(parts));
+};
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
 };
@@ -6368,22 +6435,26 @@ var $elm$http$Http$request = function (r) {
 		$elm$http$Http$Request(
 			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
 };
-var $elm$http$Http$post = function (r) {
-	return $elm$http$Http$request(
-		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
-};
-var $author$project$File$ImageResponse$testImageUrl = 'https://freeimage.host/api/1/upload?key=6d207e02198a847aa98d0a2a901485a5&source=https://cdsassets.apple.com/live/7WUAS350/images/macos/sonoma/macos-sonoma-recovery-disk-utility.png&format=json';
-var $author$project$File$ImageResponse$postImage = F2(
-	function (key, file) {
-		return $elm$http$Http$post(
+var $elm$http$Http$stringPart = _Http_pair;
+var $author$project$File$ImageForm$postImage = F3(
+	function (expiration, key, file) {
+		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$emptyBody,
-				expect: A2($elm$http$Http$expectJson, $author$project$File$ImageModel$SentImage, $author$project$File$ImageResponse$decodeImage),
-				url: $author$project$File$ImageResponse$testImageUrl
+				body: $elm$http$Http$multipartBody(
+					_List_fromArray(
+						[
+							A2($elm$http$Http$stringPart, 'image', file)
+						])),
+				expect: A2($elm$http$Http$expectJson, $author$project$File$ImageForm$SentImage, $author$project$File$ImageForm$decodeImage),
+				headers: _List_Nil,
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: A2($author$project$File$ImageForm$buildUrl, expiration, key)
 			});
 	});
 var $elm$file$File$toUrl = _File_toUrl;
-var $author$project$File$Image$update = F2(
+var $author$project$File$ImageForm$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'ImageRequested':
@@ -6393,7 +6464,7 @@ var $author$project$File$Image$update = F2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['image/jpg', 'image/png', 'image/gif']),
-						$author$project$File$ImageModel$ImageSelected));
+						$author$project$File$ImageForm$ImageSelected));
 			case 'ImageSelected':
 				var file = msg.a;
 				return _Utils_Tuple2(
@@ -6404,11 +6475,11 @@ var $author$project$File$Image$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						$author$project$File$ImageModel$ImageLoaded,
+						$author$project$File$ImageForm$ImageLoaded,
 						$elm$file$File$toUrl(file)));
 			case 'ImageLoaded':
 				var base64 = msg.a;
-				var chopBase24 = A2(
+				var chopBase64 = A2(
 					$elm$core$String$join,
 					'',
 					A2(
@@ -6419,21 +6490,21 @@ var $author$project$File$Image$update = F2(
 					_Utils_update(
 						model,
 						{
-							image: $elm$core$Maybe$Just(chopBase24)
+							image: $elm$core$Maybe$Just(chopBase64)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'SendToServer':
-				var base24 = msg.a;
+				var base64 = msg.a;
 				return _Utils_Tuple2(
 					model,
-					A2($author$project$File$ImageResponse$postImage, '6d207e02198a847aa98d0a2a901485a5', base24));
+					A3($author$project$File$ImageForm$postImage, '600', '104e88f54082d98be7ac1d3649ba21d1', base64));
 			default:
 				var payload = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							imageUrl: $author$project$File$ImageModel$Image(payload)
+							imageUrl: $author$project$File$ImageForm$Image(payload)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -6451,8 +6522,8 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$File$ImageModel$ImageRequested = {$: 'ImageRequested'};
-var $author$project$File$ImageModel$SendToServer = function (a) {
+var $author$project$File$ImageForm$ImageRequested = {$: 'ImageRequested'};
+var $author$project$File$ImageForm$SendToServer = function (a) {
 	return {$: 'SendToServer', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -6474,14 +6545,14 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$html$Html$strong = _VirtualDom_node('strong');
-var $author$project$File$Image$viewUploaded = function (model) {
+var $author$project$File$ImageForm$viewUploaded = function (model) {
 	var _v0 = model.image;
 	if (_v0.$ === 'Nothing') {
 		return A2(
 			$elm$html$Html$button,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$File$ImageModel$ImageRequested)
+					$elm$html$Html$Events$onClick($author$project$File$ImageForm$ImageRequested)
 				]),
 			_List_fromArray(
 				[
@@ -6529,7 +6600,7 @@ var $author$project$File$Image$viewUploaded = function (model) {
 					_List_fromArray(
 						[
 							$elm$html$Html$Events$onClick(
-							$author$project$File$ImageModel$SendToServer(url))
+							$author$project$File$ImageForm$SendToServer(url))
 						]),
 					_List_fromArray(
 						[
@@ -6538,10 +6609,10 @@ var $author$project$File$Image$viewUploaded = function (model) {
 				]));
 	}
 };
-var $author$project$File$Image$view = function (model) {
+var $author$project$File$ImageForm$view = function (model) {
 	var _v0 = model.imageUrl;
 	if (_v0.$ === 'ImageNotAskedFor') {
-		return $author$project$File$Image$viewUploaded(model);
+		return $author$project$File$ImageForm$viewUploaded(model);
 	} else {
 		if (_v0.a.$ === 'Ok') {
 			var url = _v0.a.a;
@@ -6558,7 +6629,7 @@ var $author$project$File$Image$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('image: ' + (url + 'is ready to add to the form!'))
+								$elm$html$Html$text('image: ' + (url + ' is ready to add to the form!'))
 							]))
 					]));
 		} else {
@@ -6612,7 +6683,7 @@ var $author$project$File$Image$view = function (model) {
 		}
 	}
 };
-var $author$project$File$Image$main = $elm$browser$Browser$element(
-	{init: $author$project$File$ImageModel$init, subscriptions: $author$project$File$Image$subscriptions, update: $author$project$File$Image$update, view: $author$project$File$Image$view});
-_Platform_export({'File':{'Image':{'init':$author$project$File$Image$main(
+var $author$project$File$ImageForm$main = $elm$browser$Browser$element(
+	{init: $author$project$File$ImageForm$init, subscriptions: $author$project$File$ImageForm$subscriptions, update: $author$project$File$ImageForm$update, view: $author$project$File$ImageForm$view});
+_Platform_export({'File':{'ImageForm':{'init':$author$project$File$ImageForm$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));
