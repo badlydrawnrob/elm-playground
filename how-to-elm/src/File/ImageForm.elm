@@ -1,29 +1,33 @@
-module File.Image exposing (..)
+module File.ImageForm exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    The Image Module: uploading a file to the server (a URL in response)
+    Image POST `--form` to server: `base64` with MultiPart
     ============================================================================
     ⚠️ Try to avoid naming clashes with elm packages.
     ⚠️ Avoid large files. Read notes on `data:` urls.
+    ⚠️ Version `js` and `css` files to force reloading when upgrading app.
     You can allow multiple image types (MIME) in `File.toUrl` as a list.
 
-    See @ issue #43 for detailed notes on `base64` (freeimage.host CORS error).
+    See @ issue #43 for detailed notes on `base64` (and CORS errors).
     See @ https://tinyurl.com/simplest-way-to-upload-img for help.
     See `elm/file` package for example csv upload program.
 
     Technical tasks
     ---------------
+    This module is the correct way to do things for a server that accepts
+    `base64` POST in the URL. Currently looking for a server that allows CORS.
 
     1. Upload a file (based on allowed `MIME` types)
     2. Convert `file` to `File.toUrl`.
     3. Strip the `data:[<mediatype>][;base64],` part.
     4. Store it in the `Model`.
-    5. URL encode the `<data-string>` part (`freeimage.host` only)
-    6. Send to server with POST (or `--form`) (with `onClick` message)
-    7. AVOID LARGE FILES (both `curl` and POST will crash, load slow, or error)
-        - `200kb` is fine, `1mb` isn't
+    5. `Http.stringPart` handles any URL encoding (if any?) for `<data-string>`
+    6. Send to server with POST (`--form`) with `onClick` message
+        - At this point we can pass along our `Just url` so we don't need to
+          unpack the `Maybe`. We know it's NOT `Nothing`.
+    7. LARGE FILES are OK, but should be AVOIDED (it's slow and `curl` is also)
+        - Anything over `200kb-500kb` should have a "LOADING" status for UI
     8. Collect the image url from the server response ...
-    9. Repeat for multiple files (or send multiple `Task`s perhaps?)
 
     Handy tools:
     ------------
@@ -42,24 +46,29 @@ module File.Image exposing (..)
     ----------------------------------------------------------------------------
     The UI and customer journey ...
     ----------------------------------------------------------------------------
-    For some reason in certain cases the module is NOT SHOWING this in the
-    browser (it's there if you inspect element). That could be a CSS issue.
+    ⚠️ Some file names (such as a large `.gif` don't show their `<data-string>`
+    for some reason — perhaps they're too long? It is there however, if you use
+    "inspect element".
 
-    What it looks like to a visitor
-    -------------------------------
+    How it should look to the visitor in future ...
+    -----------------------------------------------
     1. Click a button (and select an acceptable image file)
-    2. Upload the file. Returns the file name (and the `<data-string>`)
-        - You'll likely want to hide the data string from user.
-    3. "Send to image server" button is now available
-        - You could use `Task.sequence` here to store multiple files?
-        - We're only allowing ONE file right now ...
-        - But your form might have 2-3 image fields available
-        - They're only image urls! Step (2) does the hard work.
-    4. If our `Task` is successful, user sees "Image ready"
-        - Our image is simply a URL ...
-        - Which we can post to our `json` server with a form.
-        - Your form might have 2-3 image fields available, (step 3) is doing
-          the hard work here.
+    2. -- Select multiple images? --
+    3. Upload the file(s)
+        - The `<data-string>` shouldn't be shown to the user, only filename/size.
+    4. "Send to server" button is now visible
+        -- Could this be automatic? --
+    5. User clicks button and all files are uploaded
+
+    Technical considerations
+    ------------------------
+    You could either have a "upload files" button with a `List File`, or have the
+    user go through the process as many times as they need. The former option is
+    likely the best user-experience.
+
+
+    - User still needs to continue with the "main" form to attach the image url's
+      to the main body of the form (POST Json)
 
     Questions
     ---------
@@ -74,15 +83,18 @@ module File.Image exposing (..)
     Wishlist
     ----------------------------------------------------------------------------
     1. Convert into a component, that can be run multiple times (at least 3 img)
-    2. WRITE BASIC UNIT TESTS!! There was one instance where I didn't export
-       `Base24` type (`String` that `Msg` consumed) in my `Model` module and the
+        - @ https://elm-lang.org/examples/upload (multiple files)
+        - `Task.sequence` may help to stack up the calls
+        - Some kind of spinner would be required when uploading/sending
+        - A limit will be necessary (check each file image size -> ERROR?)
+            - Max file size / Max images (3?)
+    2. Use `ImageForm` module within another main form (attaching the URLs)
+        - POST the form as `Json` and retrieve it in the view (demo)
+    2. BASIC UNIT TESTS!! There was one instance where I didn't export
+       `Base64` type (`String` that `Msg` consumed) in my `Model` module and the
        compiler DID NOT CATCH IT.
-    3. Check image FILE SIZE ... over ___ takes way too long
-    4. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
-       easier to work with? Find a good plugin
-    5. It might be nice to hold on to the `data:` meta, just strip it for now.
-    6. Version `js` and `css` files to force fresh reload (sometimes seems to get
-       stuck at a previous version)
+    4. How can `Html` be tidied up so it doesn't look like Boilerplate? Ugly.
+    5. Should we hold on to the `data: ...` meta? It could be useful.
     7. Could we handle the `imageUrl` in the model a bit better?
         - Right now we're chaining `case` statements for our possible image
           states. Could we improve the STRUCTURE OF OUR VIEW?
@@ -92,14 +104,88 @@ module File.Image exposing (..)
 import Browser
 import File exposing (File)
 import File.Select as Select
-import File.ImageModel exposing (..)
-import File.ImagePostUrl exposing (postImage)
 import Html exposing (Html, button, div, p, strong, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Http exposing (..)
+import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
 import Task
-import Debug exposing (..)
+import Url.Builder as UB exposing (crossOrigin, string)
+-- import Debug exposing (..)
+
+
+-- Model -----------------------------------------------------------------------
+
+type ImageUrl
+    = ImageNotAskedFor
+    | Image (Result Http.Error String)
+
+type alias Base64 =
+    String
+
+type Msg
+  = ImageRequested
+  | ImageSelected File
+  | ImageLoaded String
+  | SendToServer Base64
+  | SentImage (Result Http.Error String)
+
+type alias Model =
+  { image : Maybe String
+  , imageName : String
+  , imageUrl : ImageUrl
+  }
+
+init : () -> (Model, Cmd Msg)
+init _ =
+  ( Model Nothing "" ImageNotAskedFor, Cmd.none )
+
+
+
+-- Image Server ----------------------------------------------------------------
+-- If your image server is on the SAME domain, or it allows CORS on a different
+-- domain, you can use this ...
+
+serverUrl : String
+serverUrl =
+    "https://api.imgbb.com"  -- Trailing slash `/` is not required
+
+{- #! How do you map this to a `type alias` that's also a `String`? -}
+decodeImage : Decoder String
+decodeImage =
+    (D.at ["data", "image", "url"] D.string)
+
+{- Helpful for testing in `elm repl` -}
+grabImage : String -> Result D.Error String
+grabImage json =
+    decodeString decodeImage json
+
+{- This helps us percent encode our `<data-string>` (file) -}
+buildUrl : String -> String -> String
+buildUrl expiration key =
+    UB.crossOrigin
+        serverUrl
+        [ "1", "upload" ]
+        [ UB.string "expiration" expiration
+        , UB.string "key" key
+        ]
+
+{- Instead of a simple `Http.post`, we've got to use `request` as ImgBB expects
+a `--form` POST request. We pass in a `base64` file string (not the file) -}
+postImage : String -> String -> Base64 -> Cmd Msg
+postImage expiration key file =
+    Http.request
+        { method = "POST"
+        , headers = []
+        , url = buildUrl expiration key
+        , body =
+            Http.multipartBody
+                [ Http.stringPart "image" file ]
+        , expect = Http.expectJson SentImage decodeImage
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
 
 
 
@@ -143,17 +229,17 @@ update msg model =
         2. APIs like @ http://freeimage.host` don't like the `data:` meta ...
            so we've got to strip it from the string.
         3. First we split at the `,` then drop the metadata part -}
-            chopBase24 = String.join "" (List.drop 1 (String.split "," base64))
+            chopBase64 = String.join "" (List.drop 1 (String.split "," base64))
         in
-        ( { model | image = Just chopBase24 }
+        ( { model | image = Just chopBase64 }
         , Cmd.none
         )
 
     {- #! We KNOW that `model.image` is not `Nothing` at this point. No need
     for another "lifting" of the `Maybe` type. Just send it along! -}
-    SendToServer base24 ->
+    SendToServer base64 ->
         ( model
-        , postImage "104e88f54082d98be7ac1d3649ba21d1" base24 )
+        , postImage "600" "104e88f54082d98be7ac1d3649ba21d1" base64 )
 
     {- #! See the custom type for `imageUrl` -}
     SentImage payload ->
@@ -174,7 +260,7 @@ view model =
 
     Image (Ok url) ->
         div [ class "wrapper" ]
-            [ p [] [ text ("image: " ++ url ++ "is ready to add to the form!") ] ]
+            [ p [] [ text ("image: " ++ url ++ " is ready to add to the form!") ] ]
 
 
     Image (Err error) ->

@@ -1,14 +1,13 @@
-module File.ImageMultiPart exposing (..)
+module File.ImageFreeApi exposing (..)
 
-{-| An example response from https://freeimage.host/
-    ------------------------------------------------
-    ⚠️ Take care when using a module name that could conflict with another,
-       for example, `elm/file`.
+{-| ----------------------------------------------------------------------------
+    FreeImage.host API
+    ============================================================================
+    ⚠️ Incomplete documentation and poor customer service
+    ⚠️ Remember that json needs to be escaped!
 
     See @ issue #43 for notes on `base64`, Curl examples, and CORS errors.
-    This module is the correct way to do things, but `freeimage.host` does not
-    allow origin with different domain. I don't entirely understand how that works,
-    but your image server MUST allow POST from different domains.
+    `freeimage.host` doesn't allow origin with different domain.
 
     Curl does work, however:
 
@@ -18,16 +17,9 @@ module File.ImageMultiPart exposing (..)
 
     Any image will do:
 
-        @ https://www.boredpanda.com/blog/wp-content/uploads/2021/02/602e5c7474580_dipqm35gir161__700.jpg
+        @ https://cdsassets.apple.com/live/7WUAS350/images/macos/sonoma/macos-sonoma-recovery-disk-utility.png
 
 -}
-
-import Json.Decode as D exposing (at, decodeString, Decoder, Error, string)
-import File exposing (File)
-import File.ImageModel exposing (..)
-import Http exposing (..)
-import Url.Builder as UB exposing (crossOrigin, string)
-
 
 exampleResponse : String
 exampleResponse =
@@ -103,38 +95,3 @@ image url twice, it's the same URL in the `json` response! -}
 testImageUrl : String
 testImageUrl =
     "https://freeimage.host/api/1/upload?key=6d207e02198a847aa98d0a2a901485a5&source=https://cdsassets.apple.com/live/7WUAS350/images/macos/sonoma/macos-sonoma-recovery-disk-utility.png&format=json"
-
-freeImageUrl : String
-freeImageUrl =
-    "http://freeimage.host"  -- I don't think trailing slash `/` is required?
-
-{- #! How do you map this to a `type alias` that's also a `String`? -}
-decodeImage : Decoder String
-decodeImage =
-    (D.at ["image", "url"] D.string)
-
-{- Helpful for testing in `elm repl` -}
-grabImage : String -> Result D.Error String
-grabImage json =
-    decodeString decodeImage json
-
-{- This helps us percent encode our `<data-string>` (file) -}
-buildUrl : String -> String -> String
-buildUrl key file =
-    UB.crossOrigin
-        freeImageUrl
-        [ "api", "1", "upload" ]
-        [ UB.string "key" key
-        , UB.string "source" file
-        , UB.string "format" "json"
-        ]
-
-{- If your image server is on the SAME domain, you can use this -}
-postImage : String -> String -> Cmd Msg
-postImage key file =
-    Http.post
-        { url = buildUrl key file
-        -- { url = testImageUrl
-        , body = Http.emptyBody
-        , expect = Http.expectJson SentImage decodeImage
-        }
