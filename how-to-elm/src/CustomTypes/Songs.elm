@@ -1,11 +1,13 @@
 module CustomTypes.Songs exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Creating A Simple Custom Type (see `CustomTypes.md` for notes)
+    A simple `Album` custom type (see `CustomTypes.md` for notes)
     ============================================================================
+    We're using NESTED records here, which are generally discouraged in Elm.
+
     Original attempt:
         @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
-    See also "What messages are for":
+    "What messages are for":
         @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
     Unpack (or "lift") `Maybe`s etc in ONE place:
         @ https://tinyurl.com/stop-unpacking-maybe-too-often
@@ -115,7 +117,6 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, type_, value, placeholder)
 import Html.Events exposing (onInput, onSubmit)
-import Debug
 
 {- An ID comes in handy if you want to edit or delete a `Song` -}
 type SongID
@@ -200,9 +201,9 @@ fields rather than a `Tuple`. It's easier to manage. -}
 init : Model
 init =
     { currentID = SongID 0
-    , currentSong = { input = "", valid = Err "Field is empty" }
-    , currentMins = { input = "", valid = Err "Field is empty" }
-    , currentSecs = { input = "", valid = Err "Field is empty" }
+    , currentSong = initUserInput
+    , currentMins = initUserInput
+    , currentSecs = initUserInput
     , album = NoAlbum
     }
 

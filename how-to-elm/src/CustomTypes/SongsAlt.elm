@@ -1,13 +1,15 @@
 module CustomTypes.SongsAlt exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Creating A Simple Custom Type (see `CustomTypes.md` for notes)
+    A simple `Album` custom type (see `CustomTypes.md` for notes)
     ============================================================================
+    We're using a `UpdateInput` custom type instead of a nested record here.
+
     Nested Record version (without editable `Song`s)
         @ Songs.elm
     Original attempt:
         @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
-    See also "What messages are for":
+    "What messages are for":
         @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
     Unpack (or "lift") `Maybe`s etc in ONE place:
         @ https://tinyurl.com/stop-unpacking-maybe-too-often
