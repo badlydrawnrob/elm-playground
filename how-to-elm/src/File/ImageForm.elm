@@ -88,13 +88,14 @@ module File.ImageForm exposing (..)
         - Some kind of spinner would be required when uploading/sending
         - A limit will be necessary (check each file image size -> ERROR?)
             - Max file size / Max images (3?)
-    2. Use `ImageForm` module within another main form (attaching the URLs)
+    2. #! Allow ADD IMAGE URL from some source (can I check it's filesize?)
+    3. Use `ImageForm` module within another main form (attaching the URLs)
         - POST the form as `Json` and retrieve it in the view (demo)
-    2. BASIC UNIT TESTS!! There was one instance where I didn't export
+    4. BASIC UNIT TESTS!! There was one instance where I didn't export
        `Base64` type (`String` that `Msg` consumed) in my `Model` module and the
        compiler DID NOT CATCH IT.
-    4. How can `Html` be tidied up so it doesn't look like Boilerplate? Ugly.
-    5. Should we hold on to the `data: ...` meta? It could be useful.
+    5. How can `Html` be tidied up so it doesn't look like Boilerplate? Ugly.
+    6. Should we hold on to the `data: ...` meta? It could be useful.
     7. Could we handle the `imageUrl` in the model a bit better?
         - Right now we're chaining `case` statements for our possible image
           states. Could we improve the STRUCTURE OF OUR VIEW?
@@ -286,6 +287,7 @@ viewUploaded model =
         Nothing ->
             button [ onClick ImageRequested ] [ text "Load Image" ]
 
+        {- #! Here it'd be helpful to use an existing URL for the image, too -}
         Just url ->
             div [ class "wrapper" ]
                 [ p [] [ strong [] [ text ("filename: " ++ model.imageName) ] ]

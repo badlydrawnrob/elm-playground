@@ -76,16 +76,17 @@ module File.ImageUrl exposing (..)
     Wishlist
     ----------------------------------------------------------------------------
     1. Convert into a component, that can be run multiple times (at least 3 img)
-    2. WRITE BASIC UNIT TESTS!! There was one instance where I didn't export
+    2. #! Allow ADD IMAGE URL from some source (can I check it's filesize?)
+    3. WRITE BASIC UNIT TESTS!! There was one instance where I didn't export
        `Base64` type (`String` that `Msg` consumed) in my `Model` module and the
        compiler DID NOT CATCH IT.
-    3. Check image FILE SIZE ... over ___ takes way too long
-    4. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
+    4. Check image FILE SIZE ... over ___ takes way too long
+    5. Elm `Html` with `p` and `strong` looks kind of UGLY. How can I make it
        easier to work with? Find a good plugin
-    5. It might be nice to hold on to the `data:` meta, just strip it for now.
-    6. Version `js` and `css` files to force fresh reload (sometimes seems to get
+    6. It might be nice to hold on to the `data:` meta, just strip it for now.
+    7. Version `js` and `css` files to force fresh reload (sometimes seems to get
        stuck at a previous version)
-    7. Could we handle the `imageUrl` in the model a bit better?
+    8. Could we handle the `imageUrl` in the model a bit better?
         - Right now we're chaining `case` statements for our possible image
           states. Could we improve the STRUCTURE OF OUR VIEW?
 
