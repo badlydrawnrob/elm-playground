@@ -9,7 +9,8 @@ module CustomTypes.SongsEditable exposing (..)
 
     We have a couple of options for our model:
     ------------------------------------------
-    For now I'm sticking with the nested record approach
+    For now I'm sticking with the nested record approach, and I'm only expecting
+    an `ID` for the `Album`, not the `Song` (just use the `Song.title`)
 
         @ Songs.elm    (nested record)
         @ SongsAlt.elm (custom `UserInput` type)
@@ -42,6 +43,9 @@ module CustomTypes.SongsEditable exposing (..)
         - A custom type can reduce the need for records, but makes code slightly
           harder to read (syntax highlighting on `song.error` but not `songError`)
         - They also need deconstructing, which can add a little bulk to a function.
+    10. More on Nested Records (and ways to do it)
+        - @ https://discourse.elm-lang.org/t/updating-nested-records-again/1488
+        - @ https://tinyurl.com/elm-spa-nested-login (using lambda and function)
         - @ https://tinyurl.com/elm-lang-why-not-nested
         - @ https://tinyurl.com/elm-spa-custom-types-eg
     10. Chaining `Result`s seems like a bad idea (see `HowToResult/FieldError`)
@@ -53,6 +57,9 @@ module CustomTypes.SongsEditable exposing (..)
 
     Questions
     ---------
+    Is this the best way to structure the `Model`? Should I just keep it simple,
+    without custom types? One big record?!
+
     1. I could've used `Album { id = ..., song = Song }` instead of params.
        - What's the benefit of using a record in a custom type over arguments?
        - I've heard that a function should have as few parameters as possible.
@@ -66,13 +73,9 @@ module CustomTypes.SongsEditable exposing (..)
     Currently ALL fields are required. I'll need to add in optional fields also.
     You might also want to take another look at other routes for form validation.
 
-    1. An `Album` name
-    2. An `Album` image
-       - See `elm-spa` for splitting up / combining types
-       - unique ID for the Album? (use `uuid` for songs?)
-    3. More `Song` fields (the `Tuple` problem)
-       - Strip spaces from front/back of `String`?
-       - Song audio or video file/link
+    1. Need to set the `AlbumID` correctly if pulling in from the server
+    2. Strip spaces from front/back of `String`s before saving
+    3. Preview media (album image, video url, etc)
     4. Editable `Song`s
     5. Delete a `Song`?
     6. Edit `Song` order?
@@ -82,13 +85,16 @@ module CustomTypes.SongsEditable exposing (..)
 
     Other things to consider in future
 
-        1. Validate only on save
-        2. Pull in from an API (openlibrary)
-        3. Splitting out components/messages/etc
-        4. Only ONE `Song`?
+        1. Use proper `Url` instead of `String`?
+        2. Validate only on save
+        3. Pull in from an API (openlibrary)
+        4. Splitting out components/messages/etc
+        5. Only ONE `Song`?
 -}
 
-import Url exposing (Url, fromString)
+import Debug
+import File.Download exposing (url)
+
 
 
 -- Model -----------------------------------------------------------------------
@@ -108,7 +114,7 @@ import Url exposing (Url, fromString)
 type AlbumID =
     AlbumID Int
 
-type alias AlbumName =
+type alias AlbumTitle =
     String
 
 getAlbumID : AlbumID -> Int
@@ -116,26 +122,28 @@ getAlbumID (AlbumID id) =
     id
 
 type Album =
-    Album AlbumID AlbumName AlbumSongs
+    Album AlbumMeta AlbumSongs
 
+type alias AlbumMeta =
+    { id : AlbumID
+    , title : AlbumTitle
+    , image : String
+    }
+
+{- `AlbumSongs` MUST hold at least one `Song` -}
 type AlbumSongs =
     AlbumSongs Song (List Song)
 
-type SongID =
-    SongID Int
-
-getSongID : SongID -> Int
-getSongID (SongID id) =
-    id
+type alias SongTitle =
+    String
 
 type alias RunTime =
     (Int, Int)
 
 type alias Song
-    = { id : SongID
-      , title : String
+    = { title : SongTitle
       , time  : RunTime
-      , url : Maybe Url  -- A YouTube link, for instance
+      , youtube : Maybe String  -- Optional YouTube link
       }
 
 type alias Validate a
@@ -147,19 +155,127 @@ type alias UserInput a
       , valid : Validate a
       }
 
+{- A default `UserInput` if the field is required -}
 initUserInput = { input = "", valid = Err "Field cannot be empty" }
+
+type AlbumStatus
+    = NewAlbum
+    | EditAlbum AlbumID
+    | EditSong AlbumID SongTitle
 
 {- #! I need to handle the AlbumID and the SongID -}
 type alias Model =
     { albumID : AlbumID
-    , albumName : AblumName
-    , songID : SongID
-    , songName : UserInput String
+    , albumTitle : UserInput String
+    , albumImage : String
+    , songTitle : UserInput String
     , minutes : UserInput Int
     , seconds : UserInput Int
+    , youtube : UserInput String
     , albums : List Album
+    , status : AlbumStatus
+    }
+
+init : Model
+init =
+    { albumID = AlbumID 0 -- #! Reset if get from server
+    , albumTitle = initUserInput
+    , albumImage = { input = "", valid = Ok "" } -- Not required
+    , songTitle = initUserInput
+    , minutes = initUserInput
+    , seconds = initUserInput
+    , youtube = { input = "", valid = Ok "" } -- Not required
+    , albums : [] -- #! Reset if get from server
+    , status = NewAlbum
     }
 
 
 
+
 -- Update ----------------------------------------------------------------------
+
+type Msg
+    = EnteredInput String String
+    | ClickedSaveAlbum
+    | ClickedEditAlbum AlbumID
+    | ClickedEditSong AlbumID SongTitle
+    | ClickedImageLink String
+
+update : Msg -> Model -> Model
+update msg model =
+    let
+        {- See notes for original link to do this -}
+        updateInput record input valid =
+            { record | input = input, valid = valid }
+    in
+    case msg of
+        EnteredInput "AlbumTitle" title ->
+            { model
+                | albumTitle =
+                    updateInput model.albumTitle title (isEmptyStr title) }
+
+        ClickedAlbumImage url ->
+            Debug.todo "Import the image file upload"
+
+        EnteredInput "SongTitle" title ->
+            { model
+                | songTitle =
+                    updateInput model.songTitle title (isEmptyStr title) }
+
+        EnteredInput "SongMinutes" mins ->
+            { model
+                | minutes =
+                    updateInput model.minutes mins (checkTime checkMinutes mins) }
+
+        EnteredInput "SongSeconds" secs ->
+            { model
+                | minutes =
+                    updateInput model.minutes secs (checkTime checkSeconds secs) }
+
+        EnteredInput "YouTube" url ->
+            { model
+                | youtube =
+                    updateInput model.minutes url (checkYouTube url) }
+
+
+isEmptyStr : String -> Validate String
+isEmptyStr s =
+    if String.isEmpty s then
+        Ok s
+    else
+        Err "Field cannot be empty"
+
+checkTime : (Int -> Bool) -> String -> Validate Int
+checkTime func s =
+    case String.toInt s of
+        Nothing -> Err "Field cannot be empty, must be a number"
+        Just i  ->
+            if func i then
+                Ok i
+            else
+                Err "Number is not in range"
+
+checkMinutes : Int -> Bool
+checkMinutes mins =
+    mins > 0 && mins <= 10
+
+checkSeconds : Int -> Bool
+checkSeconds secs =
+    secs >= 0 && secs <= 60
+
+{- A very basic url checker for now (you could switch to `elm/url`) -}
+checkYouTube : String -> Validate String
+checkYouTube url =
+    if isYouTube url && isProperLink url then
+        Ok url
+    else
+        Err "This isn't a proper YouTube link"
+
+isYouTube : String -> Bool
+isYouTube
+    (String.contains "youtube.com") || (String.contains "youtu.be")
+
+isProperLink : String -> Bool
+    (String.contains "http://") || (String.contains "https://")
+
+
