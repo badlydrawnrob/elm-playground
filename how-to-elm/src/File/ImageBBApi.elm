@@ -5,6 +5,7 @@ module File.ImageBBApi exposing (..)
     ============================================================================
     ⚠️ Fine for demos an early MVP but how's customer service?
     ⚠️ Remember that json needs to be escaped!
+    ⚠️ Sometimes creates a UNIQUE url, othertimes uses the FILENAME within url.
 
     See @ issue #43 for notes on `base64`, Curl examples, and CORS errors.
     `imgbb.com` allows origin with different domain.
