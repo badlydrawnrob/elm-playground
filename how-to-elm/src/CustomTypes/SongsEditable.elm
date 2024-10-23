@@ -23,6 +23,7 @@ module CustomTypes.SongsEditable exposing (..)
     balance each other out, so it's a matter of preference.
 
     @ https://www.diffchecker.com/me6aANHb/
+    @ https://gist.github.com/joanllenas/60edc839742bb67227b4cbf21977859b (json decode)
 
     1. `Msg` is for CARRYING DATA and NOT for changing state
         - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
@@ -82,6 +83,7 @@ module CustomTypes.SongsEditable exposing (..)
     7. Reduce repetition in the view (`viewInput` function etc)
     8. Post to `jsonbin` (can we limit it to only my URL?)
        - MUST contain at least ONE song
+    9. Represent TIME (1min20sec) in a better format (especially for json)
 
     Other things to consider in future
 
@@ -90,10 +92,14 @@ module CustomTypes.SongsEditable exposing (..)
         3. Pull in from an API (openlibrary)
         4. Splitting out components/messages/etc
         5. Only ONE `Song`?
+        6. Songs are numbered in Wikipedia
+        7. Song runtime could be a different format (int? ISO?)
 -}
 
+import Json.Decode as D exposing (Decoder, int, list, succeed, string)
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Debug
-import File.Download exposing (url)
+import Html.Attributes exposing (required)
 
 
 
@@ -121,18 +127,14 @@ getAlbumID : AlbumID -> Int
 getAlbumID (AlbumID id) =
     id
 
-type Album =
-    Album AlbumMeta AlbumSongs
-
-type alias AlbumMeta =
+{- #! Currently has a missing "wiki" field -}
+type alias Album =
     { id : AlbumID
     , title : AlbumTitle
-    , image : String
+    , artist : String
+    , image : Maybe String -- Option Image
+    , songs : List Song
     }
-
-{- `AlbumSongs` MUST hold at least one `Song` -}
-type AlbumSongs =
-    AlbumSongs Song (List Song)
 
 type alias SongTitle =
     String
@@ -146,6 +148,7 @@ type alias Song
       , youtube : Maybe String  -- Optional YouTube link
       }
 
+{- We validate any `UserInput` -}
 type alias Validate a
     = Result String a
 
@@ -158,7 +161,7 @@ type alias UserInput a
 {- A default `UserInput` if the field is required -}
 initUserInput = { input = "", valid = Err "Field cannot be empty" }
 
-type AlbumStatus
+type FormStatus
     = NewAlbum
     | EditAlbum AlbumID
     | EditSong AlbumID SongTitle
@@ -168,27 +171,104 @@ type alias Model =
     { albumID : AlbumID
     , albumTitle : UserInput String
     , albumImage : String
+    , albumArtist : String
+    , albumWiki : String
     , songTitle : UserInput String
     , minutes : UserInput Int
     , seconds : UserInput Int
     , youtube : UserInput String
     , albums : List Album
-    , status : AlbumStatus
+    , status : FormStatus
     }
 
 init : Model
 init =
-    { albumID = AlbumID 0 -- #! Reset if get from server
+    { albumID = AlbumID 0 -- #! What happens if server has existing `Album`s?
     , albumTitle = initUserInput
-    , albumImage = { input = "", valid = Ok "" } -- Not required
+    , albumImage = { input = "", valid = Ok Nothing } -- Not required
     , songTitle = initUserInput
     , minutes = initUserInput
     , seconds = initUserInput
-    , youtube = { input = "", valid = Ok "" } -- Not required
+    , youtube = { input = "", valid = Ok Nothing } -- Not required
     , albums : [] -- #! Reset if get from server
     , status = NewAlbum
     }
 
+
+-- Server ----------------------------------------------------------------------
+
+serverEmpty =
+    """
+    []
+    """
+
+{- The second album contains NO album image or youtube links -}
+serverFull =
+    """
+    [
+        { "id" = 0
+        , "artist" = "David Bowie"
+        , "image" = "https://i.ibb.co/sWJ5sZd/086a0cd9.jpg"
+        , "title" = "Heathen"
+        , "songs" = [
+            { "title" = "Afraid"
+            , "time" = "3:28"
+            , "youtube" = "https://www.youtube.com/watch?v=iI7aB-tqi7c"
+            },
+            { "title" = "5:15 The Angels Have Gone"
+            , "time = "5:00"
+            , "youtube" = "https://www.youtube.com/watch?v=M8mXfLAtHCI"
+            }
+        ],
+        "wiki" = "https://en.wikipedia.org/wiki/Heathen_(David_Bowie_album)"
+        },
+        { "id" = 1
+        , "title" = "Eye in the Sky"
+        , "artist" = "Alan Parsons"
+        , "songs" = [
+            { "title" = "Eye in the Sky"
+            , "time" = "4:36"
+            },
+            { "title" = "Sirius"
+            , "time = "1:54"
+            }
+        ]
+        , "wiki" = "https://en.wikipedia.org/wiki/Eye_in_the_Sky_(album)"
+        }
+    ]
+    """
+
+albumDecoder : Decoder Album
+albumDecoder =
+    D.succeed Album
+        |> required "id" int
+        |> required "artist" string
+        |> optional "image" string Nothing -- Defaults to `Nothing` if missing
+        |> required "title" string
+        |> required "songs" (list songDecoder)
+        |> optional "wiki" string Nothing
+
+songDecoder : Decoder Song
+songDecoder =
+    D.succeed Song
+        |> required "title" string
+        |> required "time" string
+        |> optional "youtube" string Nothing
+
+timeDecoder : Decoder (Int, Int)
+timeDecoder =
+    D.map toTuple string
+
+{- The `String` will return `Int` but we've still got to handled the `Maybe`
+cases when converting from a `[String, String]` to a `[Int, Int]` as the string
+may not convert to an Int -}
+stringToTuple : String -> (Int, Int)
+stringToTuple s =
+    let
+        split = String.split ":" string
+    in
+    case list of
+        [a,b] -> (a,b)
 
 
 
