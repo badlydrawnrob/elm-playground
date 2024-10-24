@@ -73,6 +73,7 @@ module CustomTypes.SongsEditable exposing (..)
     3. How do you `.map` over a bunch of user inputs if they're different types?
     4. Why not just store the time as a `String`, same as `json`?
         - Remember the hassle with `2.0` data type, so AVOID that.
+    5 #! How do you decode to `Nothing` for a `Maybe` type?
 
     ----------------------------------------------------------------------------
     Wishlist
@@ -113,7 +114,7 @@ module CustomTypes.SongsEditable exposing (..)
 -}
 
 import Json.Decode as D exposing (Decoder, int, list, succeed, string)
-import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Decode.Pipeline as DP exposing (hardcoded, optional, required)
 import Debug
 import Html.Attributes exposing (required)
 
@@ -146,9 +147,10 @@ getAlbumID (AlbumID id) =
 {- #! Currently has a missing "wiki" field -}
 type alias Album =
     { id : AlbumID
-    , title : AlbumTitle
     , artist : String
-    , image : Maybe String -- Option Image
+    , image : String -- #! Needs converting to a `Maybe String`
+    , title : AlbumTitle
+    , wiki : String -- #! Needs converting to a `Maybe String`
     , songs : List Song
     }
 
@@ -160,12 +162,12 @@ type alias RunTime =
 
 makeRunTime : Int -> Int -> RunTime
 makeRunTime a b =
-    String.concat [a, ":", b]
+    String.concat [String.fromInt a, ":", String.fromInt b]
 
 type alias Song
     = { title : SongTitle
       , time  : RunTime
-      , youtube : Maybe String  -- Optional YouTube link
+      , youtube : String  -- Optional YouTube link
       }
 
 {- We validate any `UserInput` -}
@@ -190,13 +192,13 @@ type FormStatus
 type alias Model =
     { albumID : AlbumID
     , albumTitle : UserInput String
-    , albumImage : String
-    , albumArtist : String
-    , albumWiki : String
+    , albumImage : String -- #! Maybe needs `Nothing` case
+    , albumArtist : UserInput String
+    , albumWiki : UserInput String
     , songTitle : UserInput String
     , minutes : UserInput Int
     , seconds : UserInput Int
-    , youtube : UserInput String
+    , youtube : UserInput String -- #! Maybe needs `Nothing` case
     , albums : List Album
     , status : FormStatus
     }
@@ -204,13 +206,15 @@ type alias Model =
 init : Model
 init =
     { albumID = AlbumID 0 -- #! What happens if server has existing `Album`s?
+    , albumArtist = initUserInput
+    , albumImage = "" -- #! Not required: use a `Maybe`?
     , albumTitle = initUserInput
-    , albumImage = { input = "", valid = Ok Nothing } -- Not required
+    , albumWiki = initUserInput
     , songTitle = initUserInput
     , minutes = initUserInput
     , seconds = initUserInput
-    , youtube = { input = "", valid = Ok Nothing } -- Not required
-    , albums : [] -- #! Reset if get from server
+    , youtube = { input = "", valid = Ok "" } -- Not required
+    , albums = [] -- #! Reset if get from server
     , status = NewAlbum
     }
 
@@ -259,22 +263,26 @@ serverFull =
     ]
     """
 
+{- #! How the fuck do you handle a `null` or missing `json` value to a `Maybe` type? -}
 albumDecoder : Decoder Album
 albumDecoder =
     D.succeed Album
-        |> required "id" int
-        |> required "artist" string
-        |> optional "image" string Nothing -- Defaults to `Nothing` if missing
-        |> required "title" string
-        |> required "songs" (list songDecoder)
-        |> optional "wiki" string Nothing
+        |> DP.required "id" albumID
+        |> DP.required "artist" string
+        |> DP.optional "image" string "" -- #! Maybe needs `Nothing` case
+        |> DP.required "title" string
+        |> DP.required "songs" (list songDecoder) -- #! How do I NEST this?
+        |> DP.optional "wiki" string "" -- #! Maybe needs `Nothing` case
+
+albumID : Decoder AlbumID
+albumID = D.map AlbumID int
 
 songDecoder : Decoder Song
 songDecoder =
     D.succeed Song
-        |> required "title" string
-        |> required "time" string -- #! "2:0" needs converting to `"2:00" later!
-        |> optional "youtube" string Nothing
+        |> DP.required "title" string
+        |> DP.required "time" string -- #! "2:0" needs converting to `"2:00" later!
+        |> DP.optional "youtube" string "" -- #! Maybe needs `Nothing` case
 
 
 
@@ -282,6 +290,7 @@ songDecoder =
 
 type Msg
     = EnteredInput String String
+    | ClickedAlbumImage String
     | ClickedSaveAlbum
     | ClickedEditAlbum AlbumID
     | ClickedEditSong AlbumID SongTitle
@@ -321,15 +330,16 @@ update msg model =
         EnteredInput "YouTube" url ->
             { model
                 | youtube =
-                    updateInput model.minutes url (checkYouTube url) }
+                    updateInput model.youtube url (checkYouTube url) }
 
 
 runSongErrors : Model -> Maybe Song
 runSongErrors model =
     getValid model.songTitle model.minutes model.seconds model.youtube
 
-getValid : UserInput String -> UserInput Int -> UserInput Int -> UserInput (Maybe Int)
-getValid { title mins secs youtube } =
+getValid : UserInput String -> UserInput Int -> UserInput Int -> UserInput String -> Maybe Song
+getValid title mins secs youtube =
+    Debug.todo "Figure out how to loop the list and output a song if error free"
 
 
 
@@ -369,10 +379,11 @@ checkYouTube url =
         Err "This isn't a proper YouTube link"
 
 isYouTube : String -> Bool
-isYouTube
-    (String.contains "youtube.com") || (String.contains "youtu.be")
+isYouTube s =
+    String.contains "youtube.com" s || String.contains "youtu.be" s
 
 isProperLink : String -> Bool
-    (String.contains "http://") || (String.contains "https://")
+isProperLink s =
+    String.contains "http://" s || String.contains "https://" s
 
 
