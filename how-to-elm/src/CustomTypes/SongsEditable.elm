@@ -67,6 +67,8 @@ module CustomTypes.SongsEditable exposing (..)
        - I also understand the benefit of typed stuff like `FirstName String`.
     2. Can I create just ONE `getID` for `SongID` and `AlbumID`?
     3. How do you `.map` over a bunch of user inputs if they're different types?
+    4. Why not just store the time as a `String`, same as `json`?
+        - Remember the hassle with `2.0` data type, so AVOID that.
 
     ----------------------------------------------------------------------------
     Wishlist
@@ -196,6 +198,7 @@ init =
 
 
 -- Server ----------------------------------------------------------------------
+-- See also @ https://stackoverflow.com/questions/18419428/what-is-the-minimum-valid-json
 
 serverEmpty =
     """
@@ -259,16 +262,25 @@ timeDecoder : Decoder (Int, Int)
 timeDecoder =
     D.map toTuple string
 
-{- The `String` will return `Int` but we've still got to handled the `Maybe`
-cases when converting from a `[String, String]` to a `[Int, Int]` as the string
-may not convert to an Int -}
+{- This function should ALWAYS succeed because I'm handling the error cases when
+the "time" tuple is created, and posted as `json`. We still have to handle the
+`Maybe` case unfortunately.  -}
 stringToTuple : String -> (Int, Int)
 stringToTuple s =
     let
         split = String.split ":" string
+        list = getInt split
     in
     case list of
         [a,b] -> (a,b)
+        _ -> () -- #! This should NEVER happen
+
+getInt : List String -> List (Maybe Int)
+getInt ls =
+    case ls of
+        [a, b] -> String.toInt a :: String.toInt b :: []
+        _ -> []
+
 
 
 
