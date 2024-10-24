@@ -37,8 +37,12 @@ module CustomTypes.SongsEditable exposing (..)
         - @ https://tinyurl.com/the-elm-way-to-validate-form
     7. Remember the `2.0` fiasco. Simplify data entry at source.
         - The fewer state possibilities, the better (in general)
+        - Going from `"2:00"` to `(2,0)` is WASTEFUL
     8. Simplify your state wherever possible:
         - See "The 5 ways to reduce code"
+        - Converting two `Int` inputs to a `"Int:Int"` string
+        - Both `json` and `Model` will hold this format from now on.
+        - If EVERY problem was a `String` you could use `List.map` with ease.
     9. Nested records are OK in moderation, but prefer a flatter style ...
         - You could easily just write a big record with more fields.
         - A custom type can reduce the need for records, but makes code slightly
@@ -76,18 +80,28 @@ module CustomTypes.SongsEditable exposing (..)
     Currently ALL fields are required. I'll need to add in optional fields also.
     You might also want to take another look at other routes for form validation.
 
-    1. Need to set the `AlbumID` correctly if pulling in from the server
-    2. Strip spaces from front/back of `String`s before saving
-    3. Preview media (album image, video url, etc)
-    4. Editable `Song`s
-    5. Delete a `Song`?
-    6. Edit `Song` order?
-    7. Reduce repetition in the view (`viewInput` function etc)
-    8. Post to `jsonbin` (can we limit it to only my URL?)
-       - MUST contain at least ONE song
-    9. Represent TIME (1min20sec) in a better format (especially for json)
+    Song
+    ----
+
+    1. Currently `2` and `0` doesn't store a `"2:00"` but a `"2:0"`
+        - This would be handled in the `view`
+    2. Songs should be editable and deletable
+    3. Order is currently static. How do I reorder the list?
+    4. Album must contain AT LEAST one `Song`.
+
+    View
+    ----
+
+    1. How do I reduce repetition in the `view`? (a `viewInput` function etc)
+
+    API
+    ---
+
+    1. Security with posting to `jsonbin` (API key, spam, etc)
+
 
     Other things to consider in future
+    ----------------------------------
 
         1. Use proper `Url` instead of `String`?
         2. Validate only on save
@@ -142,7 +156,11 @@ type alias SongTitle =
     String
 
 type alias RunTime =
-    (Int, Int)
+    String  -- So `2` and `0` become `2:0`
+
+makeRunTime : Int -> Int -> RunTime
+makeRunTime a b =
+    String.concat [a, ":", b]
 
 type alias Song
     = { title : SongTitle
@@ -255,32 +273,8 @@ songDecoder : Decoder Song
 songDecoder =
     D.succeed Song
         |> required "title" string
-        |> required "time" string
+        |> required "time" string -- #! "2:0" needs converting to `"2:00" later!
         |> optional "youtube" string Nothing
-
-timeDecoder : Decoder (Int, Int)
-timeDecoder =
-    D.map toTuple string
-
-{- This function should ALWAYS succeed because I'm handling the error cases when
-the "time" tuple is created, and posted as `json`. We still have to handle the
-`Maybe` case unfortunately.  -}
-stringToTuple : String -> (Int, Int)
-stringToTuple s =
-    let
-        split = String.split ":" string
-        list = getInt split
-    in
-    case list of
-        [a,b] -> (a,b)
-        _ -> () -- #! This should NEVER happen
-
-getInt : List String -> List (Maybe Int)
-getInt ls =
-    case ls of
-        [a, b] -> String.toInt a :: String.toInt b :: []
-        _ -> []
-
 
 
 
@@ -329,6 +323,17 @@ update msg model =
                 | youtube =
                     updateInput model.minutes url (checkYouTube url) }
 
+
+runSongErrors : Model -> Maybe Song
+runSongErrors model =
+    getValid model.songTitle model.minutes model.seconds model.youtube
+
+getValid : UserInput String -> UserInput Int -> UserInput Int -> UserInput (Maybe Int)
+getValid { title mins secs youtube } =
+
+
+
+-- Error checking --------------------------------------------------------------
 
 isEmptyStr : String -> Validate String
 isEmptyStr s =
