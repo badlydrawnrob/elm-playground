@@ -61,6 +61,7 @@ workingObjectListInt =
 --
 -- 1. Use an `optional` field with a default (a bit like `Maybe.withDefault`)
 -- 2. Wrap the thing in a `D.maybe` (either the field or the decoder)
+--    @ https://stackoverflow.com/a/42308078 for `maybe` with `Json.Decode.Pipeline`
 
 jsonObjectMaybeInt01 : String
 jsonObjectMaybeInt01 =
@@ -121,14 +122,6 @@ simpleObjectWithDefault =
 workingObjectWithDefault =
     decodeString simpleObjectWithDefault jsonObjectMaybeInt02
 
-
-
-
--- type alias objectMaybe02 =
---     { id : Int
---     , name : String
---     , stuff : List Int -- Missing? Return empty list
---     }
 
 
 
