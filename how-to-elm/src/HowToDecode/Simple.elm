@@ -6,7 +6,13 @@ module HowToDecode.Simple exposing (..)
 
     Lessons learned
     ---------------
-    1. Keep data types as simple as possible
+    1. NEVER use `Json.Decode.maybe` (that function should be BANISHED!)
+        - Use `Decode.optionalField` from `Json.Decode.Extra` or ...
+        - `Json.Decode.Pipeline` and `optional` is safe too
+    2. Better to set optional Elm types to `null` in the `json` (and back again)
+        - `Json.Decode.nullable` and `Json.Encode.null` to `null` all the things!
+          @ https://tinyurl.com/elm-json-decode-nullable
+    2. Keep data types as simple as possible
         - e.g: "2:00" -> (2,0) is quite a bit of work to achieve
                "2:00" for both `json` and Elm model better?
                Or, use a `Time` type for both (probably a `String`)
@@ -81,6 +87,7 @@ type alias ObjectMaybe =
     , stuff : Maybe (List Int)
     }
 
+{- #! `Json.Decode.maybe` should NEVER be used, but here's how it works -}
 simpleObjectMaybe01 : Decoder ObjectMaybe
 simpleObjectMaybe01 =
     D.map3 ObjectMaybe
@@ -89,12 +96,11 @@ simpleObjectMaybe01 =
         (D.maybe (field "stuff" listIntDecoder)) -- Fieldname is missing?
         -- (field "stuff" (maybe listIntDecoder)) -- Fieldname exists but wrong type?
 
-{- See the subtle difference between the two `D.maybe` methods above -}
 workingObjectMaybe01 =
     decodeString simpleObjectMaybe01 jsonObjectMaybeInt02
 
 {- Succeeds if `"stuff"` key doesn't exist, but fails if `"stuff"` exists
-but is the wrong type! -}
+but is the wrong type! Better to just use `null` however -}
 simpleObjectMaybe02 : Decoder ObjectMaybe
 simpleObjectMaybe02 =
     D.succeed ObjectMaybe
@@ -120,16 +126,4 @@ simpleObjectWithDefault =
         |> optional "stuff" listIntDecoder []
 
 workingObjectWithDefault =
-    decodeString simpleObjectWithDefault jsonObjectMaybeInt02
-
-
-
-
-
-
-
---  testingDecoder =
--- |   D.succeed Boom
--- |       |> DP.required "id" int
--- |       |> DP.required "name" string
--- |       |> DP.optional "desc" (D.map Just string) Nothing
+    decodeString simpleObjectWithDefault jsonObjectMaybeInt0
