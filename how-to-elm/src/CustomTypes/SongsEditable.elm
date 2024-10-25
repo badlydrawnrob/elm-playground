@@ -25,6 +25,16 @@ module CustomTypes.SongsEditable exposing (..)
     @ https://www.diffchecker.com/me6aANHb/
     @ https://gist.github.com/joanllenas/60edc839742bb67227b4cbf21977859b (json decode)
 
+
+
+    There's the difference between:
+        - Saved user entry
+        - Computed values
+    I've been advised by one person to NOT store the computed values to the model,
+    unless you're creating a `Song`.
+
+
+
     1. `Msg` is for CARRYING DATA and NOT for changing state
         - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
     2. Lift `Maybe` in ONE place when possible
@@ -148,9 +158,9 @@ getAlbumID (AlbumID id) =
 type alias Album =
     { id : AlbumID
     , artist : String
-    , image : String -- #! Needs converting to a `Maybe String`
+    , image : Maybe String -- #! Need to handle the `Nothing` case
     , title : AlbumTitle
-    , wiki : String -- #! Needs converting to a `Maybe String`
+    , wiki : Maybe String -- #! Needs to handle the `Nothing` case
     , songs : List Song
     }
 
@@ -190,16 +200,16 @@ type FormStatus
 
 {- #! I need to handle the AlbumID and the SongID -}
 type alias Model =
-    { albumID : AlbumID
+    { albumID : AlbumID -- #! Auto generated
     , albumTitle : UserInput String
-    , albumImage : String -- #! Maybe needs `Nothing` case
+    , albumImage : Maybe String -- #! Need to handle `Nothing` case
     , albumArtist : UserInput String
-    , albumWiki : UserInput String
+    , albumWiki : UserInput (Maybe String)
     , songTitle : UserInput String
     , minutes : UserInput Int
     , seconds : UserInput Int
-    , youtube : UserInput String -- #! Maybe needs `Nothing` case
-    , albums : List Album
+    , youtube : UserInput String -- #! Just leave empty instead of `Nothing`
+    , albums : List Album -- Store values
     , status : FormStatus
     }
 
@@ -207,7 +217,7 @@ init : Model
 init =
     { albumID = AlbumID 0 -- #! What happens if server has existing `Album`s?
     , albumArtist = initUserInput
-    , albumImage = "" -- #! Not required: use a `Maybe`?
+    , albumImage = Nothing -- #! Not required: use a `Maybe`?
     , albumTitle = initUserInput
     , albumWiki = initUserInput
     , songTitle = initUserInput
