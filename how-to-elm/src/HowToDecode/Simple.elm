@@ -62,11 +62,11 @@ workingObjectListInt =
 
 
 -- Maybe types -----------------------------------------------------------------
--- There's two options here when dealing with potentially missing fields, or items
--- in the `json` document:
+-- ⚠️ According to `@SimonLydell` you should NEVER use `Json.Decode.maybe`. But
+-- I'm listing it here anyway.
 --
 -- 1. Use an `optional` field with a default (a bit like `Maybe.withDefault`)
--- 2. Wrap the thing in a `D.maybe` (either the field or the decoder)
+-- 2. ⚠️ Wrap the thing in a `D.maybe` (either the field or the decoder)
 --    @ https://stackoverflow.com/a/42308078 for `maybe` with `Json.Decode.Pipeline`
 
 jsonObjectMaybeInt01 : String
