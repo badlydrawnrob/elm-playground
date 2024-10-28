@@ -67,7 +67,7 @@ type ValidateFields
     If the latter, run any further error checks for each field!
 -}
 isEmpty : Bool -> String -> Result String a
-isEmpty field input =
+isEmpty isOptional input =
     if isOptional && String.isEmpty then
         Ok Nothing
     else String.isEmpty then
