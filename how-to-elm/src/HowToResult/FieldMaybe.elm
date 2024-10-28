@@ -19,6 +19,9 @@ module HowToResult.FieldMaybe exposing (..)
     some other way of notifying your program this _particular_ field needn't have
     any value (i.e: an "" empty string)
 
+        @ https://tinyurl.com/result-maybe-14ab857 (first attempt, crappy)
+
+
     Examples in the wild
     --------------------
     @rtfeldman's Elm Spa example uses a `List Problem`, `ValidatedField`, and
@@ -36,6 +39,41 @@ module HowToResult.FieldMaybe exposing (..)
     And does some trickery to `Encode` all the strings as valid `json`:
 
         @ https://tinyurl.com/elm-spa-encoded-updates
+
+    TL;DR
+    -----
+    1. He uses `String` of each form input
+    2. He validates against custom types (a list of)
+    3. He uses valid `String` inputs for the `Http.send`
+        - His `Encode` looks something like this:
+
+        ```
+        updates =
+            [ ( "username", Encode.string form.username )
+            , ( "email", Encode.string form.email )
+            , ( "bio", Encode.string form.bio )
+            , ( "image", encodedAvatar )
+            ]
+        ```
+
+    Computed values ARE NOT STORED in the `json` here. He ONLY seems to store
+    things on the backend as plain strings, but those strings have been validated
+    (albeit VERY SIMPLY) and only really checks for `""` empty and `"length"`.
+
+
+    ----------------------------------------------------------------------------
+    Wishlist
+    ============================================================================
+    1. A standardised way to check for errors
+    2. Storing the `json` once form is validated:
+        - Store as simple strings in `json` and compute on `Http.get`?
+        - Store a successful `Form` within the `Model` as correct types,
+          Then `Http.post` that information as valid `json`, `Encoded` as
+          proper types (`List`, `Int`, etc, etc)
+    3. For (2) you'd need two steps for the end-user:
+        1. First the form "posts" to a valid `Model` (such as `Song`)
+        2. Next notify the user that `json` has been stored in the backend ...
+           Or have them SAVE AGAIN to store update the users `json` config file.
 
 -}
 
@@ -62,12 +100,27 @@ type ValidateFields
 {-| 1. Is the field optional?
     2. Is the field empty?
     ------------------------
-    If (1) is `True` and (2) is `True` return `Nothing`
-    If (1) is `False` and (2) is `True return `Err`
-    If the latter, run any further error checks for each field!
+    One of validateFields ->
+
+        If (1) is `True` and (2) is `True` return `Nothing`
+        If (1) is `False` and (2) is `True return `Err`
+        If the latter, run any further error checks for each field!
+
+    If not validateFields ->
+
+        If we DON'T need to validate the field
 -}
-isEmpty : Bool -> String -> Result String a
-isEmpty isOptional input =
+isEmpty : ValidateFields -> String -> Result String a
+isEmpty field input =
+    case field of
+        Name ->
+            String.toEmpty input
+        Age ->
+            String.toEmpty input
+        Employer ->
+            String.toEmpty input
+
+
     if isOptional && String.isEmpty then
         Ok Nothing
     else String.isEmpty then
