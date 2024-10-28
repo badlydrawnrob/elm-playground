@@ -3,9 +3,19 @@ module CustomTypes.SongsEditable exposing (..)
 {-| ----------------------------------------------------------------------------
     Creating A Simple Custom Type (see `CustomTypes.md` for notes)
     ============================================================================
-    This started out as an alternative for a `Maybe List`. Remember that the
-    simplest thing possible is often the best solution. If you don't need
-    complexity — don't add it!
+    ⚠️ Some feel that computed values should NOT be added to the `Model`. With
+    this thinking  any `Result` value should remain within the necessary function,
+    but not a `UserInput` as I currently have here. The form fields would remain
+    a `String` and calculated results would exist in functions and get passed
+    around as needed. `UserInput` can be unwieldy as number of fields grow. You
+    can List.map over same types, but not `UserInput` types.
+
+        ✅ Errors should ideally be underneath their assoc fields
+        ❌ Errors should display only after the user submits form
+
+    Remember that the SIMPLEST THING POSSIBLE is often the best solution. Do you
+    really need to add complexity? Is `Maybe` really needed? Is `Maybe List`
+    better than a more complicated custom type?
 
     We have a couple of options for our model:
     ------------------------------------------
@@ -17,23 +27,12 @@ module CustomTypes.SongsEditable exposing (..)
 
     Learning points
     ---------------
-    I'm using a record here for `UserInput` rather than a custom type. The benefit
-    of a custom type is that it's FLATTER (no cranky nested record update function),
-    but the benefit of a record is it's accessor `.valid` `.input` etc. They almost
-    balance each other out, so it's a matter of preference.
+    A custom type is FLATTER, but nested records have `.input` and `.valid`
+    accessor functions. The pros and cons of each balance each other out.
 
-    @ https://www.diffchecker.com/me6aANHb/
-    @ https://gist.github.com/joanllenas/60edc839742bb67227b4cbf21977859b (json decode)
-
-
-
-    There's the difference between:
-        - Saved user entry
-        - Computed values
-    I've been advised by one person to NOT store the computed values to the model,
-    unless you're creating a `Song`.
-
-
+        @ https://www.diffchecker.com/me6aANHb/
+        @ https://gist.github.com/joanllenas/60edc839742bb67227b4cbf21977859b
+          (json decode)
 
     1. `Msg` is for CARRYING DATA and NOT for changing state
         - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
@@ -72,15 +71,17 @@ module CustomTypes.SongsEditable exposing (..)
 
     Questions
     ---------
-    Is this the best way to structure the `Model`? Should I just keep it simple,
-    without custom types? One big record?!
+    The `Model` would be simpler if each input field was a simple `String`. Custom
+    types aren't essential, but result in FLATTER model than nested records. A
+    model can be one big record. Are there improvements to be made?
 
     1. I could've used `Album { id = ..., song = Song }` instead of params.
        - What's the benefit of using a record in a custom type over arguments?
        - I've heard that a function should have as few parameters as possible.
        - I also understand the benefit of typed stuff like `FirstName String`.
     2. Can I create just ONE `getID` for `SongID` and `AlbumID`?
-    3. How do you `.map` over a bunch of user inputs if they're different types?
+    3. If your `Result` values are different types, is it better to use `Result.map`?
+       - You can't use `List.map` here.
     4. Why not just store the time as a `String`, same as `json`?
         - Remember the hassle with `2.0` data type, so AVOID that.
     5 #! How do you decode to `Nothing` for a `Maybe` type?
@@ -95,7 +96,7 @@ module CustomTypes.SongsEditable exposing (..)
     ----
 
     1. Currently `2` and `0` doesn't store a `"2:00"` but a `"2:0"`
-        - This would be handled in the `view`
+        - This would be handled in the `view` to add extra zero
     2. Songs should be editable and deletable
     3. Order is currently static. How do I reorder the list?
     4. Album must contain AT LEAST one `Song`.
@@ -161,7 +162,7 @@ type alias Album =
     , image : Maybe String -- #! Need to handle the `Nothing` case
     , title : AlbumTitle
     , wiki : Maybe String -- #! Needs to handle the `Nothing` case
-    , songs : List Song
+    , songs : List Song -- #! Must include AT LEAST ONE song
     }
 
 type alias SongTitle =
