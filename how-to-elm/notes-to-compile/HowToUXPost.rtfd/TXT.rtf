@@ -1,0 +1,276 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red255\green255\blue255;\red22\green21\blue22;
+\red29\green136\blue198;\red18\green79\blue146;\red115\green115\blue115;\red22\green21\blue22;\red78\green77\blue78;
+\red22\green21\blue22;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c100000\c100000\c100000;\cssrgb\c11373\c10980\c11373\c3922;
+\cssrgb\c11373\c60784\c81961\c10196;\cssrgb\c7059\c39216\c63922;\cssrgb\c52549\c52549\c52549;\cssrgb\c11373\c10980\c11373\c70196;\cssrgb\c38039\c37647\c38039;
+\cssrgb\c11373\c10980\c11373\c12941;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid1\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid101\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid201\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs30 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Dealing with forms,\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 \'a0, and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 json
+\fs30 \AppleTypeServices \cb3 : What\'92s the general process you use for\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Encode
+\fs30 \AppleTypeServices \cb3 \'a0and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Decode
+\fs30 \AppleTypeServices \cb3 \'a0with a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0form?\cb1 \
+\
+\cb3 Looking at\'a0\cb5 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0CL0AS3V"}}{\fldrslt \cf2 @rtfeldman}}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0and\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Settings.elm#L432"}}{\fldrslt \cf6 \strokec6 Elm Spa}}\'a0his setup is quite complex, but the\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.send
+\fs30 \AppleTypeServices \cb3 \'a0is quite simple in terms of what he\'92s encoding (all the values here are\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Encode.string
+\fs30 \AppleTypeServices \cb3 ).\cb1 \
+\
+\cb3 I think I\'92m right in thinking he posts the form straight to the server (not quite sure what he does with the response).\cb1 \
+\
+\cb3 Which methods do people here think are prefererable?\cb1 \
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0\cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Convert a form to a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 \'a0such as a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Person
+\fs30 \AppleTypeServices \cb3 \'a0with the correct Elm types -> a secondary action to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0with Encoded\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 json
+\fs30 \AppleTypeServices \cb3 \'a0(
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 string
+\fs30 \AppleTypeServices \cb3 ,\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 int
+\fs30 \AppleTypeServices \cb3 , etc)\cb1 \
+\ls1\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Post a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 form
+\fs30 \AppleTypeServices \cb3 \'a0with\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Encode.string
+\fs30 \AppleTypeServices \cb3 \'a0values straight away (and add the response to your\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 \'a0when it comes back)\cb1 \
+\ls1\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Some other method I haven\'92t mentioned?\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Obviously Elm Spa example is a\'a0
+\f1\b settings page
+\f0\b0 \'a0so only stores strings here. I\'92m assuming if he had any\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Int
+\fs30 \AppleTypeServices \cb3 \'a0or\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 List
+\fs30 \AppleTypeServices \cb3 \'a0values he\'92d encode them as the correct json types.\cb1 \
+\
+\cb3 Taking a GitHub issue as an example, when an issue is created there seems to be two forms: One for the\'a0
+\f1\b title
+\f0\b0 \'a0and one for the\'a0
+\f1\b comment
+\f0\b0 \'a0(at least once the issue is created). I wonder how they\'92d be processed Elm-style too.\cb1 \
+\
+\cb3 I\'92m looking for a high-level view here rather than low-level detail, but any examples are welcomed\'a0\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \cf7 \cb3 \strokec7 \'a0(edited)\'a0
+\fs30 \cf2 \cb1 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \cf8 \cb3 \strokec8 2 replies\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \cf2 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Wolfgang Schuster (wolfadex)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730143937286829?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 7:32 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 I'm usually sending JSON so\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 Http.post\
+    \{ body = Http.jsonBody someDataAsJsonObject\
+    ...\
+    \}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \AppleTypeServices \cf2 \cb3 is usually my goto. I don't usually think about it in terms of converting anything to X, more that my API requires JSON so I send JSON. If my API required bytes, I'd send bytes, and so on.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730145126049399?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 7:52 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UB0UX3FJ9"}}{\fldrslt \cf2 \cb5 @Wolfgang Schuster (wolfadex)}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0I\'92ve changed my question somewhat, as I think I misunderstood that module. Are you always\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 ing the form right away, then retrieving the response to your\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 ? What about if you have collections or\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 List
+\fs30 \AppleTypeServices \cb3 \'a0of things?\cb1 \
+\
+\cb3 I understand each\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0would need to append to the list, then update the server with a list of objects. So I guess it\'92s\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Form
+\fs30 \AppleTypeServices \cb3 \'a0-> update\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 \'a0->\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0with the new\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Model
+\fs30 \AppleTypeServices \cb3 \'a0as\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 json
+\fs30 \AppleTypeServices \cb3 .\cb1 \
+\
+\cb3 I\'92m trying to figure out in what order things happen generally. For instance, a Github issue first creates the issue (with an optional description), then once it\'92s created you have a form to edit the title, a form to edit the description, and a form for each comment.\cb1 \
+\
+\cb3 The Elm Spa form is a very simple set of strings so the json would also be simple.\cb1 \
+\
+\cb3 I\'92m just trying to determine what order things happen, as in the Github example you\'92ve got different form states too.\cb1 \
+\
+\cb3 Sorry if that question is a bit garbled\'a0\cb1 \
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Wolfgang Schuster (wolfadex)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730146144579929?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 8:09 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Not sure I'm understanding fully, so sorry if this sounds wrong.\cb1 \
+\
+\cb3 This isn't an Elm specific question but a general UX question. Whether you submit a form as a user types (maybe you want to save state?) or submit each field (maybe you're doing a patch/put request instead of a post) or submit once at the end is entirely up to you and the desired UX of your app. With your GH example you might want to wrap the edit inputs in their own forms and submit each separate. Or you might wrap it in 1 large form that submits the state of the title & description together, it's kinda up to you.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb10 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \cb1 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730148023709409?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 8:40 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UB0UX3FJ9"}}{\fldrslt \cf2 \cb5 @Wolfgang Schuster (wolfadex)}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0Perhaps\'a0you\'92re\'a0right that\'a0it\'92s\'a0a UX problem, and those are all good observations. I guess\'a0I\'92m\'a0considering how these potential routes are technically achieved (starting with the easiest for now). Perhaps I need to view more examples.\cb1 \
+\
+\cb3 Let\'92s\'a0take a simple List of records as an easier way to describe what I was trying to ask:\cb1 \
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls2\ilvl0\cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Retrieve from server\cb1 \
+\ls2\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 View state of list (read only, edit mode, add new)\cb1 \
+\ls2\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Update Model\cb1 \
+\ls2\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Send to server\cb1 \
+\ls2\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Repeat\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 What I was trying to ask is do you generally post the form to json server on every new list item added (or edited) \'97 so every major action; or update the model first with forms, and have an extra separate \'93save to server\'94 button?\cb1 \
+\
+\cb3 I think\'a0I\'92ve\'a0seen both options out in the wild, but I imagine the former is what most users would expect?\cb1 \
+\
+\cb3 I\'92ve\'a0done posting as json,\'a0I\'92ve\'a0done forms, but\'a0I\'92m\'a0yet to combine the two!\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Wolfgang Schuster (wolfadex)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730148174044119?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 8:42 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Yeah, that can vary by UX. 2 examples off the top of my head\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls3\ilvl0\cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 A todo app, I would want each item in the list to submit to the server immediately and not wait for my to queue up multiple todos before submitting\cb1 \
+\ls3\ilvl0\cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 A list of users I want to send an email to, I would want to wait to send to the server until I've submitted each email address\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730149362194329?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 9:02 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Ok so it depends on the context. Good stuff. Does Elm have a \'93put\'94 or \'93patch\'94 option or would that be a custom\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.request
+\fs30 \AppleTypeServices \cb3 ? I couldn\'92t see a default function for updating a particular collection ID (I need to understand the differences better anyway)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Wolfgang Schuster (wolfadex)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730149636970009?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 9:07 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 Http.request
+\fs30 \AppleTypeServices \cb3 \'a0is what you'd want for put or patch.\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0is just a nice helper that calls\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.request
+\fs30 \AppleTypeServices \cb3 \'a0internally. Same with\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Http.get
+\fs30 \AppleTypeServices \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730149784218899?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Yesterday at 9:09 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Perfect.\'a0I\'92ll\'a0go back to research mode. If you have any good examples for any of this pass them on. Thanks! :)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 dwayne\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C192T0Q1E/p1730211021287919?thread_ts=1730143595.469969&cid=C192T0Q1E"}}{\fldrslt 
+\fs24 \cf9 \strokec9 Today at 2:10 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U07SYCY9BE3"}}{\fldrslt \cf2 \cb3 @Rob}}\
+\cb3 \'a0w.r.t. good examples I can suggest my\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/dwayne/elm-conduit"}}{\fldrslt \cf6 \strokec6 dwayne/elm-conduit}}\'a0project. In\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Api.elm
+\fs30 \AppleTypeServices \cb3 \'a0I use GET, POST, PUT, and DELETE. The module acts as a wrapper around the\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/gothinkster/realworld/blob/6dc657a136a00b4f6441a5b4506b7e5712c79ebd/api/openapi.yml"}}{\fldrslt \cf6 \strokec6 RealWorld API}}\'a0which I then use to build specific end-points, see\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/dwayne/elm-conduit/tree/69b1cf41d38e34c4bd8b61490d28e224a0481ac2/src/Api"}}{\fldrslt \cf6 \strokec6 here}}, for various use cases. For e.g.\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/dwayne/elm-conduit/blob/69b1cf41d38e34c4bd8b61490d28e224a0481ac2/src/Api/GetArticles.elm#L81-L124"}}{\fldrslt \cf6 \strokec6 https://github.com/dwayne/elm-conduit/blob/69b1cf41d38e34c4bd8b61490d28e224a0481ac2/src/Api/GetArticles.elm#L81-L124}}.\cb1 \
+}
