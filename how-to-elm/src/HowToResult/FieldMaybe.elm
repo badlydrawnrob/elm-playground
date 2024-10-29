@@ -3,49 +3,40 @@ module HowToResult.FieldMaybe exposing (..)
 {-| ----------------------------------------------------------------------------
     Ok with Maybe: what happens if our field is optional?
     ============================================================================
-    Here we want to allow `""` empty entries, whatever the value we're expecting
-    from the visitor. A few `Maybe` types could be:
+    What about `Maybe` types? That could be an empty string, an optional number,
+    etc. Our form inputs are generally strings however, but could also be an image
+    a user hasn't uploaded, or an empty list of comments. Let's start with a VERY
+    rudimentary example:
 
-        "" An empty string?
-        ~~[] An empty list?~~
-
-    This is a VERY rudimentary example and in real life there'd be quite a few
-    error checks dependant on the input field and calculated value.
-
-    isOptional
-    ----------
-    Somehow you have to "notify" your function that this particular field is an
-    "optional" one. Ideally your `.input` is just a plain `String`, so you need
-    some other way of notifying your program this _particular_ field needn't have
-    any value (i.e: an "" empty string)
+    `String` isOptional
+    -------------------
+    It's important to notify your program that a field is OPTIONAL. If you process
+    inputs as simple `String`s, `""` empty would be ALLOWED if optional.
 
         @ https://tinyurl.com/result-maybe-14ab857 (first attempt, crappy)
+        @ https://tinyurl.com/how-to-result-maybe-54a6474 (error checking with strings)
+        @ this version error checks with `.accessors` from the record
 
 
     Examples in the wild
     --------------------
-    @rtfeldman's Elm Spa example uses a `List Problem`, `ValidatedField`, and
-    `fieldsToValidate` function, and `List.concatMap` in an interesting way.
+    @rtfeldman's Elm Spa example uses a `List Problem`, `ValidatedField`,
+    a `fieldsToValidate` function, and `List.concatMap` in an interesting way.
 
         @ https://tinyurl.com/list-concat-map
         @ https://tinyurl.com/elm-spa-settings-page
 
-    It seems he ignores any other fields in the validation process and simply
-    trims them (remove whitespace) and outputs a:
+    Some fields in those examples seem to be ignored for validation, so he doesn't
+    seem to care if they're invalid. Those ones are either empty or not. He also
+    takes care to "trim" (remove whitespace) fields, and uses this type for valid:
 
         type ValidForm
             = Valid Form
 
-    And does some trickery to `Encode` all the strings as valid `json`:
+    In the above examples, he's only dealing with `String` types, and encodes
+    them ready for `json`. If `List Problem` is an `[]` empty list, it's POSTed.
 
         @ https://tinyurl.com/elm-spa-encoded-updates
-
-    TL;DR
-    -----
-    1. He uses `String` of each form input
-    2. He validates against custom types (a list of)
-    3. He uses valid `String` inputs for the `Http.send`
-        - His `Encode` looks something like this:
 
         ```
         updates =
@@ -56,9 +47,43 @@ module HowToResult.FieldMaybe exposing (..)
             ]
         ```
 
-    Computed values ARE NOT STORED in the `json` here. He ONLY seems to store
-    things on the backend as plain strings, but those strings have been validated
-    (albeit VERY SIMPLY) and only really checks for `""` empty and `"length"`.
+    Other alternatives
+    ------------------
+
+    1. Some people say you shouldn't store computed values in the `Model`, but
+       in one version, I'm using `{ input : String, valid: Result }` and updating
+       that on every key stroke:
+
+       @ `CustomTypes.Songs`
+
+    2. A big fat function that returns `Ok (Just value)` or `Err String` for
+       each field. This is because `optional` fields require a `Nothing` if
+       they're `""` empty, because that's allowed. And, as every return value for
+       a function MUST be the same type, they're all `Result String (Maybe a)`
+
+    3. Alternatively, you could have individual functions handle each field, like
+       I've done in (1), but NOT store them in the `Model`. You'd `Result.map`
+       them and return a valid record structure if no `Err`, for example.
+
+    4. Take a look at packages and other options Elm programmers are using, but
+       as a rule, I prefer to keep things simple (and packages are a bit of a risk)
+
+    For each method, you could consider custom types for FIELD STATES and start
+    thinking about Cardinality for each, rather than combinations of `Boolean`
+    values:
+
+    Cardinality
+    -----------
+    `optional` -> Empty? 2 -> Full? + Required? 4 (accounts for `True` and `False`)
+    `required` -> Empty? 2 -> Full? + Required? 4 (accounts for `True` and `False`)
+
+    I _think_ there's really only 3 states we'd wish our simple field data to be,
+    if you remove the `Boolean` options down to Union types:
+
+    type PossibleFieldStates
+        = Empty
+        | FullAndRequiredLength
+        | FullAndNotRequiredLength
 
 
     ----------------------------------------------------------------------------
@@ -87,10 +112,10 @@ type alias Person =
     , employer : Maybe String -- Perhaps they're unemployed?
     }
 
-type Model =
-    { input1 : String
-    , input2 : String
-    , input3 : String -- This is an optional field
+type alias Model =
+    { name : String
+    , age : String
+    , employer : String -- This is an optional field
     }
 
 type ValidateFields
@@ -105,10 +130,13 @@ listOfValidateFields =
     , Employer
     ]
 
--- allowedStates
---     = Empty -- if optional this is OK
---     | FullAndWrongLength
---     | FullAndCorrectLength
+type
+
+type Msg
+    = EnteredName String
+    | EnteredAge String
+    | EnteredEmployer String
+    | FormSubmitted
 
 
 -- Validating and checking for errors ------------------------------------------
@@ -129,60 +157,66 @@ listOfValidateFields =
 --
 -- It could be better to have a `Type` for all possible options:
 --
--- type Valid
---     = Empty
+-- type PossibleStates
+--     = Empty -- allowed if optional
 --     | FullAndRequiredLength
 --     | FullAndNotRequiredLength
 
-isEmpty : ValidateFields -> String -> Result String a
-isEmpty field input =
+{- #! Remember: Each return value MUST be the same of type. As we have an
+`optional` field which needs to return `Nothing`, all our other branches here
+need to return a `Maybe a` -}
+simpleValidate : Model -> ValidateFields -> Result String (Maybe a)
+simpleValidate model field =
     case field of
         Name ->
-            if String.isEmpty input then
+            if String.isEmpty model.name then
                 Err "Must not be empty"
             else
-                Ok input
+                Ok (Just input)
         Age ->
-            if String.isEmpty input then
+            if String.isEmpty model.age then
                 Err "Must not be empty"
-            else isRequiredLength input then
-                Ok input
+            else if isRequiredLength input then
+                Ok (Just input)
             else
                 Err "This string is not the required length"
 
         Employer ->
-            isEmployerOk input
+            isEmployerOk model.employer
 
 isRequiredLength : String -> Bool
 isRequiredLength =
     (>=) 4 << String.length -- Function composition and point-free style
 
-isEmployerOk : String -> Result String String
+isEmployerOk : String -> Result String (Maybe String)
 isEmployerOk s =
     if String.isEmpty s then
         Ok Nothing -- "" empty is allowed for an `optional` field
     else
         if isRequiredLength s then
-            Ok input -- if not "" then must be required length
+            Ok (Just s) -- if not "" then must be required length
         else
             Err "This string is not the required length"
 
+runValidationCheck :
+
 update : Msg -> Model -> Model
 update msg model =
-    EnteredInput1 str ->
-        { model | input1 = str }
+    case msg of
+        EnteredName str ->
+            { model | name = str }
 
-    EnteredInput2 str ->
-        { model | input2 = str }
+        EnteredAge str ->
+            { model | age = str }
 
-    EnteredInput3 str ->
-        { model | input3 = str }
+        EnteredEmployer str ->
+            { model | employer = str }
 
-    {- Here we have a `List ValidateFields` and a `isEmpty` function that we
-    want to run to validate our ACTUAL `List String` from each form field. It's
-    quite a clever method that @rtfeldman uses to mix a custom field type with
-    the actual user input. -}
-    FormSubmitted ->
-        List.concatMap validateForm listOfValidateFields
+        {- Here we have a `List ValidateFields` and a `isEmpty` function that we
+        want to run to validate our ACTUAL `List String` from each form field. It's
+        quite a clever method that @rtfeldman uses to mix a custom field type with
+        the actual user input. -}
+        FormSubmitted ->
+            List.concatMap (simpleValidate model) listOfValidateFields
 
 
