@@ -15,7 +15,7 @@ module HowToResult.FieldMaybe exposing (..)
 
         @ https://tinyurl.com/result-maybe-14ab857 (first attempt, crappy)
         @ https://tinyurl.com/how-to-result-maybe-54a6474 (error checking with strings)
-        @ this version error checks with `.accessors` from the record
+        @ https://tinyurl.com/field-maybe-commit-f369c88 (`Result` output -vs- `List Problem`)
 
 
     Examples in the wild
