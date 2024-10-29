@@ -103,7 +103,6 @@ module HowToResult.FieldMaybe exposing (..)
 -}
 
 import Debug exposing (..)
-import Html exposing (input)
 
 {- Employer might be better as a Union Type, but this will suffice -}
 type alias Person =
@@ -129,8 +128,6 @@ listOfValidateFields =
     , Age
     , Employer
     ]
-
-type
 
 type Msg
     = EnteredName String
@@ -165,21 +162,21 @@ type Msg
 {- #! Remember: Each return value MUST be the same of type. As we have an
 `optional` field which needs to return `Nothing`, all our other branches here
 need to return a `Maybe a` -}
-simpleValidate : Model -> ValidateFields -> Result String (Maybe a)
+simpleValidate : Model -> ValidateFields -> List String
 simpleValidate model field =
     case field of
         Name ->
             if String.isEmpty model.name then
-                Err "Must not be empty"
+                ["Name field must not be empty"]
             else
-                Ok (Just input)
+                []
         Age ->
             if String.isEmpty model.age then
-                Err "Must not be empty"
-            else if isRequiredLength input then
-                Ok (Just input)
+                ["Age field must not be empty"]
+            else if isRequiredLength model.age then
+                []
             else
-                Err "This string is not the required length"
+                ["Age field must be less than 4 characters"]
 
         Employer ->
             isEmployerOk model.employer
@@ -188,17 +185,23 @@ isRequiredLength : String -> Bool
 isRequiredLength =
     (>=) 4 << String.length -- Function composition and point-free style
 
-isEmployerOk : String -> Result String (Maybe String)
+isEmployerOk : String -> List String
 isEmployerOk s =
     if String.isEmpty s then
-        Ok Nothing -- "" empty is allowed for an `optional` field
+        [] -- "" empty is allowed for an `optional` field
     else
         if isRequiredLength s then
-            Ok (Just s) -- if not "" then must be required length
+            []
         else
-            Err "This string is not the required length"
+            -- if not "" then must be required length
+            ["Employer field must be less than 4 characters"]
 
-runValidationCheck :
+{- Right now the `listOfValidateFields` is a little redundant, as we're not
+storing the `ValidateField` in the output ... it's a simplified version of
+@rtfeldman's Elm Spa form examples. -}
+runValidationCheck : Model -> List String
+runValidationCheck model =
+    List.concatMap (simpleValidate model) listOfValidateFields
 
 update : Msg -> Model -> Model
 update msg model =
@@ -217,6 +220,6 @@ update msg model =
         quite a clever method that @rtfeldman uses to mix a custom field type with
         the actual user input. -}
         FormSubmitted ->
-            List.concatMap (simpleValidate model) listOfValidateFields
+            Debug.todo "What happens when the form is submitted?"
 
 
