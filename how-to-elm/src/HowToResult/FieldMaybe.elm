@@ -78,6 +78,7 @@ module HowToResult.FieldMaybe exposing (..)
 -}
 
 import Debug exposing (..)
+import Html exposing (input)
 
 {- Employer might be better as a Union Type, but this will suffice -}
 type alias Person =
@@ -97,40 +98,74 @@ type ValidateFields
     | Age
     | Employer -- This one is optional!
 
-{-| 1. Is the field optional?
-    2. Is the field empty?
-    ------------------------
-    One of validateFields ->
+listOfValidateFields : List ValidateFields
+listOfValidateFields =
+    [ Name
+    , Age
+    , Employer
+    ]
 
-        If (1) is `True` and (2) is `True` return `Nothing`
-        If (1) is `False` and (2) is `True return `Err`
-        If the latter, run any further error checks for each field!
+-- allowedStates
+--     = Empty -- if optional this is OK
+--     | FullAndWrongLength
+--     | FullAndCorrectLength
 
-    If not validateFields ->
 
-        If we DON'T need to validate the field
--}
+-- Validating and checking for errors ------------------------------------------
+--
+-- 1. We have 2 `optional` and 1 `required` fields,
+-- 2. If `optional` is `""` empty, that's Ok!
+-- 3. If `optional` has `"string"` run required length checks.
+-- 4. All `required` fields only need required length checks.
+--     - To keep the example simple and reduce cognitive load.
+--
+-- Cardinality
+-- -----------
+-- There's really only 2-3 options for `optional`: Empty? Full+Required?
+-- There's really only 1 option for `required` : Full+Required?
+--
+-- `optional` -> Empty? 2 -> Full? + Required? 4 (accounting for `True` and `False`)
+-- `required` -> Empty? 2 -> Full? + Required? 4 (accounting for `True` and `False`)
+--
+-- It could be better to have a `Type` for all possible options:
+--
+-- type Valid
+--     = Empty
+--     | FullAndRequiredLength
+--     | FullAndNotRequiredLength
+
 isEmpty : ValidateFields -> String -> Result String a
 isEmpty field input =
     case field of
         Name ->
-            String.toEmpty input
+            if String.isEmpty input then
+                Err "Must not be empty"
+            else
+                Ok input
         Age ->
-            String.toEmpty input
+            if String.isEmpty input then
+                Err "Must not be empty"
+            else isRequiredLength input then
+                Ok input
+            else
+                Err "This string is not the required length"
+
         Employer ->
-            String.toEmpty input
-
-
-    if isOptional && String.isEmpty then
-        Ok Nothing
-    else String.isEmpty then
-        Err "field cannot be empty"
-    else
-        runErrors input
+            isEmployerOk input
 
 isRequiredLength : String -> Bool
 isRequiredLength =
     (>=) 4 << String.length -- Function composition and point-free style
+
+isEmployerOk : String -> Result String String
+isEmployerOk s =
+    if String.isEmpty s then
+        Ok Nothing -- "" empty is allowed for an `optional` field
+    else
+        if isRequiredLength s then
+            Ok input -- if not "" then must be required length
+        else
+            Err "This string is not the required length"
 
 update : Msg -> Model -> Model
 update msg model =
@@ -143,8 +178,11 @@ update msg model =
     EnteredInput3 str ->
         { model | input3 = str }
 
-    {- Run all the error checks etc -}
+    {- Here we have a `List ValidateFields` and a `isEmpty` function that we
+    want to run to validate our ACTUAL `List String` from each form field. It's
+    quite a clever method that @rtfeldman uses to mix a custom field type with
+    the actual user input. -}
     FormSubmitted ->
-        Debug.todo "figure out how to loop over all inputs"
+        List.concatMap validateForm listOfValidateFields
 
 
