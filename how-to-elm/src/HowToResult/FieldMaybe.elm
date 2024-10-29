@@ -25,6 +25,7 @@ module HowToResult.FieldMaybe exposing (..)
 
         @ https://tinyurl.com/list-concat-map
         @ https://tinyurl.com/elm-spa-settings-page
+        @ https://tinyurl.com/elm-spa-validate-field-func
 
     Some fields in those examples seem to be ignored for validation, so he doesn't
     seem to care if they're invalid. Those ones are either empty or not. He also
