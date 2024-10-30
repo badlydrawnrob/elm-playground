@@ -100,6 +100,9 @@ module HowToResult.FieldMaybe exposing (..)
         1. First the form "posts" to a valid `Model` (such as `Song`)
         2. Next notify the user that `json` has been stored in the backend ...
            Or have them SAVE AGAIN to store update the users `json` config file.
+    4. How about `String.concat` ALL the errors for a `Field` type, and then
+       `String.concatMap` them into a `InvalidEntry ValidatedField String` so it
+       contains EVERY error for that particular field?
 
 -}
 
