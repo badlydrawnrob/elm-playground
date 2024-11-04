@@ -162,7 +162,21 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 3. Go over the two ways to use `Random` (array, uniform)
 
 
+## To-Dos (chapter 6)
 
+> Reformatting a program is quite helpful. It shows how to simplify down a program by creating helper functions, union types rather than `bool` fields, and narrowing types. Storify it! Simple examples!
+
+1. `Set` -vs- a `List String`
+    - Set's API removes need for add/remove/check-already-added functions that would need to be created.
+    - Set prevents duplicate values. It automatically sorts values. It let's you look up values.
+    - All values in `Set` need to be _comparable_ (and must be same type?)
+    - Look at the way we're using a `Msg` for every `model.toppings` insert. Isn't there an easier way?
+2. Give an example of a simplified `Model` view function. Write that it's important in helping rule out bugs (`msg` and different parts of the view):
+    - A main `view` which takes a `model`
+    - A `viewError` helper function which takes _part_ of a `model` (`model.error`) which is a `Maybe` type.
+    - Find some good examples of `view` functions with narrowed down types?
+3. Uses `Html msg` if the function doesn't produce a `Msg`. Is that useful?
+    - `Recall that `Html msg`` means you haven’t supplied a type value to the msg type variable; it has no actions, no messages, **so if there's a `Msg` bug it can't be in these functions!**
 
 
 
