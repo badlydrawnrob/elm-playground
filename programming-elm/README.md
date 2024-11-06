@@ -166,21 +166,30 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 > Reformatting a program is quite helpful. It shows how to simplify down a program by creating helper functions, union types rather than `bool` fields, and narrowing types. Storify it! Simple examples!
 
-1. `Set` -vs- a `List String`
+1. **`Set` -vs- a `List String`**
     - Set's API removes need for add/remove/check-already-added functions that would need to be created.
     - Set prevents duplicate values. It automatically sorts values. It let's you look up values.
     - All values in `Set` need to be _comparable_ (and must be same type?)
     - Look at the way we're using a `Msg` for every `model.toppings` insert. Isn't there an easier way?
-2. Give an example of a simplified `Model` view function. Bugs can be avoided by splitting out the view. If a bug is in one part of your view, you can narrow it down quicker:
+2. **Give an example of a simplified `Model` view function.** Bugs can be avoided by splitting out the view. If a bug is in one part of your view, you can narrow it down quicker:
     - A main `view` which takes a `model`
     - A `viewError` helper function which takes _part_ of a `model` (`model.error`) which is a `Maybe` type.
     - Find some good examples of `view` functions with **narrowed down types**?
     - Watch "scaling Elm apps" again for narrow types.
-3. Uses `Html msg` if the function doesn't produce a `Msg`. Is that useful?
+3. **Uses `Html msg` if the function doesn't produce a `Msg`. Is that useful?**
     - `Recall that `Html msg`` means you haven’t supplied a type value to the msg type variable; it has no actions, no messages, **so if there's a `Msg` bug it can't be in these functions!**
-4. `SelectLettuce` versus `ClickedRadio Base` with an `onClick (ClickedRadio SelectLettuce)`
+4. **`SelectLettuce` versus `ClickedRadio Base` with an `onClick (ClickedRadio SelectLettuce)`**
     - ONE `Msg` type rather than multiple ones.
-
+5. **Simplify `onCheck` checkboxes.** It's a curried function that will add a `bool`, so your message would be:
+    - `ClickedCheckbox Option Bool`
+    - `onCheck (ClickedCheckbox Option)`
+6. **Readup on `Set` and `how-to-elm` examples:**
+    - What about **very large sets** such as tags?
+    - Is it better to use custom types?
+    - Or just stick to `"string"` list?
+    - Converting loads of types to strings seems a bit of an arse on.
+7. `ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false. Is this the only way to manage this?
+    - Either way, show the refactored version in Anki
 
 
 ## Renaming files, folders, script
