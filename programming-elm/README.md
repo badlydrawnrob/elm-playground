@@ -188,8 +188,8 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Is it better to use custom types?
     - Or just stick to `"string"` list?
     - Converting loads of types to strings seems a bit of an arse on.
-7. `ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false. Is this the only way to manage this?
-    - Either way, show the refactored version in Anki
+7. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
+    - Either way, show [the refactored version](https://tinyurl.com/programming-elm-commit-efd9ed5) in Anki
 
 
 ## Renaming files, folders, script
