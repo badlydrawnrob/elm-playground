@@ -176,19 +176,15 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - A `viewError` helper function which takes _part_ of a `model` (`model.error`) which is a `Maybe` type.
     - Find some good examples of `view` functions with **narrowed down types**?
     - Watch "scaling Elm apps" again for narrow types.
-3. **Uses `Html msg` if the function doesn't produce a `Msg`. Is that useful?**
-    - `Recall that `Html msg`` means you haven’t supplied a type value to the msg type variable; it has no actions, no messages, **so if there's a `Msg` bug it can't be in these functions!**
-4. **`SelectLettuce` versus `ClickedRadio Base` with an `onClick (ClickedRadio SelectLettuce)`**
-    - ONE `Msg` type rather than multiple ones.
-5. **Simplify `onCheck` checkboxes.** It's a curried function that will add a `bool`, so your message would be:
+3. **Simplify `onCheck` checkboxes.** It's a curried function that will add a `bool`, so your message would be:
     - `ClickedCheckbox Option Bool`
     - `onCheck (ClickedCheckbox Option)`
-6. **Readup on `Set` and `how-to-elm` examples:**
+4. **Readup on `Set` and `how-to-elm` examples:**
     - What about **very large sets** such as tags?
     - Is it better to use custom types?
     - Or just stick to `"string"` list?
     - Converting loads of types to strings seems a bit of an arse on.
-7. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
+5. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
     - Either way, show [the refactored version](https://tinyurl.com/programming-elm-commit-efd9ed5) in Anki
 
 
