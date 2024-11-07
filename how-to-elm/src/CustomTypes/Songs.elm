@@ -11,6 +11,8 @@ module CustomTypes.Songs exposing (..)
         @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
     Unpack (or "lift") `Maybe`s etc in ONE place:
         @ https://tinyurl.com/stop-unpacking-maybe-too-often
+    Diff of `UserInput` here:
+        @ https://www.diffchecker.com/me6aANHb/
 
 
     What I learned
