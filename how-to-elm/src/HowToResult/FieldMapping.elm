@@ -1,4 +1,4 @@
-module HowToResult.Mapping exposing (..)
+module HowToResult.FieldMapping exposing (..)
 
 {-| ----------------------------------------------------------------------------
     Mapping: a few examples
