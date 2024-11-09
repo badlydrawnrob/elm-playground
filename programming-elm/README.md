@@ -187,8 +187,9 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - See pg.113 [Nested State](https://tinyurl.com/salad-builder-msg-f99ba12)
     - State the pros and cons of nested state
     - You can access `model.salad.dressing` for nested fields.
-    - Explain `SaladMsg SaladMsg` and `(SaladMsg (SetDressing Dressing))` and `(SaladMsg << ToggleTopping Topping)`
+    - [Explain](https://tinyurl.com/salad-builder-msg-a6bc523) `SaladMsg SaladMsg` and `(SaladMsg (SetDressing Dressing))` and `(SaladMsg << ToggleTopping Topping)`
     - Why do we use `<<` rather than parenthesis? (ToggleTopping takes two arguments, including a `Bool`)
+    - Add a Draw card to explain how `update` is handling this process (see pg.117) — nested `SaladMsg` and nested `updateSalad` functions
     - It seems Elm prefers flat records?
 
 

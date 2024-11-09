@@ -485,6 +485,11 @@ send model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        SaladMsg saladMsg ->
+            ( { model | salad = updateSalad saladMsg model.salad }
+            , Cmd.none
+            )
+
         SetName name ->
             ( { model | name = name }
             , Cmd.none
