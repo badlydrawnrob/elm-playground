@@ -184,8 +184,11 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 5. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
     - Either way, show [the refactored version](https://tinyurl.com/programming-elm-commit-efd9ed5) in Anki
 6. **Show how to reduce responsibilities for an update function**
-    - See pg.113 Nested State
+    - See pg.113 [Nested State](https://tinyurl.com/salad-builder-msg-f99ba12)
     - State the pros and cons of nested state
+    - You can access `model.salad.dressing` for nested fields.
+    - Explain `SaladMsg SaladMsg` and `(SaladMsg (SetDressing Dressing))` and `(SaladMsg << ToggleTopping Topping)`
+    - Why do we use `<<` rather than parenthesis? (ToggleTopping takes two arguments, including a `Bool`)
     - It seems Elm prefers flat records?
 
 
