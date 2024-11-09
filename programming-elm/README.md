@@ -191,6 +191,11 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Why do we use `<<` rather than parenthesis? (ToggleTopping takes two arguments, including a `Bool`)
     - Add a Draw card to [explain how `update` is handling this process](https://tinyurl.com/salad-builder-update-salad) (see pg.117) — nested `SaladMsg` and nested `updateSalad` functions
     - It seems Elm prefers flat records?
+7. We've separated concerns for our `SaladMsg`, but our `view` functions are still lumped together. We need to reach into nested `model.salad.toppings` values.
+    - That can get annoying
+    - You don't want heavily nested records
+    - His advice is to AVOID nesting state, or use it very sparingly (like @rtfeldman's Elm Spa `model.form`)
+8. Show why extensible records are better.
 
 
 ## Renaming files, folders, script
