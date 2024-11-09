@@ -204,44 +204,6 @@ viewError error =
         Nothing ->
             text ""
 
-viewConfirmation : Model -> Html msg
-viewConfirmation model =
-    div [ class "confirmation" ]
-        [ h2 [] [ text "Woo hoo!" ]
-        , p [] [ text "Thanks for your order!" ]
-        , table []
-            [ tr []
-                [ th [] [ text "Base:" ]
-                , td [] [ text (baseToString model.salad.base) ]
-                ]
-            , tr []
-                [ th [] [ text "Toppings:" ]
-                , td []
-                    [ ul []
-                        (model.salad.toppings
-                            |> Set.toList
-                            |> List.map (\topping -> li [] [ text topping ])
-                        )
-                    ]
-                ]
-            , tr []
-                [ th [] [ text "Dressing:" ]
-                , td [] [ text (dressingToString model.salad.dressing) ]
-                ]
-            , tr []
-                [ th [] [ text "Name:" ]
-                , td [] [ text model.name ]
-                ]
-            , tr []
-                [ th [] [ text "Email:" ]
-                , td [] [ text model.email ]
-                ]
-            , tr []
-                [ th [] [ text "Phone:" ]
-                , td [] [ text model.phone ]
-                ]
-            ]
-        ]
 
 viewBuild : Model -> Html Msg
 viewBuild model =
@@ -397,6 +359,47 @@ viewBuild model =
             ]
         ]
 
+
+viewConfirmation : Model -> Html msg
+viewConfirmation model =
+    div [ class "confirmation" ]
+        [ h2 [] [ text "Woo hoo!" ]
+        , p [] [ text "Thanks for your order!" ]
+        , table []
+            [ tr []
+                [ th [] [ text "Base:" ]
+                , td [] [ text (baseToString model.salad.base) ]
+                ]
+            , tr []
+                [ th [] [ text "Toppings:" ]
+                , td []
+                    [ ul []
+                        (model.salad.toppings
+                            |> Set.toList
+                            |> List.map (\topping -> li [] [ text topping ])
+                        )
+                    ]
+                ]
+            , tr []
+                [ th [] [ text "Dressing:" ]
+                , td [] [ text (dressingToString model.salad.dressing) ]
+                ]
+            , tr []
+                [ th [] [ text "Name:" ]
+                , td [] [ text model.name ]
+                ]
+            , tr []
+                [ th [] [ text "Email:" ]
+                , td [] [ text model.email ]
+                ]
+            , tr []
+                [ th [] [ text "Phone:" ]
+                , td [] [ text model.phone ]
+                ]
+            ]
+        ]
+
+
 viewStep : Model -> Html Msg
 viewStep model =
     if model.sending then
@@ -425,26 +428,6 @@ type SaladMsg
     = SetBase Base
     | ToggleTopping Topping Bool
     | SetDressing Dressing
-
-
-updateSalad : SaladMsg -> Salad -> Salad
-updateSalad msg salad =
-    case msg of
-        SetBase base ->
-            { salad | base = base }
-
-        ToggleTopping topping add ->
-            let
-                updater =
-                    if add then
-                        Set.insert
-                    else
-                        Set.remove
-            in
-            { salad | toppings = updater (toppingToString topping) model.toppings }
-
-        SetDressing dressing ->
-            { salad | dressing = dressing }
 
 
 type Msg
@@ -480,6 +463,26 @@ send model =
         , body = Http.jsonBody (encodeOrder model)
         , expect = Http.expectString SubmissionResult
         }
+
+
+updateSalad : SaladMsg -> Salad -> Salad
+updateSalad msg salad =
+    case msg of
+        SetBase base ->
+            { salad | base = base }
+
+        ToggleTopping topping add ->
+            let
+                updater =
+                    if add then
+                        Set.insert
+                    else
+                        Set.remove
+            in
+            { salad | toppings = updater (toppingToString topping) model.toppings }
+
+        SetDressing dressing ->
+            { salad | dressing = dressing }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
