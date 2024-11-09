@@ -212,13 +212,13 @@ viewConfirmation model =
         , table []
             [ tr []
                 [ th [] [ text "Base:" ]
-                , td [] [ text (baseToString model.base) ]
+                , td [] [ text (baseToString model.salad.base) ]
                 ]
             , tr []
                 [ th [] [ text "Toppings:" ]
                 , td []
                     [ ul []
-                        (model.toppings
+                        (model.salad.toppings
                             |> Set.toList
                             |> List.map (\topping -> li [] [ text topping ])
                         )
@@ -226,7 +226,7 @@ viewConfirmation model =
                 ]
             , tr []
                 [ th [] [ text "Dressing:" ]
-                , td [] [ text (dressingToString model.dressing) ]
+                , td [] [ text (dressingToString model.salad.dressing) ]
                 ]
             , tr []
                 [ th [] [ text "Name:" ]
@@ -464,9 +464,9 @@ sendUrl =
 encodeOrder : Model -> Value
 encodeOrder model =
     object
-        [ ( "base", string (baseToString model.base) )
-        , ( "toppings", list string (Set.toList model.toppings) )
-        , ( "dressing", string (dressingToString model.dressing) )
+        [ ( "base", string (baseToString model.salad.base) )
+        , ( "toppings", list string (Set.toList model.salad.toppings) )
+        , ( "dressing", string (dressingToString model.salad.dressing) )
         , ( "name", string model.name )
         , ( "email", string model.email )
         , ( "phone", string model.phone )

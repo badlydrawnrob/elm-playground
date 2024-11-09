@@ -183,13 +183,13 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Converting loads of types to strings seems a bit of an arse on.
 5. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
     - Either way, show [the refactored version](https://tinyurl.com/programming-elm-commit-efd9ed5) in Anki
-6. **Show how to reduce responsibilities for an update function**
+6. **Show how to reduce responsibilities for an update function** — probably a good time to use the **Draw!** card to visualise the process. The book doesn't do a great job of explaining this.
     - See pg.113 [Nested State](https://tinyurl.com/salad-builder-msg-f99ba12)
     - State the pros and cons of nested state
     - You can access `model.salad.dressing` for nested fields.
     - [Explain](https://tinyurl.com/salad-builder-msg-a6bc523) `SaladMsg SaladMsg` and `(SaladMsg (SetDressing Dressing))` and `(SaladMsg << ToggleTopping Topping)`
     - Why do we use `<<` rather than parenthesis? (ToggleTopping takes two arguments, including a `Bool`)
-    - Add a Draw card to explain how `update` is handling this process (see pg.117) — nested `SaladMsg` and nested `updateSalad` functions
+    - Add a Draw card to [explain how `update` is handling this process](https://tinyurl.com/salad-builder-update-salad) (see pg.117) — nested `SaladMsg` and nested `updateSalad` functions
     - It seems Elm prefers flat records?
 
 
