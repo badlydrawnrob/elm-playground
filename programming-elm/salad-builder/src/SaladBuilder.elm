@@ -97,6 +97,13 @@ dressingToString dressing =
             "Oil and Vinegar"
 
 
+type alias Salad =
+    { base : Base
+    , toppings : Set String
+    , dressing : Dressing
+    }
+
+
 type alias Model =
     { building : Bool
     , sending : Bool
@@ -106,12 +113,6 @@ type alias Model =
     , name : String
     , email : String
     , phone : String
-    }
-
-type alias Salad =
-    { base : Base
-    , toppings : Set String
-    , dressing : Dressing
     }
 
 
@@ -479,7 +480,7 @@ updateSalad msg salad =
                     else
                         Set.remove
             in
-            { salad | toppings = updater (toppingToString topping) model.toppings }
+            { salad | toppings = updater (toppingToString topping) salad.toppings }
 
         SetDressing dressing ->
             { salad | dressing = dressing }
