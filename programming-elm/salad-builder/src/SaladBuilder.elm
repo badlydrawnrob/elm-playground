@@ -102,12 +102,16 @@ type alias Model =
     , sending : Bool
     , success : Bool
     , error : Maybe String
-    , base : Base
-    , toppings : Set String
-    , dressing : Dressing
+    , salad : Salad
     , name : String
     , email : String
     , phone : String
+    }
+
+type alias Salad =
+    { base : Base
+    , toppings : Set String
+    , dressing : Dressing
     }
 
 
@@ -117,9 +121,11 @@ initialModel =
     , sending = False
     , success = False
     , error = Nothing
-    , base = Lettuce
-    , toppings = Set.empty
-    , dressing = NoDressing
+    , salad =
+        { base = Lettuce
+        , toppings = Set.empty
+        , dressing = NoDressing
+        }
     , name = ""
     , email = ""
     , phone = ""
@@ -415,6 +421,32 @@ view model =
 ---- UPDATE ----
 
 
+type SaladMsg
+    = SetBase Base
+    | ToggleTopping Topping Bool
+    | SetDressing Dressing
+
+
+updateSalad : SaladMsg -> Salad -> Salad
+updateSalad msg salad =
+    case msg of
+        SetBase base ->
+            { salad | base = base }
+
+        ToggleTopping topping add ->
+            let
+                updater =
+                    if add then
+                        Set.insert
+                    else
+                        Set.remove
+            in
+            { salad | toppings = updater (toppingToString topping) model.toppings }
+
+        SetDressing dressing ->
+            { salad | dressing = dressing }
+
+
 type Msg
     = SetBase Base
     | ToggleTopping Topping Bool
@@ -455,28 +487,6 @@ send model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetBase base ->
-            ( { model | base = base }
-            , Cmd.none
-            )
-
-        ToggleTopping topping add ->
-            let
-                updater =
-                    if add then
-                        Set.insert
-                    else
-                        Set.remove
-            in
-            ( { model | toppings = updater (toppingToString topping) model.toppings }
-            , Cmd.none
-            )
-
-        SetDressing dressing ->
-            ( { model | dressing = dressing }
-            , Cmd.none
-            )
-
         SetName name ->
             ( { model | name = name }
             , Cmd.none
