@@ -162,6 +162,12 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 ## To-Dos (chapter 6)
 
 > Reformatting a program is quite helpful. It shows how to simplify down a program by creating helper functions, union types rather than `bool` fields, and narrowing types. Storify it! Simple examples!
+>
+> However, some of the sections are hard to explain and I'm not sure the writer does a great job in parts.
+>
+> Remember: the simplest thing possible. Splitting out some of the `type_ "radio"` buttons into reusable functions (in my mind) made it **harder** to understand the code rather than easier. `List.map` would be easier to use with `(Set String)` too. There's more improvements to be made there.
+>
+> If you have a simple form then some of these refactors are not necessary.
 
 1. **`Set` -vs- a `List String`**
     - Set's API removes need for add/remove/check-already-added functions that would need to be created.
@@ -209,6 +215,11 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - List.map (viewToppings model.salad.toppings) [Tomatoes, Cucumbers, Onions] should work here, but you'd need to convert `model.salad.toppings` to a `type alias ToppingSet = (Set String)` — I'm not sure how this might affect things, as we're binding our strings to a limited set of `Topping` here.
     - Create a simple demo and ask the community. Can you restrict the range of `ToppingSet` to a proper set of strings? Then you can't accidentally create the function with the wrong string. Or maybe it doesn't matter.
     - **pg. 122 and onwards isn't very well explained**
+11. Reusable radio buttons (problem)
+    - I'm not a huge fan of this refactoring (see commit #4d80b94)
+    - I would say **_unless it makes things much simpler, or you have LOTS of inputs_ DON'T Bother refactoring.** It looks pretty ugly and makes it harder to read in my mind.
+    - See "life of a file" for more info.
+12. **Have a go at creating a `Html.map` function for a simple form element** with narrowed type (such as `ContactMsg` -> `Msg`)
 
 
 ## Renaming files, folders, script

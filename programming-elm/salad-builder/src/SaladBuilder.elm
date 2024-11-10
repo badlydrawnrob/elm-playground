@@ -288,6 +288,31 @@ viewSelectToppings toppings =
         ]
 
 
+viewTextInput : String -> String -> (String -> msg) -> Html ContactMsg
+viewTextInput inputLabel inputValue tagger =
+    div [ class "text-input" ]
+        [ label []
+            [ div [] [ text (inputLabel ++ ":") ]
+            , input
+                [ type_ "text"
+                , value inputValue
+                , onInput tagger
+                ]
+                []
+            ]
+        ]
+
+{- Here we use `ContactMsg` instead of our `Msg` -}
+viewContact : Contact a -> Html ContactMsg
+viewContact contact =
+    div []
+        -- You could've written it like `(ContactMsg << SetName)`
+        [ viewTextInput "Name" model.name SetName
+        , viewTextInput "Email" model.email SetEmail
+        , viewTextInput "Phone" model.phone SetPhone
+        ]
+
+
 viewBuild : Model -> Html Msg
 viewBuild model =
     div []
@@ -299,39 +324,9 @@ viewBuild model =
         , viewSection "3. Select Dressing"
             [ viewSelectDressing model.salad.dressing ]
         , viewSection "4. Enter Contact Info"
-            [ div [ class "text-input" ]
-                [ label []
-                    [ div [] [ text "Name:" ]
-                    , input
-                        [ type_ "text"
-                        , value model.name
-                        , onInput (ContactMsg << SetName)
-                        ]
-                        []
-                    ]
-                ]
-            , div [ class "text-input" ]
-                [ label []
-                    [ div [] [ text "Email:" ]
-                    , input
-                        [ type_ "text"
-                        , value model.email
-                        , onInput (ContactMsg << SetEmail)
-                        ]
-                        []
-                    ]
-                ]
-            , div [ class "text-input" ]
-                [ label []
-                    [ div [] [ text "Phone:" ]
-                    , input
-                        [ type_ "text"
-                        , value model.phone
-                        , onInput (ContactMsg << SetPhone)
-                        ]
-                        []
-                    ]
-                ]
+            -- But we use `Html.map` to create the correct `Msg`!
+            -- Applies `ContactMsg` to the message values of Html
+            [ Html.map ContactMsg (viewContact model)
             , button
                 [ class "send-button"
                 , disabled (not (isValid model))
