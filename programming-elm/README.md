@@ -195,7 +195,13 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - That can get annoying
     - You don't want heavily nested records
     - **His advice is to AVOID nesting state**, or use it very sparingly (like @rtfeldman's Elm Spa `model.form`)
-8. Show why extensible records are better.
+8. Show why [extensible records](https://tinyurl.com/salad-builder-extensible) are better.
+    - Reread pages 118-120
+9. **Quickly show some examples of lists in HTML:**
+    - For example `[ H1 [] [ text "Title" ] ]` is a singleton
+    - `[ H1 [] [ text "Title" ]
+       , H2 [] [ text "Secondary" ] ]` is two list
+    - Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`
 
 
 ## Renaming files, folders, script
