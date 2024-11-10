@@ -222,6 +222,31 @@ viewSection heading children =
         (h2 [] [text heading ] :: children)
 
 
+{- #! I feel like you should be able to `List.map` this function rather than having
+2 different functions:  `List.map toppings topping` where `toppings` has a
+`type alias Topping = (Set String)` (sets must be comparable, not union types) -}
+viewToppingOption : Topping -> Html Msg
+viewToppingOption toppingLabel topping toppings =
+    label [ class "select-option" ]
+            [ input
+                [ type_ "checkbox"
+                , checked (Set.member (toppingToString topping) toppings)
+                , onCheck (SaladMsg << ToggleTopping topping)
+                ]
+                []
+            , text toppingLabel -- This could use the `toppingToString` function
+            ]
+
+
+viewSelectToppings : Set String -> Html Msg
+viewSelectToppings toppings =
+    div []
+        [ viewToppingOption "Tomatoes" Tomatoes toppings
+        , viewToppingOption "Cucumbers" Cucumbers toppings
+        , viewToppingOption "Onions" Onions toppings
+        ]
+
+
 viewBuild : Model -> Html Msg
 viewBuild model =
     div []
@@ -259,34 +284,8 @@ viewBuild model =
                 ]
             ]
         , viewSection "2. Select Toppings"
-            [ label [ class "select-option" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked (Set.member (toppingToString Tomatoes) model.salad.toppings)
-                    , onCheck (SaladMsg << ToggleTopping Tomatoes)
-                    ]
-                    []
-                , text "Tomatoes"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked (Set.member (toppingToString Cucumbers) model.salad.toppings)
-                    , onCheck (SaladMsg << ToggleTopping Cucumbers)
-                    ]
-                    []
-                , text "Cucumbers"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked (Set.member (toppingToString Onions) model.salad.toppings)
-                    , onCheck (SaladMsg << ToggleTopping Onions)
-                    ]
-                    []
-                , text "Onions"
-                ]
-            ]
+            [ viewSelectToppings model.salad.toppings ]
+
         , viewSection "3. Select Dressing"
             [ label [ class "select-option" ]
                 [ input
