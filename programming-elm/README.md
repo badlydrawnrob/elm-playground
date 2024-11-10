@@ -204,9 +204,11 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`
     - See commit `cd1b22a`
 10. **Again! Sets**
+    - See also the `msg` and the only function that has a `Msg` is the secondary helper functions. Their wrappers have a `Html msg` type annotation.
     - Sets must hold comparables, it doesn't seem to accept Union Types (like `Toppings`)
     - List.map (viewToppings model.salad.toppings) [Tomatoes, Cucumbers, Onions] should work here, but you'd need to convert `model.salad.toppings` to a `type alias ToppingSet = (Set String)` — I'm not sure how this might affect things, as we're binding our strings to a limited set of `Topping` here.
     - Create a simple demo and ask the community. Can you restrict the range of `ToppingSet` to a proper set of strings? Then you can't accidentally create the function with the wrong string. Or maybe it doesn't matter.
+    - **pg. 122 and onwards isn't very well explained**
 
 
 ## Renaming files, folders, script

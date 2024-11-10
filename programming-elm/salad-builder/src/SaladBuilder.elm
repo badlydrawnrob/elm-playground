@@ -222,6 +222,47 @@ viewSection heading children =
         (h2 [] [text heading ] :: children)
 
 
+{- #! I'm not a fan of lines `225`->`263`. I'm sure there's a better way -}
+viewRadioOption : String -> value -> (value -> msg) -> String -> value -> Html msg
+viewRadioOption radioName selectedValue tagger optionLabel value =
+    label [ class "select-option" ]
+        [ input
+            [ type_ "radio"
+            , name radioName
+            , checked (value == selectedValue) -- #! These have switched places
+            , onClick (tagger value)
+            ]
+            []
+        , text optionLabel
+        ]
+
+
+viewSelectBase : Base -> Html Msg
+viewSelectBase currentBase =
+    let
+        viewBaseOption =
+            viewRadioOption "base" currentBase (SaladMsg << SetBase)
+        in
+        div []
+            [ viewBaseOption "Lettuce" Lettuce
+            , viewBaseOption "Spinach" Spinach
+            , viewBaseOption "Spring Mix" SpringMix
+            ]
+
+viewSelectDressing : Dressing -> Html Msg
+viewSelectDressing currentDressing =
+    let
+        viewBaseOption =
+            viewRadioOption "dressing" currentDressing (SaladMsg << SetDressing)
+    in
+    div []
+        [ viewDressingOption "None" NoDressing
+        , viewDressingOption "Italian" Italian
+        , viewDressingOption "Rasperry Vinaigrette" RaspberryVinaigrette
+        , viewDressingOption "Oil and Vinegar" OilVinegar
+        ]
+
+
 {- #! I feel like you should be able to `List.map` this function rather than having
 2 different functions:  `List.map toppings topping` where `toppings` has a
 `type alias Topping = (Set String)` (sets must be comparable, not union types) -}
@@ -252,82 +293,11 @@ viewBuild model =
     div []
         [ viewError model.error
         , viewSection "1. Select Base"
-            [ label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "base"
-                    , checked (model.salad.base == Lettuce)
-                    , onClick (SaladMsg (SetBase Lettuce))
-                    ]
-                    []
-                , text "Lettuce"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "base"
-                    , checked (model.salad.base == Spinach)
-                    , onClick (SaladMsg (SetBase Spinach))
-                    ]
-                    []
-                , text "Spinach"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "base"
-                    , checked (model.salad.base == SpringMix)
-                    , onClick (SaladMsg (SetBase SpringMix))
-                    ]
-                    []
-                , text "Spring Mix"
-                ]
-            ]
+            [ viewSelectBase model.salad.base ]
         , viewSection "2. Select Toppings"
             [ viewSelectToppings model.salad.toppings ]
-
         , viewSection "3. Select Dressing"
-            [ label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "dressing"
-                    , checked (model.salad.dressing == NoDressing)
-                    , onClick (SaladMsg (SetDressing NoDressing))
-                    ]
-                    []
-                , text "None"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "dressing"
-                    , checked (model.salad.dressing == Italian)
-                    , onClick (SaladMsg (SetDressing Italian))
-                    ]
-                    []
-                , text "Italian"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "dressing"
-                    , checked (model.salad.dressing == RaspberryVinaigrette)
-                    , onClick (SaladMsg (SetDressing RaspberryVinaigrette))
-                    ]
-                    []
-                , text "Raspberry Vinaigrette"
-                ]
-            , label [ class "select-option" ]
-                [ input
-                    [ type_ "radio"
-                    , name "dressing"
-                    , checked (model.salad.dressing == OilVinegar)
-                    , onClick (SaladMsg (SetDressing OilVinegar))
-                    ]
-                    []
-                , text "Oil and Vinegar"
-                ]
-            ]
+            [ viewSelectDressing model.salad.dressing ]
         , viewSection "4. Enter Contact Info"
             [ div [ class "text-input" ]
                 [ label []
