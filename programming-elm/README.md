@@ -202,6 +202,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - `[ H1 [] [ text "Title" ]
        , H2 [] [ text "Secondary" ] ]` is two list
     - Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`
+    - See commit `cd1b22a`
 
 
 ## Renaming files, folders, script
