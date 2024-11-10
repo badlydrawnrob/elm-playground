@@ -194,7 +194,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 7. We've separated concerns for our `SaladMsg`, but our `view` functions are still lumped together. We need to reach into nested `model.salad.toppings` values.
     - That can get annoying
     - You don't want heavily nested records
-    - His advice is to AVOID nesting state, or use it very sparingly (like @rtfeldman's Elm Spa `model.form`)
+    - **His advice is to AVOID nesting state**, or use it very sparingly (like @rtfeldman's Elm Spa `model.form`)
 8. Show why extensible records are better.
 
 
