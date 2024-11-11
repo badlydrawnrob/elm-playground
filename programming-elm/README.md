@@ -189,37 +189,32 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Converting loads of types to strings seems a bit of an arse on.
 5. **`ToggleTopping` has to continuously "delete" the `Set.remove` if the boolean is false.** Is this the only way to manage this?
     - Either way, show [the refactored version](https://tinyurl.com/programming-elm-commit-efd9ed5) in Anki
-6. **Show how to reduce responsibilities for an update function** — probably a good time to use the **Draw!** card to visualise the process. The book doesn't do a great job of explaining this.
-    - See pg.113 [Nested State](https://tinyurl.com/salad-builder-msg-f99ba12)
-    - State the pros and cons of nested state
-    - You can access `model.salad.dressing` for nested fields.
-    - [Explain](https://tinyurl.com/salad-builder-msg-a6bc523) `SaladMsg SaladMsg` and `(SaladMsg (SetDressing Dressing))` and `(SaladMsg << ToggleTopping Topping)`
-    - Why do we use `<<` rather than parenthesis? (ToggleTopping takes two arguments, including a `Bool`)
-    - Add a Draw card to [explain how `update` is handling this process](https://tinyurl.com/salad-builder-update-salad) (see pg.117) — nested `SaladMsg` and nested `updateSalad` functions
-    - It seems Elm prefers flat records?
+6. **Make a note somewhere about the benefits of narrowing types** — use a Draw! card to show reducing responsibilities of the update function.
+    - [Nested messages](https://tinyurl.com/salad-builder-update-salad) and [this](https://tinyurl.com/salad-builder-msg-f99ba12)
+    - `<<` rather than parenthesis
+    - [Extensible record types](https://tinyurl.com/salad-builder-extensible) rather than nested records (pg 118-120)
+    - Explain that flatter model is better!
 7. We've separated concerns for our `SaladMsg`, but our `view` functions are still lumped together. We need to reach into nested `model.salad.toppings` values.
     - That can get annoying
     - You don't want heavily nested records
     - **His advice is to AVOID nesting state**, or use it very sparingly (like @rtfeldman's Elm Spa `model.form`)
-8. Show why [extensible records](https://tinyurl.com/salad-builder-extensible) are better.
-    - Reread pages 118-120
-9. **Quickly show some examples of lists in HTML:**
+8. **Quickly show some examples of lists in HTML:**
     - For example `[ H1 [] [ text "Title" ] ]` is a singleton
     - `[ H1 [] [ text "Title" ]
        , H2 [] [ text "Secondary" ] ]` is two list
     - Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`
     - See commit `cd1b22a`
-10. **Again! Sets**
+9. **Again! Sets**
     - See also the `msg` and the only function that has a `Msg` is the secondary helper functions. Their wrappers have a `Html msg` type annotation.
     - Sets must hold comparables, it doesn't seem to accept Union Types (like `Toppings`)
     - List.map (viewToppings model.salad.toppings) [Tomatoes, Cucumbers, Onions] should work here, but you'd need to convert `model.salad.toppings` to a `type alias ToppingSet = (Set String)` — I'm not sure how this might affect things, as we're binding our strings to a limited set of `Topping` here.
     - Create a simple demo and ask the community. Can you restrict the range of `ToppingSet` to a proper set of strings? Then you can't accidentally create the function with the wrong string. Or maybe it doesn't matter.
     - **pg. 122 and onwards isn't very well explained**
-11. Reusable radio buttons (problem)
+10. Reusable radio buttons (problem)
     - I'm not a huge fan of this refactoring (see commit #4d80b94)
     - I would say **_unless it makes things much simpler, or you have LOTS of inputs_ DON'T Bother refactoring.** It looks pretty ugly and makes it harder to read in my mind.
     - See "life of a file" for more info.
-12. **Have a go at creating a `Html.map` function for a simple form element** with narrowed type (such as `ContactMsg` -> `Msg`)
+11. **Have a go at creating a `Html.map` function for a simple form element** with narrowed type (such as `ContactMsg` -> `Msg`)
 
 
 ## Renaming files, folders, script

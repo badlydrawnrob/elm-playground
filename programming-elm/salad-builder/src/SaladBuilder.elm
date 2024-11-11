@@ -303,7 +303,7 @@ viewTextInput inputLabel inputValue tagger =
         ]
 
 {- Here we use `ContactMsg` instead of our `Msg` -}
-viewContact : Contact a -> Html ContactMsg
+viewContact : Contact c -> Html ContactMsg
 viewContact contact =
     div []
         -- You could've written it like `(ContactMsg << SetName)`
