@@ -390,13 +390,13 @@ viewConfirmation model =
 viewStep : Model -> Html Msg
 viewStep model =
     case model.step of
-        Building maybeError ->
+        Building error ->
             viewBuild error model
 
         Sending ->
             viewSending
 
-        Confirmation
+        Confirmation ->
             viewConfirmation model
 
 
