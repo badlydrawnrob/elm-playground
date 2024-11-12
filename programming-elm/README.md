@@ -220,6 +220,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - Possibly link to the same authors blog posts on booleans and their downfalls.
 13. Write a checkbox and radio button group where you're using custom types, rather than boolean values.
     - See "Sets" above (4), (9): you can condense all these down into ONE example file.
+    - **If it's a really big set, for example many-to-many tags** from database, json, or whatever, should you stick to strings or convert to types?
 
 
 ## Renaming files, folders, script
