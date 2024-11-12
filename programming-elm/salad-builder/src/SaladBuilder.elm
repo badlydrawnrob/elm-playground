@@ -262,7 +262,7 @@ viewSelectBase currentBase =
 viewSelectDressing : Dressing -> Html Msg
 viewSelectDressing currentDressing =
     let
-        viewBaseOption =
+        viewDressingOption =
             viewRadioOption "dressing" currentDressing (SaladMsg << SetDressing)
     in
     div []

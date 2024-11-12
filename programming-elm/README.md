@@ -202,7 +202,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - For example `[ H1 [] [ text "Title" ] ]` is a singleton
     - `[ H1 [] [ text "Title" ]
        , H2 [] [ text "Secondary" ] ]` is two list
-    - Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`
+    - **Write a `viewHeaders h1 otherHeaders` function, where you have `(H1 [] [ text "title" ] :: rest)`**
     - See commit `cd1b22a`
 9. **Again! Sets**
     - See also the `msg` and the only function that has a `Msg` is the secondary helper functions. Their wrappers have a `Html msg` type annotation.
@@ -218,6 +218,8 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 12. **Explain "impossible states" with a link to the video.** This is basically getting into trouble with boolean fields and replacing with a Union Type (sum type)
     - Draw! a simplified version of `building`, `sending`, `success`, `error`
     - Possibly link to the same authors blog posts on booleans and their downfalls.
+13. Write a checkbox and radio button group where you're using custom types, rather than boolean values.
+    - See "Sets" above (4), (9): you can condense all these down into ONE example file.
 
 
 ## Renaming files, folders, script
