@@ -215,6 +215,9 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - I would say **_unless it makes things much simpler, or you have LOTS of inputs_ DON'T Bother refactoring.** It looks pretty ugly and makes it harder to read in my mind.
     - See "life of a file" for more info.
 11. Explore `Regex.contains` function for validating emails
+12. **Explain "impossible states" with a link to the video.** This is basically getting into trouble with boolean fields and replacing with a Union Type (sum type)
+    - Draw! a simplified version of `building`, `sending`, `success`, `error`
+    - Possibly link to the same authors blog posts on booleans and their downfalls.
 
 
 ## Renaming files, folders, script
