@@ -35,11 +35,11 @@ module HowToMessage.HtmlMap exposing (..)
 
 -}
 
+import Browser
+import Debug
 import Html exposing (..)
 import Html.Attributes exposing (class, checked, type_, placeholder, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Debug
-import Browser
 
 
 -- Model -----------------------------------------------------------------------
