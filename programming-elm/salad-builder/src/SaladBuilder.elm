@@ -470,19 +470,13 @@ updateContact : ContactMsg -> Contact c -> Contact c
 updateContact msg contact =
     case msg of
         SetName name ->
-            ( { contact | name = name }
-            , Cmd.none
-            )
+            { contact | name = name }
 
         SetEmail email ->
-            ( { contact | email = email }
-            , Cmd.none
-            )
+            { contact | email = email }
 
         SetPhone phone ->
-            ( { contact | phone = phone }
-            , Cmd.none
-            )
+            { contact | phone = phone }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

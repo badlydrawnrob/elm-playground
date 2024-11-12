@@ -214,7 +214,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - I'm not a huge fan of this refactoring (see commit #4d80b94)
     - I would say **_unless it makes things much simpler, or you have LOTS of inputs_ DON'T Bother refactoring.** It looks pretty ugly and makes it harder to read in my mind.
     - See "life of a file" for more info.
-11. **Have a go at creating a `Html.map` function for a simple form element** with narrowed type (such as `ContactMsg` -> `Msg`)
+11. Explore `Regex.contains` function for validating emails
 
 
 ## Renaming files, folders, script
