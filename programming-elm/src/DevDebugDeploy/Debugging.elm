@@ -52,3 +52,15 @@ viewDog dog =
         ++ " is "
         ++ String.fromInt dog.age
         ++ " years old."
+
+
+-- -- Main ------------------------------------------------------------------------
+
+-- main : Html msg
+-- main =
+--     case Debug.log "decodedDog" decodedDog of
+--         Ok dog ->
+--             viewDog dog
+
+--         Err _ ->
+--             text "ERROR: Couldn't decode dog."
