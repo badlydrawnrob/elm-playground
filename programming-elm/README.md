@@ -226,7 +226,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 1. Give a few basic examples of `Debug.log` (pg. 132). It seems useful for when you're uncertain how things work, but ideally you just treat the function like a black box and test the input/output.
     - A single call
     - A piped call
-    - Inspect `Json.Decode`r results
+    - Inspect `Json.Decode`r results (you can use within a case statement)
 
 
 ```
