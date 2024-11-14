@@ -45,7 +45,7 @@ decodedDog =
 
 -- View ------------------------------------------------------------------------
 
-viewDog : Dog -> Html Msg
+viewDog : Dog -> Html msg
 viewDog dog =
     text <|
         dog.name
