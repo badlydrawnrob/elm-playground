@@ -126,10 +126,12 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 2. `List.map` on a function:
     - [Updating minimally, with fewer arguments](https://tinyurl.com/elm-playground-f54b4f6) is BETTER (see the `Msg` branches update functions)
     - You MUST lift the `Maybe Feed`, hence why the `Id` mapping function is placed there.
-3. `List.filter` and `List.map` are useful when the `List a` contains the same types.
-    - What do you do when you've got different types?
-    - `Result.map3 (\a b c -> Custom a b c)` works for `Result` values (of any type)
-    - What other examples are out there?
+3. When you decide on a type for `List a` you must stick to it:
+    - `List.filter` and `List.map` expect the `List` to hold the same types
+    - If they don't you get an error.
+    - You can use different types in a record, but if you have `List record` each record must hold the same types. Same goes for `Result`.
+    - You can create a custom function with `Result.map2` that maps three valid (but different types) into a structure.
+    - But if you wanted different result types within a list, they'd need to be a custom type.
 
 
 3. **Sketch out how the [Http command works](https://github.com/badlydrawnrob/elm-playground/blob/cfe1c7a39d4829c35552ec4252c97dd5975dde2b/programming-elm/src/WebSockets/RealTime.elm#L249):** It's actually quite hard to describe as the [`Http.expectJson`](https://elmprogramming.com/decoding-json-part-1.html#replacing-expectstring-with-expectjson) type signature isn't very easy to understand. **The [simple version in the Elm Guide](https://guide.elm-lang.org/effects/json), however is much easier to understand**
@@ -141,14 +143,10 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - We also handle the `view` function if either:
         - Http error
         - No json data (no `Feed`)
-4. <s>Explain succinctly what `Http.BadBody` error is. Are there other errors I need to remember?</s>
-5. How do subscriptions and commands differ?
+4. How do subscriptions and commands differ?
     - commands tell the Elm Architecture to do something to the outside world
     - subscriptions tell the Elm Architecture to receive information from the outside world.
-6. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
-7. <s>I know how `decodeString photoDecoder` is working (takes a json string), but need to make it clearer to myself what's happening with the function composition (and the fact that you've GOT to change from `msg String` to `msg Result` in the subscriptions function.
-    - **Add `how-function-to-msg-works` to Anki**
-    - The simple string, and the `Result`.</s>
+5. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
 
 
 
@@ -221,6 +219,26 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 13. Write a checkbox and radio button group where you're using custom types, rather than boolean values.
     - See "Sets" above (4), (9): you can condense all these down into ONE example file.
     - **If it's a really big set, for example many-to-many tags** from database, json, or whatever, should you stick to strings or convert to types?
+
+
+## To-dos (chapter 7)
+
+1. Give a few basic examples of `Debug.log` (pg. 132). It seems useful for when you're uncertain how things work, but ideally you just treat the function like a black box and test the input/output.
+    - A single call
+    - A piped call
+    - Inspect `Json.Decode`r results
+
+
+```
+this =
+  list
+    |> List.map (\n -> n * 2)
+    |> Debug.log "doubled"
+    |> List.filter (\n -> n > 6)
+    |> Debug.log "filtered"
+    |> List.map (\n -> n * n)
+```
+
 
 
 ## Renaming files, folders, script
