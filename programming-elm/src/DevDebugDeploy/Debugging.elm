@@ -11,6 +11,8 @@ module DevDebugDeploy.Debugging exposing (..)
         - `Breed` is represented as a json string.
         - What if we have _lots_ of breeds?
     2. Is the `Json.andThen` the only way to convert `"Sheltie"`?
+        - `Decode.map` also seems to work:
+          @ https://stackoverflow.com/a/57248663
 
 -}
 

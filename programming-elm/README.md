@@ -234,6 +234,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - How much coverage is enough for typed functional?
 4. Give a basic explanation of `Json.succeed` and see what alternatives (if any) for `Json.string |> Json.andThen decodeBreed`
     - Search for "decoding custom types" and ask @sebastian what other methods are there (how he keeps his custom types in sync)
+    - See [here](https://stackoverflow.com/a/57248663) and [here](https://thoughtbot.com/blog/5-common-json-decoders)
 
 
 ```
