@@ -223,10 +223,15 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 ## To-dos (chapter 7)
 
+> 1-3 just write a few basic `Debug` examples. One file is probably enough.
+
 1. Give a few basic examples of `Debug.log` (pg. 132). It seems useful for when you're uncertain how things work, but ideally you just treat the function like a black box and test the input/output.
     - A single call
     - A piped call
     - Inspect `Json.Decode`r results (you can use within a case statement)
+2. Somewhere mention `Json.errorToString` as an option (just unwrap the `Err` value and wrap it in this)
+3. What are the essential tests you need to write and which ones are safe enough to leave off? I'm lazy and don't want to write them.
+    - How much coverage is enough for typed functional?
 
 
 ```
