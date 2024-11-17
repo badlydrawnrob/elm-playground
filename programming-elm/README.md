@@ -232,6 +232,8 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 2. Somewhere mention `Json.errorToString` as an option (just unwrap the `Err` value and wrap it in this)
 3. What are the essential tests you need to write and which ones are safe enough to leave off? I'm lazy and don't want to write them.
     - How much coverage is enough for typed functional?
+4. Give a basic explanation of `Json.succeed` and see what alternatives (if any) for `Json.string |> Json.andThen decodeBreed`
+    - Search for "decoding custom types" and ask @sebastian what other methods are there (how he keeps his custom types in sync)
 
 
 ```

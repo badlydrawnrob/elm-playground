@@ -4434,10 +4434,27 @@ var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	}
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-var $author$project$DevDebugDeploy$Debugging$Dog = F2(
-	function (name, age) {
-		return {age: age, name: name};
+var $author$project$DevDebugDeploy$Debugging$Dog = F3(
+	function (name, age, breed) {
+		return {age: age, breed: breed, name: name};
 	});
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $author$project$DevDebugDeploy$Debugging$Sheltie = {$: 'Sheltie'};
+var $elm$core$Debug$log = _Debug_log;
+var $elm$core$Debug$todo = _Debug_todo;
+var $author$project$DevDebugDeploy$Debugging$decodeBreed = function (breed) {
+	var _v0 = A2($elm$core$Debug$log, 'breed', breed);
+	if (_v0 === 'Sheltie') {
+		return $elm$json$Json$Decode$succeed($author$project$DevDebugDeploy$Debugging$Sheltie);
+	} else {
+		return _Debug_todo(
+			'DevDebugDeploy.Debugging',
+			{
+				start: {line: 44, column: 13},
+				end: {line: 44, column: 23}
+			})('Handle other breeds in decodeBreed');
+	}
+};
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
 var $elm$json$Json$Decode$field = _Json_decodeField;
@@ -4451,21 +4468,31 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$DevDebugDeploy$Debugging$dogDecoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'age',
-	$elm$json$Json$Decode$int,
+	'breed',
+	A2($elm$json$Json$Decode$andThen, $author$project$DevDebugDeploy$Debugging$decodeBreed, $elm$json$Json$Decode$string),
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'name',
-		$elm$json$Json$Decode$string,
-		$elm$json$Json$Decode$succeed($author$project$DevDebugDeploy$Debugging$Dog)));
-var $author$project$DevDebugDeploy$Debugging$jsonDog = '\n    {\n        "name" : "Tucker",\n        "age" : 11\n    }\n    ';
+		'age',
+		$elm$json$Json$Decode$int,
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'name',
+			$elm$json$Json$Decode$string,
+			$elm$json$Json$Decode$succeed($author$project$DevDebugDeploy$Debugging$Dog))));
+var $author$project$DevDebugDeploy$Debugging$jsonDog = '\n    {\n        "name": "Tucker",\n        "age": 11,\n        "breed": "Sheltie"\n    }\n    ';
 var $author$project$DevDebugDeploy$Debugging$decodedDog = A2($elm$json$Json$Decode$decodeString, $author$project$DevDebugDeploy$Debugging$dogDecoder, $author$project$DevDebugDeploy$Debugging$jsonDog);
-var $elm$core$Debug$log = _Debug_log;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$DevDebugDeploy$Debugging$breedToString = function (breed) {
+	if (breed.$ === 'Sheltie') {
+		return 'Sheltie';
+	} else {
+		return 'Poodle';
+	}
+};
 var $author$project$DevDebugDeploy$Debugging$viewDog = function (dog) {
 	return $elm$html$Html$text(
-		dog.name + (' is ' + ($elm$core$String$fromInt(dog.age) + ' years old.')));
+		dog.name + (' the ' + ($author$project$DevDebugDeploy$Debugging$breedToString(dog.breed) + (' is ' + ($elm$core$String$fromInt(dog.age) + ' years old.')))));
 };
 var $author$project$DevDebugDeploy$Debugging$main = function () {
 	var _v0 = A2($elm$core$Debug$log, 'decodedDog', $author$project$DevDebugDeploy$Debugging$decodedDog);
