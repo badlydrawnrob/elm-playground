@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bad API Design?</title>
+  <style>
+    body { width: 100%; }
+    #main { width: 800px; margin: 0 auto; padding: 40px 0; }
+    </style>
+</head>
+<body>
+  <h1>Open Library API: Bad API Design?</h1>
+  <div id="main" class="main"></div>
+
+  <script src="06-how-to-decode-bad-api.js"></script>
+  <script src="./scripts/clipboard.min.js?v1"></script>
+  <script>
+    Elm.HowToDecode.BadAPI.init({
+      node: document.getElementById('main')
+    });
+  </script>
+  <script>
+    var clipboard = new ClipboardJS('.copy-button');
+  </script>
+</body>
+</html>
