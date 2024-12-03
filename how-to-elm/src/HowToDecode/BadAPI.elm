@@ -52,6 +52,8 @@ module HowToDecode.BadAPI exposing (..)
         - `covers` require building a Covers API url (see above)
     3. MISSING data, rather than `nullable` entries, such as "authors", "covers",
        and "physical_format" are inconsistant.
+        - See here for the argument for and against `null` within your API:
+          @ https://softwareengineering.stackexchange.com/q/285010
     4. Is an "ISBN_13" always present, even for old books? I don't know:
         - You'd potentially have to do an `if ... then` to cover books that are
           missing an ISBN number with 13 numbers.
