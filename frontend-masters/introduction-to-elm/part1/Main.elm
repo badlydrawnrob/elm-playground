@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-{-| See the notes in `Documents/Library/code/elm`
+{-|
 
 # Task
 
