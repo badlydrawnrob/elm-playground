@@ -8,9 +8,9 @@ An [Introduction to Elm](https://frontendmasters.com/courses/intro-elm/), v2. It
 
 ## My goals
 
-> Design a `json`/REST API for intermediate students.
-> What would that look like? What's in? What's out?
-> What materials are great for light and flexible prototyping?
+> - Design a `json`/REST API for intermediate students.
+> - What would that look like? What's in? What's out?
+> - What materials are great for light and flexible prototyping?
 
 Not everyone wants to be a gigging programmer; some of us are founders, dabblers, learners figuring out if this thing called coding is right for us. Essentially I want to learn quickly, stay agile, reduce time spent coding, and avoid getting into the weeds with deep or niche knowledge. There's marketing to do, sales to get, people to manage, stuff to learn, and only so much one person can do.
 
