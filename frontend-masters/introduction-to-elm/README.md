@@ -8,6 +8,7 @@ An [Introduction to Elm](https://frontendmasters.com/courses/intro-elm/), v2. It
 
 ## My goals
 
+> ⭐ To not waste too much of your life in the process, that's the goal.
 > - Design a `json`/REST API for intermediate students.
 > - What would that look like? What's in? What's out?
 > - What materials are great for light and flexible prototyping?
