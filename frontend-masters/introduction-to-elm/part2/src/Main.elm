@@ -3,13 +3,15 @@ module Main exposing (main)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
+
 {-|
+
 
 # Task
 
-1. Use `List.map` with the `viewTag` function
-2. Use a `List String` for your `.map` function
-3. Create buttons for each tag, from the `tags` variable
+1.  Use `List.map` with the `viewTag` function
+2.  Use a `List String` for your `.map` function
+3.  Create buttons for each tag, from the `tags` variable
 
 -}
 
