@@ -6,7 +6,7 @@
 
 An [Introduction to Elm](https://frontendmasters.com/courses/intro-elm/), v2. It's a little pricy to join Frontend Masters ($39 per month), but you can do this in a month. For students, there's [a good deal](https://frontendmasters.com/welcome/github-student-developers/) at time of writing.
 
-## My goals
+## My goals
 
 > Design a `json`/REST API for intermediate students.
 > What would that look like? What's in? What's out?
