@@ -1,0 +1,14 @@
+{
+  "name": "introduction-to-elm",
+  "version": "1.0.0",
+  "description": "Frontend Masters course by @rtfeldman",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rob",
+  "license": "ISC",
+  "dependencies": {
+    "elm-format": "^0.8.7"
+  }
+}
