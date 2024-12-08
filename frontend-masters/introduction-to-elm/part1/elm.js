@@ -4349,8 +4349,45 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Main$banner = A2(
+	$elm$html$Html$div,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('banner')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('container')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h1,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('logo-font')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Conduit')
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('A place to share your knowledge.')
+						]))
+				]))
+		]));
 var $author$project$Main$feed = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -4369,13 +4406,7 @@ var $author$project$Main$main = A2(
 		]),
 	_List_fromArray(
 		[
-			A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					$elm$html$Html$text('👉 TODO: Replace this <div> with the banner')
-				])),
+			$author$project$Main$banner,
 			A2(
 			$elm$html$Html$div,
 			_List_fromArray(

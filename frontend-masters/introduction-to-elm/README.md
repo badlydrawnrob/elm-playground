@@ -6,6 +6,8 @@
 
 An [Introduction to Elm](https://frontendmasters.com/courses/intro-elm/), v2. It's a little pricy to join Frontend Masters ($39 per month), but you can do this in a month. For students, there's [a good deal](https://frontendmasters.com/welcome/github-student-developers/) at time of writing.
 
+You can find the repository and tutorial files [here](https://github.com/rtfeldman/elm-0.19-workshop).
+
 ## My goals
 
 > ⭐ To not waste too much of your life in the process, that's the goal.
@@ -27,6 +29,15 @@ Not everyone wants to be a gigging programmer; some of us are founders, dabblers
 One more thing to note is that learning knew programming languages or advanced concepts (in Elm or otherwise) has a massive overhead and days, weeks, months can drift by before you've got any real work done. The goal is to make money from your art, and to do that you need to build -> test -> build -> sell, and figure out if your idea is worth pursuing. Developers are expensive, which is the main reason I'm learning this stuff.
 
 To not waste too much of your life in the process, that's the goal.
+
+
+## Positives
+
+1. Introduction to knowledge is given (i.e: Html structures)
+2. Tasks with "To Dos" are presented (i.e: Add H1/p)
+3. New rules are inbibed (Variable contains H1/p)
+4. Silent features/knowledge (modules haven't been taught yet, but are required for task)
+
 
 ## Common complaints
 
