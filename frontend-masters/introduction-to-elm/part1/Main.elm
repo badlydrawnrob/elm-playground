@@ -1,10 +1,7 @@
 module Main exposing (main)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-
-
 {-|
+
 
 # Task
 
@@ -12,6 +9,9 @@ import Html.Attributes exposing (..)
 2.  Use the variable `banner` within `main`
 
 -}
+
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 
 banner =

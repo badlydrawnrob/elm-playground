@@ -1,23 +1,7 @@
 module Main exposing (main)
 
-{-|
-
-
-# Tasks
-
-1.  Add a `ClickedTag` message
-2.  If clicked, set `selectedTag` to `msg.data`
-3.  Filter articles by the selected tag
-      - You'll need to use:
-        `List.member`, `article.tags`, and `model.selectedTag`
-
-I'm using `Debug` to preview chosen tag in Console.
-
--}
-
 import Article
 import Browser
-import Debug exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -27,6 +11,30 @@ import Html.Events exposing (onClick)
 -- MODEL
 
 
+type alias Model =
+    { tags : List String
+    , selectedTag : String
+
+    {- 👉 TODO: change this `allArticles` annotation to the following:
+
+        allArticles : List Article
+
+
+       💡 HINT: You'll need to move the existing annotation to a `type alias`.
+    -}
+    , allArticles :
+        List
+            { title : String
+            , description : String
+            , body : String
+            , tags : List String
+            , slug : String
+            }
+    }
+
+
+{-| 👉 TODO: Replace this comment with a type annotation for `initialModel`
+-}
 initialModel =
     { tags = Article.tags
     , selectedTag = "elm"
@@ -38,19 +46,28 @@ initialModel =
 -- UPDATE
 
 
-update msg model =
-    case msg.description of
-        "User clicked tag" ->
-            { model | selectedTag = Debug.log "data tag" msg.data }
+type alias Msg =
+    { description : String
+    , data : String
+    }
 
-        _ ->
-            model
+
+{-| 👉 TODO: Replace this comment with a type annotation for `update`
+-}
+update msg model =
+    if msg.description == "ClickedTag" then
+        { model | selectedTag = msg.data }
+
+    else
+        model
 
 
 
 -- VIEW
 
 
+{-| 👉 TODO: Replace this comment with a type annotation for `view`
+-}
 view model =
     let
         articles =
@@ -76,6 +93,8 @@ view model =
         ]
 
 
+{-| 👉 TODO: Replace this comment with a type annotation for `viewArticle`
+-}
 viewArticle article =
     div [ class "article-preview" ]
         [ h1 [] [ text article.title ]
@@ -84,6 +103,8 @@ viewArticle article =
         ]
 
 
+{-| 👉 TODO: Replace this comment with a type annotation for `viewBanner`
+-}
 viewBanner =
     div [ class "banner" ]
         [ div [ class "container" ]
@@ -93,6 +114,8 @@ viewBanner =
         ]
 
 
+{-| 👉 TODO: Replace this comment with a type annotation for `viewTag`
+-}
 viewTag selectedTagName tagName =
     let
         otherClass =
@@ -104,11 +127,12 @@ viewTag selectedTagName tagName =
     in
     button
         [ class ("tag-pill " ++ otherClass)
-        , onClick { description = "User clicked tag", data = tagName }
+        , onClick { description = "ClickedTag", data = tagName }
         ]
         [ text tagName ]
-L
 
+
+viewTags : Model -> Html Msg
 viewTags model =
     div [ class "tag-list" ] (List.map (viewTag model.selectedTag) model.tags)
 
@@ -117,6 +141,7 @@ viewTags model =
 -- MAIN
 
 
+main : Program () Model Msg
 main =
     Browser.sandbox
         { init = initialModel

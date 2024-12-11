@@ -1,9 +1,5 @@
 module Main exposing (main)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-
-
 {-|
 
 
@@ -14,6 +10,9 @@ import Html.Attributes exposing (..)
 3.  Create buttons for each tag, from the `tags` variable
 
 -}
+
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 
 viewTags tags =
