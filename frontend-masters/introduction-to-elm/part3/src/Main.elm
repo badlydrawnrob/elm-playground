@@ -40,7 +40,7 @@ initialModel =
 
 update msg model =
     case msg.description of
-        "User clicked tag" ->
+        "ClickedTag" ->
             { model | selectedTag = Debug.log "data tag" msg.data }
 
         _ ->
@@ -104,7 +104,7 @@ viewTag selectedTagName tagName =
     in
     button
         [ class ("tag-pill " ++ otherClass)
-        , onClick { description = "User clicked tag", data = tagName }
+        , onClick { description = "ClickedTag", data = tagName }
         ]
         [ text tagName ]
 L
