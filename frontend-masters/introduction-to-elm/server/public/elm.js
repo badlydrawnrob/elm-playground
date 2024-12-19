@@ -10554,6 +10554,16 @@ var $author$project$Page$Register$validate = function (form) {
 var $author$project$Page$Register$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'EnteredUsername':
+				var username = msg.a;
+				return A2(
+					$author$project$Page$Register$updateForm,
+					function (form) {
+						return _Utils_update(
+							form,
+							{username: username});
+					},
+					model);
 			case 'EnteredEmail':
 				var email = msg.a;
 				return A2(
@@ -13822,6 +13832,9 @@ var $author$project$Page$Register$EnteredEmail = function (a) {
 var $author$project$Page$Register$EnteredPassword = function (a) {
 	return {$: 'EnteredPassword', a: a};
 };
+var $author$project$Page$Register$EnteredUsername = function (a) {
+	return {$: 'EnteredUsername', a: a};
+};
 var $author$project$Page$Register$SubmittedForm = {$: 'SubmittedForm'};
 var $author$project$Page$Register$viewForm = function (form) {
 	return A2(
@@ -13846,6 +13859,7 @@ var $author$project$Page$Register$viewForm = function (form) {
 							[
 								$elm$html$Html$Attributes$class('form-control form-control-lg'),
 								$elm$html$Html$Attributes$placeholder('Username'),
+								$elm$html$Html$Events$onInput($author$project$Page$Register$EnteredUsername),
 								$elm$html$Html$Attributes$value(form.username)
 							]),
 						_List_Nil)
