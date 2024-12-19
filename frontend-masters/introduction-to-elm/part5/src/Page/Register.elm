@@ -1,5 +1,21 @@
 module Page.Register exposing (Model, Msg, init, subscriptions, toSession, update, view)
 
+{-|
+
+
+# Task
+
+1.  Add a message to hold our `username` string
+2.  Wire up the message in the `viewForm` and `update` functions
+3.  Recompile the script
+
+You'll need the `/server` working, and you might also like to take a look at the
+`Problem` type, the `viewProblem` function, and the `SubmittedForm` update case.
+It's pretty neat, it uses a `ValidatedField` and a function that lists them to
+validate the whole thing. Worth understanding.
+
+-}
+
 import Api
 import Browser.Navigation as Nav
 import Html exposing (..)
