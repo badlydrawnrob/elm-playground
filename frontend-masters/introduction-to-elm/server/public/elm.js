@@ -6420,7 +6420,7 @@ var $author$project$Author$decoder = function (maybeCred) {
 				$elm$json$Json$Decode$succeed($elm$core$Tuple$pair))));
 };
 var $author$project$Article$Metadata = F6(
-	function (description, title, tags, createdAt, favorited, favoritesCount) {
+	function (description, title, tags, favorited, favoritesCount, createdAt) {
 		return {createdAt: createdAt, description: description, favorited: favorited, favoritesCount: favoritesCount, tags: tags, title: title};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -7002,27 +7002,18 @@ var $author$project$Timestamp$fromString = function (str) {
 };
 var $author$project$Timestamp$iso8601Decoder = A2($elm$json$Json$Decode$andThen, $author$project$Timestamp$fromString, $elm$json$Json$Decode$string);
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$Article$metadataDecoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'favoritesCount',
-	$elm$json$Json$Decode$int,
+	'createdAt',
+	$author$project$Timestamp$iso8601Decoder,
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'favorited',
-		$elm$json$Json$Decode$bool,
+		'favoritesCount',
+		$elm$json$Json$Decode$int,
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'createdAt',
-			$author$project$Timestamp$iso8601Decoder,
+			'favorited',
+			$elm$json$Json$Decode$bool,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 				'tagList',
@@ -7034,10 +7025,7 @@ var $author$project$Article$metadataDecoder = A3(
 					A3(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 						'description',
-						A2(
-							$elm$json$Json$Decode$map,
-							$elm$core$Maybe$withDefault(''),
-							$elm$json$Json$Decode$nullable($elm$json$Json$Decode$string)),
+						$elm$json$Json$Decode$string,
 						$elm$json$Json$Decode$succeed($author$project$Article$Metadata)))))));
 var $author$project$Article$internalsDecoder = function (maybeCred) {
 	return A2(
@@ -7729,6 +7717,15 @@ var $author$project$Session$viewer = function (session) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $author$project$Page$Settings$init = function (session) {
 	return _Utils_Tuple2(
 		{
@@ -9274,13 +9271,15 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $author$project$Page$Article$Editor$toTagList = function (tagString) {
+var $elm$core$String$trim = _String_trim;
+var $author$project$Page$Article$Editor$tagsFromString = function (str) {
 	return A2(
 		$elm$core$List$filter,
-		function (str) {
-			return str !== '';
-		},
-		A2($elm$core$String$split, ' ', tagString));
+		A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$String$isEmpty),
+		A2(
+			$elm$core$List$map,
+			$elm$core$String$trim,
+			A2($elm$core$String$split, ' ', str)));
 };
 var $author$project$Page$Article$Editor$create = F2(
 	function (_v0, cred) {
@@ -9308,7 +9307,7 @@ var $author$project$Page$Article$Editor$create = F2(
 					A2(
 						$elm$json$Json$Encode$list,
 						$elm$json$Json$Encode$string,
-						$author$project$Page$Article$Editor$toTagList(form.tags)))
+						$author$project$Page$Article$Editor$tagsFromString(form.tags)))
 				]));
 		var jsonBody = $elm$http$Http$jsonBody(
 			$elm$json$Json$Encode$object(
@@ -9380,7 +9379,6 @@ var $author$project$Page$Article$Editor$fieldsToValidate = _List_fromArray(
 var $author$project$Page$Article$Editor$Trimmed = function (a) {
 	return {$: 'Trimmed', a: a};
 };
-var $elm$core$String$trim = _String_trim;
 var $author$project$Page$Article$Editor$trimFields = function (form) {
 	return $author$project$Page$Article$Editor$Trimmed(
 		{
@@ -9394,44 +9392,6 @@ var $author$project$Page$Article$Editor$InvalidEntry = F2(
 	function (a, b) {
 		return {$: 'InvalidEntry', a: a, b: b};
 	});
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$List$all = F2(
-	function (isOkay, list) {
-		return !A2(
-			$elm$core$List$any,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
-			list);
-	});
-var $author$project$Article$Tag$validate = function (str) {
-	return $elm$core$Basics$eq(
-		A2(
-			$elm$core$List$filter,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$String$isEmpty),
-			A2(
-				$elm$core$List$map,
-				$elm$core$String$trim,
-				A2($elm$core$String$split, ' ', str))));
-};
 var $author$project$Page$Article$Editor$validateField = F2(
 	function (_v0, field) {
 		var form = _v0.a;
@@ -9444,15 +9404,7 @@ var $author$project$Page$Article$Editor$validateField = F2(
 						['title can\'t be blank.']) : _List_Nil;
 				} else {
 					return $elm$core$String$isEmpty(form.body) ? _List_fromArray(
-						['body can\'t be blank.']) : ((($elm$core$String$trim(form.tags) !== '') && A2(
-						$elm$core$List$all,
-						$elm$core$String$isEmpty,
-						$author$project$Page$Article$Editor$toTagList(form.tags))) ? _List_fromArray(
-						['close, but not quite! Is your filter condition returning True when it should be returning False?']) : (A2(
-						$author$project$Article$Tag$validate,
-						form.tags,
-						$author$project$Page$Article$Editor$toTagList(form.tags)) ? _List_Nil : _List_fromArray(
-						['some tags were empty.'])));
+						['body can\'t be blank.']) : _List_Nil;
 				}
 			}());
 	});
@@ -11261,26 +11213,35 @@ var $author$project$Page$navbarLink = F3(
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$html$Html$img = _VirtualDom_node('img');
-var $author$project$Avatar$resolveAvatarUrl = function (maybeUrl) {
-	if (maybeUrl.$ === 'Just') {
-		var url = maybeUrl.a;
-		return url;
-	} else {
-		return 'https://static.productionready.io/images/smiley-cyrus.jpg';
-	}
+var $author$project$Asset$Image = function (a) {
+	return {$: 'Image', a: a};
 };
+var $author$project$Asset$image = function (filename) {
+	return $author$project$Asset$Image('/assets/images/' + filename);
+};
+var $author$project$Asset$defaultAvatar = $author$project$Asset$image('smiley-cyrus.jpg');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
+var $author$project$Asset$src = function (_v0) {
+	var url = _v0.a;
+	return $elm$html$Html$Attributes$src(url);
+};
 var $author$project$Avatar$src = function (_v0) {
 	var maybeUrl = _v0.a;
-	return $elm$html$Html$Attributes$src(
-		_Utils_eq(
-			maybeUrl,
-			$elm$core$Maybe$Just('')) ? $author$project$Avatar$resolveAvatarUrl($elm$core$Maybe$Nothing) : $author$project$Avatar$resolveAvatarUrl(maybeUrl));
+	if (maybeUrl.$ === 'Nothing') {
+		return $author$project$Asset$src($author$project$Asset$defaultAvatar);
+	} else {
+		if (maybeUrl.a === '') {
+			return $author$project$Asset$src($author$project$Asset$defaultAvatar);
+		} else {
+			var url = maybeUrl.a;
+			return $elm$html$Html$Attributes$src(url);
+		}
+	}
 };
 var $author$project$Username$toHtml = function (_v0) {
 	var username = _v0.a;
@@ -11450,17 +11411,7 @@ var $elm$html$Html$Attributes$height = function (n) {
 		'height',
 		$elm$core$String$fromInt(n));
 };
-var $author$project$Asset$Image = function (a) {
-	return {$: 'Image', a: a};
-};
-var $author$project$Asset$image = function (filename) {
-	return $author$project$Asset$Image('/assets/images/' + filename);
-};
 var $author$project$Asset$loading = $author$project$Asset$image('loading.svg');
-var $author$project$Asset$src = function (_v0) {
-	var url = _v0.a;
-	return $elm$html$Html$Attributes$src(url);
-};
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
 		_VirtualDom_attribute,
