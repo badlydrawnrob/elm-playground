@@ -1,5 +1,27 @@
 module Page.Article.Editor exposing (Model, Msg, initEdit, initNew, subscriptions, toSession, update, view)
 
+{-|
+
+
+# Task
+
+> See line 573
+
+1.  Add a `List.filter` function to remove any empty spaces
+2.  Use `|>` the pipeline operator to pass one function result to the next
+
+To see if the bug is fixed, visit <http://localhost:3000/#/editor>
+(you'll need to be logged in) and create an article with tags that have
+multiple spaces between them, e.g. "tag1 tag2 tag3"
+
+
+## Learning points
+
+1.  `String.trim` (line 580) seems to unnecessary now in `0.19.1` as
+    `String.split " "` returns a list of words with empty strings.
+
+-}
+
 import Api
 import Article exposing (Article, Full)
 import Article.Body exposing (Body)
@@ -555,23 +577,9 @@ create (Trimmed form) cred =
 
 toTagList : String -> List String
 toTagList tagString =
-    {- 👉 TODO #2 of 2: add another |> to the end of this pipeline,
-       which filters out any remaining empty strings.
-
-       To see if the bug is fixed, visit http://localhost:3000/#/editor
-       (you'll need to be logged in) and create an article with tags that have
-       multiple spaces between them, e.g. "tag1     tag2     tag3"
-
-       If the bug has not been fixed, trying to save an article with those tags
-       will result in an error! If it has been fixed, saving will work and the
-       tags will be accepted.
-
-       💡 HINT: Here's how to keep only the "foo" strings in a list of strings:
-
-       List.filter (\str -> str == "foo") listOfStrings
-    -}
     String.split " " tagString
-        |> List.map String.trim
+        -- |> List.map String.trim
+        |> List.filter (\str -> str /= "")
 
 
 edit : Slug -> TrimmedForm -> Cred -> Http.Request (Article Full)

@@ -1,5 +1,32 @@
 module Avatar exposing (Avatar, decoder, encode, src, toMaybeString)
 
+{-|
+
+
+# Task
+
+1.  Avatar url is broken:
+      - Case on the `Maybe String` and provide ...
+      - A branch for the `Just`
+      - A backup branch for the `Nothing` (with fallback url)
+
+Note that the `decoder` is within the `Avatar` module, rather than having a
+`decodeAvatar` function. It uses `nullable` as we may have an empty `json` value.
+
+
+## Learning points
+
+1.  The `src` function is adding a `case` statement for an `""` empty string
+      - Is this entirely necessary? Surely when we're encoding the value we can
+        force the string to be a `Nothing` or a `Just nonEmptyString`?
+
+
+## Questions
+
+1.  What is `src` function doing and why?
+
+-}
+
 import Asset
 import Html exposing (Attribute)
 import Html.Attributes
@@ -40,12 +67,12 @@ src (Avatar maybeUrl) =
 
 resolveAvatarUrl : Maybe String -> String
 resolveAvatarUrl maybeUrl =
-    {- 👉 TODO #1 of 2: return the user's avatar from maybeUrl, if maybeUrl actually
-       contains one. If maybeUrl is Nothing, return this URL instead:
+    case maybeUrl of
+        Just url ->
+            url
 
-          https://static.productionready.io/images/smiley-cyrus.jpg
-    -}
-    ""
+        Nothing ->
+            "https://static.productionready.io/images/smiley-cyrus.jpg"
 
 
 encode : Avatar -> Value
