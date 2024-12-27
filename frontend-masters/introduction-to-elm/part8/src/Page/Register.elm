@@ -1,5 +1,24 @@
 module Page.Register exposing (Model, Msg, init, subscriptions, toSession, update, view)
 
+{-|
+
+
+# Tasks
+
+> You might also want to take a look at `Viewer.elm` as it's an example
+> of exposing a type with functions to pull out information about that type.
+
+WARNING: `Http` module has changed since `0.19` and no longer contains
+`Http.send`. Instead you use a simple `Http.post` to get the job done. That
+won't work here, as we're using version `1.0.0` of `Http`.
+
+See line 171
+
+1.  Create a `Http.post` with the url, `requestBody` and `responseDecoder`
+2.  Then use `Http.send`
+
+-}
+
 import Api
 import Browser.Navigation as Nav
 import Html exposing (..)
@@ -155,34 +174,19 @@ update msg model =
                 responseDecoder =
                     Decode.field "user" Viewer.decoder
 
-                {- 👉 TODO: Create a Http.Request value that represents
-                      a POST request to "/api/users"
-
-                   💡 HINT 1: Documentation for `Http.post` is here:
-
-                       http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#post
-
-                   💡 HINT 2: Look at the values defined above in this
-                   let-expression. What are their types? What are the types the
-                   `Http.post` function is looking for?
+                {- The documentation seems to have changed a bit, and you'd now
+                   use `Http.post` to do ALL of the below.
                 -}
                 request : Http.Request Viewer
                 request =
-                    Debug.todo "Call Http.post to represent a POST to /api/users"
+                    Http.post "/api/users" requestBody responseDecoder
 
-                {- 👉 TODO: Use Http.send to turn the request we just defined
-                   into a Cmd for `update` to execute.
-
-                   💡 HINT 1: Documentation for `Http.send` is here:
-
-                    http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#send
-
-                   💡 HINT 2: The `CompletedRegister` variant defined in `type Msg`
-                    will be useful here!
+                {- `Http.send` is now deprecated. Use `Http.post` or
+                   `Http.request` instead
                 -}
                 cmd : Cmd Msg
                 cmd =
-                    Cmd.none
+                    Http.send CompletedRegister request
             in
             ( { model | problems = [] }, cmd )
 

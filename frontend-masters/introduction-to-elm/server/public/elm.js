@@ -6423,7 +6423,12 @@ var $author$project$Article$Metadata = F6(
 	function (description, title, tags, favorited, favoritesCount, createdAt) {
 		return {createdAt: createdAt, description: description, favorited: favorited, favoritesCount: favoritesCount, tags: tags, title: title};
 	});
-var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded = A2($elm$core$Basics$composeR, $elm$json$Json$Decode$succeed, $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom);
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -7001,31 +7006,25 @@ var $author$project$Timestamp$fromString = function (str) {
 	}
 };
 var $author$project$Timestamp$iso8601Decoder = A2($elm$json$Json$Decode$andThen, $author$project$Timestamp$fromString, $elm$json$Json$Decode$string);
-var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Article$metadataDecoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 	'createdAt',
 	$author$project$Timestamp$iso8601Decoder,
-	A3(
-		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'favoritesCount',
-		$elm$json$Json$Decode$int,
-		A3(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'favorited',
-			$elm$json$Json$Decode$bool,
-			A3(
-				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'tagList',
-				$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
-				A3(
-					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'title',
-					$elm$json$Json$Decode$string,
-					A3(
-						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'description',
-						$elm$json$Json$Decode$string,
+	A2(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
+		0,
+		A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
+			false,
+			A2(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
+				_List_Nil,
+				A2(
+					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
+					'(needs decoding!)',
+					A2(
+						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
+						'(needs decoding!)',
 						$elm$json$Json$Decode$succeed($author$project$Article$Metadata)))))));
 var $author$project$Article$internalsDecoder = function (maybeCred) {
 	return A2(
@@ -7075,11 +7074,6 @@ var $elm$http$Http$Internal$Request = function (a) {
 	return {$: 'Request', a: a};
 };
 var $elm$http$Http$request = $elm$http$Http$Internal$Request;
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var $elm$url$Url$percentEncode = _Url_percentEncode;
 var $lukewestby$elm_http_builder$HttpBuilder$replace = F2(
 	function (old, _new) {
@@ -7218,6 +7212,7 @@ var $author$project$Article$Comment$Internals = F4(
 var $author$project$CommentId$CommentId = function (a) {
 	return {$: 'CommentId', a: a};
 };
+var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $author$project$CommentId$decoder = A2($elm$json$Json$Decode$map, $author$project$CommentId$CommentId, $elm$json$Json$Decode$int);
 var $author$project$Article$Comment$decoder = function (maybeCred) {
 	return A2(
@@ -7241,6 +7236,7 @@ var $author$project$Article$Comment$decoder = function (maybeCred) {
 						$author$project$CommentId$decoder,
 						$elm$json$Json$Decode$succeed($author$project$Article$Comment$Internals))))));
 };
+var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Article$Comment$list = F2(
 	function (maybeCred, articleSlug) {
 		return $lukewestby$elm_http_builder$HttpBuilder$toRequest(
@@ -7354,7 +7350,6 @@ var $author$project$Article$Feed$pageCountDecoder = function (resultsPerPage) {
 		$elm$json$Json$Decode$int);
 };
 var $author$project$Article$Preview = {$: 'Preview'};
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded = A2($elm$core$Basics$composeR, $elm$json$Json$Decode$succeed, $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom);
 var $author$project$Article$previewDecoder = function (maybeCred) {
 	return A2(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
@@ -10450,8 +10445,7 @@ var $author$project$Page$Register$CompletedRegister = function (a) {
 var $author$project$Page$Register$ServerError = function (a) {
 	return {$: 'ServerError', a: a};
 };
-var $author$project$Page$Register$register = function (_v0) {
-	var form = _v0.a;
+var $author$project$Page$Register$encodeJsonBody = function (form) {
 	var user = $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -10465,19 +10459,12 @@ var $author$project$Page$Register$register = function (_v0) {
 				'password',
 				$elm$json$Json$Encode$string(form.password))
 			]));
-	var body = $elm$http$Http$jsonBody(
+	return $elm$http$Http$jsonBody(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
 					_Utils_Tuple2('user', user)
 				])));
-	return A3(
-		$elm$http$Http$post,
-		$author$project$Api$url(
-			_List_fromArray(
-				['users'])),
-		body,
-		A2($elm$json$Json$Decode$field, 'user', $author$project$Viewer$decoder));
 };
 var $author$project$Page$Register$updateForm = F2(
 	function (transform, model) {
@@ -10489,88 +10476,19 @@ var $author$project$Page$Register$updateForm = F2(
 				}),
 			$elm$core$Platform$Cmd$none);
 	});
-var $author$project$Page$Register$Email = {$: 'Email'};
-var $author$project$Page$Register$Password = {$: 'Password'};
-var $author$project$Page$Register$Username = {$: 'Username'};
-var $author$project$Page$Register$fieldsToValidate = _List_fromArray(
-	[$author$project$Page$Register$Username, $author$project$Page$Register$Email, $author$project$Page$Register$Password]);
-var $author$project$Page$Register$Trimmed = function (a) {
-	return {$: 'Trimmed', a: a};
-};
-var $author$project$Page$Register$trimFields = function (form) {
-	return $author$project$Page$Register$Trimmed(
-		{
-			email: $elm$core$String$trim(form.email),
-			password: $elm$core$String$trim(form.password),
-			username: $elm$core$String$trim(form.username)
-		});
-};
-var $author$project$Page$Register$InvalidEntry = F2(
-	function (a, b) {
-		return {$: 'InvalidEntry', a: a, b: b};
-	});
-var $author$project$Viewer$minPasswordChars = 6;
-var $author$project$Page$Register$validateField = F2(
-	function (_v0, field) {
-		var form = _v0.a;
-		return A2(
-			$elm$core$List$map,
-			$author$project$Page$Register$InvalidEntry(field),
-			function () {
-				switch (field.$) {
-					case 'Username':
-						return $elm$core$String$isEmpty(form.username) ? _List_fromArray(
-							['username can\'t be blank.']) : _List_Nil;
-					case 'Email':
-						return $elm$core$String$isEmpty(form.email) ? _List_fromArray(
-							['email can\'t be blank.']) : _List_Nil;
-					default:
-						return $elm$core$String$isEmpty(form.password) ? _List_fromArray(
-							['password can\'t be blank.']) : ((_Utils_cmp(
-							$elm$core$String$length(form.password),
-							$author$project$Viewer$minPasswordChars) < 0) ? _List_fromArray(
-							[
-								'password must be at least ' + ($elm$core$String$fromInt($author$project$Viewer$minPasswordChars) + ' characters long.')
-							]) : _List_Nil);
-				}
-			}());
-	});
-var $author$project$Page$Register$validate = function (form) {
-	var trimmedForm = $author$project$Page$Register$trimFields(form);
-	var _v0 = A2(
-		$elm$core$List$concatMap,
-		$author$project$Page$Register$validateField(trimmedForm),
-		$author$project$Page$Register$fieldsToValidate);
-	if (!_v0.b) {
-		return $elm$core$Result$Ok(trimmedForm);
-	} else {
-		var problems = _v0;
-		return $elm$core$Result$Err(problems);
-	}
-};
 var $author$project$Page$Register$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'SubmittedForm':
-				var _v1 = $author$project$Page$Register$validate(model.form);
-				if (_v1.$ === 'Ok') {
-					var validForm = _v1.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{problems: _List_Nil}),
-						A2(
-							$elm$http$Http$send,
-							$author$project$Page$Register$CompletedRegister,
-							$author$project$Page$Register$register(validForm)));
-				} else {
-					var problems = _v1.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{problems: problems}),
-						$elm$core$Platform$Cmd$none);
-				}
+				var responseDecoder = A2($elm$json$Json$Decode$field, 'user', $author$project$Viewer$decoder);
+				var requestBody = $author$project$Page$Register$encodeJsonBody(model.form);
+				var request = A3($elm$http$Http$post, '/api/users', requestBody, responseDecoder);
+				var cmd = A2($elm$http$Http$send, $author$project$Page$Register$CompletedRegister, request);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{problems: _List_Nil}),
+					cmd);
 			case 'EnteredUsername':
 				var username = msg.a;
 				return A2(
@@ -10734,6 +10652,7 @@ var $author$project$Page$Settings$InvalidEntry = F2(
 	function (a, b) {
 		return {$: 'InvalidEntry', a: a, b: b};
 	});
+var $author$project$Viewer$minPasswordChars = 6;
 var $author$project$Page$Settings$validateField = F2(
 	function (_v0, field) {
 		var form = _v0.a;

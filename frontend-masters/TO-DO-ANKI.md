@@ -12,4 +12,6 @@
         - Create special (complicated) decoders to render as a `Book`
         - Create an intermediate `JsonBook` that we can convert to a `Book`
         - This would be great for chaining `Http.get` requests too
+6. **Familiarise yourself with `Http.post` and `Http.request` examples.**
+    - Especially using the Vanguard API to login and create a session
 
