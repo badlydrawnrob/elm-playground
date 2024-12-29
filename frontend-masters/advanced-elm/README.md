@@ -1,23 +1,37 @@
 # Introduction to Elm
 
-> A speedy run-through with minimal notes.
-> I've read _[Elm in Action](https://www.manning.com/books/elm-in-action)_ and _[Programming Elm](https://pragprog.com/titles/jfelm/programming-elm/)_
-> Others who are just starting, better to slow down.
+> Minimal notes for the parts I'm new to. Other useful books:
+> - [Elm in Action](https://www.manning.com/books/elm-in-action)
+> - [Programming Elm](https://pragprog.com/titles/jfelm/programming-elm/)
 >
 > ⚠️ **See [#common-complaints] for dependency hell.** Our lesson is 5 years old and there's so many broken dependencies, it might not last long.
 
-An [Introduction to Elm](https://frontendmasters.com/courses/intro-elm/), v2. It's a little pricy to join Frontend Masters ($39 per month), but you can do this in a month. For students, there's [a good deal](https://frontendmasters.com/welcome/github-student-developers/) at time of writing.
+[Advanced Elm](https://frontendmasters.com/courses/intro-elm/), using Elm version `0.19`. It's a little pricy to join Frontend Masters ($39 per month), but you can do this course in a month. For students, there's [a good deal](https://frontendmasters.com/welcome/github-student-developers/) at time of writing.
 
 You can find the repository and tutorial files [here](https://github.com/rtfeldman/elm-0.19-workshop). You can also see notes in local at `Documents/Library/code/elm`.
 
 ## My goals
 
-> ⭐ To not waste too much of your life in the process, that's the goal.
-> - Design a `json`/REST API for intermediate students.
-> - What would that look like? What's in? What's out?
-> - What materials are great for light and flexible prototyping?
+> ⭐ Only learn essentials. No wasteful learning.
+> ⭐ Where I don't need to code, DON'T. Focus on more important tasks.
 
-Not everyone wants to be a gigging programmer; some of us are founders, dabblers, learners figuring out if this thing called coding is right for us. Essentially I want to learn quickly, stay agile, reduce time spent coding, and avoid getting into the weeds with deep or niche knowledge. There's marketing to do, sales to get, people to manage, stuff to learn, and only so much one person can do.
+What would a `json` API for intermediate students look like?
+
+- What would you leave out?
+- What materials are best for light, flexible, prototyping?
+- What technologies can you leave out?
+- What's evergreen and long-lasting?
+
+## Coding for founders
+
+> Not everyone wants to be a gigging programmer;
+> some of us are founders, dabblers, dipping our toes in ...
+
+Coding is not for everyone. It can take a few years to learn if it's something you want to pursue as a career, and many years to become great at. I've already spent 10 years at it and I'm never going to be a good programmer. I want to learn only the things I need to prototype and business-test, learn quickly, stay agile, reduce the amount of time spent coding, and fail fast. Niche and deep knowledge of programming is NOT for me.
+
+There's marketing to do, sales to get, people to manage, stuff to learn, and only so much one person can do.
+
+## Not my business
 
 1. I'm not a _serious_ programmer.[^1]
 2. I prefer _simplicity_ wherever possible.
@@ -28,9 +42,12 @@ Not everyone wants to be a gigging programmer; some of us are founders, dabblers
 7. Complex architecture is not my job.
 8. Large programs are not my job.
 
-One more thing to note is that learning knew programming languages or advanced concepts (in Elm or otherwise) has a massive overhead and days, weeks, months can drift by before you've got any real work done. The goal is to make money from your art, and to do that you need to build -> test -> build -> sell, and figure out if your idea is worth pursuing. Developers are expensive, which is the main reason I'm learning this stuff.
+## Learning overhead
 
-To not waste too much of your life in the process, that's the goal.
+> **To not waste too much of your life in the process, that's the goal.**
+> Learning knew programming languages or advanced concepts (in Elm or otherwise) has a massive overhead and days, weeks, months can drift by before you've got any real work done.
+
+The goal is to **make money from your art**, and to do that you need to `build -> test -> build -> sell`, and **figure out if your idea is worth pursuing**. Developers are expensive, which is the main reason I've had to learn this stuff.
 
 
 ## Positives
@@ -50,7 +67,7 @@ To not waste too much of your life in the process, that's the goal.
 
 ## Common complaints
 
-> ⚠️ **Dependency Hell: packages and dependencies are too old.**
+> **Dependency Hell: packages and dependencies are too old.**
 > Vulnerabilities or things that stop working, depending on versions.
 
 1. We have **LOTS of dependencies** for our server.

@@ -1,13 +1,14 @@
-port module Session exposing
-    ( Session
-    , changes
-    , cred
-    , decode
-    , login
-    , logout
-    , navKey
-    , viewer
-    )
+port module Session
+    exposing
+        ( Session
+        , changes
+        , cred
+        , decode
+        , login
+        , logout
+        , navKey
+        , viewer
+        )
 
 import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder)
@@ -71,7 +72,7 @@ login newViewer =
     Viewer.encode newViewer
         |> Encode.encode 0
         |> Just
-        |> sendSessionToJavaScript
+        |> storeSession
 
 
 
@@ -80,24 +81,7 @@ login newViewer =
 
 logout : Cmd msg
 logout =
-    sendSessionToJavaScript Nothing
-
-
-{-| 👉 TODO 1 of 2: Replace this do-nothing function with a port that sends the
-authentication token to JavaScript.
-
-    💡 HINT 1: When you convert it to a port, the port's name _must_ match
-    the name JavaScript expects in `intro/server/public/index.html`.
-    That name is not `sendSessionToJavaScript`, so you will need to
-    rename it to match what JS expects!
-
-    💡 HINT 2: After you rename it, some code in this file will break because
-    it was depending on the old name. Follow the compiler errors to fix them!
-
--}
-sendSessionToJavaScript : Maybe String -> Cmd msg
-sendSessionToJavaScript maybeAuthenticationToken =
-    storeSession maybeAuthenticationToken
+    storeSession Nothing
 
 
 port storeSession : Maybe String -> Cmd msg
@@ -109,24 +93,7 @@ port storeSession : Maybe String -> Cmd msg
 
 changes : (Session -> msg) -> Nav.Key -> Sub msg
 changes toMsg key =
-    receiveSessionFromJavaScript (\val -> toMsg (decode key val))
-
-
-{-| 👉 TODO 2 of 2: Replace this do-nothing function with a port that receives the
-authentication token from JavaScript.
-
-    💡 HINT 1: When you convert it to a port, the port's name _must_ match
-    the name JavaScript expects in `intro/server/public/index.html`.
-    That name is not `receiveSessionFromJavaScript`, so you will need to
-    rename it to match what JS expects!
-
-    💡 HINT 2: After you rename it, some code in this file will break because
-    it was depending on the old name. Follow the compiler errors to fix them!
-
--}
-receiveSessionFromJavaScript : (Value -> msg) -> Sub msg
-receiveSessionFromJavaScript toMsg =
-    onSessionChange toMsg
+    onSessionChange (\val -> toMsg (decode key val))
 
 
 port onSessionChange : (Value -> msg) -> Sub msg

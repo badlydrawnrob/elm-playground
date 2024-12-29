@@ -5647,9 +5647,8 @@ var $lukewestby$elm_http_builder$HttpBuilder$withHeader = F3(
 			});
 	});
 var $author$project$Viewer$Cred$addHeader = F2(
-	function (_v0, builder) {
-		var str = _v0.b;
-		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + str, builder);
+	function (cred, builder) {
+		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + cred.token, builder);
 	});
 var $author$project$Viewer$Cred$addHeaderIfAvailable = F2(
 	function (maybeCred, builder) {
@@ -6337,10 +6336,6 @@ var $author$project$Author$nonViewerDecoder = F2(
 			$elm$json$Json$Decode$succeed(
 				A2($author$project$Author$authorFromFollowing, prof, uname)));
 	});
-var $author$project$Viewer$Cred$username = function (_v0) {
-	var val = _v0.a;
-	return val;
-};
 var $author$project$Author$decodeFromPair = F2(
 	function (maybeCred, _v0) {
 		var prof = _v0.a;
@@ -6351,9 +6346,7 @@ var $author$project$Author$decodeFromPair = F2(
 					A2($author$project$Author$UnfollowedAuthor, uname, prof)));
 		} else {
 			var cred = maybeCred.a;
-			return _Utils_eq(
-				uname,
-				$author$project$Viewer$Cred$username(cred)) ? $elm$json$Json$Decode$succeed(
+			return _Utils_eq(uname, cred.username) ? $elm$json$Json$Decode$succeed(
 				A2($author$project$Author$IsViewer, cred, prof)) : A2($author$project$Author$nonViewerDecoder, prof, uname);
 		}
 	});
@@ -7751,8 +7744,7 @@ var $author$project$Page$Settings$init = function (session) {
 						email: $author$project$Email$toString(
 							$author$project$Viewer$email(viewer)),
 						password: '',
-						username: $author$project$Username$toString(
-							$author$project$Viewer$Cred$username(cred))
+						username: $author$project$Username$toString(cred.username)
 					};
 				} else {
 					return {avatar: '', bio: '', email: '', password: '', username: ''};
@@ -7832,10 +7824,7 @@ var $author$project$Session$storeSession = _Platform_outgoingPort(
 	function ($) {
 		return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$string, $);
 	});
-var $author$project$Session$sendSessionToJavaScript = function (maybeAuthenticationToken) {
-	return $author$project$Session$storeSession(maybeAuthenticationToken);
-};
-var $author$project$Session$logout = $author$project$Session$sendSessionToJavaScript($elm$core$Maybe$Nothing);
+var $author$project$Session$logout = $author$project$Session$storeSession($elm$core$Maybe$Nothing);
 var $author$project$Session$navKey = function (session) {
 	if (session.$ === 'LoggedIn') {
 		var key = session.a;
@@ -8078,8 +8067,8 @@ var $author$project$Email$Email = function (a) {
 };
 var $author$project$Email$decoder = A2($elm$json$Json$Decode$map, $author$project$Email$Email, $elm$json$Json$Decode$string);
 var $author$project$Viewer$Cred$Cred = F2(
-	function (a, b) {
-		return {$: 'Cred', a: a, b: b};
+	function (username, token) {
+		return {token: token, username: username};
 	});
 var $author$project$Viewer$Cred$decoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
@@ -8481,12 +8470,9 @@ var $author$project$Main$GotSession = function (a) {
 	return {$: 'GotSession', a: a};
 };
 var $author$project$Session$onSessionChange = _Platform_incomingPort('onSessionChange', $elm$json$Json$Decode$value);
-var $author$project$Session$receiveSessionFromJavaScript = function (toMsg) {
-	return $author$project$Session$onSessionChange(toMsg);
-};
 var $author$project$Session$changes = F2(
 	function (toMsg, key) {
-		return $author$project$Session$receiveSessionFromJavaScript(
+		return $author$project$Session$onSessionChange(
 			function (val) {
 				return toMsg(
 					A2($author$project$Session$decode, key, val));
@@ -10059,9 +10045,8 @@ var $author$project$Username$encode = function (_v0) {
 	var username = _v0.a;
 	return $elm$json$Json$Encode$string(username);
 };
-var $author$project$Viewer$Cred$encodeToken = function (_v0) {
-	var str = _v0.b;
-	return $elm$json$Json$Encode$string(str);
+var $author$project$Viewer$Cred$encodeToken = function (cred) {
+	return $elm$json$Json$Encode$string(cred.token);
 };
 var $author$project$Viewer$encode = function (_v0) {
 	var info = _v0.a;
@@ -10073,8 +10058,7 @@ var $author$project$Viewer$encode = function (_v0) {
 				$author$project$Email$encode(info.email)),
 				_Utils_Tuple2(
 				'username',
-				$author$project$Username$encode(
-					$author$project$Viewer$Cred$username(info.cred))),
+				$author$project$Username$encode(info.cred.username)),
 				_Utils_Tuple2(
 				'image',
 				$author$project$Avatar$encode(
@@ -10096,7 +10080,7 @@ var $author$project$Viewer$encode = function (_v0) {
 			]));
 };
 var $author$project$Session$login = function (newViewer) {
-	return $author$project$Session$sendSessionToJavaScript(
+	return $author$project$Session$storeSession(
 		$elm$core$Maybe$Just(
 			A2(
 				$elm$json$Json$Encode$encode,
@@ -10254,7 +10238,7 @@ var $author$project$Author$username = function (author) {
 	switch (author.$) {
 		case 'IsViewer':
 			var cred = author.a;
-			return $author$project$Viewer$Cred$username(cred);
+			return cred.username;
 		case 'IsFollowing':
 			var _v1 = author.a;
 			var val = _v1.a;
@@ -11262,9 +11246,10 @@ var $author$project$Page$viewMenu = F2(
 		if (maybeViewer.$ === 'Just') {
 			var viewer = maybeViewer.a;
 			var cred = $author$project$Viewer$cred(viewer);
-			var username = $author$project$Viewer$Cred$username(cred);
 			var avatar = $author$project$Profile$avatar(
 				$author$project$Viewer$profile(viewer));
+			var _v1 = cred;
+			var username = _v1.username;
 			return _List_fromArray(
 				[
 					A2(
@@ -13582,9 +13567,7 @@ var $author$project$Page$Profile$titleForMe = F2(
 	function (maybeCred, username) {
 		if (maybeCred.$ === 'Just') {
 			var cred = maybeCred.a;
-			return _Utils_eq(
-				username,
-				$author$project$Viewer$Cred$username(cred)) ? $author$project$Page$Profile$myProfileTitle : $author$project$Page$Profile$defaultTitle;
+			return _Utils_eq(username, cred.username) ? $author$project$Page$Profile$myProfileTitle : $author$project$Page$Profile$defaultTitle;
 		} else {
 			return $author$project$Page$Profile$defaultTitle;
 		}
