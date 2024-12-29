@@ -14,55 +14,101 @@
 > elm reactor
 ```
 
+## The reality of learning
+
+1. You'll lose it if you don't use it. Repeat!
+2. Making notes and Anki cards takes up quite a bit of time.
+3. Sometimes it's better to pick a new tutorial to rediscover learning points.
+4. Making a summary notebook is useful, but time consuming.
+5. Lean heavily on documentation where possible.
+6. Create clear examples and isolate code.
+7. Focused and passive learning (tutorials, videos, reading code)
+
+The timesinks are:
+
+- Learning difficult concepts that are niche
+- Asking wide-ranging questions that need a pair programmer
+- Adding needless complexity that involves new learning
+- Flip-flopping between tasks and learning goals
+- Consuming too many books, articles, videos
+
+I need a reasonable working prototype that works. It doesn't have to be perfect. It can use off-the-shelf tools. Some things can wait until a team is affordable.
+
+
+## Things to avoid
+
+- Recursive functions (fuck that)
+- Complex data types and big programs
+- Stuff that takes more than 2-4 hours per day
+- Stuff that isn't suitable for intermediate students
+- Complex state and interactions
+
+
 ## The best way to learn (redux)
 
 > It really depends on how _deep_ you want the learning to be. Is it something I can look up in the documentation later? Will that be clear enough for me to do the job? Do I need proper examples to help me in the future?
 
-1. Lazy loading of cards, then chunk/consolidate learning points
-    - This is more time consuming with intermediate learning.
-2. Isolate the learning point into a single file or module
-3. Show it working _within_ the program (with comments in-place)
-4. For _some_ learning points, add Anki Cards
-5. It's sometimes helpful to write a summary book too.
-6. Create some drawings, perhaps storify the learning point
-    - Add some memorable examples that are your own.
-7. Now, from time to time, refresh your knowledge
-    - Watch a video, write an example, read an article, or another book on the subject. You've always got the documentation to fall back on too.
-8. It's really all about practice. Memory will only get you so far.
+1. Lazy load cards. Chunk knowledge.
+2. Is this piece of information essential?
+3. If not, consider leaving it out. Reduce.
+4. Create stories and drawings.
+5. Isolate code and code in context.
+6. Refresh your knowledge regularly.
+7. If you don't use it, you'll lose it.
+8. Outsource esoteric code samples.
+9. Some things can be learned passively
+10. Interleave learning (focused and diffuse)
 
-There's often a lot packed in to a book, and you don't want to be rewriting the damn thing too much, as that's time consuming, but for _deep_ learning, this seems to be the way to go. You've got Anki to drill your memory, you've got summary notes (or a book) for reference, and you've practiced a few examples to consolidate your learning.
+A book packs A LOT in. You don't want to rewrite it if it's not necessary. Some books are easier to come back to (refresh learning) than others. Anki is good for short pieces of information. Stories are better for complex learning points. Example files often work too. Only use these once you understand how they work, and consolidate your learning.
 
-The problem with Elm is sometimes there's documentation but not enough tutorials or examples of how to _use_ these tools.
+Elm is a niche language. There's not enough tutorials for the hard stuff.
+
 
 ## Do the simplest thing first!
 
-> Got a narly piece of `json` to decode? Start "as if" you've already imported it. Do the simple things first and leave the difficult stuff to the end (like catching errors).
+> - Remember "How to Design Programs" problem solvers.
+> - You can act "as if" you've already got parts of the program running.
+> - For instance, hardcode `json` into the program before using `Http.get`.
+> - Create a wishlist and get the easy parts done first.
 >
-> **<u>Whiteboard that shit out first:</u> Spend 80% of your time thinking about how to code, then code with confidence!**
+> **Use a whiteboard and sketches** before diving into the code.
+> **Spend 80% of your time thinking about the problem**, then code with confidence.
 
-- Harcode your `Model`. Decide how data should look.
-- Do you _really_ need all that data? Can you simplify?
-- Do we _really_ need a `Maybe` type?
-- Is `type Custom` a better choice?
+- Carefully consider the data first.
+- But do "the enough" thing. Don't over prepare.
+- Always look for ways to simplify processes and data.
+- Only use custom types when they're an improvement on simple ones.
 
-Build out your functions "as-if" the data is already there. Once you're happy with the `Model` and the data it consumes, work backwords and test out the bits of the `json` you'll need.
+You can always hardcode bits of your data and make them dynamic later. Use the compiler to help you refactor. For instance, you can change the shape of `json` data to fit your (simpler) model. These questions are necessary with `json`:
 
-- Is it always in the same shape?
-- Are there some bits of data missing sometimes?
-- Is there a better source for the data?
+1. Is it always in the same shape?
+2. Are there some bits of data missing sometimes?
+3. Is there a better source for the data?
+4. Does the API have great support? (Consider ditching if not)
 
-Someone says to put off things like `Maybe.withDefault` to the very end, and start with the data so that you get saner results. Do you need a `non-empty List`? Are some `json` objects fields optional? How are you going to validate the data that's coming from, or sending to the server?
+Think carefully about your data:
+
+- Do you need non-empty lists?
+- Can you hold off on `Maybe.withDefault` until the very end?
+- Can you validate data reliably?
 
 
 ## The sad (but real) truth
 
-> **Do what you're good at.** I'll repeat. Do what you're good at!!! **You've got one life, so don't waste time.**
+> 1. **Do what you're good at.**
+> 2. **I'll repeat. Do what you're good at!**
+> 3. **You've got one life, so don't waste time.**
 >
-> Learning to program (properly) is such a _huge_ investment in time — just look how much one chapter covers!!! I only really want to be able to use it for simple prototypes, proof-of-concepts, until they're turning over a profit and I can find someone better than me to work with.
+> Programming is a HUGE investment in time. Ideally you want to learn only the things relevant to your project, or your goals. Unfortunately you often drop down rabbit holes when trying to solve problems.
 >
-> **Remind yourself of that, and don't get bogged down with research for CompSci.** Only do it for fun or necessity (or for quick brain training).
+> - What are your goals?
+> - How much of these can be solved _without_ code?
+> - How long can you hold off without a team?
+>
+> **Don't get bogged down in research.** Build just enough to turn a profit.
+> Then find someone better than you to take over when you can afford it.
 
-I've forgotten at least 60% of what I learned during HTDP (the college-level course) and recursive algorithms would probably take a good deal of rejigging in my mindbox to get right (they can get very difficult!). I don't think I have that kind of time at my disposal. There's lots of other things I'd rather be doing; high-level thought, a bit of design, learning the piano, writing a book; all of which are a considerable investments in time themselves.
+I don't have time to relearn the 60% of forgotten recursive learning HTDP taught me. I don't have patience to become a great programmer. I need to focus most of my time on high-level thinking, strategy, marketing, business, and sales. Then make great art (which won't be programming).
 
 - Some people make great developers
 - Some people's mind is a finely-tuned logic machine
@@ -70,53 +116,25 @@ I've forgotten at least 60% of what I learned during HTDP (the college-level cou
 
 I'm not one of those people. Purely practical, or good to keep the grey matter alive. And that's OK. I'm happy to do simple forms, simple json, spreadsheets for a bit of data, AI for help, and GUI tools to do the rest.
 
-**No data base admin, no heavy lifting, no racking my brains for maths or difficult algorithms. Fuck that.** I'll learn enough to teach, enough to get by, enough to make some money. I can follow documentation and tutorials, cobble together some basic websites, and that's enough.
+## What I'm _not_ for
 
-- Some light `sql` would be fine but ...
-- Setting up a `postgres` db with a linux server is an effort ...
-- Learning the ropes of even light DBA stuff is time consuming.
+> - I'm not a database admin
+> - I don't need to do the heavy lifting
+> - I don't need to fall down rabbit holes
+> - I don't need deep knowledge
 
-The Structure and Interpretation of Computer Programs is a nice _theoretical_ dream to complete, and is intellectually stimulating, but it's _such_ an investment in time that would have diminishing returns. Furthermore, learning one language is a challenge but in most jobs you'll have to master multiple languages and _keep on learning_ which can be trying. Things move especially fast in the javascript world.
+I need to learn enough to teach, prototype, get by, and make money. I don't want to deal with virtual servers, postgres setup, big programs, or anything like that.
+I want to keep things simple and manageable. I don't need to learn SICP. Or maths. Or Haskell.
 
-It's a little like learning Mandarin — Don't do it!!! _Admire_ the caligraphy, learn a few characters and stock phrases; move on to saner, better pursuits (for me!).
-
-
-## Timesinks
-
-> Get better at focusing on the essentials, and speeding up these tasks:
-
-- Writing notes on books or adding issues to Github
-- Asking questions and figuring things out on forums
-- Adding unecessary complexity ...
-- ... Which I always end up simplifying anyway!
-- Flip-flopping between tasks or learning goals
-- Consuming too many books, articles, videos
-    - Often trying to flip between them when I should full-ass one thing.
+It's a little like Mandarin, a nice idea, admire the caligraphy, but it has deminishing returns and doesn't align with my goals. Move on to saner pursuits that are better for my personality type and strengths.
 
 
-## Things for Anki
 
-> Avoid recursion (unless simple)
-> Start with the simplest thing possible
-> Dedicate [hours] per day (you'll lose it)
-> If not, you'll only get to [level]. Be ok with it.
-> I care about teaching, simple features, data.
 
 
 ## To-Dos (chapter 5)
 
 ### Definitely add
-
-> 1. Learn some things _passively_ (don't add cards)
-> 2. Where there's a LOT to pack in ... REDUCE
-> 3. Isolate each part of the program to revise
-> 4. Have the full program available online
-> 5. Create a small summary note book
-> 6. Let the documentation handle it
-> 7. Interleave learning
->     - Learn some things lightly
->     - Reinforce them with a project
->     - Reinforce with videos, exercises, tuts, etc
 
 **First run through the app** and make sure you know how all the bits are working (even if it's a vague idea).
 Sketch it out, make it visual. Add in some useful videos or links that help.
