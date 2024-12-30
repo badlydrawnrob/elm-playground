@@ -1,23 +1,22 @@
-module Article
-    exposing
-        ( Article
-        , Full
-        , Preview
-        , author
-        , body
-        , favorite
-        , favoriteButton
-        , fetch
-        , fromPreview
-        , fullDecoder
-        , mapAuthor
-        , metadata
-        , previewDecoder
-        , slug
-        , unfavorite
-        , unfavoriteButton
-        , url
-        )
+module Article exposing
+    ( Article
+    , Full
+    , Preview
+    , author
+    , body
+    , favorite
+    , favoriteButton
+    , fetch
+    , fromPreview
+    , fullDecoder
+    , mapAuthor
+    , metadata
+    , previewDecoder
+    , slug
+    , unfavorite
+    , unfavoriteButton
+    , url
+    )
 
 {-| The interface to the Article data structure.
 
@@ -27,6 +26,30 @@ This includes:
   - Ways to make HTTP requests to retrieve and modify articles
   - Ways to access information about an article
   - Converting between various types
+
+---
+
+
+# Tasks
+
+1.  Finish the `body` function for `Article Internals Full` type
+      - `Full` type has a `Body` value
+      - `Body` can be found in `Article/Body.elm` ...
+      - It holds a `String` which is Markdown
+2.  Finish the `fromPreview` function
+      - It converts an `Article Internals Preview` ...
+      - To an `Article Internals Full` type
+      - We need to deconstruct as `(Article internals Preview)` because
+          - (a) we need to pass `internals` to our other `Article` type
+          - (b) we want to remind ourselves that `Preview` does nothing here
+      - Again, see `Article/Body.elm` for more info on `Body`
+3.  Use the `Body.decoder` function from `Article/Body.elm` on line 222
+      - First, we need to use the `Body.decoder` function (which simply
+        maps a `String` decoder to a `Body` type)
+      - Secondly, we need to `Decode.map` _that_ to `Full`, to make it a proper
+        `Article Internals Full` type.
+      - Our full article looks like `Article Internals (Full (Body String))`,
+        where `String` is simply markdown content.
 
 -}
 
@@ -47,7 +70,7 @@ import Markdown
 import Profile exposing (Profile)
 import Time
 import Timestamp
-import Username as Username exposing (Username)
+import Username exposing (Username)
 import Viewer exposing (Viewer)
 import Viewer.Cred as Cred exposing (Cred)
 
@@ -159,8 +182,8 @@ slug (Article internals _) =
 
 
 body : Article Full -> Body
-body _ =
-    "👉 TODO make this return the article's body"
+body (Article _ (Full body_)) =
+    body_
 
 
 
@@ -181,8 +204,9 @@ mapAuthor transform (Article info extras) =
 
 
 fromPreview : Body -> Article Preview -> Article Full
-fromPreview _ _ =
-    "👉 TODO convert from an Article Preview to an Article Full"
+fromPreview body_ (Article internals Preview) =
+    Article internals
+        (Full body_)
 
 
 
@@ -200,7 +224,7 @@ fullDecoder : Maybe Cred -> Decoder (Article Full)
 fullDecoder maybeCred =
     Decode.succeed Article
         |> custom (internalsDecoder maybeCred)
-        |> required "body" "👉 TODO use `Body.decoder` (which is a `Decoder Body`) to decode the body into this Article Full"
+        |> required "body" (Decode.map Full Body.decoder)
 
 
 internalsDecoder : Maybe Cred -> Decoder Internals

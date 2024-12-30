@@ -9,3 +9,6 @@
     - Be careful of GETTERS. The whole point of opaque types is to hide implementation details. Read only.
 2. Open records -vs- extensible types
     - Give two simple examples
+    - Give a more convoluted example in `Article Internals (Full (Body String))`
+    - Write a simple reason _why_ we're using that and `Article Internals Preview`
+    - Why is this "better' than using open records? When are open records best?

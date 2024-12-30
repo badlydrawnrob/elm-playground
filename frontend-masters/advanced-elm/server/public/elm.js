@@ -5648,8 +5648,8 @@ var $lukewestby$elm_http_builder$HttpBuilder$withHeader = F3(
 	});
 var $author$project$Viewer$Cred$addHeader = F2(
 	function (_v0, builder) {
-		var token = _v0.b;
-		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + token, builder);
+		var str = _v0.b;
+		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + str, builder);
 	});
 var $author$project$Viewer$Cred$addHeaderIfAvailable = F2(
 	function (maybeCred, builder) {
@@ -6338,8 +6338,8 @@ var $author$project$Author$nonViewerDecoder = F2(
 				A2($author$project$Author$authorFromFollowing, prof, uname)));
 	});
 var $author$project$Viewer$Cred$username = function (_v0) {
-	var user = _v0.a;
-	return user;
+	var val = _v0.a;
+	return val;
 };
 var $author$project$Author$decodeFromPair = F2(
 	function (maybeCred, _v0) {
@@ -8717,13 +8717,13 @@ var $author$project$Page$Article$CompletedFavoriteChange = function (a) {
 	return {$: 'CompletedFavoriteChange', a: a};
 };
 var $author$project$Article$fromPreview = F2(
-	function (newBody, _v0) {
-		var info = _v0.a;
+	function (body_, _v0) {
+		var internals = _v0.a;
 		var _v1 = _v0.b;
 		return A2(
 			$author$project$Article$Article,
-			info,
-			$author$project$Article$Full(newBody));
+			internals,
+			$author$project$Article$Full(body_));
 	});
 var $author$project$Page$Article$fave = F4(
 	function (toRequest, cred, slug, body) {
@@ -9237,8 +9237,8 @@ var $author$project$Page$Article$Editor$LoadingSlowly = function (a) {
 	return {$: 'LoadingSlowly', a: a};
 };
 var $author$project$Article$body = function (_v0) {
-	var extraInfo = _v0.b.a;
-	return extraInfo;
+	var body_ = _v0.b.a;
+	return body_;
 };
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
@@ -10054,8 +10054,8 @@ var $author$project$Username$encode = function (_v0) {
 	return $elm$json$Json$Encode$string(username);
 };
 var $author$project$Viewer$Cred$encodeToken = function (_v0) {
-	var token = _v0.b;
-	return $elm$json$Json$Encode$string(token);
+	var str = _v0.b;
+	return $elm$json$Json$Encode$string(str);
 };
 var $author$project$Viewer$encode = function (_v0) {
 	var info = _v0.a;
@@ -11273,7 +11273,7 @@ var $author$project$Page$viewMenu = F2(
 									$elm$html$Html$Attributes$class('ion-compose')
 								]),
 							_List_Nil),
-							$elm$html$Html$text('\u00A0New Post')
+							$elm$html$Html$text(' New Post')
 						])),
 					A2(
 					linkTo,
@@ -11287,7 +11287,7 @@ var $author$project$Page$viewMenu = F2(
 									$elm$html$Html$Attributes$class('ion-gear-a')
 								]),
 							_List_Nil),
-							$elm$html$Html$text('\u00A0Settings')
+							$elm$html$Html$text(' Settings')
 						])),
 					A2(
 					linkTo,
@@ -11979,7 +11979,7 @@ var $author$project$Page$Article$favoriteButton = F2(
 var $author$project$Author$toggleFollowButton = F4(
 	function (txt, extraClasses, msgWhenClicked, uname) {
 		var classStr = 'btn btn-sm ' + (A2($elm$core$String$join, ' ', extraClasses) + ' action-btn');
-		var caption = '\u00A0' + (txt + (' ' + $author$project$Username$toString(uname)));
+		var caption = ' ' + (txt + (' ' + $author$project$Username$toString(uname)));
 		return A2(
 			$elm$html$Html$button,
 			_List_fromArray(
