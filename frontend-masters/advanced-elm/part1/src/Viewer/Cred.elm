@@ -10,6 +10,7 @@ module Viewer.Cred exposing (Cred, addHeader, addHeaderIfAvailable, decoder, enc
 2.  You need to expose `username` however
       - Create a function that exposes the username
       - But does not break (1)
+3.  Fix ALL errors that arise from changing (1) and (2)
 
 -}
 
