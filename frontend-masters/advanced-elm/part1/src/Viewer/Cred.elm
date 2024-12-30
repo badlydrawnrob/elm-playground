@@ -1,4 +1,4 @@
-module Viewer.Cred exposing (Cred, addHeader, addHeaderIfAvailable, decoder, encodeToken)
+module Viewer.Cred exposing (Cred, addHeader, addHeaderIfAvailable, decoder, encodeToken, username)
 
 {-|
 
@@ -11,6 +11,29 @@ module Viewer.Cred exposing (Cred, addHeader, addHeaderIfAvailable, decoder, enc
       - Create a function that exposes the username
       - But does not break (1)
 3.  Fix ALL errors that arise from changing (1) and (2)
+      - There's A LOT of errors in different parts of the app
+      - Deconstruct `token`, eg: `(Cred _ token)`
+      - Access `Username` with `username` function
+
+Records in custom (opaque) types are better used when you have different fields
+with the same types, or when you have quite a few different fields.
+
+
+## Points to consider
+
+> If you need to expose _some_ details of the Opaque Type, you can
+> write functions to grab those details, like `Cred.username`
+
+1.  `Cred` is an opaque type, as modules should no longer be able
+    to grab the `token` value directly
+2.  Other modules still need to access the `username` value
+
+
+## Gotchas
+
+To get the username `String`, you'll need to first pull out the
+`Username` value from `Cred`, then use `Username.toString` from
+the `Username` module!
 
 -}
 
@@ -25,18 +48,13 @@ import Username exposing (Username)
 -- TYPES
 
 
-type alias Cred =
-    {- 👉 TODO: Make Cred an opaque type, then fix the resulting compiler errors.
-       Afterwards, it should no longer be possible for any other module to access
-       this `token` value directly!
+type Cred
+    = Cred Username String
 
-       💡 HINT: Other modules still depend on being able to access the
-       `username` value. Expand this module's API to expose a new way for them
-       to access the `username` without also giving them access to `token`.
-    -}
-    { username : Username
-    , token : String
-    }
+
+username : Cred -> Username
+username (Cred user _) =
+    user
 
 
 
@@ -55,14 +73,14 @@ decoder =
 
 
 encodeToken : Cred -> Value
-encodeToken cred =
-    Encode.string cred.token
+encodeToken (Cred _ token) =
+    Encode.string token
 
 
 addHeader : Cred -> RequestBuilder a -> RequestBuilder a
-addHeader cred builder =
+addHeader (Cred _ token) builder =
     builder
-        |> withHeader "authorization" ("Token " ++ cred.token)
+        |> withHeader "authorization" ("Token " ++ token)
 
 
 addHeaderIfAvailable : Maybe Cred -> RequestBuilder a -> RequestBuilder a

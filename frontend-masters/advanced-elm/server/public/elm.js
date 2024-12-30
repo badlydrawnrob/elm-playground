@@ -5647,8 +5647,9 @@ var $lukewestby$elm_http_builder$HttpBuilder$withHeader = F3(
 			});
 	});
 var $author$project$Viewer$Cred$addHeader = F2(
-	function (cred, builder) {
-		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + cred.token, builder);
+	function (_v0, builder) {
+		var token = _v0.b;
+		return A3($lukewestby$elm_http_builder$HttpBuilder$withHeader, 'authorization', 'Token ' + token, builder);
 	});
 var $author$project$Viewer$Cred$addHeaderIfAvailable = F2(
 	function (maybeCred, builder) {
@@ -6336,6 +6337,10 @@ var $author$project$Author$nonViewerDecoder = F2(
 			$elm$json$Json$Decode$succeed(
 				A2($author$project$Author$authorFromFollowing, prof, uname)));
 	});
+var $author$project$Viewer$Cred$username = function (_v0) {
+	var user = _v0.a;
+	return user;
+};
 var $author$project$Author$decodeFromPair = F2(
 	function (maybeCred, _v0) {
 		var prof = _v0.a;
@@ -6346,7 +6351,9 @@ var $author$project$Author$decodeFromPair = F2(
 					A2($author$project$Author$UnfollowedAuthor, uname, prof)));
 		} else {
 			var cred = maybeCred.a;
-			return _Utils_eq(uname, cred.username) ? $elm$json$Json$Decode$succeed(
+			return _Utils_eq(
+				uname,
+				$author$project$Viewer$Cred$username(cred)) ? $elm$json$Json$Decode$succeed(
 				A2($author$project$Author$IsViewer, cred, prof)) : A2($author$project$Author$nonViewerDecoder, prof, uname);
 		}
 	});
@@ -7744,7 +7751,8 @@ var $author$project$Page$Settings$init = function (session) {
 						email: $author$project$Email$toString(
 							$author$project$Viewer$email(viewer)),
 						password: '',
-						username: $author$project$Username$toString(cred.username)
+						username: $author$project$Username$toString(
+							$author$project$Viewer$Cred$username(cred))
 					};
 				} else {
 					return {avatar: '', bio: '', email: '', password: '', username: ''};
@@ -8067,8 +8075,8 @@ var $author$project$Email$Email = function (a) {
 };
 var $author$project$Email$decoder = A2($elm$json$Json$Decode$map, $author$project$Email$Email, $elm$json$Json$Decode$string);
 var $author$project$Viewer$Cred$Cred = F2(
-	function (username, token) {
-		return {token: token, username: username};
+	function (a, b) {
+		return {$: 'Cred', a: a, b: b};
 	});
 var $author$project$Viewer$Cred$decoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
@@ -10045,8 +10053,9 @@ var $author$project$Username$encode = function (_v0) {
 	var username = _v0.a;
 	return $elm$json$Json$Encode$string(username);
 };
-var $author$project$Viewer$Cred$encodeToken = function (cred) {
-	return $elm$json$Json$Encode$string(cred.token);
+var $author$project$Viewer$Cred$encodeToken = function (_v0) {
+	var token = _v0.b;
+	return $elm$json$Json$Encode$string(token);
 };
 var $author$project$Viewer$encode = function (_v0) {
 	var info = _v0.a;
@@ -10058,7 +10067,8 @@ var $author$project$Viewer$encode = function (_v0) {
 				$author$project$Email$encode(info.email)),
 				_Utils_Tuple2(
 				'username',
-				$author$project$Username$encode(info.cred.username)),
+				$author$project$Username$encode(
+					$author$project$Viewer$Cred$username(info.cred))),
 				_Utils_Tuple2(
 				'image',
 				$author$project$Avatar$encode(
@@ -10238,7 +10248,7 @@ var $author$project$Author$username = function (author) {
 	switch (author.$) {
 		case 'IsViewer':
 			var cred = author.a;
-			return cred.username;
+			return $author$project$Viewer$Cred$username(cred);
 		case 'IsFollowing':
 			var _v1 = author.a;
 			var val = _v1.a;
@@ -11246,10 +11256,9 @@ var $author$project$Page$viewMenu = F2(
 		if (maybeViewer.$ === 'Just') {
 			var viewer = maybeViewer.a;
 			var cred = $author$project$Viewer$cred(viewer);
+			var username = $author$project$Viewer$Cred$username(cred);
 			var avatar = $author$project$Profile$avatar(
 				$author$project$Viewer$profile(viewer));
-			var _v1 = cred;
-			var username = _v1.username;
 			return _List_fromArray(
 				[
 					A2(
@@ -11264,7 +11273,7 @@ var $author$project$Page$viewMenu = F2(
 									$elm$html$Html$Attributes$class('ion-compose')
 								]),
 							_List_Nil),
-							$elm$html$Html$text(' New Post')
+							$elm$html$Html$text('\u00A0New Post')
 						])),
 					A2(
 					linkTo,
@@ -11278,7 +11287,7 @@ var $author$project$Page$viewMenu = F2(
 									$elm$html$Html$Attributes$class('ion-gear-a')
 								]),
 							_List_Nil),
-							$elm$html$Html$text(' Settings')
+							$elm$html$Html$text('\u00A0Settings')
 						])),
 					A2(
 					linkTo,
@@ -11970,7 +11979,7 @@ var $author$project$Page$Article$favoriteButton = F2(
 var $author$project$Author$toggleFollowButton = F4(
 	function (txt, extraClasses, msgWhenClicked, uname) {
 		var classStr = 'btn btn-sm ' + (A2($elm$core$String$join, ' ', extraClasses) + ' action-btn');
-		var caption = ' ' + (txt + (' ' + $author$project$Username$toString(uname)));
+		var caption = '\u00A0' + (txt + (' ' + $author$project$Username$toString(uname)));
 		return A2(
 			$elm$html$Html$button,
 			_List_fromArray(
@@ -13567,7 +13576,9 @@ var $author$project$Page$Profile$titleForMe = F2(
 	function (maybeCred, username) {
 		if (maybeCred.$ === 'Just') {
 			var cred = maybeCred.a;
-			return _Utils_eq(username, cred.username) ? $author$project$Page$Profile$myProfileTitle : $author$project$Page$Profile$defaultTitle;
+			return _Utils_eq(
+				username,
+				$author$project$Viewer$Cred$username(cred)) ? $author$project$Page$Profile$myProfileTitle : $author$project$Page$Profile$defaultTitle;
 		} else {
 			return $author$project$Page$Profile$defaultTitle;
 		}

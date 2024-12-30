@@ -15,7 +15,7 @@ import Json.Encode as Encode
 import Profile exposing (Profile)
 import Route
 import Session exposing (Session)
-import Username as Username exposing (Username)
+import Username exposing (Username)
 import Viewer exposing (Viewer)
 import Viewer.Cred as Cred exposing (Cred)
 
@@ -62,7 +62,7 @@ init session =
                     { avatar = Maybe.withDefault "" (Avatar.toMaybeString (Profile.avatar profile))
                     , email = Email.toString (Viewer.email viewer)
                     , bio = Maybe.withDefault "" (Profile.bio profile)
-                    , username = Username.toString cred.username
+                    , username = Username.toString (Cred.username cred)
                     , password = ""
                     }
 
