@@ -32,6 +32,9 @@ This includes:
 
 # Tasks
 
+> See commit `#d36b3f3` for changes:
+> @ <https://tinyurl.com/article-decoder-d36b3f3>
+
 1.  Finish the `body` function for `Article Internals Full` type
       - `Full` type has a `Body` value
       - `Body` can be found in `Article/Body.elm` ...
