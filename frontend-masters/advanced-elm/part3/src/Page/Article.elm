@@ -1,6 +1,20 @@
 module Page.Article exposing (Model, Msg, init, subscriptions, toSession, update, view)
 
 {-| Viewing an individual article.
+
+# Tasks
+
+> See lines 82 and below
+
+1. Use `|> Task.perform` and `|> Task.attempt` to make turn a `Task` into `Cmd`
+    - You'll need to use the correct `Msg` for each task
+    - Use the compiler to guide you when making changes!
+
+Where a `Task` has a `x` it means that there should be NO errors and it always
+runs (that's what `Never` type means). If, however it's a `Task Http.Error ...`
+then you'll have to use `Task.attempt` and provide a `Msg` that can handle both
+the `Error` and `Value` on success.
+
 -}
 
 import Api
@@ -82,10 +96,14 @@ init session slug =
         -}
         [ Article.fetch maybeCred slug
             |> Http.toTask
+            |> Task.attempt CompletedLoadArticle
         , Comment.list maybeCred slug
             |> Http.toTask
+            |> Task.attempt CompletedLoadComments
         , Time.here
+            |> Task.perform GotTimeZone
         , Loading.slowThreshold
+            |> Task.perform (\() -> PassedSlowLoadThreshold)
         ]
     )
 

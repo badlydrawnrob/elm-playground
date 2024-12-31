@@ -5616,6 +5616,30 @@ var $author$project$Page$Article$GotTimeZone = function (a) {
 };
 var $author$project$Page$Article$Loading = {$: 'Loading'};
 var $author$project$Page$Article$PassedSlowLoadThreshold = {$: 'PassedSlowLoadThreshold'};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$Task$onError = _Scheduler_onError;
+var $elm$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return $elm$core$Task$command(
+			$elm$core$Task$Perform(
+				A2(
+					$elm$core$Task$onError,
+					A2(
+						$elm$core$Basics$composeL,
+						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+						$elm$core$Result$Err),
+					A2(
+						$elm$core$Task$andThen,
+						A2(
+							$elm$core$Basics$composeL,
+							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+							$elm$core$Result$Ok),
+						task))));
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$Viewer$cred = function (_v0) {
 	var info = _v0.a;
@@ -7270,43 +7294,12 @@ var $author$project$Article$Comment$list = F2(
 					$lukewestby$elm_http_builder$HttpBuilder$get(
 						A2($author$project$Article$Comment$allCommentsUrl, articleSlug, _List_Nil)))));
 	});
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$core$Task$onError = _Scheduler_onError;
-var $elm$core$Task$attempt = F2(
-	function (resultToMessage, task) {
-		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2(
-					$elm$core$Task$onError,
-					A2(
-						$elm$core$Basics$composeL,
-						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-						$elm$core$Result$Err),
-					A2(
-						$elm$core$Task$andThen,
-						A2(
-							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-							$elm$core$Result$Ok),
-						task))));
-	});
+var $elm$core$Process$sleep = _Process_sleep;
+var $author$project$Loading$slowThreshold = $elm$core$Process$sleep(500);
 var $elm$http$Http$toTask = function (_v0) {
 	var request_ = _v0.a;
 	return A2(_Http_toTask, request_, $elm$core$Maybe$Nothing);
 };
-var $elm$http$Http$send = F2(
-	function (resultToMessage, request_) {
-		return A2(
-			$elm$core$Task$attempt,
-			resultToMessage,
-			$elm$http$Http$toTask(request_));
-	});
-var $elm$core$Process$sleep = _Process_sleep;
-var $author$project$Loading$slowThreshold = $elm$core$Process$sleep(500);
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Page$Article$init = F2(
 	function (session, slug) {
@@ -7317,13 +7310,15 @@ var $author$project$Page$Article$init = F2(
 				_List_fromArray(
 					[
 						A2(
-						$elm$http$Http$send,
+						$elm$core$Task$attempt,
 						$author$project$Page$Article$CompletedLoadArticle,
-						A2($author$project$Article$fetch, maybeCred, slug)),
+						$elm$http$Http$toTask(
+							A2($author$project$Article$fetch, maybeCred, slug))),
 						A2(
-						$elm$http$Http$send,
+						$elm$core$Task$attempt,
 						$author$project$Page$Article$CompletedLoadComments,
-						A2($author$project$Article$Comment$list, maybeCred, slug)),
+						$elm$http$Http$toTask(
+							A2($author$project$Article$Comment$list, maybeCred, slug))),
 						A2($elm$core$Task$perform, $author$project$Page$Article$GotTimeZone, $elm$time$Time$here),
 						A2(
 						$elm$core$Task$perform,
@@ -7520,6 +7515,13 @@ var $author$project$Article$Tag$list = A2(
 		$elm$json$Json$Decode$field,
 		'tags',
 		$elm$json$Json$Decode$list($author$project$Article$Tag$decoder)));
+var $elm$http$Http$send = F2(
+	function (resultToMessage, request_) {
+		return A2(
+			$elm$core$Task$attempt,
+			resultToMessage,
+			$elm$http$Http$toTask(request_));
+	});
 var $author$project$Page$Home$init = function (session) {
 	var loadTags = $elm$http$Http$toTask($author$project$Article$Tag$list);
 	var feedTab = function () {
@@ -8717,13 +8719,13 @@ var $author$project$Page$Article$CompletedFavoriteChange = function (a) {
 	return {$: 'CompletedFavoriteChange', a: a};
 };
 var $author$project$Article$fromPreview = F2(
-	function (body_, _v0) {
-		var internals = _v0.a;
+	function (newBody, _v0) {
+		var info = _v0.a;
 		var _v1 = _v0.b;
 		return A2(
 			$author$project$Article$Article,
-			internals,
-			$author$project$Article$Full(body_));
+			info,
+			$author$project$Article$Full(newBody));
 	});
 var $author$project$Page$Article$fave = F4(
 	function (toRequest, cred, slug, body) {
@@ -9237,8 +9239,8 @@ var $author$project$Page$Article$Editor$LoadingSlowly = function (a) {
 	return {$: 'LoadingSlowly', a: a};
 };
 var $author$project$Article$body = function (_v0) {
-	var body_ = _v0.b.a;
-	return body_;
+	var extraInfo = _v0.b.a;
+	return extraInfo;
 };
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
