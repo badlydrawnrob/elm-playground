@@ -8,8 +8,10 @@ module Task.Time exposing (main)
     `Task.perform` for this. Tasks that have a possible `Error` will need to be
     handled with `Task.attempt`.
 
-    See also: @ https://tinyurl.com/elm-spa-timestamp
+    See also: @ https://tinyurl.com/elm-spa-timestamp (Posix)
+              @ https://tinyurl.com/elm-spa-metadata-timestamp (ISO)
               @ https://www.iso.org/iso-8601-date-and-time-format.html
+
               @ https://tinyurl.com/elm-lang-posix-alternative (better?)
               @ https://package.elm-lang.org/packages/justinmimbs/time-extra/1.2.0/
               @ https://discourse.elm-lang.org/t/date-and-time-conversion/9677
