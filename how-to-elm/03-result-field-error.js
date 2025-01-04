@@ -4370,8 +4370,8 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$HowToResult$FieldError$EmptyOrNotString = {$: 'EmptyOrNotString'};
-var $author$project$HowToResult$FieldError$initialModel = {fieldError: $author$project$HowToResult$FieldError$EmptyOrNotString, savedInput: 0, userInput: ''};
+var $author$project$Result$FieldError$EmptyOrNotString = {$: 'EmptyOrNotString'};
+var $author$project$Result$FieldError$initialModel = {fieldError: $author$project$Result$FieldError$EmptyOrNotString, savedInput: 0, userInput: ''};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5182,7 +5182,7 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
-var $author$project$HowToResult$FieldError$YayNoErrors = {$: 'YayNoErrors'};
+var $author$project$Result$FieldError$YayNoErrors = {$: 'YayNoErrors'};
 var $elm$core$Result$andThen = F2(
 	function (callback, result) {
 		if (result.$ === 'Ok') {
@@ -5194,20 +5194,20 @@ var $elm$core$Result$andThen = F2(
 		}
 	});
 var $elm$core$String$toFloat = _String_toFloat;
-var $author$project$HowToResult$FieldError$checkIfFloat = function (s) {
+var $author$project$Result$FieldError$checkIfFloat = function (s) {
 	var _v0 = $elm$core$String$toFloat(s);
 	if (_v0.$ === 'Nothing') {
-		return $elm$core$Result$Err($author$project$HowToResult$FieldError$EmptyOrNotString);
+		return $elm$core$Result$Err($author$project$Result$FieldError$EmptyOrNotString);
 	} else {
 		var f = _v0.a;
 		return $elm$core$Result$Ok(s);
 	}
 };
-var $author$project$HowToResult$FieldError$NumbersTooHigh = {$: 'NumbersTooHigh'};
+var $author$project$Result$FieldError$NumbersTooHigh = {$: 'NumbersTooHigh'};
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$HowToResult$FieldError$checkMinutesInRange = $elm$core$Basics$ge(10);
-var $author$project$HowToResult$FieldError$checkSecondsInRange = $elm$core$Basics$ge(60);
-var $author$project$HowToResult$FieldError$extractInt = function (s) {
+var $author$project$Result$FieldError$checkMinutesInRange = $elm$core$Basics$ge(10);
+var $author$project$Result$FieldError$checkSecondsInRange = $elm$core$Basics$ge(60);
+var $author$project$Result$FieldError$extractInt = function (s) {
 	var _v0 = $elm$core$String$toInt(s);
 	if (_v0.$ === 'Nothing') {
 		return 11;
@@ -5216,7 +5216,7 @@ var $author$project$HowToResult$FieldError$extractInt = function (s) {
 		return i;
 	}
 };
-var $author$project$HowToResult$FieldError$checkInRange = function (l) {
+var $author$project$Result$FieldError$checkInRange = function (l) {
 	if (!l.b) {
 		return false;
 	} else {
@@ -5227,16 +5227,16 @@ var $author$project$HowToResult$FieldError$checkInRange = function (l) {
 				var first = l.a;
 				var _v1 = l.b;
 				var second = _v1.a;
-				return $author$project$HowToResult$FieldError$checkMinutesInRange(
-					$author$project$HowToResult$FieldError$extractInt(first)) && $author$project$HowToResult$FieldError$checkSecondsInRange(
-					$author$project$HowToResult$FieldError$extractInt(second));
+				return $author$project$Result$FieldError$checkMinutesInRange(
+					$author$project$Result$FieldError$extractInt(first)) && $author$project$Result$FieldError$checkSecondsInRange(
+					$author$project$Result$FieldError$extractInt(second));
 			} else {
 				return false;
 			}
 		}
 	}
 };
-var $author$project$HowToResult$FieldError$extractFloat = function (s) {
+var $author$project$Result$FieldError$extractFloat = function (s) {
 	var _v0 = $elm$core$String$toFloat(s);
 	if (_v0.$ === 'Nothing') {
 		return 0;
@@ -5245,19 +5245,19 @@ var $author$project$HowToResult$FieldError$extractFloat = function (s) {
 		return f;
 	}
 };
-var $author$project$HowToResult$FieldError$checkNumbersInRange = function (s) {
+var $author$project$Result$FieldError$checkNumbersInRange = function (s) {
 	var floatList = A2($elm$core$String$split, '.', s);
-	var isInRange = $author$project$HowToResult$FieldError$checkInRange(floatList);
+	var isInRange = $author$project$Result$FieldError$checkInRange(floatList);
 	if (isInRange) {
 		return $elm$core$Result$Ok(
-			$author$project$HowToResult$FieldError$extractFloat(s));
+			$author$project$Result$FieldError$extractFloat(s));
 	} else {
-		return $elm$core$Result$Err($author$project$HowToResult$FieldError$NumbersTooHigh);
+		return $elm$core$Result$Err($author$project$Result$FieldError$NumbersTooHigh);
 	}
 };
-var $author$project$HowToResult$FieldError$NotProperFloat = {$: 'NotProperFloat'};
-var $author$project$HowToResult$FieldError$NotTwoDecimals = {$: 'NotTwoDecimals'};
-var $author$project$HowToResult$FieldError$countTwoDecimals = F2(
+var $author$project$Result$FieldError$NotProperFloat = {$: 'NotProperFloat'};
+var $author$project$Result$FieldError$NotTwoDecimals = {$: 'NotTwoDecimals'};
+var $author$project$Result$FieldError$countTwoDecimals = F2(
 	function (m, string) {
 		var check = function () {
 			if (!m.b) {
@@ -5272,7 +5272,7 @@ var $author$project$HowToResult$FieldError$countTwoDecimals = F2(
 			}
 		}();
 		if (!check) {
-			return $elm$core$Result$Err($author$project$HowToResult$FieldError$NotTwoDecimals);
+			return $elm$core$Result$Err($author$project$Result$FieldError$NotTwoDecimals);
 		} else {
 			return $elm$core$Result$Ok(string);
 		}
@@ -5291,34 +5291,34 @@ var $elm$core$List$tail = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$HowToResult$FieldError$splitNumberTail = A2(
+var $author$project$Result$FieldError$splitNumberTail = A2(
 	$elm$core$Basics$composeR,
 	$elm$core$String$split('.'),
 	$elm$core$List$tail);
-var $author$project$HowToResult$FieldError$checkTwoDecimals = function (s) {
-	var rest = $author$project$HowToResult$FieldError$splitNumberTail(s);
+var $author$project$Result$FieldError$checkTwoDecimals = function (s) {
+	var rest = $author$project$Result$FieldError$splitNumberTail(s);
 	if (rest.$ === 'Nothing') {
-		return $elm$core$Result$Err($author$project$HowToResult$FieldError$EmptyOrNotString);
+		return $elm$core$Result$Err($author$project$Result$FieldError$EmptyOrNotString);
 	} else {
 		if (!rest.a.b) {
-			return $elm$core$Result$Err($author$project$HowToResult$FieldError$NotProperFloat);
+			return $elm$core$Result$Err($author$project$Result$FieldError$NotProperFloat);
 		} else {
 			var f = rest.a;
-			return A2($author$project$HowToResult$FieldError$countTwoDecimals, f, s);
+			return A2($author$project$Result$FieldError$countTwoDecimals, f, s);
 		}
 	}
 };
-var $author$project$HowToResult$FieldError$runErrorCheck = function (s) {
+var $author$project$Result$FieldError$runErrorCheck = function (s) {
 	return A2(
 		$elm$core$Result$andThen,
-		$author$project$HowToResult$FieldError$checkNumbersInRange,
+		$author$project$Result$FieldError$checkNumbersInRange,
 		A2(
 			$elm$core$Result$andThen,
-			$author$project$HowToResult$FieldError$checkTwoDecimals,
-			$author$project$HowToResult$FieldError$checkIfFloat(s)));
+			$author$project$Result$FieldError$checkTwoDecimals,
+			$author$project$Result$FieldError$checkIfFloat(s)));
 };
-var $author$project$HowToResult$FieldError$checkAndSave = function (model) {
-	var checkErrors = $author$project$HowToResult$FieldError$runErrorCheck(model.userInput);
+var $author$project$Result$FieldError$checkAndSave = function (model) {
+	var checkErrors = $author$project$Result$FieldError$runErrorCheck(model.userInput);
 	if (checkErrors.$ === 'Err') {
 		var fieldError = checkErrors.a;
 		return _Utils_update(
@@ -5328,10 +5328,10 @@ var $author$project$HowToResult$FieldError$checkAndSave = function (model) {
 		var _float = checkErrors.a;
 		return _Utils_update(
 			model,
-			{fieldError: $author$project$HowToResult$FieldError$YayNoErrors, savedInput: _float, userInput: ''});
+			{fieldError: $author$project$Result$FieldError$YayNoErrors, savedInput: _float, userInput: ''});
 	}
 };
-var $author$project$HowToResult$FieldError$update = F2(
+var $author$project$Result$FieldError$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'UpdateInput') {
 			var str = msg.a;
@@ -5339,11 +5339,11 @@ var $author$project$HowToResult$FieldError$update = F2(
 				model,
 				{userInput: str});
 		} else {
-			return $author$project$HowToResult$FieldError$checkAndSave(model);
+			return $author$project$Result$FieldError$checkAndSave(model);
 		}
 	});
-var $author$project$HowToResult$FieldError$SaveInput = {$: 'SaveInput'};
-var $author$project$HowToResult$FieldError$UpdateInput = function (a) {
+var $author$project$Result$FieldError$SaveInput = {$: 'SaveInput'};
+var $author$project$Result$FieldError$UpdateInput = function (a) {
 	return {$: 'UpdateInput', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5356,7 +5356,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $author$project$HowToResult$FieldError$convertError = function (fe) {
+var $author$project$Result$FieldError$convertError = function (fe) {
 	switch (fe.$) {
 		case 'YayNoErrors':
 			return '';
@@ -5437,13 +5437,13 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$HowToResult$FieldError$view = function (model) {
+var $author$project$Result$FieldError$view = function (model) {
 	return A2(
 		$elm$html$Html$form,
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class('float-input'),
-				$elm$html$Html$Events$onSubmit($author$project$HowToResult$FieldError$SaveInput)
+				$elm$html$Html$Events$onSubmit($author$project$Result$FieldError$SaveInput)
 			]),
 		_List_fromArray(
 			[
@@ -5454,7 +5454,7 @@ var $author$project$HowToResult$FieldError$view = function (model) {
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Please add a number ...'),
 						$elm$html$Html$Attributes$value(model.userInput),
-						$elm$html$Html$Events$onInput($author$project$HowToResult$FieldError$UpdateInput)
+						$elm$html$Html$Events$onInput($author$project$Result$FieldError$UpdateInput)
 					]),
 				_List_Nil),
 				A2(
@@ -5466,7 +5466,7 @@ var $author$project$HowToResult$FieldError$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						$author$project$HowToResult$FieldError$convertError(model.fieldError))
+						$author$project$Result$FieldError$convertError(model.fieldError))
 					])),
 				A2(
 				$elm$html$Html$button,
@@ -5501,7 +5501,7 @@ var $author$project$HowToResult$FieldError$view = function (model) {
 					]))
 			]));
 };
-var $author$project$HowToResult$FieldError$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$HowToResult$FieldError$initialModel, update: $author$project$HowToResult$FieldError$update, view: $author$project$HowToResult$FieldError$view});
-_Platform_export({'HowToResult':{'FieldError':{'init':$author$project$HowToResult$FieldError$main(
+var $author$project$Result$FieldError$main = $elm$browser$Browser$sandbox(
+	{init: $author$project$Result$FieldError$initialModel, update: $author$project$Result$FieldError$update, view: $author$project$Result$FieldError$view});
+_Platform_export({'Result':{'FieldError':{'init':$author$project$Result$FieldError$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));

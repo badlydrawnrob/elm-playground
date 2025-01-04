@@ -1,9 +1,10 @@
-module HowToMessage.NarrowTypes exposing (..)
+module Message.NarrowTypes exposing (..)
 
 {-| ----------------------------------------------------------------------------
     Narrowing types for messages
     ============================================================================
-    From @ https://programming-elm.com/ (the types have been changed)
+    From @ https://programming-elm.com/ (the types have been changed).
+    See "FrontendMasters -> Advanced" for alternative "Opaque Types"!
 
     1. Nested records (state) is generally avoided
     2. Don't optimise too early (do you really need an extensible record?)

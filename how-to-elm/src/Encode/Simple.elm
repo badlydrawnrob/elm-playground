@@ -1,4 +1,4 @@
-module HowToEncode.Simple exposing (..)
+module Encode.Simple exposing (..)
 
 {-| ✅ A nested object with a list
     ==============================

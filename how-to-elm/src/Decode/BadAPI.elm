@@ -1,4 +1,4 @@
-module HowToDecode.BadAPI exposing (..)
+module Decode.BadAPI exposing (..)
 
 {-| ----------------------------------------------------------------------------
     ⚠️ Open Library API example (and an AWFUL API design? 💩)

@@ -1,4 +1,4 @@
-module HowToResult.FieldMaybe exposing (..)
+module Result.FieldMaybe exposing (..)
 
 {-| ----------------------------------------------------------------------------
     Ok with Maybe: what happens if our field is optional?

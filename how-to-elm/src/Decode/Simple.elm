@@ -1,4 +1,4 @@
-module HowToDecode.Simple exposing (..)
+module Decode.Simple exposing (..)
 
 {-| ----------------------------------------------------------------------------
     How to decode: some simple examples

@@ -1,4 +1,4 @@
-module HowToResult.FieldErrorRevisited exposing (..)
+module Result.FieldErrorRevisited exposing (..)
 
 {-| ✅ Field Error (revisited)
     ==========================

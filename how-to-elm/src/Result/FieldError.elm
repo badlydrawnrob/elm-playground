@@ -1,4 +1,4 @@
-module HowToResult.FieldError exposing (..)
+module Result.FieldError exposing (..)
 
 {-| ⚠️ Field Error
     ==============

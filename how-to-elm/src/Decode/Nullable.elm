@@ -1,4 +1,4 @@
-module HowToDecode.Nullable exposing (..)
+module Decode.Nullable exposing (..)
 
 {-| ----------------------------------------------------------------------------
     How to encode: using `null` for optional fields

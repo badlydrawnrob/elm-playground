@@ -1,4 +1,4 @@
-module HowToDecode.Nested exposing (..)
+module Decode.Nested exposing (..)
 
 {-| ----------------------------------------------------------------------------
     How to decode: some nested examples
