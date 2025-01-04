@@ -1,7 +1,8 @@
 module Result.FieldError exposing (..)
 
-{-| ⚠️ Field Error
-    ==============
+{-| ----------------------------------------------------------------------------
+    ⚠️ Field Error
+    ============================================================================
     > This file example is really quite hard to follow when it gets in to the
     > error checking. I think this is a result of poor data choices up-front.
 

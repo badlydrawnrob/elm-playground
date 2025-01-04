@@ -1,7 +1,8 @@
 module Form.SingleFieldNotes exposing (..)
 
-{-| ✅ A simple form that's validated with `Result`
-    ===============================================
+{-| ----------------------------------------------------------------------------
+    ✅ A simple form that's validated with `Result`
+    ============================================================================
 
     Notes on `Maybe` and `type Custom`
     ----------------------------------

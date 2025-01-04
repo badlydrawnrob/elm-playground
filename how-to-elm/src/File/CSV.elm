@@ -1,7 +1,8 @@
 module File.CSV exposing (..)
 
-{-| This is the example that `elm/file` package gives.
-    -------------------------------------------------
+{-| ----------------------------------------------------------------------------
+    This is the example that `elm/file` package gives.
+    ============================================================================
 
     It converts a `CSV` file into a `String`. You could do the same for any
     `.txt` file, or `.md` perhaps.

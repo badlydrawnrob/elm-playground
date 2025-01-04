@@ -1,7 +1,8 @@
 module Result.FieldErrorRevisited exposing (..)
 
-{-| ✅ Field Error (revisited)
-    ==========================
+{-| ----------------------------------------------------------------------------
+    ✅ Field Error (revisited)
+    ============================================================================
 
     You need to SKETCH OUT THINGS better and show the flow of data.
 
