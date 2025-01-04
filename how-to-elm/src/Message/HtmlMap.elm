@@ -1,4 +1,4 @@
-module HowToMessage.HtmlMap exposing (..)
+module Message.HtmlMap exposing (..)
 
 {-| ----------------------------------------------------------------------------
     Narrowing types with `Html.map`
