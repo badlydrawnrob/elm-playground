@@ -34,6 +34,7 @@ elm reactor
 
 ## Online courses
 
+- [Welcome to Elm](https://www.youtube.com/playlist?list=PLuGpJqnV9DXq_ItwwUoJOGk_uCr72Yvzb) (nice walkthrough)
 - [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
 - [Exercism](https://exercism.org/tracks/elm)'s Elm track
 - [7 GUIs](https://eugenkiss.github.io/7guis/tasks/) for practice
