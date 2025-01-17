@@ -36,6 +36,7 @@ elm reactor
 
 - [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
 - [Exercism](https://exercism.org/tracks/elm)'s Elm track
+- [7 GUIs](https://eugenkiss.github.io/7guis/tasks/) for practice
 
 ## Helpful talks
 
