@@ -1,10 +1,19 @@
 # README
 
-> Why do we need types? It's best illustrated by the old joke:
->
-> A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
+> I'd strongly encourage starting with Elm if you're learning how to program.
+> It's better designed, more consistent, with better compiler error messages than Python.
 
-A testing ground for all things Elm. There's plenty of javascript guides out there, so this only covers functional programming in the style of Elm. Also see ["Lazy Loading of Anki Cards"](https://github.com/badlydrawnrob/anki/issues/91) for revision.
+A testing ground for all things Elm. There's plenty of javascript guides out there, so this only covers functional programming in the style of Elm. Also see ["Lazy Loading of Anki Cards"](https://github.com/badlydrawnrob/anki/issues/91) for revision with Anki.
+
+You might like to read the first couple of chapters of "[How to Design Programs](https://htdp.org/)" before diving in to Elm for a grounding in CompSci theory (it's not too academic).
+
+
+## Types and inference
+
+> Why do we need types? It's best illustrated by the old joke ...
+
+A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
+
 
 ## Basic commands
 
