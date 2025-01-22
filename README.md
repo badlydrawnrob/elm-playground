@@ -8,7 +8,7 @@ A testing ground for all things Elm. There's plenty of javascript guides out the
 You might like to read the first couple of chapters of "[How to Design Programs](https://htdp.org/)" before diving in to Elm for a grounding in CompSci theory (it's not too academic).
 
 
-## Types and inference
+## Types and inference
 
 > Why do we need types? It's best illustrated by the old joke ...
 
