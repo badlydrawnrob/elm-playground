@@ -32,7 +32,6 @@ module CustomTypes.Cred exposing (Cred, decoder, encodeToken, username)
 
 -}
 
-import CustomTypes.Username exposing (Username)
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)

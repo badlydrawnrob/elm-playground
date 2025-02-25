@@ -11,7 +11,7 @@ module CustomTypes.Username exposing (Username, decoder, toString)
     function, for ease of naming conventions.
 -}
 
-import Json.Decode as albumDecoder exposing (Decoder)
+import Json.Decode as Decode exposing (Decoder)
 
 type Username
     = Username String
