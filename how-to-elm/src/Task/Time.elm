@@ -3,10 +3,9 @@ module Task.Time exposing (main)
 {-| ----------------------------------------------------------------------------
     Tasks: a simple Time example
     ============================================================================
-    Originally from here: @ https://sporto.github.io/elm-workshop/05-effects/04-tasks.html
-    `Time.now` is a `Task` that can never fail, so we can happily use
-    `Task.perform` for this. Tasks that have a possible `Error` will need to be
-    handled with `Task.attempt`.
+    Original: @ https://sporto.github.io/elm-workshop/05-effects/04-tasks.html
+    We've got to do quite a bit manually, such as converting `Int` to `String`
+    days and hours.
 
     See also: @ https://tinyurl.com/elm-spa-timestamp (Posix)
               @ https://tinyurl.com/elm-spa-metadata-timestamp (ISO)
@@ -16,6 +15,11 @@ module Task.Time exposing (main)
               @ https://package.elm-lang.org/packages/justinmimbs/time-extra/1.2.0/
               @ https://discourse.elm-lang.org/t/date-and-time-conversion/9677
 
+    Tasks
+    -----
+    `Time.now` is a `Task` that can never fail, so `Task.perform` can be used.
+    for this. Tasks with a potential `Error` need to be handled with `Task.attempt`.
+
 
     Notes
     -----
@@ -24,15 +28,12 @@ module Task.Time exposing (main)
     2. Getting the `pm` in the correct place may need another helper function ..
 
 
+    Time
+    ----
+    As mentioned, we must convert data to usable strings.
 
-    Learning points
-    ---------------
-    Elm Lang makes it a little harder to get to `String` time values than other
-    libraries, as you need to convert `Weekday` and `Hour` types to their
-    `String` equivalents:
-
-    - `0` -> `"12pm"`
-    - `Mon` -> `"Monday"
+    - `0` -> `"12pm"` (hour)
+    - `Mon` -> `"Monday" (weekday)
 
 -}
 
