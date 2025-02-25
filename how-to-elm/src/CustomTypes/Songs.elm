@@ -3,7 +3,9 @@ module CustomTypes.Songs exposing (..)
 {-| ----------------------------------------------------------------------------
     A simple `Album` custom type (see `CustomTypes.md` for notes)
     ============================================================================
-    We're using NESTED records here, which are generally discouraged in Elm.
+    ⚠️ It's not a good idea to store computed data in your model! So this entire
+       can be seen as a learning exercise. We're also using NESTED records,
+       which are generally discouraged in Elm!
 
     Original attempt:
         @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
@@ -23,10 +25,10 @@ module CustomTypes.Songs exposing (..)
     I'm not sure which function should do which action, and where in the program
     these functions should be. There's a LOT of approaches to forms and validation.
 
-        1. Stupid (data) decisions upfront have HORRID artifacts:
+        1. ⚠️ Stupid (data) decisions upfront have HORRID artifacts:
            - @ https://tinyurl.com/songs-v1-possible-states (commit c25d389)
            - If there's LOTS OF STATE then FUCKING CHANGE IT!
-        2. Unpack `Maybe` in ONE place
+        2. ⚠️ Unpack `Maybe` in ONE place
         3. It's easier to split the `Song` creation (if no errors) ...
         4. And have an `updateAlbum` action (if there's a `Song`) ...
         5. Than combining those actions into ONE `updateAlbum` function

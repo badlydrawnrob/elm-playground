@@ -1,9 +1,11 @@
 module CustomTypes.SongsAlt exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    A simple `Album` custom type (see `CustomTypes.md` for notes)
+    A simple `Album` custom type (✏️ see `CustomTypes.md` for notes)
     ============================================================================
-    We're using a `UpdateInput` custom type instead of a nested record here.
+    ⚠️ It's not a good idea to store computed data in your model! So this entire
+       can be seen as a learning exercise. This example is very similar to
+       `CustomTypes.Songs` but uses a custom type for user input.
 
     Nested Record version (without editable `Song`s)
         @ Songs.elm
