@@ -12,6 +12,9 @@ port module Ports.Settings exposing (Settings, decoder, encoder, setStorage, The
     1. We need some way to convert a `String` to a `Theme`. If you use
        `D.map` you'd have to have to covert the `_` other strings case.
        @ https://stackoverflow.com/a/61857967
+    2. If the decoder and the `settings` localStorage are not in sync, we can
+       error (see `init` in `LocalStorage.elm` and then reset the settings with
+       the new encoder!
 
     Wishlist
     --------

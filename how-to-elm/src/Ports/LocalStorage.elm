@@ -13,6 +13,8 @@ module Ports.LocalStorage exposing (main)
     -----
     1. I'm using @rtfeldman's "magic" nested settings state pattern.
        @ https://tinyurl.com/elm-spa-login-update
+    2. If the decoder structure changes, we will receive an `Err`. This means
+       we'll load the error state and on next save, the new settings `setItem`.
 
     Wishlist
     --------
@@ -50,7 +52,7 @@ init flags =
         case D.decodeValue P.decoder flags of
             Ok settings ->
                 { settings = settings }
-            Err _ ->
+            Err _ -> -- #! (2)
                 { settings = { theme = Light, cookies = False, session = "logged in" } }
     , Cmd.none
     )
