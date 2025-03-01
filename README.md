@@ -1,21 +1,34 @@
 # README
 
-> I'd strongly encourage starting with Elm if you're learning how to program.
-> It's better designed, more consistent, with better compiler error messages than Python.
+> It's super easy [to forget](https://www.azquotes.com/quote/585801) so aim to practice once per week.
 
-A testing ground for all things Elm. There's plenty of javascript guides out there, so this only covers functional programming in the style of Elm. Also see ["Lazy Loading of Anki Cards"](https://github.com/badlydrawnrob/anki/issues/91) for revision with Anki.
+This is the killer. If I step away from programming for a few weeks, you really feel the rust gathering. This repository is a testing ground for all things Elm, and it's a year-long learning curve to get building.
 
-You might like to read the first couple of chapters of "[How to Design Programs](https://htdp.org/)" before diving in to Elm for a grounding in CompSci theory (it's not too academic).
+There's plenty of [javascript guides](https://eloquentjavascript.net/) out there, so this repository focuses on a statically typed functional style that turns you into a good programmer. For a study aid, you can use [Anki flashcards](https://github.com/badlydrawnrob/anki) and [these handy guides](https://github.com/badlydrawnrob/anki/discussions/123) to get you started. It's great for revision, but no substitute for _building_ things.
+
+## Beginners
+
+> Elm is great for learning how to engineer.
+
+Start with [How To Design Programs](https://htdp.org/) and follow that up with Elm. It's **better designed**, more **consistent**, with **better compiler error messages** than [Python](https://github.com/badlydrawnrob/python-playground).
+
+After these two languages you'll have a decent grounding in Computer Science theory, and they're not too academic. I'm rubbish at maths, and am mostly focused on rapid prototyping, so I like to avoid deep academic learning.
+
+An artist ships!
 
 
-## Types and inference
+## Getting started
 
-> Why do we need types? It's best illustrated by the old joke ...
+> [Here would be a great place for a book!]
 
-A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
+Things I'd love to know if I were to start over:
 
+1. The subset of CompSci for prototyping
+2. Best practices for `json` and `REST` APIs
+3. How to use Ai for learning (and how not to)
+4. How to frame and structure your learning (fail fast, just build!)
 
-## Basic commands
+### Basic commands
 
 ```terminal
 # Initialise an Elm project
@@ -34,14 +47,36 @@ elm make src/Main.elm --output=app.js
 elm reactor
 ```
 
-## Some useful docs
+### ⭐ Why Elm, then?
+
+#### Types and inference
+
+> Why do we need types? It's best illustrated by the old joke ...
+
+A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
+
+#### Beautiful error messages
+
+This is where Elm really shines, everything is easy to install and just works! Unlike Python, where there's many ways to manage packages, the error messages are cryptic, and so on.
+
+#### How to document your code
+
+- Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
+- Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
+
+
+## Learning Elm
+
+### 📚 Some useful docs
+
+> See your offline books in `Library/code/elm`!
 
 - [Official Elm guide](https://guide.elm-lang.org/)
 - [Elm syntax](https://elm-lang.org/docs/syntax) (quick overview of syntax)
 - [Learn you an Elm](https://learnyouanelm.github.io/) (based on Haskell book)
 - [Beginning Elm](https://elmprogramming.com/)
 
-## Online courses
+### 🧑‍🏫 Online courses
 
 - [Welcome to Elm](https://www.youtube.com/playlist?list=PLuGpJqnV9DXq_ItwwUoJOGk_uCr72Yvzb) (nice walkthrough)
 - [Richard Feldman's](https://frontendmasters.com/teachers/richard-feldman/) intro and advanced Elm
@@ -49,7 +84,7 @@ elm reactor
 - [7 GUIs](https://eugenkiss.github.io/7guis/tasks/) for practice
 - [Elm Workshop](https://sporto.github.io/elm-workshop/) (e.g: [stopwatch](https://sporto.github.io/elm-workshop/05-effects/02-start.html))
 
-## Helpful talks
+### 🎞️ Helpful talks
 
 1. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
 2. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U)
@@ -58,19 +93,19 @@ elm reactor
 5. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
 6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
 
-## Books
+### 📖 Books
 
 - [Elm in Action](https://www.manning.com/books/elm-in-action)
 - [Learn you an Elm](https://learnyouanelm.github.io)
 - [Learn Elm](https://elmcraft.org/learn/) (Elm Craft)
 
-## Some tools
+### 🛠️ Some tools
 
 - [Elm Doc Preview](https://github.com/dmy/elm-doc-preview) (great for offline documentation)
 - [Elm land](https://elm.land)
 - [Everything else](https://github.com/sporto/awesome-elm) (massive list)
 
-## Some helpful FAQs
+### ❓ Some helpful FAQs
 
 - [Elm community FAQs](https://faq.elm-community.org)
 - [Why large records are OK](https://elm-lang.org/docs/records#large-records)
@@ -85,11 +120,6 @@ elm reactor
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 - [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
-
-## Documentation
-
-- Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
-- Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
 
 
 [^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
