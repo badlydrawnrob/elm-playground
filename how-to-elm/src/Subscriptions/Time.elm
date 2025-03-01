@@ -1,4 +1,4 @@
-module CmdSubTime exposing (..)
+module Subscriptions.Time exposing (..)
 
 import Browser
 import CmdSubHttp exposing (Msg)

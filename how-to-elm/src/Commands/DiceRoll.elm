@@ -1,4 +1,4 @@
-module CmdSubRandom exposing (..)
+module Commands.DiceRoll exposing (..)
 
 import Browser
 import Html exposing (..)

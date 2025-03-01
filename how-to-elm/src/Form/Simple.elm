@@ -1,4 +1,4 @@
-module Forms exposing (..)
+module Form.Simple exposing (..)
 
 import Browser
 import Html exposing (..)

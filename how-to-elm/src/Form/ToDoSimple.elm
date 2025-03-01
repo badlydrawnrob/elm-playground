@@ -1,4 +1,4 @@
-module ToDoSimple exposing (..)
+module Form.ToDoSimple exposing (..)
 
 {-| Following this tutorial:
 

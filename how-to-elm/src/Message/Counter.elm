@@ -1,4 +1,4 @@
-module Buttons exposing (..)
+module Message.Counter exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, text)
