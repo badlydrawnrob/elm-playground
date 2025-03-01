@@ -1,6 +1,6 @@
 # README
 
-> It's super easy [to forget](https://www.azquotes.com/quote/585801) so aim to practice once per week.
+> 📅 It's super easy [to forget](https://www.azquotes.com/quote/585801) so aim to practice once per week!
 
 This is the killer. If I step away from programming for a few weeks, you really feel the rust gathering. This repository is a testing ground for all things Elm, and it's a year-long learning curve to get building.
 
@@ -12,9 +12,7 @@ There's plenty of [javascript guides](https://eloquentjavascript.net/) out there
 
 Start with [How To Design Programs](https://htdp.org/) and follow that up with Elm. It's **better designed**, more **consistent**, with **better compiler error messages** than [Python](https://github.com/badlydrawnrob/python-playground).
 
-After these two languages you'll have a decent grounding in Computer Science theory, and they're not too academic. I'm rubbish at maths, and am mostly focused on rapid prototyping, so I like to avoid deep academic learning.
-
-An artist ships!
+After these two languages you'll have a decent grounding in Computer Science theory, and they're not too academic. I'm rubbish at maths, and am mostly focused on rapid prototyping, so I like to avoid deep academic learning. An artist ships!
 
 
 ## Getting started
@@ -63,6 +61,12 @@ This is where Elm really shines, everything is easy to install and just works! U
 
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
 - Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
+
+#### Testing
+
+> I'm lazy, and rarely test, but it's good practice to.
+
+[#! Check a few useful examples in]
 
 
 ## Learning Elm
