@@ -4,7 +4,7 @@
 
 This is the killer. If I step away from programming for a few weeks, you really feel the rust gathering. This repository is a testing ground for all things Elm, and it's a year-long learning curve to get building.
 
-There's plenty of [javascript guides](https://eloquentjavascript.net/) out there, so this repository focuses on a statically typed functional style that turns you into a good programmer. For a study aid, you can use [Anki flashcards](https://github.com/badlydrawnrob/anki) and [these handy guides](https://github.com/badlydrawnrob/anki/discussions/123) to get you started. It's great for revision, but no substitute for _building_ things.
+There's plenty of [javascript guides](https://eloquentjavascript.net/) out there, so here the focus is on a statically typed functional style that turns you into a good programmer. For a study aid, you can use [Anki flashcards](https://github.com/badlydrawnrob/anki) and [these handy guides](https://github.com/badlydrawnrob/anki/discussions/123) to get you started. It's great for revision, but no substitute for _building_ things.
 
 ## Beginners
 
