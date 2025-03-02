@@ -105,6 +105,8 @@ This is where Elm really shines, everything is easy to install and just works! U
 
 ### 🛠️ Some tools
 
+- [Minification](https://discourse.elm-lang.org/t/elm-minification-benchmarks/9968)
+- [Hot reload](https://www.youtube.com/watch?v=eVsgBJqTOIE) or [`elm-watch`](https://github.com/lydell/elm-watch) / [`elm-live`](https://github.com/wking-io/elm-live)
 - [Elm Doc Preview](https://github.com/dmy/elm-doc-preview) (great for offline documentation)
 - [Elm land](https://elm.land)
 - [Everything else](https://github.com/sporto/awesome-elm) (massive list)
