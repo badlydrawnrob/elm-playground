@@ -6,7 +6,7 @@ This is the killer. If I step away from programming for a few weeks, you really 
 
 There's plenty of [javascript guides](https://eloquentjavascript.net/) out there, so here the focus is on a statically typed functional style that turns you into a good programmer. For a study aid, you can use [Anki flashcards](https://github.com/badlydrawnrob/anki) and [these handy guides](https://github.com/badlydrawnrob/anki/discussions/123) to get you started. It's great for revision, but no substitute for _building_ things.
 
-## Beginners
+## 🔰 Beginners
 
 > Elm is great for learning how to engineer.
 
@@ -15,7 +15,7 @@ Start with [How To Design Programs](https://htdp.org/) and follow that up with E
 After these two languages you'll have a decent grounding in Computer Science theory, and they're not too academic. I'm rubbish at maths, and am mostly focused on rapid prototyping, so I like to avoid deep academic learning. An artist ships!
 
 
-## Getting started
+## 🚀 Getting started
 
 > [Here would be a great place for a book!]
 
