@@ -1,13 +1,5 @@
 module Form.Simple exposing (..)
 
-import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
-import String exposing (any)
-import Char exposing (isDigit, isLower, isUpper)
-import Debug exposing (log)
-
 {-| A simple form
 
     Always start with the `Model` — what shape will our data take?
@@ -35,6 +27,14 @@ import Debug exposing (log)
     scenario without any special extras. So definitely give that a shot before
     deciding you need something more complex!
 -}
+
+import Browser
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
+import String exposing (any)
+import Char exposing (isDigit, isLower, isUpper)
+import Debug exposing (log)
 
 
 -- Main ------------------------------------------------------------------------

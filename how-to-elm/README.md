@@ -10,11 +10,18 @@ These can be a blessing and a curse, as some things might be better with a dedic
 
 ## Rules
 
-> I need to start setting rules for myself
+> I need to start setting rules for myself ...
+> How do I keep my programs simple? What's in? What's out?
 
 1. What format am I using? (custom headings or `elm-format`)
 2. What indentation style am I preferring? (`2` or `4` spaces)
 3. What learning is "in" and what is "out"?[^1]
+
+
+## Improvements
+
+1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
+    - In general I use as little javascript as possible. Set it and forget it.
 
 
 [^1]: I'm using Elm as my go-to language and for that reason learning the details in a little more depth than, say, Python. However, my purpose is prototyping and I still want to keep my learning light. Some implementations (SPA, packages) get complicated quite quickly as an app scales.

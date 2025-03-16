@@ -19,7 +19,6 @@ module DevDebugDeploy.Debugging exposing (..)
 import Html exposing (Html, text)
 import Json.Decode as Json
 import Json.Decode.Pipeline exposing (required)
-import WebSockets.RealTime exposing (Msg)
 
 
 -- Model -----------------------------------------------------------------------
