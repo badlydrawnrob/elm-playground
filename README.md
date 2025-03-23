@@ -18,7 +18,7 @@ After these two languages you'll have a decent grounding in Computer Science the
 ## 🚀 Getting started
 
 > My goals are not the same as yours; have a clear vision! This can change as you go.
-> — [Here would be a great place for a book!]
+> — [#! Here would be a great place for a book!]
 
 **Here are my goals:**
 
