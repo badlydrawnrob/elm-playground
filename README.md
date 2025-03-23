@@ -17,11 +17,10 @@ After these two languages you'll have a decent grounding in Computer Science the
 
 ## 🚀 Getting started
 
-> [Here would be a great place for a book!]
+> My goals are not the same as yours; it's a good idea to have a clear vision in mind! These can change as you go.
+> — [Here would be a great place for a book!]
 
-**Have a goal:**
-
-My goals are not the same as yours; it's a good idea to have a clear vision in mind, which can change as you go. For me this is ...
+**Here are my goals:**
 
 1. Prototyping a business model
 2. Teaching beginners
