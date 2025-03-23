@@ -108,7 +108,7 @@ This is where Elm really shines, everything is easy to install and just works! U
 - [Minification](https://discourse.elm-lang.org/t/elm-minification-benchmarks/9968)
 - [Hot reload](https://www.youtube.com/watch?v=eVsgBJqTOIE) or [`elm-watch`](https://github.com/lydell/elm-watch) / [`elm-live`](https://github.com/wking-io/elm-live)
 - [Elm Doc Preview](https://github.com/dmy/elm-doc-preview) (great for offline documentation)
-- [Elm land](https://elm.land)
+- [Elm land](https://elm.land) (or the older [elm-spa](https://www.elm-spa.dev/)
 - [Everything else](https://github.com/sporto/awesome-elm) (massive list)
 
 ### ❓ Some helpful FAQs
@@ -127,5 +127,12 @@ This is where Elm really shines, everything is easy to install and just works! U
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
 - [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
+### Larger programs
+
+- [Elm Spa](https://github.com/rtfeldman/elm-spa-example) example (by @rtfeldman)[^2]
+- [Elk Herd](https://github.com/mzero/elk-herd) (by @mzero)
+
 
 [^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
+
+[^2]: There's an alternative by Dwayne called [Elm Conduit](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758)
