@@ -26,7 +26,7 @@ My goals are not the same as yours; it's a good idea to have a clear vision in m
 1. Prototyping a business model
 2. Teaching beginners
 
-If I were to start over, and learn again, I would:
+**If I were to start over, and learn again, I would:**
 
 1. Start with [HTDP](https://github.com/badlydrawnrob/racket-playground/tree/master/htdp) and then [Elm](https://www.manning.com/books/elm-in-action)
 2. Learn only a subset of CompSci[^1] (first two chapters of HTDP, for example)
