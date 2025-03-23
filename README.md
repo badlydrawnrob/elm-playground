@@ -19,12 +19,21 @@ After these two languages you'll have a decent grounding in Computer Science the
 
 > [Here would be a great place for a book!]
 
-Things I'd love to know if I were to start over:
+**Have a goal:**
 
-1. The subset of CompSci for prototyping
-2. Best practices for `json` and `REST` APIs
-3. How to use Ai for learning (and how not to)
-4. How to frame and structure your learning (fail fast, just build!)
+My goals are not the same as yours; it's a good idea to have a clear vision in mind, which can change as you go. For me this is ...
+
+1. Prototyping a business model
+2. Teaching beginners
+
+If I were to start over, and learn again, I would:
+
+1. Start with [HTDP](https://github.com/badlydrawnrob/racket-playground/tree/master/htdp) and then [Elm](https://www.manning.com/books/elm-in-action)
+2. Learn only a subset of CompSci[^1] (first two chapters of HTDP, for example)
+3. Learn the best practices for `http` servers, `json` and `REST` APIs
+4. Learn how to use Ai as a teacher, or for pair-programming
+5. Learn from a mentor (good habits and what _not_ to do)
+6. Learn how to frame and structure your learning (fail fast, just build!)
 
 ### Basic commands
 
@@ -93,7 +102,7 @@ This is where Elm really shines, everything is easy to install and just works! U
 1. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
 2. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U)
 3. [Scaling Elm apps](https://www.youtube.com/watch?v=DoA4Txr4GUs)
-4. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^1]
+4. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^2]
 5. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
 6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
 
@@ -124,15 +133,19 @@ This is where Elm really shines, everything is easy to install and just works! U
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
-- [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)
+- [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)[^3]
 - [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
 ### Larger programs
 
-- [Elm Spa](https://github.com/rtfeldman/elm-spa-example) example (by @rtfeldman)[^2]
+- [Elm Spa](https://github.com/rtfeldman/elm-spa-example) example (by @rtfeldman)[^4]
 - [Elk Herd](https://github.com/mzero/elk-herd) (by @mzero)
 
 
-[^1]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
+[^1]: A lot of programming books can be highly academic, and although [books like these](https://leanpub.com/fp-made-easier) can be very thorough (and suit some learning styles), for me that was the wrong approach. For example, learning how to code recursively can be intellectually stimulating and it teaches you a lot, but after a certain point, it provides diminishing returns. It's hard to know _exactly_ what you need to learn, but if your goal is to build things, aim for industry knowledge and pragmatic goals, rather than academic ones. Learn the basics well and start building things. You'll learn a lot along the way (with help from mentors), and you can do the heavier academic texts later if you enjoy that kind of thing!
 
-[^2]: There's an alternative by Dwayne called [Elm Conduit](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758)
+[^2]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
+
+[^3]: I'm lazy, and not a proper programmer, so I rarely write unit tests. This isn't the _correct_ way, but Elm types give you quite a lot of guarantees, and I test the program as a regular user (or QA) might do. If any bugs arise, a visitor can raise a ticket and tests can be written.
+
+[^4]: There's an alternative by Dwayne called [Elm Conduit](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758)
