@@ -75,7 +75,7 @@ This is where Elm really shines, everything is easy to install and just works! U
 
 > I'm lazy, and rarely test, but it's good practice to.
 
-This mindset will land you in trouble if you're using Python, or a language that doesn't have strict typing. It's always wise to test your functions somehow, as typing only [gets you so far](https://discourse.elm-lang.org/t/what-not-to-unit-test/3511). It only checks data types; it won't make sure your inputs and outputs are what you'd expect. For example, I use [Bruno](https://www.usebruno.com/) when testing my APIs, but I don't write unit tests.
+This mindset will land you in trouble if you're using Python, or a language that doesn't have strict typing. It's always wise to test your functions somehow, as typing only [gets you so far](https://discourse.elm-lang.org/t/what-not-to-unit-test/3511). For example, I use [Bruno](https://www.usebruno.com/) when testing my APIs, but I don't write unit tests. Remember, Elm only checks for data types; it won't make sure your inputs and outputs are what you'd expect.
 
 Always check your programs as your visitors would use them. My goal is prototyping, so I'm a little lax, but for large programs with bigger teams, a lot can go wrong without tests!
 
