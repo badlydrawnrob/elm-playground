@@ -7,6 +7,8 @@ module File.CSV exposing (..)
     It converts a `CSV` file into a `String`. You could do the same for any
     `.txt` file, or `.md` perhaps.
 
+    @ https://discourse.elm-lang.org/t/how-to-use-elm-file/3046
+
 -}
 
 import Browser
