@@ -6,8 +6,17 @@ module Ports.LocalStorage exposing (main)
     We can persist across our application by using LocalStorage. This will remain
     on our user's device until they clear their browser's cache. See the original
     examples from Elm Guide:
-        @ https://ellie-app.com/8yYddD6HRYJa1
+        @ https://ellie-app.com/8yYddD6HRYJa1 #!
         @ https://guide.elm-lang.org/interop/ports.html
+
+
+    Cookies
+    -------
+    > A good article on Elm's view of cookies, which are discouraged ...
+    > Or at least, you should take care when setting or accessing them!
+
+        @ https://github.com/elm-lang/cookie
+
 
     Notes
     -----
@@ -88,6 +97,13 @@ type Msg
 
 
 -- Update ----------------------------------------------------------------------
+-- (1) Our `updateWithStorage` function isn't strictly necessary, but allows us
+--     to set our `localStorage` with our `Ports.Settings` package functions from
+--     ONE place (rather than within the 3 branches)
+-- (2) `Cmd.batch` also isn't necessary in this example package. We have no extra
+--      commands to run! However, if we _were_ to add a new `Cmd` in any one of
+--      our branches, this would ensure the command runs, as well as setting our
+--      `localStorage` centrally.
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -101,17 +117,18 @@ update msg model =
         ClearSession ->
             updateSettings (\settings -> { settings | session = "" }) model
 
-{- Helper function for update. Updates the settings -}
+{- @rtfeldman's helper function for updating our model (settings) -}
 updateSettings : (P.Settings -> P.Settings) -> Model -> ( Model, Cmd Msg )
 updateSettings transform model =
     ( { model | settings = transform model.settings }, Cmd.none )
 
+{- (1) -}
 updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
 updateWithStorage msg oldModel =
     let
-        ( newModel, cmd ) = update msg oldModel
+        ( newModel, cmds ) = update msg oldModel
     in
     ( newModel,
-      P.setStorage (P.encoder newModel.settings) -- elm guide uses `Cmd.batch`
+      Cmd.batch [ P.setStorage (P.encoder newModel.settings), cmds ] -- (2)
     )
 
