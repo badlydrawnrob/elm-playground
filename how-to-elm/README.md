@@ -1,6 +1,7 @@
 # README
 
 > The good bits of Elm
+> It's a good idea to practice regularly![^1]
 
 1. It forces you to build things without too many dependencies
 2. Some low-level detail must be done by the user (js makes you a bit lazy)
@@ -17,7 +18,7 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
 
 1. What format am I using? (custom headings or `elm-format`)
 2. What indentation style am I preferring? (`2` or `4` spaces)
-3. What learning is "in" and what is "out"?[^1]
+3. What learning is "in" and what is "out"?[^2]
 
 
 ## Improvements
@@ -26,4 +27,6 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
     - In general I use as little javascript as possible. Set it and forget it.
 
 
-[^1]: I'm using Elm as my go-to language and for that reason learning the details in a little more depth than, say, Python. However, my purpose is prototyping and I still want to keep my learning light. Some implementations (SPA, packages) get complicated quite quickly as an app scales.
+[^1]: Coming back after 2-3 months off and I'm rusty as fuck!
+
+[^2]: I'm using Elm as my go-to language and for that reason learning the details in a little more depth than, say, Python. However, my purpose is prototyping and I still want to keep my learning light. Some implementations (SPA, packages) get complicated quite quickly as an app scales.
