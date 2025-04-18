@@ -7,6 +7,8 @@
 
 These can be a blessing and a curse, as some things might be better with a dedicated package, such as image uploads. For that you have to understand what `base64` is and how file uploads work.
 
+I'm not using `elm-format` in this repository, as I quite like my _own_ commenting style.
+
 
 ## Rules
 

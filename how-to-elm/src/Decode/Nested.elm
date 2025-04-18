@@ -33,7 +33,7 @@ type alias Album =
     , songs : List Song
     }
 
-type alias Song -
+type alias Song =
     { title : String
     , time : String
     , link : Url
