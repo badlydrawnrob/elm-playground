@@ -61,6 +61,14 @@ module Decode.BestPractice exposing (..)
         - Your `Recipe`s would likely be a `Maybe (List Recipe)`, incase of an
           empty response. You might like to _enforce_ a non-empty list.
         - See @ https://elm-lang.org/examples/book for union type.
+    5. You can use the `style` attribute for inline CSS ...
+        - But why would you want to do that?! Alternatively there's packages like
+          @rtfeldman/elm-css, mdgriffith/elm-ui, @dillonkearns/elm-css, and so on.
+            - I don't advise mixing Elm and CSS, as it makes for ugly code!
+        - Better to just use a CSS file, only downside of this is you'll need
+          to compile your Elm code with `elm make` before seeing the changes ...
+            - Another minor issue is you'll pepper your Elm code with classes
+            - You could use @ https://picocss.com/docs/classless instead.
 
     Questions
     ---------
@@ -77,6 +85,7 @@ module Decode.BestPractice exposing (..)
     Wishlist
     --------
     1. Remove the `Debug`er and replace with proper error checking.
+    2. Should our `D.at` record getter be pulled out into it's own function?
 
 -}
 
@@ -84,7 +93,8 @@ import Browser
 import Debug
 import Json.Decode as D exposing (Decoder, andThen, field, int, list, nullable, string)
 
-import Html exposing (Html, article, button, div, h1, hr, text, ul, li)
+import Html exposing (Html, article, button, div, h1, hr, span, text, ul, li)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Http
 
@@ -169,13 +179,17 @@ url : String
 url =
     "https://api.jsonbin.io" -- We're using `Url.Builder` so doesn't need trailing slash
 
+bin : String
+bin =
+    "680117848a456b79668b8c5d" -- This is the bin ID for our JSON data
+
 
 -- URL builder -----------------------------------------------------------------
 -- The API version, `b` for bin, and specific bin ID
 
 api : String
 api =
-    crossOrigin url ["v3", "b", "680117848a456b79668b8c5d"] []
+    crossOrigin url ["v3", "b", bin] []
 
 
 -- Request ---------------------------------------------------------------------
@@ -256,13 +270,15 @@ difficultyDecoder str =
 
 view : Model -> Html Msg
 view model =
-    article []
+    article [ style "margin" "20px" ] -- Better to not use inline CSS ...
         [ div []
-            [ h1 [] [ text "Here's an example of best practice API decoder" ]
+            [ h1 [] [ text "An example of best practice when decoding an API" ]
             , viewButton "Load JSON"
-            , text
-                (if (String.isEmpty model.error) then "No errors!"
-                 else model.error)
+            , span [ style "padding-left" "20px" ] -- ... As it's ugly code!
+                [ text
+                    (if (String.isEmpty model.error) then "No errors!"
+                    else model.error)
+                ]
             , hr [] []
             ]
         , div []
