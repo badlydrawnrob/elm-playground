@@ -85,7 +85,12 @@ module CustomTypes.SongsNew exposing (..)
         - `NoAlbum`, ~~editing `Album`,~~ edit `Song`.
     7. Songs are generally numbered (for now this is implicit)
     8. Pull/Push to an API.
-       - Should ALWAYS have at least one `Song` in the `Album`.
+        - Should ALWAYS have at least one `Song` in the `Album`.
+    9. `Insert | Edit ID | Delete` modes (potentially use the same form)
+        - Is using the same form a bit of a risk?
+        - If API do you update song straight away, or in bulk?
+        - The trouble with `Album Song (List Song)` is it's a bit harder to work
+          with (delete, sort, etc) than a regular `List Song`.
 
 
     Errors
