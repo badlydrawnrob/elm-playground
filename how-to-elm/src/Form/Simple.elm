@@ -34,7 +34,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import String exposing (any)
 import Char exposing (isDigit, isLower, isUpper)
-import Debug exposing (log)
+import Debug
 
 
 -- Main ------------------------------------------------------------------------
@@ -98,6 +98,7 @@ view model =
     , viewValidation model
     ]
 
+{- #! This might be reducing repetition, but it's not so readable? -}
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
   input [ type_ t, placeholder p, value v, onInput toMsg ] []
@@ -119,18 +120,18 @@ validatePassword str1 str2 =
 
 validateStringEquals : String -> String -> Bool
 validateStringEquals str1 str2 =
-  log "validateStringEquals" (str1 == str2)
+  Debug.log "validateStringEquals" (str1 == str2)
 
 validateStringCompare : String -> Bool
 validateStringCompare str =
   if (validateStringLength str) then
-    log "validateStringContains" (validateStringContains str)
+    Debug.log "validateStringContains" (validateStringContains str)
   else
     False
 
 validateStringLength : String -> Bool
 validateStringLength str =
-  log "validateStringLength" (String.length str >= 8)
+  Debug.log "validateStringLength" (String.length str >= 8)
 
 validateStringContains : String -> Bool
 validateStringContains str =

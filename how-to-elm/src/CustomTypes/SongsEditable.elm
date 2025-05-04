@@ -3,12 +3,35 @@ module CustomTypes.SongsEditable exposing (..)
 {-| ----------------------------------------------------------------------------
     Creating A Simple Custom Type (see `CustomTypes.md` for notes)
     ============================================================================
-    ⚠️ Some feel that computed values should NOT be added to the `Model`. With
-    this thinking  any `Result` value should remain within the necessary function,
-    but not a `UserInput` as I currently have here. The form fields would remain
-    a `String` and calculated results would exist in functions and get passed
-    around as needed. `UserInput` can be unwieldy as number of fields grow. You
-    can List.map over same types, but not `UserInput` types.
+    ⚠️ It's better to not store computed values in the model if you can avoid it.
+    Only if the computation is very slow/heavy should it be considered. It's also
+    better to hand over that compute time to the browser (if it's speedy), as it
+    reduces resource on the server.
+
+    Next time:
+
+    > Just use a `String` for user input. Calculate the `Result` and build a `Song`
+    > or an `Album`. Having a `UserInput` type really complicates things. Sketch
+    > out the steps next time and use the "Simplicity" book guy's advice ... split
+    > the below sentence into a single units of work.
+
+        Create an Album that has a `List Song` and save it as `json`.
+        Create a method to edit the `Album` and the `Song`s of that album.
+
+    1. Consider if you _really_ need a custom type here.
+    2. Consider if you want to show errors on SAVE rather than every keystroke.
+    3. If an `Album` requires a song, perhaps enforce it (rather than `FormStatus`
+       as `NewAlbum`. You probably only need a `Album Song SongList` type.
+    4. I'm not sure that `FormStatus` is correct. You need a state for a `Song`
+       edit (with an `ID`) but that could possibly be in a `Msg`?
+    5. A custom type should probably have a limited amount of fields, as it can
+        get unwieldy with too many arguments.
+    6. It's probably wiser to use `Result.mapX` and have a validation function
+       for each field (makes for fewer arguments) — however you can't reliably get
+       all errors back in one go (we're giving user feedback on individual fields
+       in realtime, but on SAVE we want to check all fields and give feedback).
+       - @rtfeldman has a clever way of validating fields with `List Field` and
+         `.concatMap`, which also works well.
 
         ✅ Errors should ideally be underneath their assoc fields
         ❌ Errors should display only after the user submits form

@@ -3,9 +3,15 @@ module CustomTypes.Songs exposing (..)
 {-| ----------------------------------------------------------------------------
     A simple `Album` custom type (see `CustomTypes.md` for notes)
     ============================================================================
-    ⚠️ It's not a good idea to store computed data in your model! So this entire
-       can be seen as a learning exercise. We're also using NESTED records,
-       which are generally discouraged in Elm!
+    ⚠️ This is an exercise in "how NOT to do it"; you shouldn't store computed
+       values (and if we needed a `List Result` they'll be different types, which
+       will error!)
+
+       Take this as a learning exercise. Next time, store user input as `String`
+       (and hold on to it) then compute `Result` into a `List Err` or `Song`. We
+       could then get rid of the `UserInput` and compute `Result.mapX` into the
+       `Song`. Be careful also nesting records too deep. 2 levels max, as they're
+       generally discouraged.
 
     Original attempt:
         @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)

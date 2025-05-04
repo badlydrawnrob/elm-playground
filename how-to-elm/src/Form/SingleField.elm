@@ -39,8 +39,8 @@ module Form.SingleField exposing (..)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, classList, disabled, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Attributes exposing (class, disabled, placeholder, type_, value)
+import Html.Events exposing (onInput, onSubmit)
 
 type alias Id =
     Int

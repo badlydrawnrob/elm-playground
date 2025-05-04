@@ -14,7 +14,7 @@ module Message.HtmlMap exposing (..)
     `(ContactMsg << Email)` is much simpler when it isn't. There's also the
     "teach me how to message" pattern for child modules:
 
-        @
+        @ https://elm.land/concepts/components.html#defining-the-component
 
     The same goes for reusable functions. Is the `viewInput` type clearer? Does
     it amount to less code? NOT REALLY because:

@@ -7,6 +7,10 @@ module CustomTypes.SongsAlt exposing (..)
        can be seen as a learning exercise. This example is very similar to
        `CustomTypes.Songs` but uses a custom type for user input.
 
+       The custom input is a little more graceful than the nested record version
+       in the update function, but remember not to store computed data in your
+       model next time!
+
     Nested Record version (without editable `Song`s)
         @ Songs.elm
     Original attempt:
