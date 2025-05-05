@@ -4,14 +4,16 @@ module CustomTypes.SongsNew exposing (..)
     Songs (the correct way to do user input)
     ============================================================================
     > You shouldn't store computed values in the model!
-    > There's different ways to update input (here I'm using a custom type)
 
     Not only do you make excess work for yourself, but the code becomes more
     complicated. The previous version also used a custom `Album` and `Song` type,
     rather than a simple `List Song` (or record). You also want to hang on to the
     original input, so you can show that back to the user.
 
-    1. Think carefully whether you need a custom type.
+    1. I'm not using @rtfeldman's method here (with `.concatMap`)
+        - Generating a `List String` of errors might be preferable in some cases?
+        - If the `List String` of errors is empty, the form can be saved!
+    2. Think carefully whether you need a custom type!
         - What guarantees are you trying to create?
         - Is it _really_ an improvement over basic data structures?
     2. A `Msg` is to CARRY DATA and notify a state change. It's NOT for changing
@@ -19,6 +21,7 @@ module CustomTypes.SongsNew exposing (..)
         - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
     3. It's best to unpack (lift) a `Maybe` type in ONE place.
         - @ https://tinyurl.com/stop-unpacking-maybe-too-often
+        - Reach for `Maybe.withDefault` LATE (normally in your view)
     4. Nested records are faster to unpack (.accessor function), harder to update.
         - @ https://tinyurl.com/custom-type-songs-65d9662
     5. Custom types (not a record) are harder to unpack (pattern matching), but
@@ -26,10 +29,14 @@ module CustomTypes.SongsNew exposing (..)
         - @ https://tinyurl.com/custom-type-songsalt-65d9662
     6. For a short form, you might like to have ALL fields as their own `Msg`.
         - As we've got quite a few inputs, a single `Msg` is better.
+    7. It's the FORM that has the `onSubmit` state (not the button)
+        - Button must live _inside_ the `form` tag, or it won't submit.
+        - You _could_ use `onClick` instead if for some reason the button needed
+          to live outside the form.
 
     Simplify
     --------
-    > Simplify your state wherever possible.
+    > Simplify your state wherever possible!
     > Is the data flow and functions easy to follow?
     > Can you see things at-a-glance? (My future stupid self)
 
@@ -37,7 +44,7 @@ module CustomTypes.SongsNew exposing (..)
     - Nested records are OK in moderation, but prefer a flatter style ...
         - You could easily just write a big record with more fields.
     - `List.map` expects everything in the list to be the same type.
-    - Converting two `Int` inputs to a `"Int:Int"` string (The `"2:00"` problem)
+    - Simplify state (input variations) `"Int:Int"` (The `"2:00"` problem)
     - Only use `Result.andThen` for a single data point
         - Avoid chaining `Result`s together. It makes life complected.
         - `Result.map` only goes up to FIVE arguments (`.map6` doesn't exist)
@@ -70,40 +77,46 @@ module CustomTypes.SongsNew exposing (..)
     |   We start with a `NoAlbum` state, and then move to `Album` state.
 
 
-    Wishlist
-    --------
-    1. Build a form with song details
-    2. Validate the form as the user is typing (not `onSubmit`)
+    Wishlist (basic)
+    ----------------
+    1. ~~Build a form with song details~~
+    2. ~~Validate the form as the user is typing (not `onSubmit`)~~
         - Do you want to show errors as the user is typing, or on save?
         - The errors can appear under the form field input.
-    3. When user clicks submit, check the form is valid (`onSubmit`)
-    4. If a `Song` is valid, create an `Album` (with an `ID`).
-        - An `Album` cannot be created without at least ONE `Song`.
-    5. Add the `Song` to the `Album` (songs do not have an `ID`).
+    3. ~~When user clicks submit, check the form is valid (`onSubmit`)~~
+    4. ~~If a `Song` is valid, create an `Album`.~~
+        - ~~An `Album` cannot be created without at least ONE `Song`.~~
+    5. ~~Add the `Song` to the `Album` (songs do not have an `ID`).~~
 
-    Do something with `List.take` and `List.indexedMap` (like `ToDoSimple`). It
-    might've been easier to give each `Song` an `ID` and use that.
+    Wishlist (advanced)
+    -------------------
+    > `List.take`, `List.indexedMap` (like `ToDoSimple`), or `Array` can be used
+    > to get the index of a list. It might be easier to just give each song an
+    > `ID` or a list position (normally songs are numbered in Apple Music) ...
 
-    6. The form has a few states:
-        - `NoAlbum`, ~~editing `Album`,~~ edit `Song`.
-    7. Songs are generally numbered (for now this is implicit)
-    8. Pull/Push to an API.
+    1. Give the form different states:
+        - `Insert | Edit ID | Delete` modes (to edit the songs)
+        - What happens if `NoAlbum`? Or MULTIPLE Albums?
+        - `Album` is going to cause you problems (for delete, sort, etc) because
+          `firstSong` needs concatonation or destructuring on every album save.
+            - #! `List Song` would be FAR easier!
+        - Is using the same form a risk? (is type safe changes enough?)
+    2. Pull/Push to an API. Keep it simple for now.
         - Should ALWAYS have at least one `Song` in the `Album`.
-    9. `Insert | Edit ID | Delete` modes (potentially use the same form)
-        - Is using the same form a bit of a risk?
-        - If API do you update song straight away, or in bulk?
-        - The trouble with `Album Song (List Song)` is it's a bit harder to work
-          with (delete, sort, etc) than a regular `List Song`.
-
+        - Do you update the `Album` straight away? (on EVERY song change)
 
     Errors
     ------
-    > We're not using @rtfeldman's method here (Elm Spa Login)
+    > We're using `Result.mapX` here, no @rtfeldman's Elm Spa method.
 
-    Instead, use a `Result.mapX` into the `Song`. Each field can have it's own
-    validation function rather than `case`ing on `(ValidField, String)` types
-    (like `Form.Passport`) or `.concatMap` over `List ValidField` to generate a
-    `List Error` like @rtfeldman does.
+    `Result.map` only goes up to FIVE. For anything over that you'll have to
+    do some trickery to make it work. It could be difficult to generate a `Song`
+    if you're having to `andThen` or chain `Result.map`.
+
+    It's also maybe not the best way to work out validations. In @rtfeldman's
+    example he uses `ValidField` types `Email | Password` and generates a
+    `List String` of errors (rather than working with `Result.map`). If the error
+    list is empty, you can go ahead and generate a `Song`!
 
     ----------------------------------------------------------------------------
 
@@ -126,7 +139,7 @@ module CustomTypes.SongsNew exposing (..)
 import Browser
 import Debug
 
-import Html exposing (Html, button, div, form, h1, input, p, text)
+import Html exposing (Html, button, div, form, h1, hr, input, li, p, text, ul)
 import Html.Attributes exposing (placeholder, style, value)
 import Html.Events exposing (onInput, onSubmit)
 
@@ -187,6 +200,22 @@ type Msg
 
 
 -- Helper functions ------------------------------------------------------------
+-- #! It's going to be harder to deal with `List` manipulation if we wanted to
+--    rearrange our songs, as we'll have to first create the list, then recreate
+--    our `Album` with the new `firstSong` (again).
+
+getAllSongs : Album -> List Song
+getAllSongs album =
+    case album of
+        NoAlbum ->
+            []
+
+        Album firstSong restSongs ->
+            [firstSong] ++ restSongs
+
+getTime : (Int, Int) -> String
+getTime (mins, secs) =
+    String.fromInt mins ++ ":" ++ String.fromInt secs
 
 
 -- View ------------------------------------------------------------------------
@@ -198,8 +227,31 @@ view model =
     div []
         [ h1 [] [ text "Songs" ]
         , viewSongForm model.currentSong
-        , button [] [ text "Create a song" ]
         , p [ style "colour" "red" ] [ text model.error ]
+        , hr [] []
+        , viewAlbum model.album
+        ]
+
+viewAlbum : Album -> Html Msg
+viewAlbum album =
+    case album of
+        NoAlbum ->
+            div [] [ text "No Album created yet" ]
+
+        Album song songs ->
+            div []
+                [ h1 [] [ text song.title ]
+                , ul []
+                    (List.map viewSongItem songs)
+                ]
+
+viewSongItem : Song -> Html Msg
+viewSongItem {title, artist, album, year, time } =
+    li []
+        [ text (title ++ " by " ++ artist)
+        , p [] [ text album ]
+        , p [] [ text (String.fromInt year) ]
+        , p [] [ text ("runtime:" ++ getTime time) ]
         ]
 
 {- Explicit is better than implicit? -}
@@ -212,6 +264,7 @@ viewSongForm { title, artist, album, year, minutes, seconds } =
             , placeholder "Title"
             ]
             []
+        , p [] [ viewError title isEmpty ]
         , input
             [ value artist
             , onInput (ChangeInput Artist)
@@ -243,6 +296,7 @@ viewSongForm { title, artist, album, year, minutes, seconds } =
             , placeholder "Seconds"
             ]
             []
+        , button [] [ text "Create a song" ]
         ]
 
 {- We only care (return) if it's an error -}
@@ -307,10 +361,11 @@ createSong form =
         Err _ ->
             Nothing
 
+{- Mock some of the data for now -}
 isValidSong : Form -> Result String Song
 isValidSong { title, artist, album, year, minutes, seconds } =
     Result.map5 Song
-        (Ok (String.trim title))
+        (isEmpty title)
         (Ok (String.trim artist))
         (Ok (String.trim album))
         (isYear year) <|
@@ -338,10 +393,18 @@ isYear str =
                 Ok year
 
             else
-                Err "Year must be between 1900 and 2100"
+                Err "Year must be between 2000 and 2030"
 
         Nothing ->
             Err "Year must be a number"
+
+isEmpty : String -> Result String String
+isEmpty str =
+    if String.isEmpty str then
+        Err "Field cannot be empty"
+
+    else
+        Ok (String.trim str)
 
 
 -- Main ------------------------------------------------------------------------
