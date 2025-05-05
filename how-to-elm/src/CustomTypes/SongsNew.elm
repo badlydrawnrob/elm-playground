@@ -126,7 +126,7 @@ module CustomTypes.SongsNew exposing (..)
 import Browser
 import Debug
 
-import Html exposing (Html, button, div, h1, input, p, text)
+import Html exposing (Html, button, div, form, h1, input, p, text)
 import Html.Attributes exposing (placeholder, style, value)
 import Html.Events exposing (onInput, onSubmit)
 
@@ -198,14 +198,14 @@ view model =
     div []
         [ h1 [] [ text "Songs" ]
         , viewSongForm model.currentSong
-        , button [ Debug.log "submit" (onSubmit ClickedSave) ] [ text "Create a song" ]
+        , button [] [ text "Create a song" ]
         , p [ style "colour" "red" ] [ text model.error ]
         ]
 
 {- Explicit is better than implicit? -}
 viewSongForm : Form -> Html Msg
 viewSongForm { title, artist, album, year, minutes, seconds } =
-    div []
+    form [ onSubmit ClickedSave ]
         [ input
             [ value title
             , onInput (ChangeInput Title)
@@ -300,7 +300,7 @@ update msg model =
 
 createSong : Form -> Maybe Song
 createSong form =
-    case (isValidSong form) of
+    case Debug.log "is valid song?" (isValidSong form) of
         Ok song ->
             Just song
 
