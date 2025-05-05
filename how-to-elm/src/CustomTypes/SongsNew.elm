@@ -41,6 +41,8 @@ module CustomTypes.SongsNew exposing (..)
     > Can you see things at-a-glance? (My future stupid self)
 
     - See "The 5 ways to reduce code" (Tesla model)
+    - A `List Song` would be FAR easier to deal with than an `Album first rest`.
+        - We can order, shuffle, filter, etc WAY easier (no concatonation needed)
     - Nested records are OK in moderation, but prefer a flatter style ...
         - You could easily just write a big record with more fields.
     - `List.map` expects everything in the list to be the same type.
@@ -94,7 +96,9 @@ module CustomTypes.SongsNew exposing (..)
     > to get the index of a list. It might be easier to just give each song an
     > `ID` or a list position (normally songs are numbered in Apple Music) ...
 
-    1. Give the form different states:
+    1. #! Our latest `Song` is added to the FRONT of the list.
+        - We likely want to add it to the BACK of the list!
+    2. Give the form different states:
         - `Insert | Edit ID | Delete` modes (to edit the songs)
         - What happens if `NoAlbum`? Or MULTIPLE Albums?
         - `Album` is going to cause you problems (for delete, sort, etc) because
