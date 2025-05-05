@@ -1,7 +1,7 @@
 module CustomTypes.SongsNew exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Songs (the correct way to do user input)
+    Songs (the correct way to do user input) ⏰ 1 day
     ============================================================================
     > You shouldn't store computed values in the model!
 
@@ -268,7 +268,7 @@ viewSongForm { title, artist, album, year, minutes, seconds } =
             , placeholder "Title"
             ]
             []
-        , p [] [ viewError title isEmpty ]
+        , p [] [ viewError isEmpty title ]
         , input
             [ value artist
             , onInput (ChangeInput Artist)
@@ -287,7 +287,7 @@ viewSongForm { title, artist, album, year, minutes, seconds } =
             , placeholder "Year"
             ]
             []
-        , p [] [ viewError year isYear ]
+        , p [] [ viewError isYear year ]
         , input
             [ value minutes
             , onInput (ChangeInput Minutes)
@@ -303,9 +303,10 @@ viewSongForm { title, artist, album, year, minutes, seconds } =
         , button [] [ text "Create a song" ]
         ]
 
-{- We only care (return) if it's an error -}
-viewError : String -> (String -> Result String a) -> Html msg
-viewError value check =
+{- We only care (return) if it's an error ...
+Remember the value that changes the most should come last! -}
+viewError : (String -> Result String a) -> String -> Html msg
+viewError check value =
     case (check value) of
         Ok _ ->
             text ""
