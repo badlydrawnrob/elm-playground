@@ -200,9 +200,9 @@ type Msg
 
 
 -- Helper functions ------------------------------------------------------------
--- #! It's going to be harder to deal with `List` manipulation if we wanted to
---    rearrange our songs, as we'll have to first create the list, then recreate
---    our `Album` with the new `firstSong` (again).
+-- #! `getAllSongs` is helpful if the `Album` has no ID or title to grab, as we
+--    don't have to repeatedly concatonate the `firstSong` and `restSongs` together.
+--    If `Album` had it's own metadata, this might not work.
 
 getAllSongs : Album -> List Song
 getAllSongs album =
@@ -232,16 +232,16 @@ view model =
         , viewAlbum model.album
         ]
 
+{- We've changed to use `getAllSongs` so we don't work with the album directly -}
 viewAlbum : Album -> Html Msg
 viewAlbum album =
-    case album of
-        NoAlbum ->
+    case Debug.log "all songs" (getAllSongs album) of
+        [] ->
             div [] [ text "No Album created yet" ]
 
-        Album song songs ->
+        songs ->
             div []
-                [ h1 [] [ text song.title ]
-                , ul []
+                [ ul []
                     (List.map viewSongItem songs)
                 ]
 
@@ -373,14 +373,15 @@ isValidSong { title, artist, album, year, minutes, seconds } =
                 (Ok (Maybe.withDefault 0 (String.toInt minutes)))
                 (Ok (Maybe.withDefault 0 (String.toInt seconds))))
 
+{- #! FIX THIS: DUPLICATING SONGS! -}
 updateAlbum : Song -> Album -> Album
 updateAlbum song album =
     case album of
         NoAlbum ->
             Album song []
 
-        Album _ songs ->
-            Album song (song :: songs)
+        Album firstSong songs ->
+            Album firstSong (song :: songs)
 
 
 -- Validation ------------------------------------------------------------------
