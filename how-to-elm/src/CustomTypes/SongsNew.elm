@@ -33,14 +33,17 @@ module CustomTypes.SongsNew exposing (..)
     > Is the data flow and functions easy to follow?
     > Can you see things at-a-glance? (My future stupid self)
 
-    - See "The 5 ways to reduce code"
+    - See "The 5 ways to reduce code" (Tesla model)
     - Nested records are OK in moderation, but prefer a flatter style ...
-    - You could easily just write a big record with more fields.
+        - You could easily just write a big record with more fields.
     - `List.map` expects everything in the list to be the same type.
     - Converting two `Int` inputs to a `"Int:Int"` string (The `"2:00"` problem)
-    - Avoid chaining `Result`s together. It makes life complected.
-    - Only use `Result.andThen` for a single data point.
-    - A function should have as few parameters as possible.
+    - Only use `Result.andThen` for a single data point
+        - Avoid chaining `Result`s together. It makes life complected.
+        - `Result.map` only goes up to FIVE arguments (`.map6` doesn't exist)
+        - If `Song` had 7 fields, the `Result.map` might need to be 3 levels
+          deep, which adds complexity (how to pass a `Song` to a `Song`?!)
+    - A function should have as few parameters as possible!
 
     ---------------------------------------------------------
     The previous version looked like this (storing `Result`):
@@ -120,8 +123,12 @@ module CustomTypes.SongsNew exposing (..)
 
 -}
 
-import Html exposing (Html, div, h1, text)
-import Html.Attributes exposing (placeholder)
+import Browser
+import Debug
+
+import Html exposing (Html, button, div, h1, input, p, text)
+import Html.Attributes exposing (placeholder, style, value)
+import Html.Events exposing (onInput, onSubmit)
 
 
 -- Types -----------------------------------------------------------------------
@@ -150,7 +157,7 @@ type Album
 type Input
     = Title
     | Artist
-    | Album
+    | AlbumTitle
     | Year
     | Minutes
     | Seconds
@@ -161,6 +168,13 @@ type Input
 type alias Model =
     { album : Album
     , currentSong : Form
+    , error : String
+    }
+
+init =
+    { album = NoAlbum
+    , currentSong = { title = "", artist = "", album = "", year = "", minutes = "", seconds = "" }
+    , error = ""
     }
 
 
@@ -168,7 +182,7 @@ type alias Model =
 -- Our `ChangeInput` type doesn't really save us much. May as well be explicit.
 
 type Msg
-    = SavedForm
+    = ClickedSave
     | ChangeInput Input String
 
 
@@ -184,88 +198,153 @@ view model =
     div []
         [ h1 [] [ text "Songs" ]
         , viewSongForm model.currentSong
+        , button [ Debug.log "submit" (onSubmit ClickedSave) ] [ text "Create a song" ]
+        , p [ style "colour" "red" ] [ text model.error ]
         ]
 
 {- Explicit is better than implicit? -}
 viewSongForm : Form -> Html Msg
 viewSongForm { title, artist, album, year, minutes, seconds } =
     div []
-        [ input []
+        [ input
             [ value title
             , onInput (ChangeInput Title)
             , placeholder "Title"
             ]
-        , input []
+            []
+        , input
             [ value artist
             , onInput (ChangeInput Artist)
             , placeholder "Artist"
             ]
-        , input []
+            []
+        , input
             [ value album
-            , onInput (ChangeInput Album)
+            , onInput (ChangeInput AlbumTitle)
             , placeholder "Album"
             ]
-        , input []
+            []
+        , input
             [ value year
             , onInput (ChangeInput Year)
             , placeholder "Year"
             ]
-        , input []
+            []
+        , p [] [ viewError year isYear ]
+        , input
             [ value minutes
             , onInput (ChangeInput Minutes)
             , placeholder "Minutes"
             ]
-        , input []
+            []
+        , input
             [ value seconds
             , onInput (ChangeInput Seconds)
             , placeholder "Seconds"
             ]
+            []
         ]
+
+{- We only care (return) if it's an error -}
+viewError : String -> (String -> Result String a) -> Html msg
+viewError value check =
+    case (check value) of
+        Ok _ ->
+            text ""
+
+        Err error ->
+            text error
+
+
 
 -- Update ----------------------------------------------------------------------
 
 update : Msg -> Model -> Model
 update msg model =
+    let
+        {- #! Can't use `model.record` to update record directly -}
+        songRecord = model.currentSong
+    in
     case msg of
-        SavedForm ->
-            case model.album of
-                NoAlbum ->
+        ClickedSave ->
+            case (createSong model.currentSong) of
+                Just song ->
                     { model
-                        | album = Album (createSong model.currentSong) []
+                        | album = updateAlbum song model.album
+                        , currentSong = { title = "", artist = "", album = "", year = "", minutes = "", seconds = "" }
+                        , error = ""
                     }
 
-                Album song songs ->
-                    { model
-                        | album = Album song (createSong model.currentSong :: songs)
-                    }
+                Nothing ->
+                    { model | error = "The form is not a valid song" }
 
     {- #! This doesn't really save us much, other than extra `Msg` types -}
         ChangeInput Title value ->
-            { model | currentSong = { model.currentSong | title = value } }
+            { model | currentSong = { songRecord | title = value } }
 
         ChangeInput Artist value ->
-            { model | currentSong = { model.currentSong | title = value } }
+            { model | currentSong = { songRecord | artist = value } }
 
-        ChangeInput Album value ->
-            { model | currentSong = { model.currentSong | album = value } }
+        ChangeInput AlbumTitle value ->
+            { model | currentSong = { songRecord | album = value } }
 
         ChangeInput Year value ->
-            { model | currentSong = { model.currentSong | year = value } }
+            { model | currentSong = { songRecord | year = value } }
 
         ChangeInput Minutes value ->
-            { model | currentSong = { model.currentSong | minutes = value } }
+            { model | currentSong = { songRecord | minutes = value } }
 
         ChangeInput Seconds value ->
-            { model | currentSong = { model.currentSong | seconds = value } }
+            { model | currentSong = { songRecord | seconds = value } }
 
 
-createSong : Form -> Song
-createSong { title, artist, album, year, minutes, seconds } =
-    Result.map6 Song
-        (Ok (String.toInt year))
-        (Ok (String.toInt minutes))
-        (Ok (String.toInt seconds))
+createSong : Form -> Maybe Song
+createSong form =
+    case (isValidSong form) of
+        Ok song ->
+            Just song
+
+        Err _ ->
+            Nothing
+
+isValidSong : Form -> Result String Song
+isValidSong { title, artist, album, year, minutes, seconds } =
+    Result.map5 Song
         (Ok (String.trim title))
         (Ok (String.trim artist))
         (Ok (String.trim album))
+        (isYear year) <|
+            (Result.map2 (\mins secs -> (mins, secs))
+                (Ok (Maybe.withDefault 0 (String.toInt minutes)))
+                (Ok (Maybe.withDefault 0 (String.toInt seconds))))
 
+updateAlbum : Song -> Album -> Album
+updateAlbum song album =
+    case album of
+        NoAlbum ->
+            Album song []
+
+        Album _ songs ->
+            Album song (song :: songs)
+
+
+-- Validation ------------------------------------------------------------------
+
+isYear : String -> Result String Int
+isYear str =
+    case String.toInt str of
+        Just year ->
+            if year > 2000 && year < 2030 then
+                Ok year
+
+            else
+                Err "Year must be between 1900 and 2100"
+
+        Nothing ->
+            Err "Year must be a number"
+
+
+-- Main ------------------------------------------------------------------------
+
+main =
+    Browser.sandbox { init = init, update = update, view = view }
