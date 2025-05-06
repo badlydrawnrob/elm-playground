@@ -24,7 +24,6 @@ module CustomTypes.Songs exposing (..)
         - Reach for `Maybe.withDefault` LATE (normally in your view)
     4. Nested records are faster to unpack (.accessor function), harder to update.
         - @ https://tinyurl.com/custom-type-songs-65d9662
-        - @ https://medium.com/elm-shorts/updating-nested-records-in-elm-15d162e80480
     5. Custom types (not a record) are harder to unpack (pattern matching), but
        easier to update (no nested update function required)
         - @ https://tinyurl.com/custom-type-songsalt-65d9662
