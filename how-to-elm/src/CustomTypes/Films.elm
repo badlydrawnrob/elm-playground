@@ -143,3 +143,23 @@ module CustomTypes.Films exposing (..)
 
 -}
 
+type alias Model =
+    { films : List Film -- A film is a list of reviews
+    -- Film (is ID handled by server?)
+    , title : String
+    , otherFilmFields : String
+    -- Review
+    , rating : Int -- Out of 5
+    , reviewer : String -- Short text
+    , description : String -- Long text
+    -- Errors
+    , error : List String
+    -- State
+    , serverState : ServerState -- Loading, Success, Error
+    , formState : FormState -- NoForm, EditForm
+    }
+
+type FilmState
+    = NoFilm -- is this required?
+    | EditFilm FilmId
+    | EditReview FilmId ReviewId
