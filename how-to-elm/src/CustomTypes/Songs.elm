@@ -16,48 +16,63 @@ module CustomTypes.Songs exposing (..)
     2. Think carefully whether you need a custom type!
         - What guarantees are you trying to create?
         - Is it _really_ an improvement over basic data structures?
-    2. A `Msg` is to CARRY DATA and notify a state change. It's NOT for changing
+    3. A `Msg` is to CARRY DATA and notify a state change. It's NOT for changing
        and updating state. That's updates job.
         - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
-    3. It's best to unpack (lift) a `Maybe` type in ONE place.
+    4. It's best to unpack (lift) a `Maybe` type in ONE place.
         - @ https://tinyurl.com/stop-unpacking-maybe-too-often
         - Reach for `Maybe.withDefault` LATE (normally in your view)
-    4. Nested records are faster to unpack (.accessor function), harder to update.
+    5. Nested records are faster to unpack (.accessor function), harder to update.
         - @ https://tinyurl.com/custom-type-songs-65d9662
-    5. Custom types (not a record) are harder to unpack (pattern matching), but
+    6. Custom types (not a record) are harder to unpack (pattern matching), but
        easier to update (no nested update function required)
         - @ https://tinyurl.com/custom-type-songsalt-65d9662
-    6. For a short form, you might like to have ALL fields as their own `Msg`.
+    7. For a short form, you might like to have ALL fields as their own `Msg`.
         - As we've got quite a few inputs, a single `Msg` is better.
-    7. It's the FORM that has the `onSubmit` state (not the button!)
+    8. It's the FORM that has the `onSubmit` state (not the button!)
         - Button must live _inside_ the `form` tag, or it won't submit.
         - You _could_ use `onClick` instead if for some reason the button needed
           to live outside the form.
-    8. Consider your APP ARCHITECTURE in relation to your data model.
+    9. Consider your APP ARCHITECTURE in relation to your data model.
         - An `Album` should be non-empty (why not just use a `Maybe (List Song)`?)
         - If a `[singleton]` is deleted, do we ...
             - (a) delete the `Album` (if a collection of albums)
             - (b) notify the user "This album cannot be empty"
 
-    Simplify
-    --------
+    Simplify your program
+    ---------------------
     > Simplify your state wherever possible!
     > Is the data flow and functions easy to follow?
     > Can you see things at-a-glance? (My future stupid self)
 
-    - See "The 5 ways to reduce code" (Tesla model)
-    - A `List Song` would be FAR easier to deal with than an `Album first rest`.
-        - We can order, shuffle, filter, etc WAY easier (no concatonation needed)
-    - Nested records are OK in moderation, but prefer a flatter style ...
-        - You could easily just write a big record with more fields.
+    First, see "The 5 ways to reduce code" (Tesla model).
+    A `List Song` is FAR easier to deal with than `Album first rest` ...
+    That list could easily be ordered, shuffled, filtered (no cancatonation)
+
+        @ https://www.youtube.com/watch?v=XpDsk374LDE ("Life of a File")
+
+        What functionality do we need our `Album` type to have?
+        If there's no non-List functionality, why bother using it?
+
+    We could simplify our model further:
+
+    - Prefer a flatter model: only use nested records in moderation!
+    - Never nest records more than one level deep.
+    - Consider refactoring into a bigger record with more fields.
+    - A function should have as few parameters as possible!
+
+    Be careful with types:
+
     - `List.map` expects everything in the list to be the same type.
     - Simplify state (input variations) `"Int:Int"` (The `"2:00"` problem)
-    - Only use `Result.andThen` for a single data point
-        - Avoid chaining `Result`s together. It makes life complected.
-        - `Result.map` only goes up to FIVE arguments (`.map6` doesn't exist)
-        - If `Song` had 7 fields, the `Result.map` might need to be 3 levels
-          deep, which adds complexity (how to pass a `Song` to a `Song`?!)
-    - A function should have as few parameters as possible!
+
+    Only use `Result.andThen` for a single data point:
+
+    - Avoid chaining `Result`s together. It makes life complected.
+    - `Result.map` only goes up to FIVE arguments (`.map6` doesn't exist)
+    - If `Song` had 7 fields, the `Result.map` might need to be 3 levels
+      deep, which adds complexity (how to pass a `Song` to a `Song`?!)
+
 
     ---------------------------------------------------------
     The previous version looked like this (storing `Result`):
@@ -99,9 +114,7 @@ module CustomTypes.Songs exposing (..)
 
     Wishlist (advanced)
     -------------------
-    > `List.take`, `List.indexedMap` (like `ToDoSimple`), or `Array` can be used
-    > to get the index of a list. It might be easier to just give each song an
-    > `ID` or a list position (normally songs are numbered in Apple Music) ...
+    > See `Films` for more advanced wishlist items.
 
     1. #! Our latest `Song` is added to the FRONT of the list.
         - We likely want to add it to the BACK of the list!
@@ -222,6 +235,10 @@ type Msg
 -- #! `getAllSongs` is helpful if the `Album` has no ID or title to grab, as we
 --    don't have to repeatedly concatonate the `firstSong` and `restSongs` together.
 --    If `Album` had it's own metadata, this might not work.
+
+composeAllSongs : List Song -> Album
+composeAllSongs songs =
+    Debug.todo "This would be super helpful when using list functions"
 
 getAllSongs : Album -> List Song
 getAllSongs album =

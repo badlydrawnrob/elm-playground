@@ -7,6 +7,54 @@ module CustomTypes.Films exposing (..)
     as well as data about the film itself. We want to add, delete, edit our videos
     and pull/push to an API (or local storage?).
 
+    The sentence method
+    -------------------
+    > Using the sentence method to break down the problem!
+
+    1. Write out your program in plain English with a single sentence.
+    2. Any clauses (commas, and, then) should be split into it's own sentence.
+    3. Repeat the process until you have a list of single sentences.
+    4. Convert these into HTDP style headers (wishlist); watch out for state!
+        - Which functions have ZERO state? Which have some state?
+
+    |   Our video van man can create a new film by entering it's details in a
+    |   form. He can also enter a `List Review`s for any film. Each film can be
+    |   edited, and each film's review list can be edited. These films can be
+    |   pulled/pushed to the server.
+
+    The customer journey
+    --------------------
+    > Simple to understand, simple to action.
+    > Can we simplify this customer journey?**
+
+    1. Start with zero films (an empty van)
+    2. Each film must have (some) film data
+    3. Each film must have (at least) one review
+        - This would be a non-empty list
+        - Alternatively you could allow `null`
+    4. A film cannot be saved to the server without a review
+    5. A review can be pulled in from a different API
+    6. The video man can select one of these reviews to add to the film
+    7. The video man can delete one, or all, of the reviews
+        - Deleting all of the reviews will invalidate the film
+    8. The video man can delete one, or all, of the films
+    9. The video man can reorder a film's reviews
+        - But reordering the films is not possible**
+
+    |--------------------------------------------------------------|
+    | ** Use the Tesla method to simplify the scope and processes. |
+    |                                                              |
+    | Is it more likely the video man will reorder the reviews? or |
+    | the videos? Think carefully about the user story.            |
+    |--------------------------------------------------------------|
+      make the scope less dumb. Reduce the data to the minimum.
+
+    *** make it as close to one of your apps as possible.
+    *** imagine that your python server is ready to go.
+    *** data will be normalised and stored in a SQL database.
+
+
+
         How do other apps do it?
 
         For your API, you can search for `FILM_ID` and get back a choice of
@@ -23,6 +71,9 @@ module CustomTypes.Films exposing (..)
         ⚠️ Stupid (data) decisions upfront have HORRID artifacts:
            - @ https://tinyurl.com/songs-v1-possible-states (commit c25d389)
            - If there's LOTS OF STATE then FUCKING CHANGE IT!
+
+        If you use a custom type for `List Review`, you'll have to compose/uncompose
+        a list every time (if similar to `Album`)
 
         Customer journey ...
         --------------------

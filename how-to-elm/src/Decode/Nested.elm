@@ -10,8 +10,7 @@ module Decode.Nested exposing (..)
 -}
 
 import Json.Decode as D exposing (..)
-import Json.Decode.Pipeline as DP exposing (..)
-import Url as U exposing (fromString, Url)
+import Url as U exposing (Url)
 
 -- Some simpler nested examples ------------------------------------------------
 
