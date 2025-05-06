@@ -4370,30 +4370,11 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$CustomTypes$SongsAlt$NoAlbum = {$: 'NoAlbum'};
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
-var $author$project$CustomTypes$SongsAlt$SongID = function (a) {
-	return {$: 'SongID', a: a};
-};
-var $elm$core$Result$Err = function (a) {
-	return {$: 'Err', a: a};
-};
-var $author$project$CustomTypes$SongsAlt$UserInput = F2(
-	function (a, b) {
-		return {$: 'UserInput', a: a, b: b};
-	});
-var $author$project$CustomTypes$SongsAlt$initUserInput = A2(
-	$author$project$CustomTypes$SongsAlt$UserInput,
-	'',
-	$elm$core$Result$Err('Field is be empty'));
-var $author$project$CustomTypes$SongsAlt$init = {
-	album: $author$project$CustomTypes$SongsAlt$NoAlbum,
-	currentID: $author$project$CustomTypes$SongsAlt$SongID(0),
-	currentMins: $author$project$CustomTypes$SongsAlt$initUserInput,
-	currentSecs: $author$project$CustomTypes$SongsAlt$initUserInput,
-	currentSong: $author$project$CustomTypes$SongsAlt$initUserInput
+var $author$project$CustomTypes$Songs$NoAlbum = {$: 'NoAlbum'};
+var $author$project$CustomTypes$Songs$init = {
+	album: $author$project$CustomTypes$Songs$NoAlbum,
+	currentSong: {album: '', artist: '', minutes: '', seconds: '', title: '', year: ''},
+	error: ''
 };
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
@@ -4474,6 +4455,9 @@ var $elm$core$Array$foldr = F3(
 	});
 var $elm$core$Array$toList = function (array) {
 	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+};
+var $elm$core$Result$Err = function (a) {
+	return {$: 'Err', a: a};
 };
 var $elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
@@ -4888,6 +4872,9 @@ var $elm$browser$Browser$External = function (a) {
 var $elm$browser$Browser$Internal = function (a) {
 	return {$: 'Internal', a: a};
 };
+var $elm$core$Basics$identity = function (x) {
+	return x;
+};
 var $elm$browser$Browser$Dom$NotFound = function (a) {
 	return {$: 'NotFound', a: a};
 };
@@ -5199,149 +5186,334 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
-var $author$project$CustomTypes$SongsAlt$checkMinutes = function (mins) {
-	return (mins > 0) && (mins <= 10);
+var $author$project$CustomTypes$Songs$Song = F5(
+	function (title, artist, album, year, time) {
+		return {album: album, artist: artist, time: time, title: title, year: year};
+	});
+var $elm$core$String$trim = _String_trim;
+var $author$project$CustomTypes$Songs$isEmpty = function (str) {
+	return $elm$core$String$isEmpty(str) ? $elm$core$Result$Err('Field cannot be empty') : $elm$core$Result$Ok(
+		$elm$core$String$trim(str));
 };
-var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$CustomTypes$SongsAlt$checkSeconds = function (secs) {
-	return (secs >= 0) && (secs <= 60);
+var $author$project$CustomTypes$Songs$isYear = function (str) {
+	var _v0 = $elm$core$String$toInt(str);
+	if (_v0.$ === 'Just') {
+		var year = _v0.a;
+		return ((year > 2000) && (year < 2030)) ? $elm$core$Result$Ok(year) : $elm$core$Result$Err('Year must be between 2000 and 2030');
+	} else {
+		return $elm$core$Result$Err('Year must be a number');
+	}
 };
-var $author$project$CustomTypes$SongsAlt$checkSong = function (s) {
-	return $elm$core$String$isEmpty(s) ? $elm$core$Result$Err('Field cannot be empty') : $elm$core$Result$Ok(s);
-};
-var $author$project$CustomTypes$SongsAlt$checkTime = F2(
-	function (func, s) {
-		var _v0 = $elm$core$String$toInt(s);
-		if (_v0.$ === 'Nothing') {
-			return $elm$core$Result$Err('Field cannot be empty, must be a number');
+var $elm$core$Result$map2 = F3(
+	function (func, ra, rb) {
+		if (ra.$ === 'Err') {
+			var x = ra.a;
+			return $elm$core$Result$Err(x);
 		} else {
-			var i = _v0.a;
-			return func(i) ? $elm$core$Result$Ok(i) : $elm$core$Result$Err('Number is not in range');
+			var a = ra.a;
+			if (rb.$ === 'Err') {
+				var x = rb.a;
+				return $elm$core$Result$Err(x);
+			} else {
+				var b = rb.a;
+				return $elm$core$Result$Ok(
+					A2(func, a, b));
+			}
 		}
 	});
-var $author$project$CustomTypes$SongsAlt$createID = function (_v0) {
-	var num = _v0.a;
-	return $author$project$CustomTypes$SongsAlt$SongID(num + 1);
-};
-var $author$project$CustomTypes$SongsAlt$Song = F3(
-	function (songID, songTitle, songTime) {
-		return {songID: songID, songTime: songTime, songTitle: songTitle};
-	});
-var $author$project$CustomTypes$SongsAlt$getValid = function (_v0) {
-	var result = _v0.b;
-	return result;
-};
-var $author$project$CustomTypes$SongsAlt$allValid = F4(
-	function (id, song, mins, secs) {
-		var _v0 = _Utils_Tuple3(
-			$author$project$CustomTypes$SongsAlt$getValid(song),
-			$author$project$CustomTypes$SongsAlt$getValid(mins),
-			$author$project$CustomTypes$SongsAlt$getValid(secs));
-		if (((_v0.a.$ === 'Ok') && (_v0.b.$ === 'Ok')) && (_v0.c.$ === 'Ok')) {
-			var title = _v0.a.a;
-			var minutes = _v0.b.a;
-			var seconds = _v0.c.a;
-			return $elm$core$Maybe$Just(
-				A3(
-					$author$project$CustomTypes$SongsAlt$Song,
-					id,
-					title,
-					_Utils_Tuple2(minutes, seconds)));
+var $elm$core$Result$map5 = F6(
+	function (func, ra, rb, rc, rd, re) {
+		if (ra.$ === 'Err') {
+			var x = ra.a;
+			return $elm$core$Result$Err(x);
 		} else {
-			return $elm$core$Maybe$Nothing;
+			var a = ra.a;
+			if (rb.$ === 'Err') {
+				var x = rb.a;
+				return $elm$core$Result$Err(x);
+			} else {
+				var b = rb.a;
+				if (rc.$ === 'Err') {
+					var x = rc.a;
+					return $elm$core$Result$Err(x);
+				} else {
+					var c = rc.a;
+					if (rd.$ === 'Err') {
+						var x = rd.a;
+						return $elm$core$Result$Err(x);
+					} else {
+						var d = rd.a;
+						if (re.$ === 'Err') {
+							var x = re.a;
+							return $elm$core$Result$Err(x);
+						} else {
+							var e = re.a;
+							return $elm$core$Result$Ok(
+								A5(func, a, b, c, d, e));
+						}
+					}
+				}
+			}
 		}
 	});
-var $author$project$CustomTypes$SongsAlt$runErrorsAndBuildSong = function (model) {
-	return A4($author$project$CustomTypes$SongsAlt$allValid, model.currentID, model.currentSong, model.currentMins, model.currentSecs);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$CustomTypes$Songs$isValidSong = function (_v0) {
+	var title = _v0.title;
+	var artist = _v0.artist;
+	var album = _v0.album;
+	var year = _v0.year;
+	var minutes = _v0.minutes;
+	var seconds = _v0.seconds;
+	return A6(
+		$elm$core$Result$map5,
+		$author$project$CustomTypes$Songs$Song,
+		$author$project$CustomTypes$Songs$isEmpty(title),
+		$elm$core$Result$Ok(
+			$elm$core$String$trim(artist)),
+		$elm$core$Result$Ok(
+			$elm$core$String$trim(album)),
+		$author$project$CustomTypes$Songs$isYear(year),
+		A3(
+			$elm$core$Result$map2,
+			F2(
+				function (mins, secs) {
+					return _Utils_Tuple2(mins, secs);
+				}),
+			$elm$core$Result$Ok(
+				A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					$elm$core$String$toInt(minutes))),
+			$elm$core$Result$Ok(
+				A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					$elm$core$String$toInt(seconds)))));
 };
-var $author$project$CustomTypes$SongsAlt$Album = F2(
+var $elm$core$Debug$log = _Debug_log;
+var $author$project$CustomTypes$Songs$createSong = function (form) {
+	var _v0 = A2(
+		$elm$core$Debug$log,
+		'is valid song?',
+		$author$project$CustomTypes$Songs$isValidSong(form));
+	if (_v0.$ === 'Ok') {
+		var song = _v0.a;
+		return $elm$core$Maybe$Just(song);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$CustomTypes$Songs$Album = F2(
 	function (a, b) {
 		return {$: 'Album', a: a, b: b};
 	});
-var $author$project$CustomTypes$SongsAlt$updateAlbum = F2(
-	function (album, song) {
+var $author$project$CustomTypes$Songs$updateAlbum = F2(
+	function (song, album) {
 		if (album.$ === 'NoAlbum') {
-			return A2($author$project$CustomTypes$SongsAlt$Album, song, _List_Nil);
+			return A2($author$project$CustomTypes$Songs$Album, song, _List_Nil);
 		} else {
-			var first = album.a;
-			var rest = album.b;
+			var firstSong = album.a;
+			var songs = album.b;
 			return A2(
-				$author$project$CustomTypes$SongsAlt$Album,
-				first,
-				A2($elm$core$List$cons, song, rest));
+				$author$project$CustomTypes$Songs$Album,
+				firstSong,
+				A2($elm$core$List$cons, song, songs));
 		}
 	});
-var $author$project$CustomTypes$SongsAlt$update = F2(
+var $author$project$CustomTypes$Songs$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'EnteredInput') {
-			switch (msg.a) {
-				case 'song':
-					var title = msg.b;
-					return _Utils_update(
-						model,
-						{
-							currentSong: A2(
-								$author$project$CustomTypes$SongsAlt$UserInput,
-								title,
-								$author$project$CustomTypes$SongsAlt$checkSong(title))
-						});
-				case 'minutes':
-					var mins = msg.b;
-					return _Utils_update(
-						model,
-						{
-							currentMins: A2(
-								$author$project$CustomTypes$SongsAlt$UserInput,
-								mins,
-								A2($author$project$CustomTypes$SongsAlt$checkTime, $author$project$CustomTypes$SongsAlt$checkMinutes, mins))
-						});
-				case 'seconds':
-					var secs = msg.b;
-					return _Utils_update(
-						model,
-						{
-							currentSecs: A2(
-								$author$project$CustomTypes$SongsAlt$UserInput,
-								secs,
-								A2($author$project$CustomTypes$SongsAlt$checkTime, $author$project$CustomTypes$SongsAlt$checkSeconds, secs))
-						});
-				default:
-					return model;
-			}
-		} else {
-			var _v1 = $author$project$CustomTypes$SongsAlt$runErrorsAndBuildSong(model);
-			if (_v1.$ === 'Nothing') {
-				return model;
-			} else {
+		var songRecord = model.currentSong;
+		if (msg.$ === 'ClickedSave') {
+			var _v1 = $author$project$CustomTypes$Songs$createSong(model.currentSong);
+			if (_v1.$ === 'Just') {
 				var song = _v1.a;
 				return _Utils_update(
 					model,
 					{
-						album: A2($author$project$CustomTypes$SongsAlt$updateAlbum, model.album, song),
-						currentID: $author$project$CustomTypes$SongsAlt$createID(song.songID),
-						currentMins: $author$project$CustomTypes$SongsAlt$initUserInput,
-						currentSecs: $author$project$CustomTypes$SongsAlt$initUserInput,
-						currentSong: $author$project$CustomTypes$SongsAlt$initUserInput
+						album: A2($author$project$CustomTypes$Songs$updateAlbum, song, model.album),
+						currentSong: {album: '', artist: '', minutes: '', seconds: '', title: '', year: ''},
+						error: ''
 					});
+			} else {
+				return _Utils_update(
+					model,
+					{error: 'The form is not a valid song'});
+			}
+		} else {
+			switch (msg.a.$) {
+				case 'Title':
+					var _v2 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{title: value})
+						});
+				case 'Artist':
+					var _v3 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{artist: value})
+						});
+				case 'AlbumTitle':
+					var _v4 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{album: value})
+						});
+				case 'Year':
+					var _v5 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{year: value})
+						});
+				case 'Minutes':
+					var _v6 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{minutes: value})
+						});
+				default:
+					var _v7 = msg.a;
+					var value = msg.b;
+					return _Utils_update(
+						model,
+						{
+							currentSong: _Utils_update(
+								songRecord,
+								{seconds: value})
+						});
 			}
 		}
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $author$project$CustomTypes$SongsAlt$ClickedSave = {$: 'ClickedSave'};
-var $author$project$CustomTypes$SongsAlt$EnteredInput = F2(
+var $elm$html$Html$hr = _VirtualDom_node('hr');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$CustomTypes$Songs$getAllSongs = function (album) {
+	if (album.$ === 'NoAlbum') {
+		return _List_Nil;
+	} else {
+		var firstSong = album.a;
+		var restSongs = album.b;
+		return _Utils_ap(
+			_List_fromArray(
+				[firstSong]),
+			restSongs);
+	}
+};
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$CustomTypes$Songs$getTime = function (_v0) {
+	var mins = _v0.a;
+	var secs = _v0.b;
+	return $elm$core$String$fromInt(mins) + (':' + $elm$core$String$fromInt(secs));
+};
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $author$project$CustomTypes$Songs$viewSongItem = function (_v0) {
+	var title = _v0.title;
+	var artist = _v0.artist;
+	var album = _v0.album;
+	var year = _v0.year;
+	var time = _v0.time;
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(title + (' by ' + artist)),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(album)
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(year))
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						'runtime:' + $author$project$CustomTypes$Songs$getTime(time))
+					]))
+			]));
+};
+var $author$project$CustomTypes$Songs$viewAlbum = function (album) {
+	var _v0 = A2(
+		$elm$core$Debug$log,
+		'all songs',
+		$author$project$CustomTypes$Songs$getAllSongs(album));
+	if (!_v0.b) {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('No Album created yet')
+				]));
+	} else {
+		var songs = _v0;
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$ul,
+					_List_Nil,
+					A2($elm$core$List$map, $author$project$CustomTypes$Songs$viewSongItem, songs))
+				]));
+	}
+};
+var $author$project$CustomTypes$Songs$AlbumTitle = {$: 'AlbumTitle'};
+var $author$project$CustomTypes$Songs$Artist = {$: 'Artist'};
+var $author$project$CustomTypes$Songs$ChangeInput = F2(
 	function (a, b) {
-		return {$: 'EnteredInput', a: a, b: b};
+		return {$: 'ChangeInput', a: a, b: b};
 	});
+var $author$project$CustomTypes$Songs$ClickedSave = {$: 'ClickedSave'};
+var $author$project$CustomTypes$Songs$Minutes = {$: 'Minutes'};
+var $author$project$CustomTypes$Songs$Seconds = {$: 'Seconds'};
+var $author$project$CustomTypes$Songs$Title = {$: 'Title'};
+var $author$project$CustomTypes$Songs$Year = {$: 'Year'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$form = _VirtualDom_node('form');
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -5401,220 +5573,153 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 			$elm$html$Html$Events$alwaysPreventDefault,
 			$elm$json$Json$Decode$succeed(msg)));
 };
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $author$project$CustomTypes$SongsAlt$viewFormError = function (valid) {
-	if (valid.$ === 'Err') {
-		var str = valid.a;
-		return A2(
-			$elm$html$Html$p,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('form-error')
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(str)
-				]));
-	} else {
-		return $elm$html$Html$text('');
-	}
-};
-var $author$project$CustomTypes$SongsAlt$viewForm = F4(
-	function (_v0, _v1, _v2, _v3) {
-		var title = _v1.a;
-		var titleError = _v1.b;
-		var mins = _v2.a;
-		var minsError = _v2.b;
-		var secs = _v3.a;
-		var secsError = _v3.b;
-		return A2(
-			$elm$html$Html$form,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('form-songs'),
-					$elm$html$Html$Events$onSubmit($author$project$CustomTypes$SongsAlt$ClickedSave)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$input,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$type_('text'),
-							$elm$html$Html$Attributes$placeholder('Add a song title'),
-							$elm$html$Html$Attributes$value(title),
-							$elm$html$Html$Events$onInput(
-							$author$project$CustomTypes$SongsAlt$EnteredInput('song'))
-						]),
-					_List_Nil),
-					$author$project$CustomTypes$SongsAlt$viewFormError(titleError),
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('input-group')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('collapse')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$input,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$type_('text'),
-											$elm$html$Html$Attributes$placeholder('Add a song time (minutes)'),
-											$elm$html$Html$Attributes$value(mins),
-											$elm$html$Html$Events$onInput(
-											$author$project$CustomTypes$SongsAlt$EnteredInput('minutes'))
-										]),
-									_List_Nil),
-									$author$project$CustomTypes$SongsAlt$viewFormError(minsError)
-								])),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('collapse')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$input,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$type_('text'),
-											$elm$html$Html$Attributes$placeholder('Add a song time (seconds)'),
-											$elm$html$Html$Attributes$value(secs),
-											$elm$html$Html$Events$onInput(
-											$author$project$CustomTypes$SongsAlt$EnteredInput('seconds'))
-										]),
-									_List_Nil),
-									$author$project$CustomTypes$SongsAlt$viewFormError(secsError)
-								]))
-						])),
-					A2(
-					$elm$html$Html$button,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Save')
-						]))
-				]));
+var $author$project$CustomTypes$Songs$viewError = F2(
+	function (check, value) {
+		var _v0 = check(value);
+		if (_v0.$ === 'Ok') {
+			return $elm$html$Html$text('');
+		} else {
+			var error = _v0.a;
+			return $elm$html$Html$text(error);
+		}
 	});
-var $author$project$CustomTypes$SongsAlt$initForm = function (model) {
-	return A4($author$project$CustomTypes$SongsAlt$viewForm, model.currentID, model.currentSong, model.currentMins, model.currentSecs);
-};
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $author$project$CustomTypes$SongsAlt$extractID = function (_v0) {
-	var num = _v0.a;
-	return num;
-};
-var $author$project$CustomTypes$SongsAlt$songIDtoString = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$CustomTypes$SongsAlt$extractID);
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
-var $author$project$CustomTypes$SongsAlt$songTimeToString = function (_v0) {
-	var m = _v0.a;
-	var s = _v0.b;
-	return $elm$core$String$concat(
-		_List_fromArray(
-			[
-				$elm$core$String$fromInt(m),
-				'mins ',
-				$elm$core$String$fromInt(s),
-				'secs'
-			]));
-};
-var $author$project$CustomTypes$SongsAlt$viewSong = function (song) {
+var $author$project$CustomTypes$Songs$viewSongForm = function (_v0) {
+	var title = _v0.title;
+	var artist = _v0.artist;
+	var album = _v0.album;
+	var year = _v0.year;
+	var minutes = _v0.minutes;
+	var seconds = _v0.seconds;
 	return A2(
-		$elm$html$Html$li,
+		$elm$html$Html$form,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('album-song'),
-				$elm$html$Html$Attributes$class(
-				'id-' + $author$project$CustomTypes$SongsAlt$songIDtoString(song.songID))
+				$elm$html$Html$Events$onSubmit($author$project$CustomTypes$Songs$ClickedSave)
 			]),
 		_List_fromArray(
 			[
-				$elm$html$Html$text(
-				song.songTitle + (' (time: ' + ($author$project$CustomTypes$SongsAlt$songTimeToString(song.songTime) + ')')))
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(title),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$Title)),
+						$elm$html$Html$Attributes$placeholder('Title')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2($author$project$CustomTypes$Songs$viewError, $author$project$CustomTypes$Songs$isEmpty, title)
+					])),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(artist),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$Artist)),
+						$elm$html$Html$Attributes$placeholder('Artist')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(album),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$AlbumTitle)),
+						$elm$html$Html$Attributes$placeholder('Album')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(year),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$Year)),
+						$elm$html$Html$Attributes$placeholder('Year')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2($author$project$CustomTypes$Songs$viewError, $author$project$CustomTypes$Songs$isYear, year)
+					])),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(minutes),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$Minutes)),
+						$elm$html$Html$Attributes$placeholder('Minutes')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$value(seconds),
+						$elm$html$Html$Events$onInput(
+						$author$project$CustomTypes$Songs$ChangeInput($author$project$CustomTypes$Songs$Seconds)),
+						$elm$html$Html$Attributes$placeholder('Seconds')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$button,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Create a song')
+					]))
 			]));
 };
-var $author$project$CustomTypes$SongsAlt$viewSongs = F2(
-	function (song, lsong) {
-		return A2(
-			$elm$html$Html$ul,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('album')
-				]),
-			A2(
-				$elm$core$List$map,
-				$author$project$CustomTypes$SongsAlt$viewSong,
-				A2($elm$core$List$cons, song, lsong)));
-	});
-var $author$project$CustomTypes$SongsAlt$view = function (model) {
-	var _v0 = model.album;
-	if (_v0.$ === 'NoAlbum') {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('wrapper empty')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$h1,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('No album has been added')
-						])),
-					$author$project$CustomTypes$SongsAlt$initForm(model)
-				]));
-	} else {
-		var first = _v0.a;
-		var rest = _v0.b;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('wrapper')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$h1,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('An album with no name')
-						])),
-					$author$project$CustomTypes$SongsAlt$initForm(model),
-					A2($author$project$CustomTypes$SongsAlt$viewSongs, first, rest)
-				]));
-	}
+var $author$project$CustomTypes$Songs$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h1,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Songs')
+					])),
+				$author$project$CustomTypes$Songs$viewSongForm(model.currentSong),
+				A2(
+				$elm$html$Html$p,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'colour', 'red')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(model.error)
+					])),
+				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
+				$author$project$CustomTypes$Songs$viewAlbum(model.album)
+			]));
 };
-var $author$project$CustomTypes$SongsAlt$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$CustomTypes$SongsAlt$init, update: $author$project$CustomTypes$SongsAlt$update, view: $author$project$CustomTypes$SongsAlt$view});
-_Platform_export({'CustomTypes':{'SongsAlt':{'init':$author$project$CustomTypes$SongsAlt$main(
+var $author$project$CustomTypes$Songs$main = $elm$browser$Browser$sandbox(
+	{init: $author$project$CustomTypes$Songs$init, update: $author$project$CustomTypes$Songs$update, view: $author$project$CustomTypes$Songs$view});
+_Platform_export({'CustomTypes':{'Songs':{'init':$author$project$CustomTypes$Songs$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));

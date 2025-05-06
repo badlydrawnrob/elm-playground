@@ -1,446 +1,438 @@
 module CustomTypes.Songs exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    A simple `Album` custom type (see `CustomTypes.md` for notes)
+    Songs (the correct way to do user input) ⏰ 1 day
     ============================================================================
-    ⚠️ This is an exercise in "how NOT to do it"; you shouldn't store computed
-       values (and if we needed a `List Result` they'll be different types, which
-       will error!)
+    > You shouldn't store computed values in the model!
 
-       Take this as a learning exercise. Next time, store user input as `String`
-       (and hold on to it) then compute `Result` into a `List Err` or `Song`. We
-       could then get rid of the `UserInput` and compute `Result.mapX` into the
-       `Song`. Be careful also nesting records too deep. 2 levels max, as they're
-       generally discouraged.
+    Not only do you make excess work for yourself, but the code becomes more
+    complicated. The previous version also used a custom `Album` and `Song` type,
+    rather than a simple `List Song` (or record). You also want to hang on to the
+    original input, so you can show that back to the user.
 
-    Original attempt:
-        @ https://tinyurl.com/custom-type-songs-v01 (commit #a0ab8a0)
-    "What messages are for":
-        @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
-    Unpack (or "lift") `Maybe`s etc in ONE place:
-        @ https://tinyurl.com/stop-unpacking-maybe-too-often
-    Diff of `UserInput` here:
-        @ https://www.diffchecker.com/me6aANHb/
+    1. I'm not using @rtfeldman's method here (with `.concatMap`)
+        - Generating a `List String` of errors might be preferable in some cases?
+        - If the `List String` of errors is empty, the form can be saved!
+    2. Think carefully whether you need a custom type!
+        - What guarantees are you trying to create?
+        - Is it _really_ an improvement over basic data structures?
+    2. A `Msg` is to CARRY DATA and notify a state change. It's NOT for changing
+       and updating state. That's updates job.
+        - @ https://discourse.elm-lang.org/t/message-types-carrying-new-state/2177/5
+    3. It's best to unpack (lift) a `Maybe` type in ONE place.
+        - @ https://tinyurl.com/stop-unpacking-maybe-too-often
+        - Reach for `Maybe.withDefault` LATE (normally in your view)
+    4. Nested records are faster to unpack (.accessor function), harder to update.
+        - @ https://tinyurl.com/custom-type-songs-65d9662
+        - @ https://medium.com/elm-shorts/updating-nested-records-in-elm-15d162e80480
+    5. Custom types (not a record) are harder to unpack (pattern matching), but
+       easier to update (no nested update function required)
+        - @ https://tinyurl.com/custom-type-songsalt-65d9662
+    6. For a short form, you might like to have ALL fields as their own `Msg`.
+        - As we've got quite a few inputs, a single `Msg` is better.
+    7. It's the FORM that has the `onSubmit` state (not the button!)
+        - Button must live _inside_ the `form` tag, or it won't submit.
+        - You _could_ use `onClick` instead if for some reason the button needed
+          to live outside the form.
+    8. Consider your APP ARCHITECTURE in relation to your data model.
+        - An `Album` should be non-empty (why not just use a `Maybe (List Song)`?)
+        - If a `[singleton]` is deleted, do we ...
+            - (a) delete the `Album` (if a collection of albums)
+            - (b) notify the user "This album cannot be empty"
 
+    Simplify
+    --------
+    > Simplify your state wherever possible!
+    > Is the data flow and functions easy to follow?
+    > Can you see things at-a-glance? (My future stupid self)
 
-    What I learned
-    --------------
-    It's way easier to check errors in one place, build a `Song` in one place,
-    and `updateAlbum` without creating a `Song` in that function. It's way easier
-    to just use a simple `String` in `UserInput` rather than a `Tuple`. At times
-    I'm not sure which function should do which action, and where in the program
-    these functions should be. There's a LOT of approaches to forms and validation.
+    - See "The 5 ways to reduce code" (Tesla model)
+    - A `List Song` would be FAR easier to deal with than an `Album first rest`.
+        - We can order, shuffle, filter, etc WAY easier (no concatonation needed)
+    - Nested records are OK in moderation, but prefer a flatter style ...
+        - You could easily just write a big record with more fields.
+    - `List.map` expects everything in the list to be the same type.
+    - Simplify state (input variations) `"Int:Int"` (The `"2:00"` problem)
+    - Only use `Result.andThen` for a single data point
+        - Avoid chaining `Result`s together. It makes life complected.
+        - `Result.map` only goes up to FIVE arguments (`.map6` doesn't exist)
+        - If `Song` had 7 fields, the `Result.map` might need to be 3 levels
+          deep, which adds complexity (how to pass a `Song` to a `Song`?!)
+    - A function should have as few parameters as possible!
 
-        1. ⚠️ Stupid (data) decisions upfront have HORRID artifacts:
-           - @ https://tinyurl.com/songs-v1-possible-states (commit c25d389)
-           - If there's LOTS OF STATE then FUCKING CHANGE IT!
-        2. ⚠️ Unpack `Maybe` in ONE place
-        3. It's easier to split the `Song` creation (if no errors) ...
-        4. And have an `updateAlbum` action (if there's a `Song`) ...
-        5. Than combining those actions into ONE `updateAlbum` function
-           - @ 5d419efd9740fd891a21b299f7468a133c61bf64
-        6. Updating nested records (prefer a flatter model)
-           - @ https://discourse.elm-lang.org/t/updating-nested-records-again/1488
-           - See @rtfeldman's response to the above thread
+    ---------------------------------------------------------
+    The previous version looked like this (storing `Result`):
 
+        type alias Validate a
+            = Result String a
 
+        type alias UserInput a
+            = { input : String
+              , valid : Validate a
+              }
 
-    What we're looking to achieve:
-    ------------------------------
+    ---------------------------------------------------------
 
-        1. An alternative to a `Maybe List`
-        2. Preparing ready to save a form to `json`
-        3. Store `Err` messages with `Result`
-        4. Display these in-place on the form
-        5. To NOT store optional data as `json`
-           - I've been told that's better. Just use a `Maybe` in your app.
+    The sentence method
+    -------------------
+    > Using the sentence method to break down the problem:
 
-        Here's the steps:
-        -----------------
+    1. Write out your program in plain English with a single sentence.
+    2. Any clauses (commas, and, then) should be split into it's own sentence.
+    3. Repeat the process until you have a list of single sentences.
+    4. Convert these into HTDP style headers (wishlist); watch out for state!
+        - Which functions have ZERO state? Which have some state?
 
-        1. User inputs form field data
-        2. On input, check for errors
-        3. Save `Result` to `UserInput` record
-        4. When save button is clicked ...
-        5. Check if all errors are clean
-        6. If so, create a `Song` ...
-        7. And create (or update) our `Album`.
-
-
-    Solving other problems that arose in last attempt
-    -------------------------------------------------
-
-        1. Unpack `Maybe` types in ONE place (`String.toInt`)
-        2. ONE data type per `Result` (not chaining 3 different types)
-        3. Store that data type (so we convert it in ONE place)
-        4. We can show EVERY input's error (but only ONE error per input)
-        5. `runErrorChecks` was messy in the last version. Tidy up our code.
-            - We were mixing error handling strategies (if `Bool` and `Result`)
-        6. We create a `Tuple` ONCE and ONLY ONCE in our program
-            - When is a `Tuple` needed? When is it not?
-        7. Our data and state flow wasn't so easy to follow before.
-            - Where in the code do we create a `Song`?
-            - Where do we check for errors? How?
-            - Could we pass two `Msg`: `ClickedSave` and `SaveSong`?
-            - Can we narrow our types? In `Msg` too?
-                - Only taking in the types needed to validate the fields
-
-
-    Things we don't care about (for this attempt)
-    ---------------------------------------------
-
-        1. Displaying ALL errors for each data type
-           - I don't think this is possible with `Result`
-        2. We probably should only check errors ON CLICK BUTTON,
-           especially if there's lots of fields?
-        3. `SongTitle` can be absolutely anything. We're also
-           not stripping empty space.
+    |   The user can create a new song by entering song details into a form.
+    |   We start with a `NoAlbum` state, and then move to `Album` state.
 
 
-    Things I don't know yet ...
-    ---------------------------
+    Wishlist (basic)
+    ----------------
+    1. ~~Build a form with song details~~
+    2. ~~Validate the form as the user is typing (not `onSubmit`)~~
+        - Do you want to show errors as the user is typing, or on save?
+        - The errors can appear under the form field input.
+    3. ~~When user clicks submit, check the form is valid (`onSubmit`)~~
+    4. ~~If a `Song` is valid, create an `Album`.~~
+        - ~~An `Album` cannot be created without at least ONE `Song`.~~
+    5. ~~Add the `Song` to the `Album` (songs do not have an `ID`).~~
 
-        1. Are nested records undesirable?
-        2. Is having a type alias with `Result String a` bad?
-        3. Is `Result` a poor choice for a form with lots of fields?
-        4. Can I split our the form `Msg` so it's self-contained?
-        5. Handling `first` and `rest` of `Album` in a single function?
-        6. Better data "flow" and usage of functions
+    Wishlist (advanced)
+    -------------------
+    > `List.take`, `List.indexedMap` (like `ToDoSimple`), or `Array` can be used
+    > to get the index of a list. It might be easier to just give each song an
+    > `ID` or a list position (normally songs are numbered in Apple Music) ...
 
+    1. #! Our latest `Song` is added to the FRONT of the list.
+        - We likely want to add it to the BACK of the list!
+    2. Give the form different states:
+        - `Insert | Edit ID | Delete` modes (to edit the songs)
+        - What happens if `NoAlbum`? Or MULTIPLE Albums?
+        - `Album` is going to cause you problems (for delete, sort, etc) because
+          `firstSong` needs concatonation or destructuring on every album save.
+            - #! `List Song` would be FAR easier!
+        - Is using the same form a risk? (is type safe changes enough?)
+    3. Pull/Push to an API. Keep it simple for now.
+        - Should ALWAYS have at least one `Song` in the `Album`.
+        - Do you update the `Album` straight away? (on EVERY song change)
+
+    Errors
+    ------
+    > We're using `Result.mapX` here, no @rtfeldman's Elm Spa method.
+
+    You might find it easier to use `Result.Extra.andMap` if your `Song` has many
+    fields. That's easier than chaining `Result.map` or using `andThen`. If a
+    package has a `.mapX` function, it'll probably have a package.extra with an
+    `andMap` function.
+
+        @ https://ellie-app.com/vnfwMpHjwd8a1
+
+    It may be wiser to use @rtfeldman's validation style, as we generate a
+    `List String` of errors from `ValidField` types (such as `Email | Password`).
+    If the error list is empty, you can save the form and generate a `Song`. He
+    doesn't use a `Result` type at all!
+
+        @ https://tinyurl.com/rtfeldman-elm-spa-login
+
+    You'll still have the issue of returning multiple errors per `ValidField`
+    however (you could simply have every `if` branch with a generic error message).
 
     ----------------------------------------------------------------------------
-    Wishlist
-    ----------------------------------------------------------------------------
-    Sketch out the flow of the program BEFORE you start coding.
-    How might it be simplified?
 
-    1. Edit a `Song` with a form (but not the ID)
-    2. Delete a `Song`
-    3. Edit the `Album` `Song` order
-    4. Potentially change the view if only ONE `Song` ...
-    5. `Album` title? (perhaps use a Collection)
-    6. YouTube or audio of the song?
-    7. Count number of songs and display in heading
+    Other learning points
+    ---------------------
+    > There's many ways to validate a form. Just make it work!
+    > @ https://tinyurl.com/the-elm-way-to-validate-form
+
+    - Look how `Song` is created; `updateAlbum` is simply passed a `Song`.
+    - A `Tuple` adds some complexity. A `String` is easier to work with.
+    - Remember the roles of `Msg`, `Update`, `View` and put functions in right place!
+    - More on Nested Records (and ways to do it)
+        - @ https://discourse.elm-lang.org/t/updating-nested-records-again/1488
+        - @ https://tinyurl.com/elm-spa-nested-login (using lambda and function)
+        - @ https://tinyurl.com/elm-lang-why-not-nested
+        - @ https://tinyurl.com/elm-spa-custom-types-eg
+
 -}
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (class, type_, value, placeholder)
+import Debug
+
+import Html exposing (Html, button, div, form, h1, hr, input, li, p, text, ul)
+import Html.Attributes exposing (placeholder, style, value)
 import Html.Events exposing (onInput, onSubmit)
 
-{- An ID comes in handy if you want to edit or delete a `Song` -}
-type SongID
-    = SongID Int
 
-{- A simpler way to unpack the `Int` than using `case` -}
-extractID : SongID -> Int
-extractID (SongID num) =
-    num
+-- Types -----------------------------------------------------------------------
 
-{- Using functional composition `<<` operator -}
-songIDtoString : SongID -> String
-songIDtoString = String.fromInt << extractID
+type alias Song =
+    { title : String
+    , artist : String
+    , album : String
+    , year : Int
+    , time : (Int, Int)
+    }
 
-createID : SongID -> SongID
-createID (SongID num) =
-    SongID (num + 1)
+type alias Form =
+    { title : String
+    , artist : String
+    , album : String
+    , year : String
+    , minutes : String -- time
+    , seconds : String -- time
+    }
 
-type alias SongTitle
-    = String
-
-{- Represents `minutes` and `seconds`. Is a `Tuple` necessary? -}
-type alias SongTime
-    = (Int,Int)
-
-extractMinutes : SongTime -> Int
-extractMinutes (m,_) = m
-
-extractSeconds : SongTime -> Int
-extractSeconds (_,s) = s
-
-songTimeToString : SongTime -> String
-songTimeToString (m,s) =
-    String.concat
-        [ String.fromInt m
-        , "mins "
-        , String.fromInt s
-        , "secs"
-        ]
-
-{- We're adding more data than we need here -}
-type alias Song
-    = { songID : SongID
-      , songTitle : SongTitle
-      , songTime  : SongTime
-      }
-
-{- Custom type caters for empty, one, many -}
 type Album
     = NoAlbum
     | Album Song (List Song)
 
-{- #! We're using `Result` to gather errors and unpack data, but
-that data can come in many forms, so use a type variable. Is this going
-to potentially cause problems in future? -}
-type alias Validate a
-    = Result String a
+type Input
+    = Title
+    | Artist
+    | AlbumTitle
+    | Year
+    | Minutes
+    | Seconds
 
-{- #! What the fuck is an "unbound" type variable?
-   #! I'm not sure how best to write this. For now it's only `String` types,
-but what if there's different types? Use `a` type variable? -}
-type alias UserInput a
-    = { input : String
-      , valid : Validate a
-      }
 
-initUserInput = { input = "", valid = Err "Field cannot be empty" }
+-- Model -----------------------------------------------------------------------
 
-{- For now I'm not using aliases for user input -}
-type alias Model
-    = { currentID : SongID -- The only field that isn't a record
-      , currentSong : UserInput String
-      , currentMins : UserInput Int
-      , currentSecs : UserInput Int
-      , album : Album
-      }
+type alias Model =
+    { album : Album
+    , currentSong : Form
+    , error : String
+    }
 
-{- #! Would it be better to use a bunch of `Maybe` here instead of default data?
-I don't really like the idea of too many `Maybe`s as that's a lot to "lift". We
-sanitise the data anyway, I guess. I'm keeping `SongTime` entries simple record
-fields rather than a `Tuple`. It's easier to manage. -}
-init : Model
 init =
-    { currentID = SongID 0
-    , currentSong = initUserInput
-    , currentMins = initUserInput
-    , currentSecs = initUserInput
-    , album = NoAlbum
+    { album = NoAlbum
+    , currentSong = { title = "", artist = "", album = "", year = "", minutes = "", seconds = "" }
+    , error = ""
     }
 
 
--- Update ----------------------------------------------------------------------
+-- Messages --------------------------------------------------------------------
+-- Our `ChangeInput` type doesn't really save us much. May as well be explicit.
 
 type Msg
-    = EnteredInput String String
-    | ClickedSave
-    -- | SaveSong
+    = ClickedSave
+    | ChangeInput Input String
 
+
+-- Helper functions ------------------------------------------------------------
+-- #! `getAllSongs` is helpful if the `Album` has no ID or title to grab, as we
+--    don't have to repeatedly concatonate the `firstSong` and `restSongs` together.
+--    If `Album` had it's own metadata, this might not work.
+
+getAllSongs : Album -> List Song
+getAllSongs album =
+    case album of
+        NoAlbum ->
+            []
+
+        Album firstSong restSongs ->
+            [firstSong] ++ restSongs
+
+getTime : (Int, Int) -> String
+getTime (mins, secs) =
+    String.fromInt mins ++ ":" ++ String.fromInt secs
+
+
+-- View ------------------------------------------------------------------------
+-- See `Form.Simple`, `Form.SingleField` and other examples on structuring input.
+-- `Input` could be replaced with a `String`, `Int`, or full `Msg` type.
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ h1 [] [ text "Songs" ]
+        , viewSongForm model.currentSong
+        , p [ style "colour" "red" ] [ text model.error ]
+        , hr [] []
+        , viewAlbum model.album
+        ]
+
+{- We've changed to use `getAllSongs` so we don't work with the album directly -}
+viewAlbum : Album -> Html Msg
+viewAlbum album =
+    case Debug.log "all songs" (getAllSongs album) of
+        [] ->
+            div [] [ text "No Album created yet" ]
+
+        songs ->
+            div []
+                [ ul []
+                    (List.map viewSongItem songs)
+                ]
+
+viewSongItem : Song -> Html Msg
+viewSongItem {title, artist, album, year, time } =
+    li []
+        [ text (title ++ " by " ++ artist)
+        , p [] [ text album ]
+        , p [] [ text (String.fromInt year) ]
+        , p [] [ text ("runtime:" ++ getTime time) ]
+        ]
+
+{- Explicit is better than implicit? -}
+viewSongForm : Form -> Html Msg
+viewSongForm { title, artist, album, year, minutes, seconds } =
+    form [ onSubmit ClickedSave ]
+        [ input
+            [ value title
+            , onInput (ChangeInput Title)
+            , placeholder "Title"
+            ]
+            []
+        , p [] [ viewError isEmpty title ]
+        , input
+            [ value artist
+            , onInput (ChangeInput Artist)
+            , placeholder "Artist"
+            ]
+            []
+        , input
+            [ value album
+            , onInput (ChangeInput AlbumTitle)
+            , placeholder "Album"
+            ]
+            []
+        , input
+            [ value year
+            , onInput (ChangeInput Year)
+            , placeholder "Year"
+            ]
+            []
+        , p [] [ viewError isYear year ]
+        , input
+            [ value minutes
+            , onInput (ChangeInput Minutes)
+            , placeholder "Minutes"
+            ]
+            []
+        , input
+            [ value seconds
+            , onInput (ChangeInput Seconds)
+            , placeholder "Seconds"
+            ]
+            []
+        , button [] [ text "Create a song" ]
+        ]
+
+{- We only care (return) if it's an error ...
+Remember the value that changes the most should come last! -}
+viewError : (String -> Result String a) -> String -> Html msg
+viewError check value =
+    case (check value) of
+        Ok _ ->
+            text ""
+
+        Err error ->
+            text error
+
+
+
+-- Update ----------------------------------------------------------------------
+-- (1) This doesn't save us much, other than an extra `Msg` type
+-- (2) Mock some of the data for now (imagine all our validation funcs are done)
+-- (3) Be careful of Ai hallucinations! It wrote the `Album _ songs ->` branch
+--     as `Album song (song :: songs)` which gave duplicate entries!
 
 update : Msg -> Model -> Model
 update msg model =
     let
-        {- #! NESTED RECORDS is a problem. I think Elm
-        discourages this. See the notes and links at the
-        top of this file. You can't update in the way you'd
-        think you could :( -}
-        updateInput record input valid =
-            { record | input = input, valid = valid }
+        songRecord = model.currentSong -- #! `model.record` can't update record directly!
     in
     case msg of
-        EnteredInput "song" title ->
-            { model
-                | currentSong =
-                    updateInput model.currentSong title (checkSong title) }
-
-        EnteredInput "minutes" mins ->
-            { model
-                | currentMins =
-                    updateInput model.currentMins mins (checkTime checkMinutes mins) }
-
-        EnteredInput "seconds" secs ->
-            { model
-                | currentSecs =
-                    updateInput model.currentSecs secs (checkTime checkSeconds secs) }
-
-        EnteredInput _ _ ->
-            model
-
         ClickedSave ->
-            -- 1. [x] Check each input
-            -- 2. [x] Each input has it's own error checking function
-            -- 3. [x] Now check if there's any errors in each `.valid`
-            -- 4. [x] Where do I add `Ok data` to? `.valid`?
-            --    - We add it to the valid record field for each UserInput
-            -- 5. [x] If everything comes back clean, use the data ...
-            --    - Handled in the case statement function
-            --    - 6. To create a `Song` ...
-            -- 7. And add it to an `Album` :)
-            --    - Handled in the `Just song` branch with update helper
-
-            case runErrorsAndBuildSong model of
-                Nothing ->
-                     model
+            case (createSong model.currentSong) of
                 Just song ->
-                    {- All `.valid` fields have come back without any errors.
-                    we can now build our `Song` and pass it over to `updateAlbum`,
-                    and reset all the things, ready for a new form. -}
                     { model
-                    | currentID = (createID song.songID) -- Add one
-                    , currentSong = initUserInput
-                    , currentMins = initUserInput
-                    , currentSecs = initUserInput
-                    {- #! I'm sure I could narrow the types here better? How do
-                    we provide lots of arguments in a nicer way? -}
-                    , album = (updateAlbum model.album song)
+                        | album = updateAlbum song model.album
+                        , currentSong = { title = "", artist = "", album = "", year = "", minutes = "", seconds = "" }
+                        , error = ""
                     }
 
+                Nothing ->
+                    { model | error = "The form is not a valid song" }
 
-runErrorsAndBuildSong : Model -> Maybe Song
-runErrorsAndBuildSong model =
-    getValid model.currentID model.currentSong model.currentMins model.currentSecs
+        {- #! (1) -}
+        ChangeInput Title value ->
+            { model | currentSong = { songRecord | title = value } }
 
-{- Pulls valid field from each `UserInput` and contstructs `Song` if no error.
-#! What happens if we have lots of fields? That's too many inputs! -}
-getValid : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Maybe Song
-getValid id song mins secs =
-    case (song.valid, mins.valid, secs.valid) of
-        (Ok songTitle, Ok minutes, Ok seconds) ->
-            Just (Song id songTitle (minutes, seconds))
-        _ ->
+        ChangeInput Artist value ->
+            { model | currentSong = { songRecord | artist = value } }
+
+        ChangeInput AlbumTitle value ->
+            { model | currentSong = { songRecord | album = value } }
+
+        ChangeInput Year value ->
+            { model | currentSong = { songRecord | year = value } }
+
+        ChangeInput Minutes value ->
+            { model | currentSong = { songRecord | minutes = value } }
+
+        ChangeInput Seconds value ->
+            { model | currentSong = { songRecord | seconds = value } }
+
+
+createSong : Form -> Maybe Song
+createSong form =
+    case Debug.log "is valid song?" (isValidSong form) of
+        Ok song ->
+            Just song
+
+        Err _ ->
             Nothing
 
--- Error checking --------------------------------------------------------------
--- Previously using ONE function to handle all errors and chaining `Result`,
--- thinking that I could output `Ok Song` at the end of it. It was a mess.
---
--- This version is WAY easier to think about than that. ONE `Result` for each
--- input data. See also `HowToResult.FieldErrorRevisited` for a reference.
+{- (2) -}
+isValidSong : Form -> Result String Song
+isValidSong { title, artist, album, year, minutes, seconds } =
+    Result.map5 Song -- Here we could also use `Result.Extra.andMap`
+        (isEmpty title)
+        (Ok (String.trim artist))
+        (Ok (String.trim album))
+        (isYear year) <|
+            (Result.map2 (\mins secs -> (mins, secs))
+                (Ok (Maybe.withDefault 0 (String.toInt minutes)))
+                (Ok (Maybe.withDefault 0 (String.toInt seconds))))
 
-
-{- #! I'm using `Validate a` type alias rather than `Result String SongTitle`
-here ... is that going to cause problems? -}
-checkSong : String -> Validate String
-checkSong s =
-    case String.isEmpty s of
-        True  -> Err "Field cannot be empty"
-        False -> Ok s
-
-{- Let's abstract the function as both minutes and seconds are similar errors.
-`String.toInt` will also check if empty as `Nothing`. We're also using the
-`Result` to unpack the `Maybe Int` that we'd get from the string function! -}
-checkTime : (Int -> Bool) -> String -> Validate Int
-checkTime func s =
-    case String.toInt s of
-        Nothing -> Err "Field cannot be empty, must be a number"
-        Just i  ->
-            if func i then
-                Ok i
-            else
-                Err "Number is not in range"
-
-{- Non negative numbers -}
-checkMinutes : Int -> Bool
-checkMinutes mins =
-    mins > 0 && mins <= 10
-
-checkSeconds : Int -> Bool
-checkSeconds secs =
-    secs >= 0 && secs <= 60
-
-
-{- Finally, if there are NO errors, we can add the `Song` to the album! -}
-updateAlbum : Album -> Song -> Album
-updateAlbum album song =
+{- #! (3) -}
+updateAlbum : Song -> Album -> Album
+updateAlbum song album =
     case album of
         NoAlbum ->
             Album song []
-        {- Do you want to add to the front, or end of the list? You could check
-        here that the list isn't empty by using (first :: rest) but I ain't! -}
-        Album first rest ->
-            Album first (song :: rest)
+
+        Album firstSong songs ->
+            Album firstSong (song :: songs)
 
 
--- View ------------------------------------------------------------------------
--- In this view, for `Album`, it's possible the state could be `Album Song []`,
--- where our `rest` has NO SONGS. I'm not currently accounting for that here.
+-- Validation ------------------------------------------------------------------
 
-view : Model -> Html Msg
-view model =
-    case model.album of
-        NoAlbum ->
-            div [ class "wrapper empty"]
-                [ h1 [] [ text "No album has been added" ]
-                , initForm model
-                ]
-        {- If this was a `Maybe List` you could unpack the list
-        by using destructuring, like: `Just (first :: rest)` -}
-        Album first rest ->
-            div [ class "wrapper" ]
-                [ h1 [] [ text "An album with no name" ]
-                , initForm model
-                , viewSongs first rest
-                ]
+isYear : String -> Result String Int
+isYear str =
+    case String.toInt str of
+        Just year ->
+            if year > 2000 && year < 2030 then
+                Ok year
 
-initForm : Model -> Html Msg
-initForm model = viewForm model.currentID model.currentSong model.currentMins model.currentSecs
+            else
+                Err "Year must be between 2000 and 2030"
 
-{- #! I could probably reduce duplication here and create `viewInput` func -}
-viewForm : SongID -> UserInput String -> UserInput Int -> UserInput Int -> Html Msg
-viewForm _ title mins secs =
-    form [ class "form-songs", onSubmit ClickedSave ]
-            [ input
-                [ type_ "text"
-                , placeholder "Add a song title"
-                , value title.input
-                , onInput (EnteredInput "song")
-                ]
-                []
-            , viewFormError title.valid
-            , div [ class "input-group" ]
-                [
-                    div [ class "collapse" ]
-                        [ input
-                            [ type_ "text"
-                            , placeholder "Add a song time (minutes)"
-                            , value mins.input
-                            , onInput (EnteredInput "minutes")
-                            ] []
-                        , viewFormError mins.valid
-                        ]
-                ,   div [ class "collapse" ]
-                        [ input
-                            [ type_ "text"
-                            , placeholder "Add a song time (seconds)"
-                            , value secs.input
-                            , onInput (EnteredInput "seconds")
-                            ] []
-                        , viewFormError secs.valid
-                        ]
-                ]
-            {- We could add disable to the button until ALL errors are fixed,
-            but this would mean constantly checking our `Result` on every key
-            stroke, which isn't ideal. See `Form.SingleField` for this approach -}
-            , button [] [ text "Save" ]
-            ]
+        Nothing ->
+            Err "Year must be a number"
 
-viewFormError : Validate a -> Html Msg
-viewFormError valid =
-    case valid of
-        Err str -> p [ class "form-error" ] [ text str ]
-        Ok _ -> text ""
+isEmpty : String -> Result String String
+isEmpty str =
+    if String.isEmpty str then
+        Err "Field cannot be empty"
 
-{- A `Song` is a record. If our `List Song` is empty, just show an empty
-list item. We're not interested in using a `Maybe` here. We could split out
-our function to handle both our `Album Song []` (singleton) and
-`Album Song (List Song)` but for now, just concatonate into one list! -}
-viewSongs : Song -> List Song -> Html Msg
-viewSongs song lsong =
-    ul [ class "album" ] (List.map viewSong (song :: lsong))
-
-{- #! We need to build an EDIT function into this later -}
-viewSong : Song -> Html Msg
-viewSong song =
-    li [ class "album-song", class ("id-" ++ (songIDtoString song.songID)) ]
-        [ text (song.songTitle ++ " (time: " ++ (songTimeToString song.songTime) ++ ")") ]
-
+    else
+        Ok (String.trim str)
 
 
 -- Main ------------------------------------------------------------------------
 
-main : Program () Model Msg
 main =
-    Browser.sandbox
-        { init = init
-        , view = view
-        , update = update
-        }
+    Browser.sandbox { init = init, update = update, view = view }

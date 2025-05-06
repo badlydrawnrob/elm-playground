@@ -40,7 +40,6 @@ import Html.Events exposing (onClick)
 import Ports.Settings as P exposing (..)
 import Json.Decode as D
 import Json.Encode as E
-import CustomTypes.Songs exposing (Msg)
 
 
 -- Main ------------------------------------------------------------------------

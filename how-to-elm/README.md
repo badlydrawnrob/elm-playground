@@ -16,15 +16,16 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
 > I need to start setting rules for myself ...
 > How do I keep my programs simple? What's in? What's out?
 
-1. What format am I using? (custom headings or `elm-format`)
-2. What indentation style am I preferring? (`2` or `4` spaces)
-3. What learning is "in" and what is "out"?[^2]
+1. Is this file the **best practice** way of doing things?
+2. What format am I using? (custom headings or `elm-format`)
+3. What indentation style am I preferring? (`2` or `4` spaces)
+4. What's your **learning frame**? What's "in"? What's "out"?[^2]
 
 
 ## Improvements
 
 1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
-    - In general I use as little javascript as possible. Set it and forget it.
+    - In general I use as little javascript as possible: set it and forget it.
 
 
 [^1]: Coming back after 2-3 months off and I'm rusty as fuck!

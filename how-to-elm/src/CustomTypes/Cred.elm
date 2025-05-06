@@ -35,21 +35,21 @@ module CustomTypes.Cred exposing (Cred, decoder, encodeToken, username)
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
-import CustomTypes.Username as Username
+import CustomTypes.Username as Username exposing (Username)
 
 type Cred
     = Cred Username String
 
 username : Cred -> Username
-username (Cred username _) =
-    username -- See `Username` module
+username (Cred user _) =
+    user -- See `Username` module
 
 
 -- Decoders --------------------------------------------------------------------
 
 decoder : Decoder Cred
 decoder =
-    Decode.succed Cred
+    Decode.succeed Cred
         |> required "username" Username.decoder
         |> required "token" Decode.string
 
