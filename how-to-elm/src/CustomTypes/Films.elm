@@ -37,14 +37,25 @@ module CustomTypes.Films exposing (..)
 
     Think carefully about the problem
     ---------------------------------
+    > How can we make it easy for end-users?
     > What does a user expect to happen?
-    > How can we make it easy for them?
-    > ⚠️ Is our error checking basic, or complex?
 
     For example, for our reviews the error checking might be very basic. We only
     need to know if a `Editing ""` holds an empty string. If not, we can send it
     straight to the server. The user might also expect their review to be saved
     right away, so our UI would need to make the "SAVE FILM" state explicit.
+
+    Think about your data structures
+    --------------------------------
+    > ⚠️ What fields are essential? What's optional?
+    > ⚠️ Is our error checking basic, or complex?
+    > ⚠️ How do our API data structures look? (find examples)
+
+    For example, our images should ideally all be the same type! Otherwise we'd
+    have to perform checks on them (if using `[ID]` and building a URL). If they
+    were different types, perhaps hold the full URL string in the API. Also
+    consider simple things, like "is my poster an `Int` id or a `String`?" Is it
+    a random ID, or an incremental one?
 
     Error handling
     --------------
@@ -70,19 +81,7 @@ module CustomTypes.Films exposing (..)
 
     THE API
 
-        @ https://openlibrary.org/developers/api
-        @ https://openlibrary.org/isbn/9780140328721.json
-        @ https://covers.openlibrary.org/b/id/8739161-L.jpg
-        @ https://covers.openlibrary.org/b/isbn/9780140328721-L.jpg
-
-        OpenLibrary isn't consistant. Some books ignore certain data fields.
-
-            978-0590353427 (strip slashes, or char == digit)
-            https://www.jsondiff.com/ (diff the two `json` files)
-
         Mock up a `List Review` that's similar to `ISBN` API above.
-        Use only the data points that are most consistant: the API is MESSY.
-        Eventually we'll transition to Nielsen data (for example).
 
     ----------------------------------------------------------------------------
 
@@ -225,6 +224,9 @@ module CustomTypes.Films exposing (..)
 
 -}
 
+import Url as U exposing (fromString, toString, builder)
+import Url.Builder as UB exposing (absolute, crossOrigin)
+
 
 -- Model -----------------------------------------------------------------------
 -- Our man in a van holds a list of films, we want to simplify data where we can.
@@ -238,6 +240,7 @@ type alias Model =
     , id : Int -- convert to a `FilmId` on `Film` build.
     , title : String
     , trailer : String -- convert to `URL`
+    , image : String -- This could be an image upload (later)
     , summary : String
     , tags : Maybe (List String)
     -- The `Review` form
@@ -279,15 +282,16 @@ type alias Internals =
     { title : String
     , trailer : Url
     , summary : String
-    , tags : Maybe (List String)
+    , image : Url -- Eventually `-S`, `-M`, `-L`
+    , tags : Maybe (List String) -- Optional
     }
 
-type alias Film a -- (2)
+type alias FilmRecord a -- (2)
     = { a
         | title : String
         , trailer : Url
         , summary : String
-        , tags : Maybe (List String)
+        , tags : Maybe (List String) -- Optional
       }
 
 
