@@ -21,6 +21,7 @@ module Auth.Auth exposing (..)
     Wishlist
     --------
     > First check your code for errors!
+    > https://jwt.io/ to check the access token.
 
     1. Add the `/audience` option to the authenticate url
         - User the `ProfileFull` instead of basic.
