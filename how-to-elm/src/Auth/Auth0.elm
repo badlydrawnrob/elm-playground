@@ -287,10 +287,12 @@ oAuth2IdentityDecoder =
 
 {-| Create the URL to the login page
 
-> - @ [Authorize (implicit flow)](https://auth0.com/docs/api/authentication/implicit-flow/authorize)
-> - @ [Universal login](https://auth0.com/docs/authenticate/login/auth0-universal-login#implement-universal-login)
-> - @ [Test your JWT](https://jwt.io/)
+> You should use a short lifetime for the `AccessToken`s expiry date. It can
+> be refreshed, but with Auth0 that's a bit of a hassle.
 
+- @ [Authorize (implicit flow)](https://auth0.com/docs/api/authentication/implicit-flow/authorize)
+- @ [Universal login](https://auth0.com/docs/authenticate/login/auth0-universal-login#implement-universal-login)
+- @ [Test your JWT](https://jwt.io/)
 
 ```elm
 auth0AuthorizeURL
@@ -316,6 +318,11 @@ url. It's not particularly useful, but will give you a little more context. Go t
 audience value.
 
 - @ [Opaque -vs- JWT tokens](https://community.auth0.com/t/opaque-versus-jwt-access-token/31028)
+
+As for `&audience=` params, you can setup multiple APIs but the user has grant
+access (on login) to each one. I'd advise keeping things simple and just use ONE.
+
+- @ [APIs](https://auth0.com/docs/get-started/apis)
 
 -}
 auth0AuthorizeURL :
@@ -421,7 +428,12 @@ getAuthedUserProfile auth0Endpoint accessToken msg pDecoder =
 
 {-| Logout of your app (with redirect)
 
-> - @ [Logout docs](https://auth0.com/docs/authenticate/login/logout)
+> The `AccessToken` is NOT invalidated when the user clicks the `logoutUrl`,
+> even if they're logged out successfully. For this reason it should have a
+> short lifetime (the expiry value)
+
+- @ [Logout docs](https://auth0.com/docs/authenticate/login/logout)
+- @ [Invalidating an access token](https://community.auth0.com/t/invalidating-an-access-token-when-user-logs-out/48365/7) when a user logs out (thread)
 
 1. `clientId` is required for `returnTo` to URL to work.
 2. `Bool` is `True` to force any social logins to logout.

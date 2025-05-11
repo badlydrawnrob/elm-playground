@@ -9,6 +9,11 @@ module Auth.Auth exposing (..)
     easier just building the damn thing with Python though, it's taken 2 days of
     sifting through the fucking documentation.
 
+    Bugs
+    ----
+    1. Logged out of Google but can still access user profile details?
+    2. Elm caches the js, so sometimes changing a line doesn't work.
+
 
     Just use Ai
     -----------
@@ -58,17 +63,14 @@ module Auth.Auth exposing (..)
 
     1. `Decoder a` and `(Result Http.Error a)` make things a wee bit confusing,
        but much easier to extend the package.
-    2. I think `#access_token=` is an opaque token, but you can add `/audience`
-       for some useful JWT (the middle bit) info.
-        - Alternatively use the `/oauth/token` endpoint or the SDK.
-    3. Is there any other profile information we can pull out with an Action?
+    2. Is there any other profile information we can pull out with an Action?
         - @ https://auth0.com/docs/manage-users/user-accounts/user-profiles#access-user-profiles-from-the-management-api
         - @ https://auth0.com/docs/user-profile/user-profile-structure
-    4. Session management and documentation is a bit of a shit show. Lots of
+    3. Session management and documentation is a bit of a shit show. Lots of
        different APIs and usecases:
         - @ https://auth0.com/blog/application-session-management-best-practices/
         - @ https://community.auth0.com/t/confusion-around-authorization/78981/2
-    5. To update the user you need to set the correct scopes in your `/authorize`
+    4. To update the user you need to set the correct scopes in your `/authorize`
        endpoint.
 
 -}
@@ -80,7 +82,7 @@ import Html exposing (..)
 import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as D
+import Json.Decode as D exposing (Decoder)
 
 import Debug
 
@@ -88,22 +90,25 @@ import Debug
 -- Login link ------------------------------------------------------------------
 -- Including an example `auth0AuthorizeUrl` return url
 
-exampleUrl =
+returnUrl =
     "http://localhost:8000/index.html" ++
     "#access_token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..-R1F7wflD5Afl_XA.-wvnb48v80rd4vKDTjX3_gFO0l53uKtV3s4t3oF_dvNPcCz8nynIfNUj9u30myrxSCF4ERNFN0Y4VVgpDoYVttnXvSntJVLIoNdzgt2RXWDNxsckbzy-38MBL7GDYSiB2BY55Y4qqhUr4R-67jTKUvqLgVT1vcdE_HIr_bbuy_4IFfrid-ekHla78FcSzuPPKZK51nEG1IAIJ8aQkD-VJZfiInfp2YOPzBwYymj2oz3RCK-uM_gnmiB0a9gWLxDcovdBf7HxlsfxPWlo23uEeaRaWj4Xluo60bqwy7WepfDUm2yFlhfxhyZNvJVmgEn79hZ6UnDt6KoVoZ_by4ua.TTUwmDWIA74XMLGtJAiB4A" ++
     "&scope=openid%20email" ++
     "&expires_in=7200" ++ -- default expiry time
     "&token_type=Bearer"
 
+authConfig =
+    (Auth0Config "https://dev-ne2fnlv85ucpfobc.uk.auth0.com" "YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW")
+
 url : String
 url =
     Auth0.auth0AuthorizeURL
-        (Auth0Config "https://dev-ne2fnlv85ucpfobc.uk.auth0.com" "YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW")
+        authConfig
         "token"
         "http://localhost:8000/09-auth0.html" -- was https
         [ "openid", "name", "email" ]
         Nothing -- social login param
-        Nothing -- audience param
+        (Just "cool-api") -- Nothing (audience param)
 
 getToken : String
 getToken =
@@ -112,16 +117,25 @@ getToken =
 
 -- User Profile -----------------------------------------------------------------
 
+type alias UserMeta =
+    { json : String, prefs : List String }
+
+getProfile : Cmd Msg
 getProfile =
     Auth0.getAuthedUserProfile
-        "https://dev-ne2fnlv85ucpfobc.uk.auth0.com"
-        "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0.._FVgfZoKf1fB2Hw-.PNL_nT-9inbTDNIVYSwB6NoiwNt5zv76qcP9EBCi4zG3JlEEnOAxDOAIgs2rj69rGKZtBxjVDK6TkXz0R3ewx3LfmIMF3c1NOOIPl1Viza6OoLsGGTN5K7S2of_AK7BSoC9S73sStUNgcSil3LZXgUZrHShsDJQNinftH_BVfGJpnlwlmEodybm8isAzYSANwh8DEXgCmDl5tm8zQ5dWGyHY_W9qIBAbCkuZSFg0waJBO4cS7YvZ6D4hUSg2gjxBTV_MrOpx6GeutmTe_5TGx3EW1UunHuLYEkWP6dSTlOdYtkjQ0-RFde8hXz5ngKSWdcbXNEuaGu9a6wGewgSQ.c3bpEludpVBg3sZPXKW8-A"
+        authConfig.endpoint -- Is Same as `Auth0Config`
+        "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..hgmqQ_VAlWa1ipYz.jb4xYtCsg8AMm9DclvOzohAmnY8NkElIQ8c9AHDj8rn6HHws2tshLs5E0zv1QIZ2CDimk4NkKNt1XShGXofrlFpvjNuPh7wnvyUIfzTISSLnwBwFZLLlQ5ZamxIVuenmrDib_QzVJgrSahyVKgjCiRWDRAXSEIndjjoiuCAfNEPYRRBTLWAyqeRStWly_o2Y47OPO5PYfzWhN5_0VI_bH-NAyiBVQMJFtvKyJ4pJvtRBvAZbWOaoZeV-lqAXtKtP-h9JW6yyBHAmm4leLhmJo76We2CgtgvhSelunwLbliAy78zrUdAUg1mUw9bUFo6uwuQDjuco16_QUA.gDQlbMvKi7wr_u9iWfQ_XQ"
         GotProfile
         (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
 
-decoderUserMetadata =
-    D.succeed "This"
 
+decoderUserMetadata : Decoder UserMeta
+decoderUserMetadata =
+    D.map2 (\a b -> { json = a, prefs = b })
+        (D.field "json" D.string)
+        (D.field "prefs" (D.list D.string))
+
+decoderAppMetadata : Decoder String
 decoderAppMetadata =
     D.succeed "That"
 
@@ -141,7 +155,7 @@ logout =
 
 type Msg
   = ClickedGetProfile
-  | GotProfile (Result Http.Error (ProfileBasic String String)) -- #! Moved from Auth0.elm to `Main.Msg`
+  | GotProfile (Result Http.Error (ProfileBasic UserMeta String)) -- #! Moved from Auth0.elm to `Main.Msg`
 
 
 -- Update ----------------------------------------------------------------------
@@ -175,7 +189,7 @@ view model =
         , a [ href logout ] [ text "Logout" ] -- Returns to root url
         ]
 
-viewProfile : Maybe (ProfileBasic String String) -> Html Msg
+viewProfile : Maybe (ProfileBasic UserMeta String) -> Html Msg
 viewProfile profile =
     case profile of
         Nothing ->
@@ -189,7 +203,7 @@ viewProfile profile =
 
 type alias Model
     = { name : String
-      , profile : Maybe (ProfileBasic String String)
+      , profile : Maybe (ProfileBasic UserMeta String)
       , error : String
     }
 

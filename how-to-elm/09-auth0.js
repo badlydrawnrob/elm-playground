@@ -5370,6 +5370,11 @@ var $author$project$Auth$Auth$subscriptions = function (_v0) {
 var $author$project$Auth$Auth$GotProfile = function (a) {
 	return {$: 'GotProfile', a: a};
 };
+var $author$project$Auth$Auth0$Auth0Config = F2(
+	function (endpoint, clientId) {
+		return {clientId: clientId, endpoint: endpoint};
+	});
+var $author$project$Auth$Auth$authConfig = A2($author$project$Auth$Auth0$Auth0Config, 'https://dev-ne2fnlv85ucpfobc.uk.auth0.com', 'YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW');
 var $author$project$Auth$Auth$decoderAppMetadata = $elm$json$Json$Decode$succeed('That');
 var $author$project$Auth$Auth0$ProfileBasic = F5(
 	function (email, email_verified, sub, user_metadata, app_metadata) {
@@ -5406,7 +5411,18 @@ var $author$project$Auth$Auth0$decoderBasic = F2(
 				'app_metadata',
 				$elm$json$Json$Decode$nullable(b)));
 	});
-var $author$project$Auth$Auth$decoderUserMetadata = $elm$json$Json$Decode$succeed('This');
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $author$project$Auth$Auth$decoderUserMetadata = A3(
+	$elm$json$Json$Decode$map2,
+	F2(
+		function (a, b) {
+			return {json: a, prefs: b};
+		}),
+	A2($elm$json$Json$Decode$field, 'json', $elm$json$Json$Decode$string),
+	A2(
+		$elm$json$Json$Decode$field,
+		'prefs',
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6231,8 +6247,8 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 	});
 var $author$project$Auth$Auth$getProfile = A4(
 	$author$project$Auth$Auth0$getAuthedUserProfile,
-	'https://dev-ne2fnlv85ucpfobc.uk.auth0.com',
-	'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0.._FVgfZoKf1fB2Hw-.PNL_nT-9inbTDNIVYSwB6NoiwNt5zv76qcP9EBCi4zG3JlEEnOAxDOAIgs2rj69rGKZtBxjVDK6TkXz0R3ewx3LfmIMF3c1NOOIPl1Viza6OoLsGGTN5K7S2of_AK7BSoC9S73sStUNgcSil3LZXgUZrHShsDJQNinftH_BVfGJpnlwlmEodybm8isAzYSANwh8DEXgCmDl5tm8zQ5dWGyHY_W9qIBAbCkuZSFg0waJBO4cS7YvZ6D4hUSg2gjxBTV_MrOpx6GeutmTe_5TGx3EW1UunHuLYEkWP6dSTlOdYtkjQ0-RFde8hXz5ngKSWdcbXNEuaGu9a6wGewgSQ.c3bpEludpVBg3sZPXKW8-A',
+	$author$project$Auth$Auth$authConfig.endpoint,
+	'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..hgmqQ_VAlWa1ipYz.jb4xYtCsg8AMm9DclvOzohAmnY8NkElIQ8c9AHDj8rn6HHws2tshLs5E0zv1QIZ2CDimk4NkKNt1XShGXofrlFpvjNuPh7wnvyUIfzTISSLnwBwFZLLlQ5ZamxIVuenmrDib_QzVJgrSahyVKgjCiRWDRAXSEIndjjoiuCAfNEPYRRBTLWAyqeRStWly_o2Y47OPO5PYfzWhN5_0VI_bH-NAyiBVQMJFtvKyJ4pJvtRBvAZbWOaoZeV-lqAXtKtP-h9JW6yyBHAmm4leLhmJo76We2CgtgvhSelunwLbliAy78zrUdAUg1mUw9bUFo6uwuQDjuco16_QUA.gDQlbMvKi7wr_u9iWfQ_XQ',
 	$author$project$Auth$Auth$GotProfile,
 	A2($author$project$Auth$Auth0$decoderBasic, $author$project$Auth$Auth$decoderUserMetadata, $author$project$Auth$Auth$decoderAppMetadata));
 var $elm$core$Debug$log = _Debug_log;
@@ -6278,10 +6294,6 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
-var $author$project$Auth$Auth0$Auth0Config = F2(
-	function (endpoint, clientId) {
-		return {clientId: clientId, endpoint: endpoint};
-	});
 var $author$project$Auth$Auth0$logoutUrl = F3(
 	function (auth0Config, federated, returnTo) {
 		var forceSocialLogout = federated ? '/v2/logout?federated' : '/v2/logout?';
@@ -6348,13 +6360,13 @@ var $author$project$Auth$Auth0$auth0AuthorizeURL = F6(
 	});
 var $author$project$Auth$Auth$url = A6(
 	$author$project$Auth$Auth0$auth0AuthorizeURL,
-	A2($author$project$Auth$Auth0$Auth0Config, 'https://dev-ne2fnlv85ucpfobc.uk.auth0.com', 'YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW'),
+	$author$project$Auth$Auth$authConfig,
 	'token',
 	'http://localhost:8000/09-auth0.html',
 	_List_fromArray(
 		['openid', 'name', 'email']),
 	$elm$core$Maybe$Nothing,
-	$elm$core$Maybe$Nothing);
+	$elm$core$Maybe$Just('cool-api'));
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$core$Debug$toString = _Debug_toString;
 var $author$project$Auth$Auth$viewProfile = function (profile) {
