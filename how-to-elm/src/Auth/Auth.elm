@@ -26,18 +26,21 @@ module Auth.Auth exposing (..)
     1. Add the `/audience` option to the authenticate url
         - User the `ProfileFull` instead of basic.
     2. Extract the token from the url
-    3. Can other functions be added to the `Auth0` package?
+        - For now, just use a local storage value.
+    3. Can you update `user_metadata` with `updateUserMetadata` funtion?
+        - It suggests not to do this client-side in the API docs.
+    4. Can other functions be added to the `Auth0` package?
         - Any `extractX` functions? (like the `ProfileFull` and `ProfileBasic`)
         - Should `extractProfile` be in the `Auth` package? Or per app?
-    4. Set an `Auth0Config` and extract it into `getProfile`.
-    5. Make the thing work all in the same `elm reactor` session.
-    6. See if you can get the refresh token to work.
-    7. Using `URL` with stock Elm is a bit of a headache ...
+    5. Set an `Auth0Config` and extract it into `getProfile`.
+    6. Make the thing work all in the same `elm reactor` session.
+    7. See if you can get the refresh token to work.
+    8. Using `URL` with stock Elm is a bit of a headache ...
         - I think it might be easier to use something like Elm Land!
         - However this will use `Browser.application` and take control of the
           whole page.
         - Alternatively you could grab the URL with js and use Ports.
-    8. Get Mike to check over the code.
+    9. Get Mike to check over the code.
 
 
     The API
@@ -99,7 +102,8 @@ url =
         "token"
         "http://localhost:8000/09-auth0.html" -- was https
         [ "openid", "name", "email" ]
-        Nothing
+        Nothing -- social login param
+        Nothing -- audience param
 
 getToken : String
 getToken =
@@ -111,7 +115,7 @@ getToken =
 getProfile =
     Auth0.getAuthedUserProfile
         "https://dev-ne2fnlv85ucpfobc.uk.auth0.com"
-        "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..xjrR68DiifjNmugP.2XbI08_39ZvT0__dxOK28dMNpYs1nfpeXJJUDoW9sRYklm9EVykN9mG_s9jsh_pw0bGiga6dx-9NQXiAuAQmnP8AcIiOHsuHtu25lQuG9yAN3OFVC5WWv_ow2sE-boowiWTx3OrsgPA6g_P07eZF6Su78ngncRzgQxyz5Kn4ticUdHFJzCDeOh6O-xlS_TymMOLsR0tBI9Mzn4G1v_N-_4H5Eq-DL9HS1TS5AsEq5BFMYhwsoWeSDCeD3CPK_zcLj7k8z6yfgPiFpFS0Lk136zbO74Xk84IH35BVw4C3suZONpzDP3ObdNOT-jIznfIGWEgj3a-H-4HGuA.lx3gLg9KzE4zCIR1gFoD8A"
+        "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0.._FVgfZoKf1fB2Hw-.PNL_nT-9inbTDNIVYSwB6NoiwNt5zv76qcP9EBCi4zG3JlEEnOAxDOAIgs2rj69rGKZtBxjVDK6TkXz0R3ewx3LfmIMF3c1NOOIPl1Viza6OoLsGGTN5K7S2of_AK7BSoC9S73sStUNgcSil3LZXgUZrHShsDJQNinftH_BVfGJpnlwlmEodybm8isAzYSANwh8DEXgCmDl5tm8zQ5dWGyHY_W9qIBAbCkuZSFg0waJBO4cS7YvZ6D4hUSg2gjxBTV_MrOpx6GeutmTe_5TGx3EW1UunHuLYEkWP6dSTlOdYtkjQ0-RFde8hXz5ngKSWdcbXNEuaGu9a6wGewgSQ.c3bpEludpVBg3sZPXKW8-A"
         GotProfile
         (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
 

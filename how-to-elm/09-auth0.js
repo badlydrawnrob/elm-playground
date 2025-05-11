@@ -6210,7 +6210,7 @@ var $elm$http$Http$request = function (r) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
-	function (auth0Endpoint, idToken, msg, pDecoder) {
+	function (auth0Endpoint, accessToken, msg, pDecoder) {
 		return $elm$http$Http$request(
 			{
 				body: $elm$http$Http$jsonBody(
@@ -6219,7 +6219,7 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 							[
 								_Utils_Tuple2(
 								'access_token',
-								$elm$json$Json$Encode$string(idToken))
+								$elm$json$Json$Encode$string(accessToken))
 							]))),
 				expect: A2($elm$http$Http$expectJson, msg, pDecoder),
 				headers: _List_Nil,
@@ -6232,7 +6232,7 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 var $author$project$Auth$Auth$getProfile = A4(
 	$author$project$Auth$Auth0$getAuthedUserProfile,
 	'https://dev-ne2fnlv85ucpfobc.uk.auth0.com',
-	'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..xjrR68DiifjNmugP.2XbI08_39ZvT0__dxOK28dMNpYs1nfpeXJJUDoW9sRYklm9EVykN9mG_s9jsh_pw0bGiga6dx-9NQXiAuAQmnP8AcIiOHsuHtu25lQuG9yAN3OFVC5WWv_ow2sE-boowiWTx3OrsgPA6g_P07eZF6Su78ngncRzgQxyz5Kn4ticUdHFJzCDeOh6O-xlS_TymMOLsR0tBI9Mzn4G1v_N-_4H5Eq-DL9HS1TS5AsEq5BFMYhwsoWeSDCeD3CPK_zcLj7k8z6yfgPiFpFS0Lk136zbO74Xk84IH35BVw4C3suZONpzDP3ObdNOT-jIznfIGWEgj3a-H-4HGuA.lx3gLg9KzE4zCIR1gFoD8A',
+	'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0.._FVgfZoKf1fB2Hw-.PNL_nT-9inbTDNIVYSwB6NoiwNt5zv76qcP9EBCi4zG3JlEEnOAxDOAIgs2rj69rGKZtBxjVDK6TkXz0R3ewx3LfmIMF3c1NOOIPl1Viza6OoLsGGTN5K7S2of_AK7BSoC9S73sStUNgcSil3LZXgUZrHShsDJQNinftH_BVfGJpnlwlmEodybm8isAzYSANwh8DEXgCmDl5tm8zQ5dWGyHY_W9qIBAbCkuZSFg0waJBO4cS7YvZ6D4hUSg2gjxBTV_MrOpx6GeutmTe_5TGx3EW1UunHuLYEkWP6dSTlOdYtkjQ0-RFde8hXz5ngKSWdcbXNEuaGu9a6wGewgSQ.c3bpEludpVBg3sZPXKW8-A',
 	$author$project$Auth$Auth$GotProfile,
 	A2($author$project$Auth$Auth0$decoderBasic, $author$project$Auth$Auth$decoderUserMetadata, $author$project$Auth$Auth$decoderAppMetadata));
 var $elm$core$Debug$log = _Debug_log;
@@ -6331,28 +6331,29 @@ var $elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var $author$project$Auth$Auth0$auth0AuthorizeURL = F5(
-	function (auth0Config, responseType, redirectURL, scopes, maybeConn) {
+var $author$project$Auth$Auth0$auth0AuthorizeURL = F6(
+	function (auth0Config, responseType, redirectURL, scopes, maybeConn, maybeAud) {
 		var scopeParam = $elm$url$Url$percentEncode(
 			A2($elm$core$String$join, ' ', scopes));
-		var connectionParam = A2(
-			$elm$core$Maybe$withDefault,
-			'',
-			A2(
-				$elm$core$Maybe$map,
-				function (c) {
-					return '&connection=' + c;
-				},
-				maybeConn));
-		return auth0Config.endpoint + ('/authorize' + (('?response_type=' + responseType) + (('&client_id=' + auth0Config.clientId) + (connectionParam + (('&redirect_uri=' + redirectURL) + ('&scope=' + scopeParam))))));
+		var mapParam = function (key) {
+			return A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$map(
+					$elm$core$Basics$append(key)),
+				$elm$core$Maybe$withDefault(''));
+		};
+		var connectionParam = A2(mapParam, '&connection=', maybeConn);
+		var audienceParam = A2(mapParam, '&audience=', maybeAud);
+		return auth0Config.endpoint + ('/authorize' + (('?response_type=' + responseType) + (('&client_id=' + auth0Config.clientId) + (connectionParam + (('&redirect_uri=' + redirectURL) + (('&scope=' + scopeParam) + audienceParam))))));
 	});
-var $author$project$Auth$Auth$url = A5(
+var $author$project$Auth$Auth$url = A6(
 	$author$project$Auth$Auth0$auth0AuthorizeURL,
 	A2($author$project$Auth$Auth0$Auth0Config, 'https://dev-ne2fnlv85ucpfobc.uk.auth0.com', 'YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW'),
 	'token',
 	'http://localhost:8000/09-auth0.html',
 	_List_fromArray(
 		['openid', 'name', 'email']),
+	$elm$core$Maybe$Nothing,
 	$elm$core$Maybe$Nothing);
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$core$Debug$toString = _Debug_toString;
