@@ -16,23 +16,28 @@ module Auth.Auth0
 
 {-| This library provides data types and helper functions for [Auth0](https://auth0.com)
 
-> I've found Auth0 documentation hard to get through: confusing to know how to
-> do things the right way that work reliably. It's great for light use as an
-> authentication method, but we're a bit limited what we can do in Elm. For more
-> advanced needs, you'd be better off with Auth0.js, the SDKs, or another framework.
+> Auth0 documentation is hard to get through, but this package is useful for a
+> simple authentication setup. We're a little limited what we can do with a SPA
+> (without using Auth0.js or the SDKs). For more advanced needs, I'd consider a
+> different framework.
 
 This package uses the "Implicit Flow". You could alternatively use `/oauth/token`
 endpoint, or the SDK provided by Auth0; that will involve using Ports however.
 Previous releases used `id_token`, but (I think) this is now not recommended.
 
 By default, when the user logs in, you'll get a prompt that "app is requesting
-access to your account" which they'll have to accept. To skip user consent for
-the implicit flow, you go to `Applications -> APIs -> (select the api) -> Settings -> Access Settings`
+access to your account" which they'll have to accept. You can skip user consent:
+go to `Applications -> APIs -> (select the api) -> Settings -> Access Settings`
 and turn on "Allow Skipping User Consent".
 
-It currently has limitations, as `user_metadata` cannot (or shouldn't) be allowed
-to be changed by the client (a logged in user). Perhaps set a backend cron job
-for this, or do it manually.
+Limitations:
+
+1. It's less secure than an SDK: don't store the `AccessKey` or any sensitive data.
+    - It can be potentially viewed by anyone, as it's client-side.
+2. The `user_metadata` is not recommended to be changed by a client-side app:
+    - Technically it's only the logged-in user that's making changes, but see (1);
+      it's less secure. You _could_ use the Management API on the frontend.
+    - You can edit the `user_metadata` manually or on the back-end.
 
 We're now using `(Result Error a -> msg)` and `Cmd msg` so you can set your own
 messages.
@@ -287,8 +292,9 @@ oAuth2IdentityDecoder =
 
 {-| Create the URL to the login page
 
-> You should use a short lifetime for the `AccessToken`s expiry date. It can
-> be refreshed, but with Auth0 that's a bit of a hassle.
+> You should use a short lifetime for the `AccessToken`s expiry date; it can
+> be refreshed, but with Auth0 that's a bit of a hassle. For security reasons,
+> it's better to not store the `AccessToken` in local storage.
 
 - @ [Authorize (implicit flow)](https://auth0.com/docs/api/authentication/implicit-flow/authorize)
 - @ [Universal login](https://auth0.com/docs/authenticate/login/auth0-universal-login#implement-universal-login)
@@ -304,25 +310,40 @@ auth0AuthorizeURL
     Nothing -- e.g: `(Just "https://dev-yourid.uk.auth0.com/api/v2/")
 ```
 
-The scope `["openid", "name", "email"]` will return basic information when
-posting to `getAuthedUserProfile` (`ProfileBasic`); replacing `"name"` with `"profile"` will return
-will return more information (`ProfileFull`). You can add more scopes to your
-`accessToken` for more permissions for Auth0 API calls. By default, `user_metadata`
-is not rendered — see `getAuthedUserProfile` for the code to render this.
+Once you've got your `AccessToken` you can use the `getAuthedUserProfile` function:
 
-- @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
+- `["openid", "name", "email"]` scopes return basic information (`ProfileBasic`)
+- `["openid", "profile", "email"]` scopes return more information (`ProfileFull`)
 
-For a JWT Payload with an EXPIRY VALUE, set a `maybeAud` parameter to your authorize
-url. It's not particularly useful, but will give you a little more context. Go to
-`Application -> APIs -> (select the api) -> Settings -> Identifier` to find your
-audience value.
 
-- @ [Opaque -vs- JWT tokens](https://community.auth0.com/t/opaque-versus-jwt-access-token/31028)
+## Optional parameters
 
-As for `&audience=` params, you can setup multiple APIs but the user has grant
-access (on login) to each one. I'd advise keeping things simple and just use ONE.
+To get the value for our `maybeAud`ience parameter, go to `Applications -> APIs`
+and (for basic setup) select the `Auth0 Management API`. You'll find an `Identifier`
+value. This is our `/audience` value.
 
-- @ [APIs](https://auth0.com/docs/get-started/apis)
+The `/audience` parameter is required for two things:
+
+1. To get a helpful JWT token with permissions and token expiry date
+2. To allow use of a specific API (for example, the Management API)
+3. To allow extra scopes, specific to the API (eg: `update:current_user_metadata`)
+
+The user may have to grant access to specific permissions when logging in. You
+can "skip user consent" to avoid this.
+
+## Scopes
+
+>  @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
+
+You can add more scopes to your access token for more permissions. See the
+`updateUserMetaData` for an example. For now, all you need to know is that by
+adding an `/audience` parameter (such as Auth0 Management API) you get back a
+JWT with information such as expiry date, and any permissions granted the user.
+
+## Opaque tokens
+
+One more thing to note is that the `accessToken` is [opaque](https://community.auth0.com/t/opaque-versus-jwt-access-token/31028)
+(not a JWT). You'll need to hit the `/userinfo` endpoint for useful information.
 
 -}
 auth0AuthorizeURL :
@@ -359,13 +380,14 @@ auth0AuthorizeURL auth0Config responseType redirectURL scopes maybeConn maybeAud
 
 {-| Get the Auth0 user profile from an `accessToken`
 
-> This used to be represented by an `IdToken` (and the js below actually
-> references it), but you now post an `accessToken` to retrieve profile json.
+> Once you have an `AccessToken`, you can use this function to retrieve profile
+> json. Only store the data your application needs; be mindful of privacy as this
+> is stored on the client-side. Potentially anyone can see this data.
 
 - @ [Get user info](https://auth0.com/docs/api/authentication/user-profile/get-user-info)
 - @ [Get user meta (thread)](https://community.auth0.com/t/how-to-get-user-meta-from-userinfo-endpoint/106000)
 
-The return value depends on what scope you used in your `auth0AuthorizeURL`
+The return value depends on what scopes you used in your `auth0AuthorizeURL`
 function call. The `user_metadata` and `app_metadata` are not returned by default,
 so you'll need to set a post-login trigger (this slows down the response time a
 little).
@@ -390,9 +412,9 @@ exports.onExecutePostLogin = async (event, api) => {
 };
 ```
 
-This has changed from `Decoder String` to `Decoder a` to allow for our custom
-`ProfileBasic` or `ProfileFull` decoders. For the `msg` type, you can add your
-`GotProfile` message like below:
+The type signature has changed from `Decoder String` to `Decoder a` to allow for
+our custom `ProfileBasic` or `ProfileFull` decoders. For the `msg` type, you can
+add your `GotProfile` message like below:
 
 ```elm
 getProfile =
@@ -407,16 +429,16 @@ Where `...` are your own `userMetaData` and `appMetaData` decoders.
 
 -}
 getAuthedUserProfile :
-    Endpoint
+    Auth0Config
     -> AccessToken
     -> (Result Error a -> msg)
     -> Decoder a
     -> Cmd msg
-getAuthedUserProfile auth0Endpoint accessToken msg pDecoder =
+getAuthedUserProfile auth0Config accessToken msg pDecoder =
     Http.request
         { method = "POST"
         , headers = []
-        , url = auth0Endpoint ++ "/userinfo" -- #! Changed from `/tokeninfo`
+        , url = auth0Config.endpoint ++ "/userinfo" -- #! Changed from `/tokeninfo`
         , body =
             Http.jsonBody <|
                 Encode.object [ ( "access_token", Encode.string accessToken ) ] -- #! Was `/id_token`
@@ -428,9 +450,9 @@ getAuthedUserProfile auth0Endpoint accessToken msg pDecoder =
 
 {-| Logout of your app (with redirect)
 
-> The `AccessToken` is NOT invalidated when the user clicks the `logoutUrl`,
-> even if they're logged out successfully. For this reason it should have a
-> short lifetime (the expiry value)
+> Our `AccessToken` doesn't invalidate on `logoutUrl`. For that reason give it a
+> short lifetime (the expiry value), and don't store it (for security reasons).
+> You can always ping the `/authorize` url to get the token (or a new one).
 
 - @ [Logout docs](https://auth0.com/docs/authenticate/login/logout)
 - @ [Invalidating an access token](https://community.auth0.com/t/invalidating-an-access-token-when-user-logs-out/48365/7) when a user logs out (thread)
@@ -456,36 +478,54 @@ logoutUrl auth0Config federated returnTo =
 
 {-| Update the `user_metadata` in the Auth0 unified user profile
 
+> Take care with security! Auth0 doesn't advise doing this, but make sure that
+> you're only allowing the user to update _their own_ data. It's not as secure
+> client-side as it would be on the backend.
+
+- You can setup APIs, scopes, and user permissions.
+- When you ping the `/authorize` endpoint, permissions are added to the `AccessToken`.
+
 > ⚠️ "Auth0 does not recommend putting Management API Tokens on the frontend that
-> allow users to change user metadata." This function might be worth deprecating.
+> allow users to change user metadata."
 
-This is quite hard to understand from the documentation: you'll need to use the
-Management API to update the `user_metadata` (or other profile fields). You'll also
-need to set the correct scopes in your `/authorize` endpoint (probably
-`update:current_user_metadata`). It's easier to just set this within your Auth0
-dashboard instead (or do it as an admin).
+That said, here's how you can change your `user_metadata` with the Management API.
 
+1. Make sure your `Auth0 Management API` is enabled in `Applications -> APIs`
+2. Select the API and get the `Identifier` unique ID.
+3. Add this to your `/audience` parameter in the `auth0AuthorizeURL` function.
+4. Add `update:current_user_metadata` to your scopes in the `auth0AuthorizeURL` function.
+
+The user may be prompted to grant permissions. You can setup multiple APIs (for
+different resources) each with their own custom permissions. I'd suggest
+keeping things simple and just use ONE (the Management API) for now.
+
+- @ [APIs](https://auth0.com/docs/get-started/apis)
+
+## Security
+
+It's better safe then sorry, so be careful with SPA apps and the Management API.
+Only allow the user to update their own account, nothing more. It might be safer
+to do this on the backend (not the client), or manually in the Auth0 GUI.
+
+- @ [Manage user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
 - @ [API scopes](https://auth0.com/docs/get-started/apis/scopes/api-scopes)
 - @ [Management API for SPA apps](https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens/get-management-api-tokens-for-single-page-applications)
 - @ [SPA security vulnerabilities](https://community.auth0.com/t/confusion-about-management-api-token-limitation/86136)
 
-It also seems preferable to handle this on the backend (not on the client), for
-security purposes.
-
 -}
 updateUserMetaData :
-    Endpoint
-    -> IdToken
+    Auth0Config
+    -> AccessToken
+    -> (Result Error a -> msg)
+    -> Decoder a
     -> UserID
-    -> (Result Error String -> msg)
     -> Encode.Value
-    -> Decoder String
     -> Cmd msg
-updateUserMetaData auth0Endpoint idToken userID msg userMeta pDecoder =
+updateUserMetaData auth0Config accessToken msg pDecoder userID userMeta =
     Http.request
         { method = "PATCH"
-        , headers = [ Http.header "Authorization" ("Bearer " ++ idToken) ]
-        , url = auth0Endpoint ++ "/api/v2/users/" ++ userID
+        , headers = [ Http.header "Authorization" ("Bearer " ++ accessToken) ]
+        , url = auth0Config.endpoint ++ "/api/v2/users/" ++ userID
         , body =
             Http.jsonBody <|
                 Encode.object

@@ -13,6 +13,8 @@ module Auth.Auth exposing (..)
     ----
     1. Logged out of Google but can still access user profile details?
     2. Elm caches the js, so sometimes changing a line doesn't work.
+    3. `AccessToken` is NOT invalidated when user clicks the `logoutUrl`
+        - So it's better to have a short expiry time and not store it.
 
 
     Just use Ai
@@ -82,6 +84,7 @@ import Html exposing (..)
 import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
 import Http
+import Json.Encode as E
 import Json.Decode as D exposing (Decoder)
 
 import Debug
@@ -120,13 +123,30 @@ getToken =
 type alias UserMeta =
     { json : String, prefs : List String }
 
+encodeUserMeta : E.Value
+encodeUserMeta =
+    E.object
+        [ ( "json", E.string "esYNFY" )
+        , ( "age", E.list E.string ["a","b", "c"] )
+        ]
+
 getProfile : Cmd Msg
 getProfile =
     Auth0.getAuthedUserProfile
-        authConfig.endpoint -- Is Same as `Auth0Config`
-        "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..hgmqQ_VAlWa1ipYz.jb4xYtCsg8AMm9DclvOzohAmnY8NkElIQ8c9AHDj8rn6HHws2tshLs5E0zv1QIZ2CDimk4NkKNt1XShGXofrlFpvjNuPh7wnvyUIfzTISSLnwBwFZLLlQ5ZamxIVuenmrDib_QzVJgrSahyVKgjCiRWDRAXSEIndjjoiuCAfNEPYRRBTLWAyqeRStWly_o2Y47OPO5PYfzWhN5_0VI_bH-NAyiBVQMJFtvKyJ4pJvtRBvAZbWOaoZeV-lqAXtKtP-h9JW6yyBHAmm4leLhmJo76We2CgtgvhSelunwLbliAy78zrUdAUg1mUw9bUFo6uwuQDjuco16_QUA.gDQlbMvKi7wr_u9iWfQ_XQ"
+        authConfig -- extracts the endpoint
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA"
         GotProfile
         (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
+
+updateProfile : Cmd Msg
+updateProfile =
+    Auth0.updateUserMetaData
+        authConfig
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA"
+        GotProfile
+        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata)
+        "auth0|681ce3c6339152f87a583f4c" -- userID
+        encodeUserMeta -- user metadata
 
 
 decoderUserMetadata : Decoder UserMeta

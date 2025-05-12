@@ -6226,7 +6226,7 @@ var $elm$http$Http$request = function (r) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
-	function (auth0Endpoint, accessToken, msg, pDecoder) {
+	function (auth0Config, accessToken, msg, pDecoder) {
 		return $elm$http$Http$request(
 			{
 				body: $elm$http$Http$jsonBody(
@@ -6242,13 +6242,13 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 				method: 'POST',
 				timeout: $elm$core$Maybe$Nothing,
 				tracker: $elm$core$Maybe$Nothing,
-				url: auth0Endpoint + '/userinfo'
+				url: auth0Config.endpoint + '/userinfo'
 			});
 	});
 var $author$project$Auth$Auth$getProfile = A4(
 	$author$project$Auth$Auth0$getAuthedUserProfile,
-	$author$project$Auth$Auth$authConfig.endpoint,
-	'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vIn0..hgmqQ_VAlWa1ipYz.jb4xYtCsg8AMm9DclvOzohAmnY8NkElIQ8c9AHDj8rn6HHws2tshLs5E0zv1QIZ2CDimk4NkKNt1XShGXofrlFpvjNuPh7wnvyUIfzTISSLnwBwFZLLlQ5ZamxIVuenmrDib_QzVJgrSahyVKgjCiRWDRAXSEIndjjoiuCAfNEPYRRBTLWAyqeRStWly_o2Y47OPO5PYfzWhN5_0VI_bH-NAyiBVQMJFtvKyJ4pJvtRBvAZbWOaoZeV-lqAXtKtP-h9JW6yyBHAmm4leLhmJo76We2CgtgvhSelunwLbliAy78zrUdAUg1mUw9bUFo6uwuQDjuco16_QUA.gDQlbMvKi7wr_u9iWfQ_XQ',
+	$author$project$Auth$Auth$authConfig,
+	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA',
 	$author$project$Auth$Auth$GotProfile,
 	A2($author$project$Auth$Auth0$decoderBasic, $author$project$Auth$Auth$decoderUserMetadata, $author$project$Auth$Auth$decoderAppMetadata));
 var $elm$core$Debug$log = _Debug_log;

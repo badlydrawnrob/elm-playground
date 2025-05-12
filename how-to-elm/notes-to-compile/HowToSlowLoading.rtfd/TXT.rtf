@@ -1,0 +1,339 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Monaco;\f2\froman\fcharset0 Times-Bold;
+\f3\froman\fcharset0 Times-Italic;\f4\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red0\green0\blue0;\red176\green0\blue52;
+\red22\green21\blue22;\red18\green79\blue146;\red22\green21\blue22;\red22\green21\blue22;\red78\green77\blue78;
+\red29\green136\blue198;\red213\green213\blue213;\red115\green115\blue115;\red22\green21\blue22;\red22\green21\blue22;
+\red221\green246\blue255;\red246\green246\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c100000\c100000;\cssrgb\c0\c0\c0;\cssrgb\c75294\c7451\c26275;
+\cssrgb\c11373\c10980\c11373\c3922;\cssrgb\c7059\c39216\c63922;\cssrgb\c11373\c10980\c11373;\cssrgb\c11373\c10980\c11373\c12941;\cssrgb\c38039\c37647\c38039;
+\cssrgb\c11373\c60784\c81961\c10196;\cssrgb\c86667\c86667\c86667;\cssrgb\c52549\c52549\c52549;\cssrgb\c11373\c10980\c11373\c70196;\cssrgb\c11373\c10980\c11373\c5882;
+\cssrgb\c89020\c97255\c100000;\cssrgb\c97255\c97255\c97255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs30 \cf0 \cb2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 How do people track slow loading requests, or slow loading images? For instance if a 4G connection is loading images slowly? Or if the request is taking a while to receive? I haven\'92t seen this much out in the wild, although I know\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 track
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0and\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Progress
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0exist, as well as lazy loading\'a0{\field{\*\fldinst{HYPERLINK "https://package.elm-lang.org/packages/elm/http/latest/Http#track"}}{\fldrslt \cf6 \strokec6 https://package.elm-lang.org/packages/elm/http/latest/Http#track}}\cb1 \
+\
+\cb2 Considering loading text only page, or including small images (if slow, otherwise\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 srcset
+\f0\fs30 \cf0 \cb2 \strokec3 ). Any examples\'a0you\'92ve\'a0done before would be appreciated!\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Jan Jel\'ednek\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746021063515649?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 2:51 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Around over 10 years ago I did some big optimisation for one big (local) price comparison portal and mainly it was about having different resolutions of images to load smallest first, than having some inline minimal CSS and JS which was loaded first to establish basic layout of page with some progress animations, than load hopefully texts where loaded so everything was step by step but user was able start interact with web very soon. But honestly since that internet speeds get so crazy that I never did it again in that big scale\'a0\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 {{\NeXTGraphic 1f604@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Anyway there are some techniques to detect if image is fully loaded (with JS) and do not insert it into the page unless it\'92s done and instead show some spinner, but that is good only to provide slightly different user experience compared to gradually loaded image (usually from top to bottom).\cb1 \
+\cb2 Also not sure how relevant it is in SPA\'a0\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 {{\NeXTGraphic 1f937@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \'a0You an just put spinner in same node as image so it will be visible until image is loaded and call it a win.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746023982948599?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 3:39 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U4H772UU8"}}{\fldrslt \cf6 \cb10 \strokec6 @Jan Jel\'ednek}}\cf6 \cb10 \strokec6 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \strokec3 \'a0Images have certainly moved on quite a bit, and the browser handles a lot for image resolution (1x, 2x, etc) \'97 but you\'92d be surprised how slow loading (or no loading) things are in 4g/5g\'a0dead spots (unreliable on Three network for instance).\cb1 \
+\
+\cb2 Another example is\'a0Google Maps loads a list of restaurants, but many of the images don\'92t load\'a0(or load slowly). I tested\'a04g\'a0today with a friends Virgin/02\'a0network\'a0and even this brutalist\'a0website\'a0wouldn\'92t\'a0load 2 times out of 3\'a0{\field{\*\fldinst{HYPERLINK "https://brutalist-web.design/"}}{\fldrslt \cf6 \strokec6 https://brutalist-web.design}}\'a0and\'a0it\'92s\'a0ALL text.\cb1 \
+\
+\cb2 So either it depends on your provider, busyness of the network, websites have become bloated, or some other reasons.\'a0It\'92s\'a0quite surprising and annoying.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb11 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf9 \cb1 \strokec9 {{\NeXTGraphic slack-imgs.com.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \cb2 \strokec7 brutalist-web.design
+\f0\b0 \cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://brutalist-web.design/"}}{\fldrslt 
+\f2\b \cf6 \cb2 \strokec6 Brutalist Web Design}}\
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb2 Guidelines for web design that adhere to the tenets and ethos of Brutalism\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746024035560339?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 3:40 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 I feel like there must be a simple solution for this, maybe using the Time module or something? I need to find where the bottlenecks are. Ideally an Elm\'a0solution\'a0(not a js one).
+\fs26 \cf12 \strokec12 \'a0(edited)\'a0
+\fs30 \cf0 \cb1 \strokec3 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Jan Jel\'ednek\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746024260378949?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 3:44 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Yep, I am aware of poor covered areas and we have many places with terrible cellular network here, but my point is, that lot of users are now more aware of those circumstances so they do not expect everything be smooth as hell in those. But I still believe in heavy optimisation for certain services and pages. If you have for instance some tourist guide web page it should load on 4G fast for sure.\cb1 \
+\
+\cb2 Anyway are you trying to be able detect those slow connections or optimise web for slow network? Either the way just do some testing with browser dev tools console where you can simply simulate whatever network speed you need to see how your web/app is behaving\'a0\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 {{\NeXTGraphic 1f937@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746025508843579?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 4:05 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Hmm. Well it would be helpful if people were aware enough to pre-predict and wait for a WiFi or better connection, but this particular idea could be time sensitive as in \'93I want to find a meal in my current location\'94 so heavy optimisation would be a safe bet.\cb1 \
+\
+\cb2 I was actually considering both. Test the network and render a text only version of your collection if slow network detected (with \'93load images\'94 option), if fast network load only a preview image (of different resolutions), and on reveal load full images.\cb1 \
+\
+\cb2 Didn\'92t\'a0realise you could test a slow network on developer tools. That would be useful. Does that work for testing http requests?\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746025567352979?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 4:06 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 It seems you would only worry about speed for certain pages?\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746027278629259?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 4:34 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 I guess you could pass in\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 isMobile
+\f0\fs30 \cf0 \cb2 \strokec3 ? and\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 loadSpeed
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0flags on first load\'a0{\field{\*\fldinst{HYPERLINK "https://accreditly.io/articles/detecting-a-slow-internet-connection-in-javascript"}}{\fldrslt \cf6 \strokec6 https://accreditly.io/articles/detecting-a-slow-internet-connection-in-javascript}}\'a0and subsequent\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Loading | Loaded | SlowLoading
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0messages for http requests.\cb1 \
+\
+\cb2 The problem is often a sketchy network, that sometimes loads, sometimes\'a0doesn\'92t.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb11 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf9 \cb1 \strokec9 {{\NeXTGraphic 1__#$!@%!#__slack-imgs.com.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \cb2 \strokec7 Accreditly
+\f0\b0 \cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://accreditly.io/articles/detecting-a-slow-internet-connection-in-javascript"}}{\fldrslt 
+\f2\b \cf6 \cb2 \strokec6 Detecting a slow internet connection in JavaScript}}\
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb2 Different methods of determining the speed of a user's internet connection using JavaScript. The article provides code examples to help you implement these techniques in real-world applications.\'a0(32 kB)\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://accreditly.io/articles/detecting-a-slow-internet-connection-in-javascript"}}{\fldrslt \cf6 \cb2 \strokec6 https://accreditly.io/articles/detecting-a-slow-internet-connection-in-javascript
+\fs40 \cf13 \cb1 \strokec13 \
+\
+}}\pard\pardeftab720\partightenfactor0
+
+\fs40 \cf13 \strokec13 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \strokec7 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746028754291869?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 4:59 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0CL0AS3V"}}{\fldrslt \cf6 \cb10 \strokec6 @rtfeldman}}\cf6 \cb10 \strokec6 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \strokec3 \'a0uses\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Cmd.Batch
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0and\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Process.sleep
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0but I don\'92t fully understand how that works.\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Home.elm#L83"}}{\fldrslt \cf6 \strokec6 https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Home.elm#L83}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 adamdicarlo\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746032108242269?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 5:55 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Neat - after 500 ms it goes here\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Home.elm#L309"}}{\fldrslt \cf6 \strokec6 https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Home.elm#L309}}\'a0and marks requests that are still\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Loading
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0as\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 LoadingSlow
+\f0\fs30 \cf0 \cb2 \strokec3 . That's pretty cool.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 adamdicarlo\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746032483002119?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 6:01 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Ah, I was thinking it would render a different spinner after 500 ms... but no, it waits until 500 ms to render any spinner. Which makes sense - seeing a spinner for a shorter period tends to reduce perceived loading time. But that can be done with a CSS animation as well
+\fs26 \cf12 \strokec12 \'a0(edited)\'a0
+\fs30 \cf0 \cb1 \strokec3 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb8 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b \cf7 \cb1 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746032921608149?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 6:08 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0PC31XD0"}}{\fldrslt \cf6 \cb10 \strokec6 @adamdicarlo}}\cf6 \cb10 \strokec6 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \strokec3 \'a0So there\'92s no loading spinner until after 500ms?\cb1 \
+\
+\cb2 Presumably if the other\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Cmd.batch
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0commands have finished\'a0
+\f3\i before
+\f0\i0 \'a0500ms (for instance\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 CompletedTagsLoad
+\f0\fs30 \cf0 \cb2 \strokec3 ) then\'a0it\'92s\'a0already a\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Just
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0so the\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 Loading -> LoadingSlowly
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0never runs?\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf7 \strokec7 {{\NeXTGraphic 1f44d-1f3fb@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+\cf7 \
+\cb14 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs36 \cf7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746033013804909?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 6:10 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Some of the code is a bit antiquated now, but\'a0it\'92s\'a0full of clever stuff.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf7 \strokec7 {{\NeXTGraphic 1f44d-1f3fb@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\cb14 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs36 \cf7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \
+\cb2 adamdicarlo\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746042644602919?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 30 Apr at 8:50 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 Right,\'a0I didn\'92t look thoroughly, but I read it as, if it loads before 500ms, then the spinner is never shown and the\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 LoadingSlowly
+\f0\fs30 \cf0 \cb2 \strokec3 \'a0state is skipped\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs24 \cf6 \strokec6 {{\NeXTGraphic 1f44d@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+\cf6 \
+\cb15 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0\fs36 \cf7 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb16 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb16 \strokec3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1746361283445009?thread_ts=1746016832.272409&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf9 \strokec9 4 May at 1:21 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb16 There\'92s now\'a0
+\f1\fs24 \cf4 \cb5 \strokec4 loading=\'93lazy\'94
+\f0\fs30 \cf0 \cb16 \strokec3 \'a0attribute for images, but it\'92s up to the individual browser how to interpret that\'a0{\field{\*\fldinst{HYPERLINK "https://web.dev/articles/browser-level-image-lazy-loading#distance-from-viewport"}}{\fldrslt \cf6 \strokec6 https://web.dev/articles/browser-level-image-lazy-loading#distance-from-viewport}}\'a0\'97 in Safari iOS it seems to load two viewport heights of images, then loads on scroll (just before you reach the next image).\cb1 \
+\
+\cb16 Example here\'a0{\field{\*\fldinst{HYPERLINK "https://mathiasbynens.be/demo/img-loading-lazy"}}{\fldrslt \cf6 \strokec6 https://mathiasbynens.be/demo/img-loading-lazy}}\'a0(scroll fast to see\'a0lazy loading)\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb11 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf9 \cb1 \strokec9 {{\NeXTGraphic 2__#$!@%!#__slack-imgs.com.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+
+\f2\b\fs30 \cf7 \cb16 \strokec7 web.dev
+\f0\b0 \cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://web.dev/articles/browser-level-image-lazy-loading#distance-from-viewport"}}{\fldrslt 
+\f2\b \cf6 \cb16 \strokec6 Browser-level image lazy loading for the web \'a0|\'a0 Articles \'a0|\'a0 web.dev}}\
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb16 This post covers the loading attribute and how it can be used to control the loading of images.
+\f4 \cf7 \cb16 \strokec7 \'a0(13 kB)
+\f0 \cf7 \cb1 \strokec7 \
+}
