@@ -333,7 +333,8 @@ can "skip user consent" to avoid this.
 
 ## Scopes
 
->  @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
+> Take care that you're using the correct API `/audience` for the scopes.
+> - @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
 
 You can add more scopes to your access token for more permissions. See the
 `updateUserMetaData` for an example. For now, all you need to know is that by
@@ -482,11 +483,21 @@ logoutUrl auth0Config federated returnTo =
 > you're only allowing the user to update _their own_ data. It's not as secure
 > client-side as it would be on the backend.
 
+This function will only return the updated user's metadata. You'll have to use
+the `getAuthedUserProfile` function again to return the full user profile.
+
 - You can setup APIs, scopes, and user permissions.
 - When you ping the `/authorize` endpoint, permissions are added to the `AccessToken`.
+- You can use this `AccessToken` to update your user's metadata
 
 > ⚠️ "Auth0 does not recommend putting Management API Tokens on the frontend that
 > allow users to change user metadata."
+
+- @ [API scopes](https://auth0.com/docs/get-started/apis/scopes/api-scopes)
+- @ [Update user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
+- @ [Manage user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
+- @ [Patch users by ID](https://auth0.com/docs/api/management/v2/users/patch-users-by-id)
+- @ [Management API for SPA apps](https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens/get-management-api-tokens-for-single-page-applications)
 
 That said, here's how you can change your `user_metadata` with the Management API.
 
@@ -501,15 +512,13 @@ keeping things simple and just use ONE (the Management API) for now.
 
 - @ [APIs](https://auth0.com/docs/get-started/apis)
 
+
 ## Security
 
 It's better safe then sorry, so be careful with SPA apps and the Management API.
 Only allow the user to update their own account, nothing more. It might be safer
 to do this on the backend (not the client), or manually in the Auth0 GUI.
 
-- @ [Manage user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
-- @ [API scopes](https://auth0.com/docs/get-started/apis/scopes/api-scopes)
-- @ [Management API for SPA apps](https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens/get-management-api-tokens-for-single-page-applications)
 - @ [SPA security vulnerabilities](https://community.auth0.com/t/confusion-about-management-api-token-limitation/86136)
 
 -}

@@ -5351,15 +5351,28 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Auth$Auth$Model = F3(
-	function (name, profile, error) {
-		return {error: error, name: name, profile: profile};
+var $author$project$Auth$Auth$Model = F4(
+	function (name, profile, meta, error) {
+		return {error: error, meta: meta, name: name, profile: profile};
+	});
+var $author$project$Auth$Auth$UserMeta = F2(
+	function (json, prefs) {
+		return {json: json, prefs: prefs};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Auth$Auth$init = function (_v0) {
 	return _Utils_Tuple2(
-		A3($author$project$Auth$Auth$Model, '', $elm$core$Maybe$Nothing, ''),
+		A4(
+			$author$project$Auth$Auth$Model,
+			'',
+			$elm$core$Maybe$Nothing,
+			A2(
+				$author$project$Auth$Auth$UserMeta,
+				'',
+				_List_fromArray(
+					[''])),
+			''),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -6248,35 +6261,122 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 var $author$project$Auth$Auth$getProfile = A4(
 	$author$project$Auth$Auth0$getAuthedUserProfile,
 	$author$project$Auth$Auth$authConfig,
-	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA',
+	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiY29vbC1hcGkiLCJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NDcwNTg4MTUsImV4cCI6MTc0NzA2NjAxNSwic2NvcGUiOiJvcGVuaWQgZW1haWwiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.rOIx9e6lBQciNM3E4d0B3SAjLGBCBf95yX5L4GywtBgI6BGw6OL1BMauSvNJxsfNi0F0edOdEiKN3QygF1kj7bqKuHxJkW2MpT1fCZrEsJZCg3U7H30i-_G-XJduCW1kr2tuUO1cQ4nsYl7ogwWQ8XL3vw9PWUSTbPdFMD6c5oBMR-JlEOkk258oCTYibMUwjL6FslKdDC0TCxOGng3xwyRWtw1qvrwCieGuCCcmdl1DGoiktX0L_uouBnB8z63FwdBCwNCeCk8vjOziCDaxt8btFbQEDN9ESDua38xzC4MqzGb8fnwfYn2Ql4x0UStXybWTe_xoWye9ltX6obvXRQ',
 	$author$project$Auth$Auth$GotProfile,
 	A2($author$project$Auth$Auth0$decoderBasic, $author$project$Auth$Auth$decoderUserMetadata, $author$project$Auth$Auth$decoderAppMetadata));
 var $elm$core$Debug$log = _Debug_log;
+var $author$project$Auth$Auth$GotMeta = function (a) {
+	return {$: 'GotMeta', a: a};
+};
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $author$project$Auth$Auth$encodeUserMeta = $elm$json$Json$Encode$object(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'json',
+			$elm$json$Json$Encode$string('esYNFY')),
+			_Utils_Tuple2(
+			'prefs',
+			A2(
+				$elm$json$Json$Encode$list,
+				$elm$json$Json$Encode$string,
+				_List_fromArray(
+					['a', 'b', 'c'])))
+		]));
+var $elm$http$Http$Header = F2(
+	function (a, b) {
+		return {$: 'Header', a: a, b: b};
+	});
+var $elm$http$Http$header = $elm$http$Http$Header;
+var $author$project$Auth$Auth0$updateUserMetaData = F6(
+	function (auth0Config, accessToken, msg, pDecoder, userID, userMeta) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(
+					$elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2('user_metadata', userMeta)
+							]))),
+				expect: A2($elm$http$Http$expectJson, msg, pDecoder),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + accessToken)
+					]),
+				method: 'PATCH',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: auth0Config.endpoint + ('/api/v2/users/' + userID)
+			});
+	});
+var $author$project$Auth$Auth$updateProfile = A6(
+	$author$project$Auth$Auth0$updateUserMetaData,
+	$author$project$Auth$Auth$authConfig,
+	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1OTE1NywiZXhwIjoxNzQ3MDY2MzU3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.X3sYhFK0T_TjwOHFonzF5lbI9XnlLyFUMF7-8Y6heICOISKBujfKCTYz2sPBk_5RK9fxq-1FD6JGJ06rcuqNZKFkEG1cKn1hjJ3iTfJHRCWa_464ED2y9bgPF20kZ20xGv7Yc-ueGO5Nap80eMG8A4xtfcYHgnPTfwaRpekEvtz6qH_YOsD6vK_4v5p5HjRChonw_AzZB4IZW6Y2Yq_pyacyGCmnDHYhc9EBeC_b8ITiBb1k36xoXtZQNo1RL6kMaZQZqMmafj0Q-uN92WhqYwWSKgXEAvjREkeq03OhpO0dcF1iRdU9-an4_KiQcdtyuye9FOSJ9bAVFDhTAH8wdA',
+	$author$project$Auth$Auth$GotMeta,
+	A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['user_metadata']),
+		$author$project$Auth$Auth$decoderUserMetadata),
+	'auth0|681ce3c6339152f87a583f4c',
+	$author$project$Auth$Auth$encodeUserMeta);
 var $author$project$Auth$Auth$update = F2(
 	function (msg, model) {
 		var _v0 = A2($elm$core$Debug$log, 'The Msg: ', msg);
-		if (_v0.$ === 'ClickedGetProfile') {
-			return _Utils_Tuple2(model, $author$project$Auth$Auth$getProfile);
-		} else {
-			if (_v0.a.$ === 'Ok') {
-				var profile = _v0.a.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							profile: $elm$core$Maybe$Just(profile)
-						}),
-					$elm$core$Platform$Cmd$none);
-			} else {
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{error: 'Something went wrong with profile'}),
-					$elm$core$Platform$Cmd$none);
-			}
+		switch (_v0.$) {
+			case 'ClickedGetProfile':
+				return _Utils_Tuple2(model, $author$project$Auth$Auth$getProfile);
+			case 'ClickedUpdateProfile':
+				return _Utils_Tuple2(model, $author$project$Auth$Auth$updateProfile);
+			case 'GotMeta':
+				if (_v0.a.$ === 'Ok') {
+					var meta = _v0.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{meta: meta}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{error: 'Something went wrong with metadata update'}),
+						$elm$core$Platform$Cmd$none);
+				}
+			default:
+				if (_v0.a.$ === 'Ok') {
+					var profile = _v0.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								profile: $elm$core$Maybe$Just(profile)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{error: 'Something went wrong with profile'}),
+						$elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $author$project$Auth$Auth$ClickedGetProfile = {$: 'ClickedGetProfile'};
+var $author$project$Auth$Auth$ClickedUpdateProfile = {$: 'ClickedUpdateProfile'};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
@@ -6423,6 +6523,16 @@ var $author$project$Auth$Auth$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Get Profile')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Auth$Auth$ClickedUpdateProfile)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Update Profile Metadata')
 					])),
 				A2(
 				$elm$html$Html$a,

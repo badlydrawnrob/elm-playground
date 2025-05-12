@@ -11,10 +11,13 @@ module Auth.Auth exposing (..)
 
     Bugs
     ----
-    1. Logged out of Google but can still access user profile details?
-    2. Elm caches the js, so sometimes changing a line doesn't work.
-    3. `AccessToken` is NOT invalidated when user clicks the `logoutUrl`
+    1. Updating the metadata doesn't return a full profile. Options:
+        - Update the profile with Elm (`updateProfilMeta` function)
+        - Ping the database again with `getProfile` function.
+    2. `AccessToken` is NOT invalidated when user clicks the `logoutUrl`
         - So it's better to have a short expiry time and not store it.
+    3. Elm caches the js, so sometimes changing a line doesn't work.
+        - Set the browser to no-cache mode?
 
 
     Just use Ai
@@ -127,27 +130,8 @@ encodeUserMeta : E.Value
 encodeUserMeta =
     E.object
         [ ( "json", E.string "esYNFY" )
-        , ( "age", E.list E.string ["a","b", "c"] )
+        , ( "prefs", E.list E.string ["a","b", "c"] )
         ]
-
-getProfile : Cmd Msg
-getProfile =
-    Auth0.getAuthedUserProfile
-        authConfig -- extracts the endpoint
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA"
-        GotProfile
-        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
-
-updateProfile : Cmd Msg
-updateProfile =
-    Auth0.updateUserMetaData
-        authConfig
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1MzQ5MiwiZXhwIjoxNzQ3MDYwNjkyLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.asT1LkAjCnum8rJUhDrYdKHDMmSIOGXJLnAVdTae7SKYiUNBHi36E2j1nU2GxDd2IOGv76Vvw5SXCNvS_9rf86t6bYIp7QPPRBE84WrtvAsRTgOT6ZAf8rrR3CqCsStNvE06XUiNjmcXOr3Qn6evp8jiUppSCYb5DfZCTx9UofyzQd_0n4G7o2CMASoF8zYGKlOimB_7R7388WC6VFo4T1Ii2AE9AMO_F2eX6e7lIzVf0730gM_7lF7qdFEdt3biQsP-Tlgo7SqzS48i16HFSSlU9xZEyqaYLgqsZrNnJZ7pjVcqBsjmDX9ijh--zo-4eQPf433d7HjcdqGBLEa_sA"
-        GotProfile
-        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata)
-        "auth0|681ce3c6339152f87a583f4c" -- userID
-        encodeUserMeta -- user metadata
-
 
 decoderUserMetadata : Decoder UserMeta
 decoderUserMetadata =
@@ -158,6 +142,26 @@ decoderUserMetadata =
 decoderAppMetadata : Decoder String
 decoderAppMetadata =
     D.succeed "That"
+
+getProfile : Cmd Msg
+getProfile =
+    Auth0.getAuthedUserProfile
+        authConfig -- extracts the endpoint
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiY29vbC1hcGkiLCJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NDcwNTg4MTUsImV4cCI6MTc0NzA2NjAxNSwic2NvcGUiOiJvcGVuaWQgZW1haWwiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.rOIx9e6lBQciNM3E4d0B3SAjLGBCBf95yX5L4GywtBgI6BGw6OL1BMauSvNJxsfNi0F0edOdEiKN3QygF1kj7bqKuHxJkW2MpT1fCZrEsJZCg3U7H30i-_G-XJduCW1kr2tuUO1cQ4nsYl7ogwWQ8XL3vw9PWUSTbPdFMD6c5oBMR-JlEOkk258oCTYibMUwjL6FslKdDC0TCxOGng3xwyRWtw1qvrwCieGuCCcmdl1DGoiktX0L_uouBnB8z63FwdBCwNCeCk8vjOziCDaxt8btFbQEDN9ESDua38xzC4MqzGb8fnwfYn2Ql4x0UStXybWTe_xoWye9ltX6obvXRQ"
+        GotProfile
+        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
+
+
+{- #! Only returns the `user_metadata` not the full profile -}
+updateProfile : Cmd Msg
+updateProfile =
+    Auth0.updateUserMetaData
+        authConfig
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1OTE1NywiZXhwIjoxNzQ3MDY2MzU3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.X3sYhFK0T_TjwOHFonzF5lbI9XnlLyFUMF7-8Y6heICOISKBujfKCTYz2sPBk_5RK9fxq-1FD6JGJ06rcuqNZKFkEG1cKn1hjJ3iTfJHRCWa_464ED2y9bgPF20kZ20xGv7Yc-ueGO5Nap80eMG8A4xtfcYHgnPTfwaRpekEvtz6qH_YOsD6vK_4v5p5HjRChonw_AzZB4IZW6Y2Yq_pyacyGCmnDHYhc9EBeC_b8ITiBb1k36xoXtZQNo1RL6kMaZQZqMmafj0Q-uN92WhqYwWSKgXEAvjREkeq03OhpO0dcF1iRdU9-an4_KiQcdtyuye9FOSJ9bAVFDhTAH8wdA"
+        GotMeta
+        (D.at ["user_metadata"] decoderUserMetadata) -- #! Could this return `GotProfile`?
+        "auth0|681ce3c6339152f87a583f4c" -- userID
+        encodeUserMeta -- user metadata
 
 
 -- Logout ----------------------------------------------------------------------
@@ -175,6 +179,8 @@ logout =
 
 type Msg
   = ClickedGetProfile
+  | ClickedUpdateProfile
+  | GotMeta (Result Http.Error UserMeta) -- #! Can this return the FULL profile?
   | GotProfile (Result Http.Error (ProfileBasic UserMeta String)) -- #! Moved from Auth0.elm to `Main.Msg`
 
 
@@ -186,6 +192,21 @@ update msg model =
         ClickedGetProfile ->
             ( model
             , getProfile -- #! New version of Auth package
+            )
+
+        ClickedUpdateProfile ->
+            ( model
+            , updateProfile
+            )
+
+        GotMeta (Ok meta) ->
+            ( { model | meta = meta }
+            , Cmd.none
+            )
+
+        GotMeta (Err _) ->
+            ( { model | error = "Something went wrong with metadata update" }
+            , Cmd.none
             )
 
         GotProfile (Ok profile) ->
@@ -206,6 +227,7 @@ view model =
         , a [ href url ] [ text "Login with Auth0" ]
         , viewProfile model.profile
         , button [ onClick ClickedGetProfile ] [ text "Get Profile" ]
+        , button [ onClick ClickedUpdateProfile ] [ text "Update Profile Metadata" ]
         , a [ href logout ] [ text "Logout" ] -- Returns to root url
         ]
 
@@ -224,12 +246,13 @@ viewProfile profile =
 type alias Model
     = { name : String
       , profile : Maybe (ProfileBasic UserMeta String)
+      , meta : UserMeta -- #! This needs to be updated in PROFILE
       , error : String
     }
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model "" Nothing "", Cmd.none)
+  ( Model "" Nothing (UserMeta "" [""]) "", Cmd.none)
 
 
 -- Main ------------------------------------------------------------------------
