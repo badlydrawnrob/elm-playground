@@ -4,13 +4,14 @@ module Auth.Auth0
         , Auth0Config
         , Endpoint
         , getAuthedUserProfile
-        , IdToken -- #! Deprecate this? Is it _still_ an `idToken`?
         , logoutUrl
         , ProfileBasic
         , ProfileFull
         , decoderBasic
         , decoderFull
-        , updateUserMetaData -- #! Deprecate this?
+        , updateUserMetaData
+        , updateProfileBasic
+        , updateProfileFull
         , UserID
         )
 
@@ -38,6 +39,8 @@ Limitations:
     - Technically it's only the logged-in user that's making changes, but see (1);
       it's less secure. You _could_ use the Management API on the frontend.
     - You can edit the `user_metadata` manually or on the back-end.
+3. The free plan comes with rate limits on the API
+    - @ [See rate limits](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/rate-limit-configurations/free-public)
 
 We're now using `(Result Error a -> msg)` and `Cmd msg` so you can set your own
 messages.
@@ -82,13 +85,6 @@ type alias Endpoint =
 JSON Web Token ([JWT](https://jwt.io)) format (is it opaque?).
 -}
 type alias AccessToken =
-    String
-
-
-{-| The idToken returns from Auth0 authenticated result, it is usually in JSON
-Web Token ([JWT](https://jwt.io)) format.
--}
-type alias IdToken =
     String
 
 
@@ -147,6 +143,7 @@ type alias ProfileBasic userMetaData appMetaData =
     , app_metadata : Maybe appMetaData
     }
 
+
 {-| Fuller profile info with full profile scopes: first basic auth (email), second
 logged in with gmail account:
 
@@ -190,6 +187,7 @@ type alias ProfileFull userMetaData appMetaData =
     , app_metadata : Maybe appMetaData
     }
 
+
 {-| Auth0 unified user profile decoder
 
 > Renamed these to `decoderX` as they're the only ones we're using (and the
@@ -200,10 +198,13 @@ You should define your own `user_metadata` and `app_metadata` decoders.
 
 1. We're now using `nullable` which is safer than `maybe`. This will error if
    the `"user_metadata"` is:
-       - Not available
-       - Not `"user_metadata"`
-       - Anything other than `null` ...
-       - Or not `userMetaData` (your custom decoder type)
+    - Not available
+    - Not called `"user_metadata"`
+    - Not `null` or a `userMetaData` type (custom)
+2. Because we're using `Json.Decode.nullable` NOT `Json.Decode.maybe`, we
+   can't simply have a single profile decoder (`nullable` requires a field to be
+   present and `null`).
+    - For that reason we have a `ProfileFull` and `ProfileBasic` decoder.
 
 In order for our `nullable` decoder to work, we need to set a post-login trigger
 in the Auth0 dashboard. See the `getAuthedUserProfile` function for the javascript
@@ -543,3 +544,48 @@ updateUserMetaData auth0Config accessToken msg pDecoder userID userMeta =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+
+
+---- These might be better as extensible records. I'm only going to updating one
+---- of two fields in `Profile`. So it could serve both `ProfileBasic` AND `ProfileFull`
+---- because they both share same fields.
+
+-- Should this be left to APP code?
+--
+-- 1. What if `app_metadata` is a `Nothing` value?
+-- 2. What if `user_metadata` is a `Nothing` value?
+-- 3. Could we use extensible records instead of these update functions?
+-- 4. Do we add the `(Just ..)` or `Nothing` as values to the functions?
+--    - Rather than setting them as `Just` in the body function.
+
+
+
+{-| Update the `ProfileBasic` metadata
+
+> These values will be custom depending on your app. You'll probably be
+> using a `Maybe Profile` in your model, so make sure it exists first!
+
+A helper function to update `user_metadata` or `app_metadata`.
+-}
+updateProfileBasic : a -> b -> ProfileBasic a b -> ProfileBasic a b
+updateProfileBasic userMetaData appMetaData profile =
+    { profile
+        | user_metadata = Just userMetaData
+        , app_metadata = Just appMetaData
+    }
+
+{-| Update the `ProfileFull` metadata
+
+> These values will be custom depending on your app. You'll probably be
+> using a `Maybe Profile` in your model, so make sure it exists first!
+
+A helper function to update `user_metadata` or `app_metadata`.
+-}
+updateProfileFull : a -> b -> ProfileFull a b -> ProfileFull a b
+updateProfileFull userMetaData appMetaData profile =
+    { profile
+        | user_metadata = Just userMetaData
+        , app_metadata = Just appMetaData
+    }

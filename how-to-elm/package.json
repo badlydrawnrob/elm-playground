@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rob",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "elm-watch": "^1.2.2"
+  }
 }

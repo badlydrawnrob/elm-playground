@@ -122,9 +122,15 @@ getToken =
 
 
 -- User Profile -----------------------------------------------------------------
+-- 1. #! Make sure the `UserId` and `AccessToken` match the profile to be accessed.
+-- 2. I'm fairly sure there's no way to return a full `ProfileX` from `updateProfile`.
+--    It only returns the `"user_metadata"` object.
 
 type alias UserMeta =
     { json : String, prefs : List String }
+
+type alias AppMeta =
+    String
 
 encodeUserMeta : E.Value
 encodeUserMeta =
@@ -141,27 +147,35 @@ decoderUserMetadata =
 
 decoderAppMetadata : Decoder String
 decoderAppMetadata =
-    D.succeed "That"
+    D.succeed "Currently an empty object" -- #! Fix this: do we need app data?
 
 getProfile : Cmd Msg
 getProfile =
     Auth0.getAuthedUserProfile
         authConfig -- extracts the endpoint
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiY29vbC1hcGkiLCJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NDcwNTg4MTUsImV4cCI6MTc0NzA2NjAxNSwic2NvcGUiOiJvcGVuaWQgZW1haWwiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.rOIx9e6lBQciNM3E4d0B3SAjLGBCBf95yX5L4GywtBgI6BGw6OL1BMauSvNJxsfNi0F0edOdEiKN3QygF1kj7bqKuHxJkW2MpT1fCZrEsJZCg3U7H30i-_G-XJduCW1kr2tuUO1cQ4nsYl7ogwWQ8XL3vw9PWUSTbPdFMD6c5oBMR-JlEOkk258oCTYibMUwjL6FslKdDC0TCxOGng3xwyRWtw1qvrwCieGuCCcmdl1DGoiktX0L_uouBnB8z63FwdBCwNCeCk8vjOziCDaxt8btFbQEDN9ESDua38xzC4MqzGb8fnwfYn2Ql4x0UStXybWTe_xoWye9ltX6obvXRQ"
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwMjc3OTE3MDM3MjUwMzM1MjU2OSIsImF1ZCI6WyJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ3MDc3OTEzLCJleHAiOjE3NDcwODUxMTMsInNjb3BlIjoib3BlbmlkIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.e7ocqhc11QIjkcnN9rmNPisVq2tq1BBUnvIcghomS9cwyBtmhaIxIJabe_rQh8WvgDqd05KLzwgmaYZ_CweBDOO9UvFpCt49-UMD2iHEMKRnP6IbJKO6Rutr3w_ejaZTpb8fKi1gkXr7US-YQSxi8WjcMsvjBSQYmTK0G_-hQszB5lddsKvXHZvX1g1t-2c3kEHRC4j29DnLEKU0gLWJtotyq_cmwSHI2zUmVTYMsvVKz6Ln7-7kLrP0sfpIj3Pm6PLIy_jn1ulOsHShMjwQB-yn0oH1JF4ktmiWzmoxiXDaV3plEbtavIWw5OHps_bGfrBhyBl6LvrpirkMUAGXfw"
         GotProfile
-        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata) -- #! Fix
+        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata)
 
 
 {- #! Only returns the `user_metadata` not the full profile -}
-updateProfile : Cmd Msg
-updateProfile =
+updateUserMeta : Cmd Msg
+updateUserMeta =
     Auth0.updateUserMetaData
         authConfig
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzA1OTE1NywiZXhwIjoxNzQ3MDY2MzU3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.X3sYhFK0T_TjwOHFonzF5lbI9XnlLyFUMF7-8Y6heICOISKBujfKCTYz2sPBk_5RK9fxq-1FD6JGJ06rcuqNZKFkEG1cKn1hjJ3iTfJHRCWa_464ED2y9bgPF20kZ20xGv7Yc-ueGO5Nap80eMG8A4xtfcYHgnPTfwaRpekEvtz6qH_YOsD6vK_4v5p5HjRChonw_AzZB4IZW6Y2Yq_pyacyGCmnDHYhc9EBeC_b8ITiBb1k36xoXtZQNo1RL6kMaZQZqMmafj0Q-uN92WhqYwWSKgXEAvjREkeq03OhpO0dcF1iRdU9-an4_KiQcdtyuye9FOSJ9bAVFDhTAH8wdA"
-        GotMeta
-        (D.at ["user_metadata"] decoderUserMetadata) -- #! Could this return `GotProfile`?
-        "auth0|681ce3c6339152f87a583f4c" -- userID
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwMjc3OTE3MDM3MjUwMzM1MjU2OSIsImF1ZCI6WyJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ3MDc3OTEzLCJleHAiOjE3NDcwODUxMTMsInNjb3BlIjoib3BlbmlkIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.e7ocqhc11QIjkcnN9rmNPisVq2tq1BBUnvIcghomS9cwyBtmhaIxIJabe_rQh8WvgDqd05KLzwgmaYZ_CweBDOO9UvFpCt49-UMD2iHEMKRnP6IbJKO6Rutr3w_ejaZTpb8fKi1gkXr7US-YQSxi8WjcMsvjBSQYmTK0G_-hQszB5lddsKvXHZvX1g1t-2c3kEHRC4j29DnLEKU0gLWJtotyq_cmwSHI2zUmVTYMsvVKz6Ln7-7kLrP0sfpIj3Pm6PLIy_jn1ulOsHShMjwQB-yn0oH1JF4ktmiWzmoxiXDaV3plEbtavIWw5OHps_bGfrBhyBl6LvrpirkMUAGXfw"
+        GotMeta -- #! Fix this: add to `ProfileBasic UserMeta _`
+        (D.at ["user_metadata"] decoderUserMetadata) -- #! (1)
+        "google-oauth2|102779170372503352569" -- userID
         encodeUserMeta -- user metadata
+
+updateProfile :
+    UserMeta
+    -> AppMeta
+    -> ProfileBasic UserMeta String
+    -> ProfileBasic UserMeta String
+updateProfile userMeta appMeta profile =
+    Auth0.updateProfileBasic userMeta appMeta profile
 
 
 -- Logout ----------------------------------------------------------------------
@@ -196,27 +210,42 @@ update msg model =
 
         ClickedUpdateProfile ->
             ( model
-            , updateProfile
-            )
-
-        GotMeta (Ok meta) ->
-            ( { model | meta = meta }
-            , Cmd.none
-            )
-
-        GotMeta (Err _) ->
-            ( { model | error = "Something went wrong with metadata update" }
-            , Cmd.none
+            , updateUserMeta
             )
 
         GotProfile (Ok profile) ->
             ( { model | profile = Just profile }, Cmd.none )
 
         GotProfile (Err _) ->
-            ( { model | error = "Something went wrong with profile" }
+            ( { model | error = "Something went wrong getting the profile" }
             , Cmd.none
             )
 
+        GotMeta (Ok meta) ->
+            ( { model | profile = meta }
+            , Cmd.none
+            )
+
+        GotMeta (Err err) ->
+            Http.BadStatus 401 ->
+                ( { model | error = "You're not authorised to do this" }
+                , Cmd.none
+                )
+
+            Http.BadStatus 403 ->
+                ( { model | error = "You've probably got the wrong user id" }
+                , Cmd.none
+                )
+
+            err ->
+                ( { model | error = "Something went wrong with the profile update" }
+                , Cmd.none
+                )
+
+-- #! I should probably use an extensible record for this function instead.
+--    make a type alias for `user_metadata` and `app_metadata` and use that.
+updateProfile (Profile meta _) =
+    (Profile )
 
 -- View ------------------------------------------------------------------------
 

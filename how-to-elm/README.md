@@ -27,7 +27,14 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
 1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
     - In general I use as little javascript as possible: set it and forget it.
 
+## Tools
+
+1. [Elm Watch](https://lydell.github.io/elm-watch/) (live reload your app)
+2. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^3]
+
 
 [^1]: Coming back after 2-3 months off and I'm rusty as fuck!
 
 [^2]: I'm using Elm as my go-to language and for that reason learning the details in a little more depth than, say, Python. However, my purpose is prototyping and I still want to keep my learning light. Some implementations (SPA, packages) get complicated quite quickly as an app scales.
+
+[^3]: This is particularly frustrating. Sometimes Elm (or the browser) caches the output file, so if you make a line change (such as updating a string) it won't properly "reload" in your browser. You could possibly use _incognito mode_ (private) instead.
