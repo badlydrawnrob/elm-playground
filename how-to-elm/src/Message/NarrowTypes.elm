@@ -161,7 +161,6 @@ view model =
 
 
 -- Update ----------------------------------------------------------------------
---
 -- We've split out `ContactMsg` and we can use exstensible records.
 
 type ContactMsg

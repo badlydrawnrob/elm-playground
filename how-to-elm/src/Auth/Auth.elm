@@ -3,29 +3,36 @@ module Auth.Auth exposing (..)
 {-| ----------------------------------------------------------------------------
     Testing the auth0 elm library
     ============================================================================
-    To be honest, the auth0 documentation is hard to get through: it's confusing
-    to know how to do things the right way that work reliably. It's currently
-    working for the `/authorize` and `/userinfo` endpoints. I feel it'd be way
-    easier just building the damn thing with Python though, it's taken 2 days of
-    sifting through the fucking documentation.
+    > The auth0 documentation is hard to get through: it's confusing to know how
+    > to do things the right way that work reliably.
+
+    However, I've revamped the Auth0 Elm package and it's currently working for
+    the `/authorize`, `/userinfo`, and `/api/v2` endpoints. To be frank, it'd be
+    easier to build the damn thing in Python, as it's taken 3 days of testing
+    and figuring out how to make the Auth0 API work. It's handy for prototyping
+    though, so hopefully their docs won't change much now.
+
+    Right now I've separated concerns in the app, to show the functionality, but
+    in live production you'll likely want to:
+
+    1. Throwaway the `access_token` once you're done with it (for security)
+    2. Use the `Auth0.updateProfile` function to update `Profile UserMeta _`
+
 
     Bugs
     ----
-    1. Updating the metadata doesn't return a full profile. Options:
-        - Update the profile with Elm (`updateProfilMeta` function)
-        - Ping the database again with `getProfile` function.
+    1. There's no refresh function, as it seems like a hassle.
+        - Notify the user they'll have to login again.
     2. `AccessToken` is NOT invalidated when user clicks the `logoutUrl`
-        - So it's better to have a short expiry time and not store it.
+        - Have a short expiry time and DO NOT STORE IT.
     3. Elm caches the js, so sometimes changing a line doesn't work.
         - Set the browser to no-cache mode?
-
-
-    Just use Ai
-    -----------
-    > Wherever possible, remove the amount of code you're writing.
-    > Could you just use a Tally form or v0 to mock up the functionality?
-
-    You can always "make it perfect" later, but time is of the essence.
+    4. `Decoder a` and `(Result Http.Error a)` make things a wee bit confusing,
+       but much easier to extend the package.
+    5. Session management and documentation is a bit of a shit show. Lots of
+       different APIs and usecases:
+        - @ https://auth0.com/blog/application-session-management-best-practices/
+        - @ https://community.auth0.com/t/confusion-around-authorization/78981/2
 
 
     Wishlist
@@ -33,24 +40,21 @@ module Auth.Auth exposing (..)
     > First check your code for errors!
     > https://jwt.io/ to check the access token.
 
-    1. Add the `/audience` option to the authenticate url
-        - User the `ProfileFull` instead of basic.
-    2. Extract the token from the url
-        - For now, just use a local storage value.
-    3. Can you update `user_metadata` with `updateUserMetadata` funtion?
-        - It suggests not to do this client-side in the API docs.
-    4. Can other functions be added to the `Auth0` package?
-        - Any `extractX` functions? (like the `ProfileFull` and `ProfileBasic`)
-        - Should `extractProfile` be in the `Auth` package? Or per app?
-    5. Set an `Auth0Config` and extract it into `getProfile`.
-    6. Make the thing work all in the same `elm reactor` session.
-    7. See if you can get the refresh token to work.
-    8. Using `URL` with stock Elm is a bit of a headache ...
-        - I think it might be easier to use something like Elm Land!
-        - However this will use `Browser.application` and take control of the
-          whole page.
-        - Alternatively you could grab the URL with js and use Ports.
-    9. Get Mike to check over the code.
+    1. Extract the `access_token` from the URL and split out the necessary parts.
+        - Have all messages working in a single `elm reactor` session.
+    2. Add an `expiry` counter that saves to `localStorage` (which will work with
+       any API endpoint, such as my Python one.
+    3. Ping the `/userinfo` endpoint or update `Profile UserMeta _` after the
+       `user_metadata` has been updated.
+    4. Figure out how to extract `IdToken` and if it's worth doing.
+    5. See if any other functions could be useful for the `Auth0` package
+        - extract functions?
+    6. `URL` in Elm lang is a headache. Try out Elm Land.
+        - You could check the url with javascript, then pass it in a temporary
+          variable to Elm.
+        - `URL` requires `Browser.application`, which takes control of the whole
+          page.
+    7. Have Mike, or someone you trust look over the code for security issues.
 
 
     The API
@@ -62,25 +66,9 @@ module Auth.Auth exposing (..)
     extended. I'm going to leave profile editing out of scope (you can update the
     `user_metadata`) as it uses the Auth0 Management API (I don't think this is
     free).
-
-    Notes and problems:
-    -------------------
-
-    1. `Decoder a` and `(Result Http.Error a)` make things a wee bit confusing,
-       but much easier to extend the package.
-    2. Is there any other profile information we can pull out with an Action?
-        - @ https://auth0.com/docs/manage-users/user-accounts/user-profiles#access-user-profiles-from-the-management-api
-        - @ https://auth0.com/docs/user-profile/user-profile-structure
-    3. Session management and documentation is a bit of a shit show. Lots of
-       different APIs and usecases:
-        - @ https://auth0.com/blog/application-session-management-best-practices/
-        - @ https://community.auth0.com/t/confusion-around-authorization/78981/2
-    4. To update the user you need to set the correct scopes in your `/authorize`
-       endpoint.
-
 -}
 
-import Auth.Auth0 as Auth0 exposing (ProfileBasic, Auth0Config)
+import Auth.Auth0 as Auth0 exposing (Profile, Auth0Config)
 
 import Browser
 import Html exposing (..)
@@ -93,8 +81,7 @@ import Json.Decode as D exposing (Decoder)
 import Debug
 
 
--- Login link ------------------------------------------------------------------
--- Including an example `auth0AuthorizeUrl` return url
+-- Example return url ----------------------------------------------------------
 
 returnUrl =
     "http://localhost:8000/index.html" ++
@@ -102,6 +89,17 @@ returnUrl =
     "&scope=openid%20email" ++
     "&expires_in=7200" ++ -- default expiry time
     "&token_type=Bearer"
+
+
+-- Login to account-------------------------------------------------------------
+-- 1. If you have an `/audience` parameter, you can add more scopes
+-- 2. Such as `update:current_user_metadata`.
+--    - Careful! This could be a bit of a security risk. Only allow the user the
+--      permissions for _their_ account.
+-- 3. The default time for the token is 7200 seconds (2 hours).
+
+baseUrl =
+    "http://localhost:8000"
 
 authConfig =
     (Auth0Config "https://dev-ne2fnlv85ucpfobc.uk.auth0.com" "YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW")
@@ -111,20 +109,17 @@ url =
     Auth0.auth0AuthorizeURL
         authConfig
         "token"
-        "http://localhost:8000/09-auth0.html" -- was https
-        [ "openid", "name", "email" ]
+        (baseUrl ++ "/09-auth0.html") -- #! https for live
+        [ "openid", "name", "email", "update:current_user_metadata" ] -- #! (2)
         Nothing -- social login param
-        (Just "cool-api") -- Nothing (audience param)
+        (Just "https://dev-ne2fnlv85ucpfobc.uk.auth0.com/api/v2/") -- (1) or `Nothing`
 
 getToken : String
 getToken =
-    Debug.todo """List.intersperse ":" and String.split on `.`"""
+    Debug.todo """List.intersperse ":" and String.split on `.`""" -- #! (3)
 
 
 -- User Profile -----------------------------------------------------------------
--- 1. #! Make sure the `UserId` and `AccessToken` match the profile to be accessed.
--- 2. I'm fairly sure there's no way to return a full `ProfileX` from `updateProfile`.
---    It only returns the `"user_metadata"` object.
 
 type alias UserMeta =
     { json : String, prefs : List String }
@@ -136,7 +131,7 @@ encodeUserMeta : E.Value
 encodeUserMeta =
     E.object
         [ ( "json", E.string "esYNFY" )
-        , ( "prefs", E.list E.string ["a","b", "c"] )
+        , ( "prefs", E.list E.string ["b","c", "d"] )
         ]
 
 decoderUserMetadata : Decoder UserMeta
@@ -153,29 +148,36 @@ getProfile : Cmd Msg
 getProfile =
     Auth0.getAuthedUserProfile
         authConfig -- extracts the endpoint
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwMjc3OTE3MDM3MjUwMzM1MjU2OSIsImF1ZCI6WyJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ3MDc3OTEzLCJleHAiOjE3NDcwODUxMTMsInNjb3BlIjoib3BlbmlkIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.e7ocqhc11QIjkcnN9rmNPisVq2tq1BBUnvIcghomS9cwyBtmhaIxIJabe_rQh8WvgDqd05KLzwgmaYZ_CweBDOO9UvFpCt49-UMD2iHEMKRnP6IbJKO6Rutr3w_ejaZTpb8fKi1gkXr7US-YQSxi8WjcMsvjBSQYmTK0G_-hQszB5lddsKvXHZvX1g1t-2c3kEHRC4j29DnLEKU0gLWJtotyq_cmwSHI2zUmVTYMsvVKz6Ln7-7kLrP0sfpIj3Pm6PLIy_jn1ulOsHShMjwQB-yn0oH1JF4ktmiWzmoxiXDaV3plEbtavIWw5OHps_bGfrBhyBl6LvrpirkMUAGXfw"
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w"
         GotProfile
-        (Auth0.decoderBasic decoderUserMetadata decoderAppMetadata)
+        (Auth0.decoder decoderUserMetadata decoderAppMetadata)
 
 
-{- #! Only returns the `user_metadata` not the full profile -}
+-- Profile updates --------------------------------------------------------------
+-- This function will only return the `user_metadata`, not the full profile.
+--
+-- 1. ⚠️ Make sure `UserId` in the `AccessToken` matches the profile to be accessed.
+-- 2. ⚠️ Our old `AccessToken` (which you should've destroyed) caches the old
+--    profile metadata, so our updates won't show up ...
+--    - Better to update `profile.user_metadata` manually, or get a new `AccessToken`!
+
 updateUserMeta : Cmd Msg
 updateUserMeta =
     Auth0.updateUserMetaData
         authConfig
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwMjc3OTE3MDM3MjUwMzM1MjU2OSIsImF1ZCI6WyJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ3MDc3OTEzLCJleHAiOjE3NDcwODUxMTMsInNjb3BlIjoib3BlbmlkIGVtYWlsIHVwZGF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEiLCJhenAiOiJZek1IdEM2VENOYk1odkZCNUF5cUZkd2ZyZURtYVhBVyJ9.e7ocqhc11QIjkcnN9rmNPisVq2tq1BBUnvIcghomS9cwyBtmhaIxIJabe_rQh8WvgDqd05KLzwgmaYZ_CweBDOO9UvFpCt49-UMD2iHEMKRnP6IbJKO6Rutr3w_ejaZTpb8fKi1gkXr7US-YQSxi8WjcMsvjBSQYmTK0G_-hQszB5lddsKvXHZvX1g1t-2c3kEHRC4j29DnLEKU0gLWJtotyq_cmwSHI2zUmVTYMsvVKz6Ln7-7kLrP0sfpIj3Pm6PLIy_jn1ulOsHShMjwQB-yn0oH1JF4ktmiWzmoxiXDaV3plEbtavIWw5OHps_bGfrBhyBl6LvrpirkMUAGXfw"
-        GotMeta -- #! Fix this: add to `ProfileBasic UserMeta _`
-        (D.at ["user_metadata"] decoderUserMetadata) -- #! (1)
-        "google-oauth2|102779170372503352569" -- userID
-        encodeUserMeta -- user metadata
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w"
+        GotMeta -- #! Fix this: add to `Profile UserMeta _`
+        (D.at ["user_metadata"] decoderUserMetadata)
+        "auth0|681ce3c6339152f87a583f4c" -- #! (1)
+        encodeUserMeta -- The data to be updated!
 
-updateProfile :
-    UserMeta
-    -> AppMeta
-    -> ProfileBasic UserMeta String
-    -> ProfileBasic UserMeta String
-updateProfile userMeta appMeta profile =
-    Auth0.updateProfileBasic userMeta appMeta profile
+updateProfileUserMeta :
+    -> Profile UserMeta String
+    -> UserMeta
+    -> AppMeta -- #! This will be rarely used.
+    -> Profile UserMeta String -- #! The `Maybe` types are added in the function
+updateProfileUserMeta profile userMeta appMeta =
+    Auth0.updateProfile profile userMeta appMeta
 
 
 -- Logout ----------------------------------------------------------------------
@@ -184,9 +186,8 @@ updateProfile userMeta appMeta profile =
 logout =
     Auth0.logoutUrl
         (Auth0Config "https://dev-ne2fnlv85ucpfobc.uk.auth0.com" "YzMHtC6TCNbMhvFB5AyqFdwfreDmaXAW")
-        True -- I'm not using any social logins though
-        "http://localhost:8000/09-auth0.html" -- The return url
-
+        True -- Do you want to force logout of social login? (if any)
+        (baseUrl ++ "/09-auth0.html") -- Redirect url
 
 
 -- Msg -------------------------------------------------------------------------
@@ -195,17 +196,18 @@ type Msg
   = ClickedGetProfile
   | ClickedUpdateProfile
   | GotMeta (Result Http.Error UserMeta) -- #! Can this return the FULL profile?
-  | GotProfile (Result Http.Error (ProfileBasic UserMeta String)) -- #! Moved from Auth0.elm to `Main.Msg`
+  | GotProfile (Result Http.Error (Profile UserMeta String)) -- #! Moved from Auth0.elm to `Main.Msg`
 
 
 -- Update ----------------------------------------------------------------------
+-- 1. You'd want to use the
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case Debug.log "The Msg: " msg of
         ClickedGetProfile ->
             ( model
-            , getProfile -- #! New version of Auth package
+            , getProfile
             )
 
         ClickedUpdateProfile ->
@@ -222,30 +224,27 @@ update msg model =
             )
 
         GotMeta (Ok meta) ->
-            ( { model | profile = meta }
+            ( { model | meta = meta } -- (1)
             , Cmd.none
             )
 
         GotMeta (Err err) ->
-            Http.BadStatus 401 ->
-                ( { model | error = "You're not authorised to do this" }
-                , Cmd.none
-                )
+            case err of
+                Http.BadStatus 401 ->
+                    ( { model | error = "You're not authorised to do this" }
+                    , Cmd.none
+                    )
 
-            Http.BadStatus 403 ->
-                ( { model | error = "You've probably got the wrong user id" }
-                , Cmd.none
-                )
+                Http.BadStatus 403 ->
+                    ( { model | error = "You've probably got the wrong user id" }
+                    , Cmd.none
+                    )
 
-            err ->
-                ( { model | error = "Something went wrong with the profile update" }
-                , Cmd.none
-                )
+                _ ->
+                    ( { model | error = "Something went wrong with the profile update" }
+                    , Cmd.none
+                    )
 
--- #! I should probably use an extensible record for this function instead.
---    make a type alias for `user_metadata` and `app_metadata` and use that.
-updateProfile (Profile meta _) =
-    (Profile )
 
 -- View ------------------------------------------------------------------------
 
@@ -260,7 +259,7 @@ view model =
         , a [ href logout ] [ text "Logout" ] -- Returns to root url
         ]
 
-viewProfile : Maybe (ProfileBasic UserMeta String) -> Html Msg
+viewProfile : Maybe (Profile UserMeta String) -> Html Msg
 viewProfile profile =
     case profile of
         Nothing ->
@@ -274,7 +273,7 @@ viewProfile profile =
 
 type alias Model
     = { name : String
-      , profile : Maybe (ProfileBasic UserMeta String)
+      , profile : Maybe (Profile UserMeta String)
       , meta : UserMeta -- #! This needs to be updated in PROFILE
       , error : String
     }

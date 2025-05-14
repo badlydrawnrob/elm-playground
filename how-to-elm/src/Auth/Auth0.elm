@@ -4,14 +4,12 @@ module Auth.Auth0
         , Auth0Config
         , Endpoint
         , getAuthedUserProfile
+        , IdToken
         , logoutUrl
-        , ProfileBasic
-        , ProfileFull
-        , decoderBasic
-        , decoderFull
+        , Profile
+        , decoder
         , updateUserMetaData
-        , updateProfileBasic
-        , updateProfileFull
+        , updateProfile
         , UserID
         )
 
@@ -43,9 +41,8 @@ Limitations:
     - @ [See rate limits](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/rate-limit-configurations/free-public)
 
 We're now using `(Result Error a -> msg)` and `Cmd msg` so you can set your own
-messages.
-
-
+messages and `UserMetaData` / `AppMetaData` decoders. These are generally named
+`a` and `b` in the functions below.
 
 # Auth0 Basis
 
@@ -54,19 +51,38 @@ messages.
 
 # User Profile
 
-@docs ProfileBasic, ProfileFull, decoderBasic, decoderFull
+@docs Profile, decoder, updateProfile
 
 
 # Helpers
 
 @docs auth0AuthorizeURL, getAuthedUserProfile, updateUserMetaData, logoutUrl
 
+
+## Curl examples
+
+```
+curl -v --request POST \
+--url <YOUR_URL>/userinfo \
+--header 'content-type: application/json' \
+--data '{"access_token": "<YOUR_ACCESS_TOKEN>"}'
+```
+
+```
+curl --request PATCH \
+  --url '<YOUR_URL>/api/v2/users/<USER_ID>' \
+  --header 'authorization: Bearer <YOUR_ACCESS_TOKEN_WITH_SCOPE_PERMISSIONS>' \
+  --header 'content-type: application/json' \
+  --data '{"user_metadata": {"example": ["data", "to", "update"]}'
+```
+
 -}
 
 import Http exposing (..)
 import Iso8601
-import Json.Decode as Decode exposing (Decoder, nullable, string, bool, field)
-import Json.Encode as Encode
+import Json.Decode as D exposing (Decoder, string, bool, field)
+import Json.Decode.Pipeline as DP
+import Json.Encode as E
 import Parser
 import Time
 import Url
@@ -88,6 +104,15 @@ type alias AccessToken =
     String
 
 
+{-| The idToken returns from Auth0 authenticated result, but only if you've got
+an `/audience` parameter in your request url. It contains information such as
+the token expiry data, and any permissions the user is authorized for. It is
+usually in JSON Web Token ([JWT](https://jwt.io)) format.
+-}
+type alias IdToken =
+    String
+
+
 {-| Represent the Auth0 unified user ID
 -}
 type alias UserID =
@@ -105,23 +130,25 @@ type alias Auth0Config =
 {-| Auth0 unified user profile
 
 > `/tokeninfo` endpoint is part of the legacy authentication flows and
-> they are disabled in the new tenants. Use `/userinfo` instead ...
+> disabled for new tenants. Now uses the `/userinfo` endpoint ...
 
-It's probably best to set your own `Profile` and `profileDecoder`; there's a lot
-of variety (are you using social ids? etc). The examples are using basic auth
-with email and password (you can add social ids if you like, but you'll need to
-enable them in Auth0 admin)
-
-- To return a basic profile use scopes: `["openid", "name", "email"]` and
-- To return a full profile use scopes: `["openid", "profile", "email"]`.
+If your `Profile` is setup differently, it's wise to use your own profile decoder.
+There's quite a lot of variety with setup, but this `Profile` uses the defaults on
+a free account. You can choose your scopes and return either a `"name"` or a
+full `"profile"`.
 
 The `user_metadata` and `app_metadata` vary in different applications. You
 should define your own `user_metadata` and `app_metadata` records. The `/userinfo`
 endpoint doesn't return these values by default. You'll have to add an Action
 (post-login trigger). See `getAuthedUserProfile` below for more information.
 
-Here's a basic profile example with basic profile scopes, and a post-login trigger
-created (add your own `*_metadata` decoders):
+Our `Profile` assumes you've setup a post-login trigger, and that you've set up
+your own `*_metadata` decoders.
+
+
+## Scopes ["openid", "name", "email"]
+
+Logged in with regular email and password, and `user_metadata` setup:
 
 ```json
 {
@@ -134,18 +161,10 @@ created (add your own `*_metadata` decoders):
     }
 }
 ```
--}
-type alias ProfileBasic userMetaData appMetaData =
-    { email : String
-    , email_verified : Bool
-    , sub : UserID
-    , user_metadata : Maybe userMetaData
-    , app_metadata : Maybe appMetaData
-    }
 
+## Scopes `["openid", "profile", "email"]`
 
-{-| Fuller profile info with full profile scopes: first basic auth (email), second
-logged in with gmail account:
+Logged in with regular email and password:
 
 ```json
 {
@@ -161,6 +180,8 @@ logged in with gmail account:
 }
 ```
 
+Logged in with gmail account:
+
 ```json
 {
     "sub":"google-oauth2|109543812167723561932",
@@ -175,14 +196,14 @@ logged in with gmail account:
 }
 ```
 -}
-type alias ProfileFull userMetaData appMetaData =
+type alias Profile userMetaData appMetaData =
     { email : String
     , email_verified : Bool
-    , nickname : String
-    , name : String
-    , picture : String
+    , nickname : Maybe String
+    , name : Maybe String
+    , picture : Maybe String
     , sub : UserID
-    , updated_at : Time.Posix
+    , updated_at : Maybe Time.Posix
     , user_metadata : Maybe userMetaData
     , app_metadata : Maybe appMetaData
     }
@@ -190,50 +211,43 @@ type alias ProfileFull userMetaData appMetaData =
 
 {-| Auth0 unified user profile decoder
 
-> Renamed these to `decoderX` as they're the only ones we're using (and the
-> `decoderDate` isn't exposed)
+> There's a lot of `Maybe` types here! It gives some flexibility if you don't
+> require a lot of user info for your application. I've renamed to `Auth0.decoder`
+> as it's the only one we're currently exposing.
 
-The `user_metatdata` and `app_metadata` varies in different application.
+The `user_metatdata` and `app_metadata` varies in different applications.
 You should define your own `user_metadata` and `app_metadata` decoders.
 
-1. We're now using `nullable` which is safer than `maybe`. This will error if
-   the `"user_metadata"` is:
-    - Not available
+1. There's ONE `Profile`, regardless of if your scope is `name` or `profile`. It's
+   using `.optional` which will render a `Maybe x_metadata`. If the key is
+   missing, it'll return a `Nothing`. It will fail if:
+    - `user_metadata` is available and not `null` (`{}` will error)
+    - `user_metadata` is available and `json` is malformed (the decoder)
+2. We're now using `nullable` for our `x_metadata` which is safer than `maybe`.
+   This will error if `"user_metadata"` is:
+    - Not available (the key is not present)
     - Not called `"user_metadata"`
     - Not `null` or a `userMetaData` type (custom)
-2. Because we're using `Json.Decode.nullable` NOT `Json.Decode.maybe`, we
-   can't simply have a single profile decoder (`nullable` requires a field to be
-   present and `null`).
-    - For that reason we have a `ProfileFull` and `ProfileBasic` decoder.
+
 
 In order for our `nullable` decoder to work, we need to set a post-login trigger
 in the Auth0 dashboard. See the `getAuthedUserProfile` function for the javascript
 to add to your Actions.
 
 -}
-decoderBasic : Decoder a -> Decoder b -> Decoder (ProfileBasic a b)
-decoderBasic a b =
-    Decode.map5 ProfileBasic
-        (field "email" string)
-        (field "email_verified" bool)
-        (field "sub" string)
-        (field "user_metadata" (nullable a)) -- #! (1)
-        (field "app_metadata" (nullable b)) -- #! (1)
 
-decoderFull : Decoder a -> Decoder b -> Decoder (ProfileFull a b)
-decoderFull a b =
-    Decode.map2
-        (<|)
-        (Decode.map8 ProfileFull
-            (field "email" string)
-            (field "email_verified" bool)
-            (field "nickname" string)
-            (field "name" string)
-            (field "picture" string)
-            (field "sub" string)
-            (field "updated_at" decoderDate)
-            (field "user_metadata" (nullable a))) -- #! (1)
-        (field "app_metadata" (nullable b)) -- #! (1)
+decoder : Decoder a -> Decoder b -> Decoder (Profile a b)
+decoder a b =
+    D.succeed Profile
+        |> DP.required "email" D.string
+        |> DP.required "email_verified" D.bool
+        |> DP.optional "nickname" (D.map Just string) Nothing -- (1)
+        |> DP.optional "name" (D.map Just string) Nothing
+        |> DP.optional "picture" (D.map Just string) Nothing
+        |> DP.required "sub" string
+        |> DP.optional "updated_at" (D.map Just decoderDate) Nothing
+        |> DP.required "user_metadata" (D.nullable a) -- (2)
+        |> DP.required "app_metadata" (D.nullable b)
 
 
 decoderDate : Decoder Time.Posix
@@ -242,12 +256,12 @@ decoderDate =
         dateStringDecode dateString =
             case Iso8601.toTime dateString of
                 Result.Ok date ->
-                    Decode.succeed date
+                    D.succeed date
 
                 Err errorMessage ->
-                    Decode.fail (Parser.deadEndsToString errorMessage)
+                    D.fail (Parser.deadEndsToString errorMessage)
     in
-        Decode.string |> Decode.andThen dateStringDecode
+        D.string |> D.andThen dateStringDecode
 
 
 
@@ -313,8 +327,8 @@ auth0AuthorizeURL
 
 Once you've got your `AccessToken` you can use the `getAuthedUserProfile` function:
 
-- `["openid", "name", "email"]` scopes return basic information (`ProfileBasic`)
-- `["openid", "profile", "email"]` scopes return more information (`ProfileFull`)
+- `["openid", "name", "email"]` scopes return basic information
+- `["openid", "profile", "email"]` scopes return more information
 
 
 ## Optional parameters
@@ -415,19 +429,19 @@ exports.onExecutePostLogin = async (event, api) => {
 ```
 
 The type signature has changed from `Decoder String` to `Decoder a` to allow for
-our custom `ProfileBasic` or `ProfileFull` decoders. For the `msg` type, you can
-add your `GotProfile` message like below:
+our custom `Profile` decoder. For the `msg` type, you can add your `GotProfile`
+message like below:
 
 ```elm
 getProfile =
-    getAuthedUserProfile
+    Auth0.getAuthedUserProfile
         "https://YOUR-API-URL.auth0.com"
         "access_token"
         GotProfile
-        (profileDecoderFull ... ...)
+        (Auth0.decoder a b)
 ```
 
-Where `...` are your own `userMetaData` and `appMetaData` decoders.
+Where `a` and `b` are your own `userMetaData` and `appMetaData` decoders.
 
 -}
 getAuthedUserProfile :
@@ -443,7 +457,7 @@ getAuthedUserProfile auth0Config accessToken msg pDecoder =
         , url = auth0Config.endpoint ++ "/userinfo" -- #! Changed from `/tokeninfo`
         , body =
             Http.jsonBody <|
-                Encode.object [ ( "access_token", Encode.string accessToken ) ] -- #! Was `/id_token`
+                E.object [ ( "access_token", E.string accessToken ) ] -- #! Was `/id_token`
         , expect = Http.expectJson msg pDecoder
         , timeout = Nothing
         , tracker = Nothing
@@ -480,19 +494,15 @@ logoutUrl auth0Config federated returnTo =
 
 {-| Update the `user_metadata` in the Auth0 unified user profile
 
-> Take care with security! Auth0 doesn't advise doing this, but make sure that
-> you're only allowing the user to update _their own_ data. It's not as secure
-> client-side as it would be on the backend.
-
-This function will only return the updated user's metadata. You'll have to use
-the `getAuthedUserProfile` function again to return the full user profile.
+> Security: make sure you allow the user to only update _their own_ data! Auth0
+> doesn't advise allowing updates to `user_metadata`; client-side is not as
+> secure as doing this on the back-end.
 
 - You can setup APIs, scopes, and user permissions.
 - When you ping the `/authorize` endpoint, permissions are added to the `AccessToken`.
 - You can use this `AccessToken` to update your user's metadata
 
-> ⚠️ "Auth0 does not recommend putting Management API Tokens on the frontend that
-> allow users to change user metadata."
+Documentation:
 
 - @ [API scopes](https://auth0.com/docs/get-started/apis/scopes/api-scopes)
 - @ [Update user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
@@ -500,18 +510,30 @@ the `getAuthedUserProfile` function again to return the full user profile.
 - @ [Patch users by ID](https://auth0.com/docs/api/management/v2/users/patch-users-by-id)
 - @ [Management API for SPA apps](https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens/get-management-api-tokens-for-single-page-applications)
 
-That said, here's how you can change your `user_metadata` with the Management API.
+Steps to change your `user_metadata` with the Management API:
+
+> The `a` value is your own custom `UserMeta` decoder
 
 1. Make sure your `Auth0 Management API` is enabled in `Applications -> APIs`
 2. Select the API and get the `Identifier` unique ID.
 3. Add this to your `/audience` parameter in the `auth0AuthorizeURL` function.
 4. Add `update:current_user_metadata` to your scopes in the `auth0AuthorizeURL` function.
 
-The user may be prompted to grant permissions. You can setup multiple APIs (for
-different resources) each with their own custom permissions. I'd suggest
-keeping things simple and just use ONE (the Management API) for now.
+The user may be prompted to grant permissions on login. I'd suggest to keep things
+simple and only use ONE API (the Management API).
 
 - @ [APIs](https://auth0.com/docs/get-started/apis)
+
+
+## Return values
+
+> ⚠️ The return value is correct, but our old `AccessToken` caches the old version,
+> without our newly updated `user_metadata` values. Better to update your
+`model.profile.user_metadata` manually, or get a new AccessToken`!
+
+This function only returns a `"user_metadata" record, not the full profile. You'll
+have to ping the `/userinfo` endpoint again, or update your `Profile.user_metadata`
+value within your update function.
 
 
 ## Security
@@ -529,62 +551,44 @@ updateUserMetaData :
     -> (Result Error a -> msg)
     -> Decoder a
     -> UserID
-    -> Encode.Value
+    -> E.Value
     -> Cmd msg
-updateUserMetaData auth0Config accessToken msg pDecoder userID userMeta =
+updateUserMetaData auth0Config accessToken msg metaDecoder userID userMeta =
     Http.request
         { method = "PATCH"
         , headers = [ Http.header "Authorization" ("Bearer " ++ accessToken) ]
         , url = auth0Config.endpoint ++ "/api/v2/users/" ++ userID
         , body =
             Http.jsonBody <|
-                Encode.object
+                E.object
                     [ ( "user_metadata", userMeta ) ]
-        , expect = Http.expectJson msg pDecoder
+        , expect = Http.expectJson msg metaDecoder
         , timeout = Nothing
         , tracker = Nothing
         }
 
 
-
-
----- These might be better as extensible records. I'm only going to updating one
----- of two fields in `Profile`. So it could serve both `ProfileBasic` AND `ProfileFull`
----- because they both share same fields.
-
--- Should this be left to APP code?
---
--- 1. What if `app_metadata` is a `Nothing` value?
--- 2. What if `user_metadata` is a `Nothing` value?
--- 3. Could we use extensible records instead of these update functions?
--- 4. Do we add the `(Just ..)` or `Nothing` as values to the functions?
---    - Rather than setting them as `Just` in the body function.
-
-
-
 {-| Update the `ProfileBasic` metadata
 
-> These values will be custom depending on your app. You'll probably be
-> using a `Maybe Profile` in your model, so make sure it exists first!
+> Only use this function if you know you've already got a `Profile`, otherwise
+> it'll fail (if `model.profile == Nothing`).
 
-A helper function to update `user_metadata` or `app_metadata`.
+A helper function to update `user_metadata` or `app_metadata`. It doesn't seem
+like we can use extensible records here, unfortunately, as we can't predict the
+type of our `user_metadata` (which is custom per application).
+
+- [Extensible records](https://tinyurl.com/adv-types-extensible-records) (require proper typing?)
+
+Instead we'll use simpler, more flexible type signatures.
+
+## Permissions
+
+You must have set the `/audience` to the Management API identifier and set the
+permissions `update:current_user_metadata` in scopes!
+
 -}
-updateProfileBasic : a -> b -> ProfileBasic a b -> ProfileBasic a b
-updateProfileBasic userMetaData appMetaData profile =
-    { profile
-        | user_metadata = Just userMetaData
-        , app_metadata = Just appMetaData
-    }
-
-{-| Update the `ProfileFull` metadata
-
-> These values will be custom depending on your app. You'll probably be
-> using a `Maybe Profile` in your model, so make sure it exists first!
-
-A helper function to update `user_metadata` or `app_metadata`.
--}
-updateProfileFull : a -> b -> ProfileFull a b -> ProfileFull a b
-updateProfileFull userMetaData appMetaData profile =
+updateProfile : Profile a b -> a -> b -> Profile a b
+updateProfile profile userMetaData appMetaData  =
     { profile
         | user_metadata = Just userMetaData
         , app_metadata = Just appMetaData
