@@ -15,34 +15,51 @@ module Auth.Auth0
 
 {-| This library provides data types and helper functions for [Auth0](https://auth0.com)
 
-> Auth0 documentation is hard to get through, but this package is useful for a
-> simple authentication setup. We're a little limited what we can do with a SPA
-> (without using Auth0.js or the SDKs). For more advanced needs, I'd consider a
-> different framework.
+> Auth0 documentation is hard to get through; I'd suggest keeping your auth
+> setup simple. We're a little limited with a SPA (without using Auth0.js or the
+SDKs which would require ports). For more advanced needs, I'd suggest finding
+> a different (simpler) framework.
 
-This package uses the "Implicit Flow". You could alternatively use `/oauth/token`
-endpoint, or the SDK provided by Auth0; that will involve using Ports however.
-Previous releases used `id_token`, but (I think) this is now not recommended.
+This package uses the "Implicit Flow". Previous releases used `IdToken`, but now
+`AccessToken` is used (the id token simply shows permissions if the `/audience`
+parameter is set).
 
-By default, when the user logs in, you'll get a prompt that "app is requesting
-access to your account" which they'll have to accept. You can skip user consent:
-go to `Applications -> APIs -> (select the api) -> Settings -> Access Settings`
-and turn on "Allow Skipping User Consent".
+Logging users in prompts "app is requesting access to your account" can be removed
+by setting `Applications -> APIs -> (select the api) -> Settings -> Access Settings`
+to "Allow Skipping User Consent". `localhost:8000` will always prompt users.
 
 Limitations:
 
-1. It's less secure than an SDK: don't store the `AccessKey` or any sensitive data.
-    - It can be potentially viewed by anyone, as it's client-side.
-2. The `user_metadata` is not recommended to be changed by a client-side app:
-    - Technically it's only the logged-in user that's making changes, but see (1);
-      it's less secure. You _could_ use the Management API on the frontend.
-    - You can edit the `user_metadata` manually or on the back-end.
+1. Less secure than an SDK: NEVER store the `AccessKey` or any sensitive data.
+    - It's client-side, so could potentially be visible to ANYONE.
+2. Auth0 don't recommend changing `user_metadata` with a client-side app:
+    - If you do, make sure the logged-in user can only work with _their own_
+      data; see (1).
+    - For more advanced needs, consider using the SDK on the back-end. It's safer.
 3. The free plan comes with rate limits on the API
     - @ [See rate limits](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/rate-limit-configurations/free-public)
 
-We're now using `(Result Error a -> msg)` and `Cmd msg` so you can set your own
-messages and `UserMetaData` / `AppMetaData` decoders. These are generally named
-`a` and `b` in the functions below.
+We're now using the message type `(Result Error a -> msg)` and returning a `Cmd msg`
+for allowing you to set your own `Msg` and `userMetaData` / `appMetaData` decoders.
+These are generally named `a` and `b` in our functions.
+
+Curl calls for testing:
+
+```
+curl -v --request POST \
+--url <YOUR_ENDPOINT>/userinfo \
+--header 'content-type: application/json' \
+--data '{"access_token": "<YOUR_ACCESS_TOKEN>"}'
+```
+
+```
+curl --request PATCH \
+  --url '<YOUR_ENDPOINT>/api/v2/users/<USER_ID>' \
+  --header 'authorization: Bearer <YOUR_ACCESS_TOKEN_WITH_SCOPE_PERMISSIONS>' \
+  --header 'content-type: application/json' \
+  --data '{"user_metadata": {"example": ["data", "to", "update"]}'
+```
+
 
 # Auth0 Basis
 
@@ -57,24 +74,6 @@ messages and `UserMetaData` / `AppMetaData` decoders. These are generally named
 # Helpers
 
 @docs auth0AuthorizeURL, getAuthedUserProfile, updateUserMetaData, logoutUrl
-
-
-## Curl examples
-
-```
-curl -v --request POST \
---url <YOUR_URL>/userinfo \
---header 'content-type: application/json' \
---data '{"access_token": "<YOUR_ACCESS_TOKEN>"}'
-```
-
-```
-curl --request PATCH \
-  --url '<YOUR_URL>/api/v2/users/<USER_ID>' \
-  --header 'authorization: Bearer <YOUR_ACCESS_TOKEN_WITH_SCOPE_PERMISSIONS>' \
-  --header 'content-type: application/json' \
-  --data '{"user_metadata": {"example": ["data", "to", "update"]}'
-```
 
 -}
 
@@ -129,7 +128,7 @@ type alias Auth0Config =
 
 {-| Auth0 unified user profile
 
-> `/tokeninfo` endpoint is part of the legacy authentication flows and
+> ⚠️ `/tokeninfo` endpoint is part of the legacy authentication flows and
 > disabled for new tenants. Now uses the `/userinfo` endpoint ...
 
 If your `Profile` is setup differently, it's wise to use your own profile decoder.
@@ -146,7 +145,7 @@ Our `Profile` assumes you've setup a post-login trigger, and that you've set up
 your own `*_metadata` decoders.
 
 
-## Scopes ["openid", "name", "email"]
+## Scopes `["openid", "name", "email"]`
 
 Logged in with regular email and password, and `user_metadata` setup:
 
@@ -169,14 +168,17 @@ Logged in with regular email and password:
 ```json
 {
     "sub":"auth0|681ce3c6339152f87a583f4c",
-    "nickname":"waterproof-rob",
-    "name":"waterproof-rob@outlook.com",
-    "picture":"https://s.gravatar.com/avatar/395e9068d232bb28eef989b6e60d6c96?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fwa.png",
+    "nickname":"johnny",
+    "name":"johnny@mail.com",
+    "picture":"http://some-avatar.com/image.jpg",
     "updated_at":"2025-05-10T14:34:31.128Z",
-    "email":"waterproof-rob@outlook.com",
+    "email":"johnny@mail.com",
     "email_verified":false,
-    "user_metadata":{"json":"kBaCSd10","prefs":["one","two","three"]},
-    "app_metadata":{}
+    "user_metadata":{
+        "secret":"kBaCSd10",
+        "prefs":["one","two","three"]
+    },
+    "app_metadata":null
 }
 ```
 
@@ -186,9 +188,9 @@ Logged in with gmail account:
 {
     "sub":"google-oauth2|109543812167723561932",
     "given_name":"Johnny",
-    "nickname":"johnnysanders",
+    "nickname":"johnny",
     "name":"Johnny",
-    "picture":"https://lh3.googleusercontent.com/a/<some_id>",
+    "picture":"https://lh3.googleusercontent.com/a/image.jpg",
     "updated_at":"2025-05-10T15:22:28.814Z",
     "email":"johnny@gmail.com",
     "email_verified":true,
@@ -218,16 +220,16 @@ type alias Profile userMetaData appMetaData =
 The `user_metatdata` and `app_metadata` varies in different applications.
 You should define your own `user_metadata` and `app_metadata` decoders.
 
-1. There's ONE `Profile`, regardless of if your scope is `name` or `profile`. It's
-   using `.optional` which will render a `Maybe x_metadata`. If the key is
-   missing, it'll return a `Nothing`. It will fail if:
+1. There's ONE `Profile`, regardless if your scope is `name` or `profile`. It's
+   using `Json.Decode.Pipeline.optional` which renders a `Maybe x_metadata`. If
+   the key is missing, it'll return a `Nothing`. It will fail if:
     - `user_metadata` is available and not `null` (`{}` will error)
     - `user_metadata` is available and `json` is malformed (the decoder)
 2. We're now using `nullable` for our `x_metadata` which is safer than `maybe`.
    This will error if `"user_metadata"` is:
     - Not available (the key is not present)
     - Not called `"user_metadata"`
-    - Not `null` or a `userMetaData` type (custom)
+    - Not `null` or your custom `userMetaData` type
 
 
 In order for our `nullable` decoder to work, we need to set a post-login trigger
@@ -273,43 +275,43 @@ decoderDate =
 It should look something like this:
 
     type Msg
-        = GotProfile (Result Http.Error (ProfileFull ... ...))
+        = GotProfile (Result Http.Error (Profile a b))
 
-Where `...` are your own `userMetaData` and `appMetaData` decoders. You can pass
-in your `GotProfile` message into the `getAuthedUserProfile` function.
+Where `a` and `b` are your own `userMetaData` and `appMetaData` decoders. You
+can pass in your `GotProfile` message into the `getAuthedUserProfile` function.
 
 -}
-type NoMessage
-    = SetupInYourOwnApp
+type Msg
+    = SetupYourOwnMessageType
 
 
 {-| The OAuth2 identity of the unified user profile.
 
 > ⚠️ This has been removed, as it involves quite a bit of manual setup.
 
-This usually tell the social account or database account linked with the unified user profile. I've
-removed this, as although Auth0 provides a mechanism to link two accounts and
-store them in the `identities` array, by default Auth0 does not merge user profile
-attributes from multiple providers. It sources the **core** user profile
-attributes from the first provider used.
+I wouldn't advise using the unified (linked) user profile unless absolutely
+necessary as it involves a manual setup. Auth0 provides a mechanism to link two
+accounts (two social logins, for example) and store them in the `identities`
+array. Auth0 does not merge these by default.
 
 - @ [User profiles](https://auth0.com/docs/manage-users/user-accounts/user-profiles#account-linking)
 - @ [Account linking](https://auth0.com/docs/manage-users/user-accounts/user-account-linking/link-user-accounts)
 
-It involves manually setting up Actions or client-sidde account linking, or with
-the Auth0.js library (or perhaps one of the SDKs). I'd suggest sticking with ONE
-login per user, and keep things simple.
+You'd need to setup Actions or an account linking function. The Auth0.js library
+or SDKs offer this; I'd suggest sticking with ONE login profile per user. Keep
+things simple!
 
 -}
 oAuth2IdentityDecoder =
-    "Likely to be deprecated"
+    "This will be deprecated"
 
 
 {-| Create the URL to the login page
 
-> You should use a short lifetime for the `AccessToken`s expiry date; it can
-> be refreshed, but with Auth0 that's a bit of a hassle. For security reasons,
-> it's better to not store the `AccessToken` in local storage.
+> You should use a short lifetime for the `AccessToken`s expiry date; the session
+> can be refreshed, but with Auth0 that's a bit of a hassle. For security reasons,
+> NEVER store it client-side; use it for what you need then discard it. You can
+> always ping the `/authorize` endpoint to get another token.
 
 - @ [Authorize (implicit flow)](https://auth0.com/docs/api/authentication/implicit-flow/authorize)
 - @ [Universal login](https://auth0.com/docs/authenticate/login/auth0-universal-login#implement-universal-login)
@@ -339,7 +341,7 @@ value. This is our `/audience` value.
 
 The `/audience` parameter is required for two things:
 
-1. To get a helpful JWT token with permissions and token expiry date
+1. To get a helpful JWT `IdToken` with permissions and `AccessToken` expiry date
 2. To allow use of a specific API (for example, the Management API)
 3. To allow extra scopes, specific to the API (eg: `update:current_user_metadata`)
 
@@ -349,7 +351,8 @@ can "skip user consent" to avoid this.
 ## Scopes
 
 > Take care that you're using the correct API `/audience` for the scopes.
-> - @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
+
+- @ [Scopes and use-cases](https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims)
 
 You can add more scopes to your access token for more permissions. See the
 `updateUserMetaData` for an example. For now, all you need to know is that by
@@ -358,8 +361,9 @@ JWT with information such as expiry date, and any permissions granted the user.
 
 ## Opaque tokens
 
-One more thing to note is that the `accessToken` is [opaque](https://community.auth0.com/t/opaque-versus-jwt-access-token/31028)
-(not a JWT). You'll need to hit the `/userinfo` endpoint for useful information.
+One more thing to note is that the `AccessToken` is [opaque](https://community.auth0.com/t/opaque-versus-jwt-access-token/31028)
+(I guess not inspectable). You'll need to hit the `/userinfo` endpoint for
+useful information.
 
 -}
 auth0AuthorizeURL :
@@ -429,20 +433,33 @@ exports.onExecutePostLogin = async (event, api) => {
 ```
 
 The type signature has changed from `Decoder String` to `Decoder a` to allow for
-our custom `Profile` decoder. For the `msg` type, you can add your `GotProfile`
-message like below:
+your own custom `Profile` decoder. For the `msg` type, you can add a `GotProfile`
+message; a `UserMeta` decoder; and a `AppMeta` decoder if needed. See below:
 
 ```elm
+type alias UserMeta =
+    { secret : String, prefs : List String }
+
+type alias AppMeta =
+    String
+
+decoderUserMeta : Decoder UserMeta
+decoderUserMeta =
+    D.map2 (\a b -> { secret = a, prefs = b })
+        (D.field "json" D.string)
+        (D.field "prefs" (D.list D.string))
+
+decoderAppMeta : Decoder String
+decoderAppMeta =
+    D.succeed "Not used (nullable)"
+
 getProfile =
     Auth0.getAuthedUserProfile
         "https://YOUR-API-URL.auth0.com"
         "access_token"
         GotProfile
-        (Auth0.decoder a b)
+        (Auth0.decoder decoderUserMeta decoderAppMeta)
 ```
-
-Where `a` and `b` are your own `userMetaData` and `appMetaData` decoders.
-
 -}
 getAuthedUserProfile :
     Auth0Config
@@ -466,9 +483,8 @@ getAuthedUserProfile auth0Config accessToken msg pDecoder =
 
 {-| Logout of your app (with redirect)
 
-> Our `AccessToken` doesn't invalidate on `logoutUrl`. For that reason give it a
-> short lifetime (the expiry value), and don't store it (for security reasons).
-> You can always ping the `/authorize` url to get the token (or a new one).
+> Make sure your `AccessToken` has a short expiry value (lifetime). It's easier
+> (but not as user-friendly) to have them login again after the token expires.
 
 - @ [Logout docs](https://auth0.com/docs/authenticate/login/logout)
 - @ [Invalidating an access token](https://community.auth0.com/t/invalidating-an-access-token-when-user-logs-out/48365/7) when a user logs out (thread)
@@ -494,25 +510,23 @@ logoutUrl auth0Config federated returnTo =
 
 {-| Update the `user_metadata` in the Auth0 unified user profile
 
-> Security: make sure you allow the user to only update _their own_ data! Auth0
-> doesn't advise allowing updates to `user_metadata`; client-side is not as
-> secure as doing this on the back-end.
+> Be secure and only allow user to update _their own_ data. It's also best to not
+> store anything private (GDPR) in `user_metadata`. Auth0 doesn't advise allowing
+> updating this client-side at all (back-end is more secure), but it should be
+> fine for user settings and so on.
 
 - You can setup APIs, scopes, and user permissions.
 - When you ping the `/authorize` endpoint, permissions are added to the `AccessToken`.
 - You can use this `AccessToken` to update your user's metadata
 
-Documentation:
+## Documentation
 
 - @ [API scopes](https://auth0.com/docs/get-started/apis/scopes/api-scopes)
-- @ [Update user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
 - @ [Manage user metadata](https://auth0.com/docs/manage-users/user-accounts/metadata/manage-metadata-api)
 - @ [Patch users by ID](https://auth0.com/docs/api/management/v2/users/patch-users-by-id)
 - @ [Management API for SPA apps](https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens/get-management-api-tokens-for-single-page-applications)
 
-Steps to change your `user_metadata` with the Management API:
-
-> The `a` value is your own custom `UserMeta` decoder
+## The Management API
 
 1. Make sure your `Auth0 Management API` is enabled in `Applications -> APIs`
 2. Select the API and get the `Identifier` unique ID.
@@ -527,13 +541,15 @@ simple and only use ONE API (the Management API).
 
 ## Return values
 
-> ⚠️ The return value is correct, but our old `AccessToken` caches the old version,
-> without our newly updated `user_metadata` values. Better to update your
-`model.profile.user_metadata` manually, or get a new AccessToken`!
+> This function only returns a `"user_metadata" record, not the full profile.
 
-This function only returns a `"user_metadata" record, not the full profile. You'll
-have to ping the `/userinfo` endpoint again, or update your `Profile.user_metadata`
+You'll have to ping the `/userinfo` endpoint again, or update your `Profile.user_metadata`
 value within your update function.
+
+- ⚠️ Our `AccessToken` caches the old values, so won't display updated `user_metadata`!
+
+It's best to update your `model.profile.user_metadata` manually, or get a new
+AccessToken` with the login url.
 
 
 ## Security
@@ -568,14 +584,14 @@ updateUserMetaData auth0Config accessToken msg metaDecoder userID userMeta =
         }
 
 
-{-| Update the `ProfileBasic` metadata
+{-| Update the `Profile` metadata
 
 > Only use this function if you know you've already got a `Profile`, otherwise
 > it'll fail (if `model.profile == Nothing`).
 
 A helper function to update `user_metadata` or `app_metadata`. It doesn't seem
-like we can use extensible records here, unfortunately, as we can't predict the
-type of our `user_metadata` (which is custom per application).
+like we can use extensible records here unfortunately, as we can't predict the
+types of our `user_metadata` (which are custom per application).
 
 - [Extensible records](https://tinyurl.com/adv-types-extensible-records) (require proper typing?)
 
@@ -584,7 +600,7 @@ Instead we'll use simpler, more flexible type signatures.
 ## Permissions
 
 You must have set the `/audience` to the Management API identifier and set the
-permissions `update:current_user_metadata` in scopes!
+permissions (e.g: `update:current_user_metadata`) in scopes!
 
 -}
 updateProfile : Profile a b -> a -> b -> Profile a b

@@ -6428,9 +6428,9 @@ var $author$project$Auth$Auth0$decoder = F2(
 											$elm$json$Json$Decode$string,
 											$elm$json$Json$Decode$succeed($author$project$Auth$Auth0$Profile))))))))));
 	});
-var $author$project$Auth$Auth$decoderAppMetadata = $elm$json$Json$Decode$succeed('Currently an empty object');
+var $author$project$Auth$Auth$decoderAppMeta = $elm$json$Json$Decode$succeed('Currently an empty object');
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Auth$Auth$decoderUserMetadata = A3(
+var $author$project$Auth$Auth$decoderUserMeta = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
 		function (a, b) {
@@ -7266,9 +7266,9 @@ var $author$project$Auth$Auth0$getAuthedUserProfile = F4(
 var $author$project$Auth$Auth$getProfile = A4(
 	$author$project$Auth$Auth0$getAuthedUserProfile,
 	$author$project$Auth$Auth$authConfig,
-	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w',
+	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzMxODcxMCwiZXhwIjoxNzQ3MzI1OTEwLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.woqKGUjIxeYMU2bfpwAQf4jwgrhMh8pSVqHPGG6tm4yqhMW86-_mGvaKt8C5YM76Q9OQWcmP8CHygyikLW8fGtVWC8w7SrkV0hQ6ULNqEeo7nTc-zyh5e45NSG0pc8aXT14Hxjqb5fTXBen1rYPurYwc9UXEiAPCeQpoEtVXXLnszBI_tqYuLZD2_DkHY96ZYdXsYbZ3tGMbHvJLUp7S_sDqq3ORnM1CaKM_qatpEqYQXcA20soqpbfroLW2bqeqfwWrBQktjd9ydnAXH45o64h2brjfLq6nml3kFclqSQu2kyTDx2fPSnzcjUCXo0_K1XG5QLP1T6-UzVZ5wlxJXw',
 	$author$project$Auth$Auth$GotProfile,
-	A2($author$project$Auth$Auth0$decoder, $author$project$Auth$Auth$decoderUserMetadata, $author$project$Auth$Auth$decoderAppMetadata));
+	A2($author$project$Auth$Auth0$decoder, $author$project$Auth$Auth$decoderUserMeta, $author$project$Auth$Auth$decoderAppMeta));
 var $elm$core$Debug$log = _Debug_log;
 var $author$project$Auth$Auth$GotMeta = function (a) {
 	return {$: 'GotMeta', a: a};
@@ -7325,13 +7325,13 @@ var $author$project$Auth$Auth0$updateUserMetaData = F6(
 var $author$project$Auth$Auth$updateUserMeta = A6(
 	$author$project$Auth$Auth0$updateUserMetaData,
 	$author$project$Auth$Auth$authConfig,
-	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w',
+	'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzMxODcxMCwiZXhwIjoxNzQ3MzI1OTEwLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.woqKGUjIxeYMU2bfpwAQf4jwgrhMh8pSVqHPGG6tm4yqhMW86-_mGvaKt8C5YM76Q9OQWcmP8CHygyikLW8fGtVWC8w7SrkV0hQ6ULNqEeo7nTc-zyh5e45NSG0pc8aXT14Hxjqb5fTXBen1rYPurYwc9UXEiAPCeQpoEtVXXLnszBI_tqYuLZD2_DkHY96ZYdXsYbZ3tGMbHvJLUp7S_sDqq3ORnM1CaKM_qatpEqYQXcA20soqpbfroLW2bqeqfwWrBQktjd9ydnAXH45o64h2brjfLq6nml3kFclqSQu2kyTDx2fPSnzcjUCXo0_K1XG5QLP1T6-UzVZ5wlxJXw',
 	$author$project$Auth$Auth$GotMeta,
 	A2(
 		$elm$json$Json$Decode$at,
 		_List_fromArray(
 			['user_metadata']),
-		$author$project$Auth$Auth$decoderUserMetadata),
+		$author$project$Auth$Auth$decoderUserMeta),
 	'auth0|681ce3c6339152f87a583f4c',
 	$author$project$Auth$Auth$encodeUserMeta);
 var $author$project$Auth$Auth$update = F2(
@@ -7490,7 +7490,7 @@ var $author$project$Auth$Auth$url = A6(
 	'token',
 	$author$project$Auth$Auth$baseUrl + '/09-auth0.html',
 	_List_fromArray(
-		['openid', 'name', 'email', 'update:current_user_metadata']),
+		['openid', 'name', 'email', 'update:current_user_metadata', 'update:users']),
 	$elm$core$Maybe$Nothing,
 	$elm$core$Maybe$Just('https://dev-ne2fnlv85ucpfobc.uk.auth0.com/api/v2/'));
 var $elm$html$Html$p = _VirtualDom_node('p');

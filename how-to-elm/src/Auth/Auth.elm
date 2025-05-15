@@ -110,7 +110,7 @@ url =
         authConfig
         "token"
         (baseUrl ++ "/09-auth0.html") -- #! https for live
-        [ "openid", "name", "email", "update:current_user_metadata" ] -- #! (2)
+        [ "openid", "name", "email", "update:current_user_metadata", "update:users" ] -- #! (2)
         Nothing -- social login param
         (Just "https://dev-ne2fnlv85ucpfobc.uk.auth0.com/api/v2/") -- (1) or `Nothing`
 
@@ -134,23 +134,23 @@ encodeUserMeta =
         , ( "prefs", E.list E.string ["b","c", "d"] )
         ]
 
-decoderUserMetadata : Decoder UserMeta
-decoderUserMetadata =
+decoderUserMeta : Decoder UserMeta
+decoderUserMeta =
     D.map2 (\a b -> { json = a, prefs = b })
         (D.field "json" D.string)
         (D.field "prefs" (D.list D.string))
 
-decoderAppMetadata : Decoder String
-decoderAppMetadata =
+decoderAppMeta : Decoder String
+decoderAppMeta =
     D.succeed "Currently an empty object" -- #! Fix this: do we need app data?
 
 getProfile : Cmd Msg
 getProfile =
     Auth0.getAuthedUserProfile
         authConfig -- extracts the endpoint
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w"
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzMxODcxMCwiZXhwIjoxNzQ3MzI1OTEwLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.woqKGUjIxeYMU2bfpwAQf4jwgrhMh8pSVqHPGG6tm4yqhMW86-_mGvaKt8C5YM76Q9OQWcmP8CHygyikLW8fGtVWC8w7SrkV0hQ6ULNqEeo7nTc-zyh5e45NSG0pc8aXT14Hxjqb5fTXBen1rYPurYwc9UXEiAPCeQpoEtVXXLnszBI_tqYuLZD2_DkHY96ZYdXsYbZ3tGMbHvJLUp7S_sDqq3ORnM1CaKM_qatpEqYQXcA20soqpbfroLW2bqeqfwWrBQktjd9ydnAXH45o64h2brjfLq6nml3kFclqSQu2kyTDx2fPSnzcjUCXo0_K1XG5QLP1T6-UzVZ5wlxJXw"
         GotProfile
-        (Auth0.decoder decoderUserMetadata decoderAppMetadata)
+        (Auth0.decoder decoderUserMeta decoderAppMeta)
 
 
 -- Profile updates --------------------------------------------------------------
@@ -165,14 +165,14 @@ updateUserMeta : Cmd Msg
 updateUserMeta =
     Auth0.updateUserMetaData
         authConfig
-        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzI0MzEyOCwiZXhwIjoxNzQ3MjUwMzI4LCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.GrJOsBvTeseUziZDdHRqVLrsb5YTVoAIsbpJdfodtTBLTJO_e4NRndcofJUvHQZ01_9Q7aI478ZemWI_CFk90u8xQBz4HPw-7Fb8ryMA_paT5_eQXkhFVtkdrYkKL66T5SLW-T73Xs1Ak7H19xZH0l9uPpvSfmWI_IdDg1olA2LkcmzgGi4lyHjxRQMwyrJp8gwUljWhCMHAHXecIpvETV0FOAf8kX92vlrRNvQSCbOI559tR1bBZtYih6O45roxlk8qhyLH3pDlFE1YB6IvNGBXyE7lv6LoM_-aBKFqDmprizY12vEVLDxCs7MhBz7vawMhZ3p0mNCdG2SNXzMi8w"
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlQnhDcVpNOFhpRGtiZHZaX2xlWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1uZTJmbmx2ODV1Y3Bmb2JjLnVrLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2ODFjZTNjNjMzOTE1MmY4N2E1ODNmNGMiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtbmUyZm5sdjg1dWNwZm9iYy51ay5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LW5lMmZubHY4NXVjcGZvYmMudWsuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc0NzMxODcxMCwiZXhwIjoxNzQ3MzI1OTEwLCJzY29wZSI6Im9wZW5pZCBlbWFpbCB1cGRhdGU6Y3VycmVudF91c2VyX21ldGFkYXRhIiwiYXpwIjoiWXpNSHRDNlRDTmJNaHZGQjVBeXFGZHdmcmVEbWFYQVcifQ.woqKGUjIxeYMU2bfpwAQf4jwgrhMh8pSVqHPGG6tm4yqhMW86-_mGvaKt8C5YM76Q9OQWcmP8CHygyikLW8fGtVWC8w7SrkV0hQ6ULNqEeo7nTc-zyh5e45NSG0pc8aXT14Hxjqb5fTXBen1rYPurYwc9UXEiAPCeQpoEtVXXLnszBI_tqYuLZD2_DkHY96ZYdXsYbZ3tGMbHvJLUp7S_sDqq3ORnM1CaKM_qatpEqYQXcA20soqpbfroLW2bqeqfwWrBQktjd9ydnAXH45o64h2brjfLq6nml3kFclqSQu2kyTDx2fPSnzcjUCXo0_K1XG5QLP1T6-UzVZ5wlxJXw"
         GotMeta -- #! Fix this: add to `Profile UserMeta _`
-        (D.at ["user_metadata"] decoderUserMetadata)
+        (D.at ["user_metadata"] decoderUserMeta)
         "auth0|681ce3c6339152f87a583f4c" -- #! (1)
         encodeUserMeta -- The data to be updated!
 
 updateProfileUserMeta :
-    -> Profile UserMeta String
+    Profile UserMeta String
     -> UserMeta
     -> AppMeta -- #! This will be rarely used.
     -> Profile UserMeta String -- #! The `Maybe` types are added in the function
