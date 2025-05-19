@@ -3,28 +3,34 @@ module Message.HtmlMap exposing (..)
 {-| ----------------------------------------------------------------------------
     Narrowing types with `Html.map`
     ============================================================================
-    See `HowToMessage.NarrowTypes` for notes
+    See `HowToMessage.NarrowTypes` for notes on extensible records and other
+    parts of this program. Here we're concerned with reusable form fields and the
+    `Html.map` function (which should be used sparingly).
 
     1. Create reusable input types
     2. `Html.map` over child message with parent one
 
     ⚠️ The downsides of `Html.map` and reusable inputs
     --------------------------------------------------
-    `Html.map` might be useful if your `ContactMsg` is in a separate module, but
-    `(ContactMsg << Email)` is much simpler when it isn't. There's also the
+    In general, using `(ContactMsg << Email)` or `(a -> msg)` is a bit cleaner
+    than using `Html.map`, but it's useful if you don't have much control over
+    your imported package or module messages. Here's more info on the alternative
     "teach me how to message" pattern for child modules:
 
+        @ https://tinyurl.com/whats-wrong-using-html-map
         @ https://elm.land/concepts/components.html#defining-the-component
 
-    The same goes for reusable functions. Is the `viewInput` type clearer? Does
-    it amount to less code? NOT REALLY because:
+    It could also be said this reusable `viewInput` function makes code a little
+    harder to read; for a few inputs it's overkill. Ask yourself the question
+    "does the function save me many lines of code?" or "Would this be better in
+    it's own component module?":
 
-    1. We've got TWO inputs that can't use the `viewInput` function:
+    1. TWO of our inputs can't use the `viewInput` function:
         - `"Your name"` because `viewInput` expects a `ContactMsg` type
         - `"checkbox" because it's got different attributes to `viewInput`
     2. Counting lines of code, it's only a slight improvement:
-        - For very large forms, it makes sense to cut code down ...
-        - But this could be done by creating modules around types.
+        - For very large forms, it may make sense to cut code down ...
+        - But this could also be done by creating modules around types.
 
     ⚠️ Use `Html.map` sparingly
     --------------------------

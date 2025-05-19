@@ -23,13 +23,26 @@ module Message.NarrowTypes exposing (..)
 
     More about extensible records:
     ------------------------------
+    > The extensible record must output the same record type, or one of it's
+    > fields. `SomeRecord a -> Model` will error, as it's not of the same type.
+
+        @ https://ellie-app.com/vsFPJKL8KHFa1 (a working and non-working example)
 
         @ https://tinyurl.com/adv-types-extensible-records (second-half only)
-        @ https://tinyurl.com/whats-wrong-using-html-map
+        @ https://allanderek.prose.sh/extensible-records (a small warning)
 
-    The general consensus seems extensible records are helpful to group
-    functions around a particular "slice" of your larger, flatter, model WITHOUT
-    the need for nested records.
+    Extensible records are helpful to group functions around a "slice" of your
+    larger, flatter, model WITHOUT the need for nested records. It's best to set
+    the extensible records to only the fields required for the function to work,
+    and unpack the fields:
+
+        type alias SomeRecord a =
+            { a | onlyNeedThisField : String }
+
+        function : SomeRecord a -> String
+        function { onlyNeedThisField } =
+            onlyNeedOneField
+
 
     Nested records
     --------------
