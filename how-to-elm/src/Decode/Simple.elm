@@ -3,6 +3,9 @@ module Decode.Simple exposing (..)
 {-| ----------------------------------------------------------------------------
     How to decode: some simple examples
     ============================================================================
+    ⚠️ According to `@SimonLydell` you should NEVER use `Json.Decode.maybe`. But
+    I'm listing it here anyway.
+
 
     Lessons learned
     ---------------
@@ -12,7 +15,7 @@ module Decode.Simple exposing (..)
     2. Better to set optional Elm types to `null` in the `json` (and back again)
         - `Json.Decode.nullable` and `Json.Encode.null` to `null` all the things!
           @ https://tinyurl.com/elm-json-decode-nullable
-    2. Keep data types as simple as possible
+    3. Keep data types as simple as possible
         - e.g: "2:00" -> (2,0) is quite a bit of work to achieve
                "2:00" for both `json` and Elm model better?
                Or, use a `Time` type for both (probably a `String`)
@@ -21,7 +24,7 @@ module Decode.Simple exposing (..)
 
 -}
 
-import Json.Decode as D exposing (..)
+import Json.Decode as D exposing (Decoder, field, int, list, string)
 import Json.Decode.Pipeline as DP exposing (..)
 
 -- Let's start with some basic types -------------------------------------------
@@ -29,15 +32,14 @@ import Json.Decode.Pipeline as DP exposing (..)
 {- a `List Int` -}
 listIntDecoder : Decoder (List Int)
 listIntDecoder =
-    D.list D.int
+    list int
 
 jsonListInt : String
 jsonListInt =
     "[1, 2, 3, 4]"
 
-{- `Ok [1, 2, 4, 4]` -}
 workingListInt =
-    decodeString listIntDecoder jsonListInt
+    D.decodeString listIntDecoder jsonListInt -- Ok [1, 2, 4, 4]
 
 type alias Object =
     { id : Int
@@ -50,6 +52,7 @@ jsonObjectInt =
     """
     { "id" : 0, "name" : "List of integers", "stuff" : [1, 2, 3, 4] }
     """
+
 simpleObject : Decoder Object
 simpleObject =
     D.map3 Object
@@ -58,16 +61,17 @@ simpleObject =
         (field "stuff" listIntDecoder)
 
 workingObjectListInt =
-    decodeString simpleObject jsonObjectInt
+    D.decodeString simpleObject jsonObjectInt
 
 
 -- Maybe types -----------------------------------------------------------------
--- ⚠️ According to `@SimonLydell` you should NEVER use `Json.Decode.maybe`. But
--- I'm listing it here anyway.
---
 -- 1. Use an `optional` field with a default (a bit like `Maybe.withDefault`)
 -- 2. ⚠️ Wrap the thing in a `D.maybe` (either the field or the decoder)
---    @ https://stackoverflow.com/a/42308078 for `maybe` with `Json.Decode.Pipeline`
+--     - It's a BIG RISK to use this as it's too permissive!
+--     - @ https://stackoverflow.com/a/42308078 for `maybe` with
+--       `Json.Decode.Pipeline`
+-- 3. Succeeds if `"stuff"` key doesn't exist, but fails if `"stuff"` exists
+--    but is the wrong type! `nullable` might be a better option here.
 
 jsonObjectMaybeInt01 : String
 jsonObjectMaybeInt01 =
@@ -87,20 +91,19 @@ type alias ObjectMaybe =
     , stuff : Maybe (List Int)
     }
 
-{- #! `Json.Decode.maybe` should NEVER be used, but here's how it works -}
 simpleObjectMaybe01 : Decoder ObjectMaybe
 simpleObjectMaybe01 =
     D.map3 ObjectMaybe
         (field "id" int)
         (field "name" string)
-        (D.maybe (field "stuff" listIntDecoder)) -- Fieldname is missing?
-        -- (field "stuff" (maybe listIntDecoder)) -- Fieldname exists but wrong type?
+        -- #! Using `Maybe` is risky!
+        (D.maybe (field "stuff" listIntDecoder)) -- #! "stuff" is missing?
+        -- (field "stuff" (maybe listIntDecoder)) -- #! "stuff" exists but wrong type?
 
 workingObjectMaybe01 =
-    decodeString simpleObjectMaybe01 jsonObjectMaybeInt02
+    D.decodeString simpleObjectMaybe01 jsonObjectMaybeInt02
 
-{- Succeeds if `"stuff"` key doesn't exist, but fails if `"stuff"` exists
-but is the wrong type! Better to just use `null` however -}
+{- (3) -}
 simpleObjectMaybe02 : Decoder ObjectMaybe
 simpleObjectMaybe02 =
     D.succeed ObjectMaybe
@@ -109,8 +112,8 @@ simpleObjectMaybe02 =
         |> optional "stuff" (D.map Just listIntDecoder) Nothing -- Fieldname is missing?
 
 workingObjectMaybe02 =
-    decodeString simpleObjectMaybe02 jsonObjectMaybeInt02
-    -- decodeString simpleObjectMaybe02 jsonObjectMaybeInt01 -- This will fail HARD!
+    D.decodeString simpleObjectMaybe02 jsonObjectMaybeInt02
+    -- decodeString simpleObjectMaybe02 jsonObjectMaybeInt01 -- #! Will fail HARD!
 
 type alias ObjectWithDefault =
     { id : Int
@@ -121,9 +124,9 @@ type alias ObjectWithDefault =
 simpleObjectWithDefault : Decoder ObjectWithDefault
 simpleObjectWithDefault =
     D.succeed ObjectWithDefault
-        |> required "id" int
-        |> required "name" string
-        |> optional "stuff" listIntDecoder []
+        |> DP.required "id" int
+        |> DP.required "name" string
+        |> DP.optional "stuff" listIntDecoder []
 
 workingObjectWithDefault =
-    decodeString simpleObjectWithDefault jsonObjectMaybeInt0
+    D.decodeString simpleObjectWithDefault jsonObjectMaybeInt02
