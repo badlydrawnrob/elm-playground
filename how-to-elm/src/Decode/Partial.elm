@@ -14,25 +14,70 @@ module Decode.Partial exposing (..)
     undefined, an array, object, function, html, etc. Essentially it stores the
     (representation of) that javascript untouched (without a "proper") Elm decoder.
 
-        - @ [`Json.Decode.Value`](...)
-        - @ [`Json.Decode.dict`](https://package.elm-lang.org/packages/elm/json/#dict)
+        - @ [`Json.Decode.Value`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#Value)
+        - @ [`Json.Decode.at`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#at)
         - @ [1602/json-value](https://package.elm-lang.org/packages/1602/json-value/latest)
 
     The `decodeValue` function is mainly used for Ports.
 
 
-    Using the `Dict`ionary method
-    -----------------------------
-    > Limitation of values having to be the same type (I think) ...
-    > You could _potentially_ use `Json.Decode.oneOf`, but seems hacky.
+    🚀 Keep your type signatures simple
+    -----------------------------------
+    > It's easier to read `Maybe User -> User` than
+    > `Result x (Maybe D.Value) -> Result D.Error User`
+    > ... and far easier to reason about.
 
-        - @ [`Json.Decode.dict`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#dict)
 
-    Ai also generated this option:
+    Using the `Dict`ionary method (it's tricky)
+    -------------------------------------------
+    > If you're going to use `Dict` then it's easier to use it for proper
+    > _fuller_ dictionary decoders, rather than this partial decoder!
 
-        D.map2 (\a b -> { user = a, items = b })
-            (D.field "user" decodeUser)
-            (D.field "items" (D.dict value)) -- obviously wouldn't work for list
+    - @ [`Json.Decode.dict`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#dict)
+
+    1. A Dict requires types to be the same (here they are both `Value`)
+    2. Pull out the `"user"` value (using simple type signatures as mentioned above)
+    3. Extract out the values, as simply as possible `(Ok (Just value))` -> `value`.
+    4. `decodeString (D.dict value) garden` returns `<internals>` (hidden values)
+
+    Do you _really_ need to keep the full `Dict` around?
+
+    - Using `Json.Decode.andThen` with a `decodeUser` decoder is easier.
+    - Building up your record with `D.at` is way easier!
+
+    Dictionary return values:
+
+    > ⚠️ How complicated are your types?!
+    > ⚠️ How difficult are your return values?
+
+    What if our function looks like this: `D.decodeValue decodeUser value` and
+    returns `Result D.Error User`? We have a big problem!!! An `Error` type
+    looks a bit like this:
+
+    ```
+    Err (Failure ("Expecting a STRING") <internals>)
+    Err (Failure ("Expecting an OBJECT with a field named `use`") <internals>)
+    ```
+
+    `Error` isn't really supposed to be written out by hand; yet our function
+    could return a `Nothing`: what value do we return? It should be `D.Error`!
+    But that's hard to write! And on, and on, and on. Save yourself headaches.
+
+    If you see some code like this:
+
+    ```
+    getUserValue : Dict String D.Value -> User
+    getUserValue dictionary =
+        case Dict.get "user" dictionary of
+            Just value ->
+                D.decodeValue decodeUser value
+
+            Nothing ->
+                Debug.crash "The key was not found" -- What type should this be?
+    ```
+
+    You're probably on the WRONG path. Use `Json.Decode.at` or some other method.
+    It's WAY easier to read and understand.
 
 
     Wishlist
@@ -45,7 +90,6 @@ module Decode.Partial exposing (..)
 
 import Dict exposing (..)
 import Json.Decode as D exposing (..)
-import Json.Decode.Pipeline as DP
 import Json.Encode as E exposing (..)
 
 import Debug
@@ -169,14 +213,14 @@ type alias Model =
 -- 1. A `Decoder` we want to change (and work with in Elm)
 -- 2. A `Value` we won't change (any shape, but we don't care about it)
 
-decodeValue : Decoder Model
-decodeValue =
+decodeWithValue : Decoder Model
+decodeWithValue =
     D.map2 (\willUse wontUse -> { user = willUse, items = wontUse })
-    (D.field "item" decodeUser) -- (1)
-    (D.field "items" D.value) -- (2)
+        (D.field "user" decodeUser) -- (1)
+        (D.field "items" D.value) -- (2)
 
-encodeValue : Model -> E.Value
-encodeValue =
+encodeWithValue : Model -> E.Value
+encodeWithValue =
     \record ->
         E.object
             [ ( "user", encodeUser record.user ) -- (1)
@@ -194,16 +238,21 @@ decodeAt =
 
 
 -- Method #3: `Json.Decode.dict` -----------------------------------------------
--- This is a bit more complicated and takes more steps to decode, but may take
--- fewer steps to re-encode. Extract the `"user"` value.
+-- This seems to be the most complicated solution, with more steps to fully
+-- decode the `Value` we want (the `"user"` value). It'd be a lot easier to simply
+-- (Json.Decode.at) the `"user"` value and decode it directly (discard the `Dict`)
+-- but then there are _far easier_ ways to do that (rather than using `Dict`).
+--
+-- *****************************************************************************
+-- ******************* ⚠️ NON-WORKING CODE BELOW *******************************
+-- *****************************************************************************
 
-{-| Three step process
 
-1. Decode your values as `Value`s
-2. Decode the `Value` you'd like to use
-3. Re-encode the `Value` you used
+{-| This will return a dictionary of `Value`s
+
 
 ```
+>> D.decodeString decodeDict garden
 Ok (Dict.fromList [("items",<internals>),("user",<internals>)])
     : Result Error (Dict.Dict String Value)
 ```
@@ -212,42 +261,43 @@ decodeDict : Decoder (Dict String D.Value)
 decodeDict =
     D.dict value
 
-{-| #! These type signatures are a bit confusing:
+{-| Get the `user` value from the dictionary
 
-1. Takes an `Ok Dict` (from `decodeDict`)
-2. Returns another `Result` (hopefully with a `"user"` value)
+> #! Keep your type signatures SIMPLE!!! If they confuse you,
+> you might be on the wrong path ...
 
-Now (headache) we have a more complex data type (a bit of a mouthful):
+The `D.Error` type is hard to build. You'd need `Value` for your `D.failure`
+branch, and I'm not sure how to do this!
+
+Overly complicated:
 
 ```
-Ok (Just <internals>) : Result Error (Maybe Value)
+Result x (Dict String D.Value) -> Result x (Maybe D.Value)
 ```
--}
-getUserValue : Result x (Dict String D.Value) -> Result x (Maybe D.Value)
-getUserValue =
-    Result.map (Dict.get "user") -- Returns `Ok` or `Err`
 
-{-| Finally we can extract the value
+Better and simpler:
+
+```
+Dict String D.Value -> User
+```
+
+Returns:
 
 ```
 ...
 ```
 -}
-getUser : Result x (Maybe D.Value) -> (Result D.Error User) -- #! Which return type?!
-getUser dict =
-    case dict of
-        Ok (Just value) ->
+getUserValue : Dict String D.Value -> Result D.Error User
+getUserValue dictionary =
+    case Dict.get "user" dictionary of
+        Just value ->
             D.decodeValue decodeUser value
 
-        Ok Nothing ->
-            -- Handle the case where the key is not found
-            -- There doesn't seem a way to generate a `Json.Decode.Error` here
-            Debug.todo "Key not found"
-
-        Err _ ->
-            -- Handle the error case
-            -- There doesn't seem a way to generate a `Json.Decode.Error` here
-            Debug.todo "Error occurred"
+        Nothing ->
+            Debug.todo "How do I handle this `Err`or correctly?!"
+            -- Err (D.Failure "Missing `user`" (D.value """20"""))
+            --                                 ^^^^^^^^^^^^^^^^^^
+            --                                 Should be a `Value`
 
 
 {-| It's a little easier to re-encode.
@@ -265,4 +315,4 @@ Dict.fromList [("items",<internals>),("user",<internals>)] : Dict.Dict String Va
 -}
 reEncode : Dict String D.Value -> String
 reEncode dictionary =
-    E.encode 0 (E.dict identity identity dictionary)
+    E.encode 0 (E.dict identity identity dictionary) -- presumes both parts are `Value`s.
