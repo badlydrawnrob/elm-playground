@@ -10,7 +10,7 @@ module Decode.Nested exposing (..)
 -}
 
 import Json.Decode as D exposing (..)
-import Url as U exposing (Url)
+import Url exposing (Url)
 
 -- Some simpler nested examples ------------------------------------------------
 
@@ -46,11 +46,12 @@ albumDecoder =
         (field "songs" (list songDecoder))
 
 songDecoder : Decoder Song
+songDecoder =
     D.map3 Song
         (field "title" string)
         (field "time" string)
         (D.maybe (field "link" urlDecoder))
 
 urlDecoder : Decoder Url
-urlDecoder
+urlDecoder =
     D.map U.fromString string

@@ -131,7 +131,7 @@ module CustomTypes.Songs exposing (..)
 
     Errors
     ------
-    > We're using `Result.mapX` here, no @rtfeldman's Elm Spa method.
+    > We're using `Result.mapX` here, not @rtfeldman's Elm Spa method.
 
     You might find it easier to use `Result.Extra.andMap` if your `Song` has many
     fields. That's easier than chaining `Result.map` or using `andThen`. If a
