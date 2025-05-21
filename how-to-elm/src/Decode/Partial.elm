@@ -28,6 +28,8 @@ module Decode.Partial exposing (..)
     > ... and far easier to reason about.
 
 
+    ----------------------------------------------------------------------------
+
     Using the `Dict`ionary method (it's tricky)
     -------------------------------------------
     > If you're going to use `Dict` then it's easier to use it for proper
@@ -40,15 +42,17 @@ module Decode.Partial exposing (..)
     3. Extract out the values, as simply as possible `(Ok (Just value))` -> `value`.
     4. `decodeString (D.dict value) garden` returns `<internals>` (hidden values)
 
-    Do you _really_ need to keep the full `Dict` around?
+    > Do you _really_ need to keep the full `Dict` around?
 
     - Using `Json.Decode.andThen` with a `decodeUser` decoder is easier.
     - Building up your record with `D.at` is way easier!
 
     Dictionary return values:
+    -------------------------
 
     > ⚠️ How complicated are your types?!
     > ⚠️ How difficult are your return values?
+    > ⚠️ How easy is your code to read and understand?
 
     What if our function looks like this: `D.decodeValue decodeUser value` and
     returns `Result D.Error User`? We have a big problem!!! An `Error` type
@@ -66,7 +70,7 @@ module Decode.Partial exposing (..)
     If you see some code like this:
 
     ```
-    getUserValue : Dict String D.Value -> User
+    getUserValue : Dict String D.Value -> Result D.Error User
     getUserValue dictionary =
         case Dict.get "user" dictionary of
             Just value ->
@@ -76,9 +80,13 @@ module Decode.Partial exposing (..)
                 Debug.crash "The key was not found" -- What type should this be?
     ```
 
-    You're probably on the WRONG path. Use `Json.Decode.at` or some other method.
-    It's WAY easier to read and understand.
+    You're probably on the WRONG path. Instead we'd want to use:
 
+    - `Json.Decode.at` or some other method to a full `Decoder User`
+    - Do a `case of` on the `Result` type and output `Result String User`, which
+      is a much simpler type to work with than `D.Error`.
+
+    ----------------------------------------------------------------------------
 
     Wishlist
     --------
