@@ -271,41 +271,40 @@ decodeDict =
 
 {-| Get the `user` value from the dictionary
 
-> #! Keep your type signatures SIMPLE!!! If they confuse you,
-> you might be on the wrong path ...
+> ⚠️ Keep your type signatures SIMPLE.
 
-The `D.Error` type is hard to build. You'd need `Value` for your `D.failure`
-branch, and I'm not sure how to do this!
+If your type signatures are difficult to follow, you might be on the wrong path.
+Here we've simplified our types a little so instead of `D.Error` we can return
+a `Maybe User`.
 
-Overly complicated:
+#! Now our `Nothing` branch also becomes easier. Instead of having to return a
+`Result D.Error User`, we can return a `Maybe User` type. Far easier to handle
+and build the error type — it's just a String! See below for `D.Error` version:
 
-```
-Result x (Dict String D.Value) -> Result x (Maybe D.Value)
-```
+    - @ [`Json.Decode.Error`]
 
-Better and simpler:
+This type signature is overly complicated:
 
-```
-Dict String D.Value -> User
-```
+    Result x (Dict String D.Value) -> Result x (Maybe D.Value)
 
-Returns:
+Here is a type signature that's simpler. You could potentially use `Result.map`
+to implement it:
 
-```
-...
-```
+    Dict String D.Value -> Maybe User
 -}
-getUserValue : Dict String D.Value -> Result D.Error User
+getUserValue : Dict String D.Value -> Maybe User
 getUserValue dictionary =
     case Dict.get "user" dictionary of
         Just value ->
-            D.decodeValue decodeUser value
+            case D.decodeValue decodeUser value of
+                Ok user ->
+                    Just user
+
+                Err _ ->
+                    Nothing
 
         Nothing ->
-            Debug.todo "How do I handle this `Err`or correctly?!"
-            -- Err (D.Failure "Missing `user`" (D.value """20"""))
-            --                                 ^^^^^^^^^^^^^^^^^^
-            --                                 Should be a `Value`
+            Nothing
 
 
 {-| It's a little easier to re-encode.
