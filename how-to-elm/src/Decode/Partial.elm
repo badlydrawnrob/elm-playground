@@ -251,9 +251,13 @@ decodeAt =
 -- (Json.Decode.at) the `"user"` value and decode it directly (discard the `Dict`)
 -- but then there are _far easier_ ways to do that (rather than using `Dict`).
 --
--- *****************************************************************************
--- ******************* ⚠️ NON-WORKING CODE BELOW *******************************
--- *****************************************************************************
+-- 1. Decode the `Dict` with `D.decodeString decodeDict garden`
+--     - This will give you an `Ok` or `Err` value ...
+--     - Unpack this in the `Msg` or use `Result.map` ...
+-- 2. `Result.map getUserValue` to get a `Result D.Error User`
+-- 3. Store our `User` in the `Model` and use it in the view.
+--
+-- #! Our encoder function is unfinished.
 
 
 {-| This will return a dictionary of `Value`s
@@ -272,42 +276,49 @@ decodeDict =
 {-| Get the `user` value from the dictionary
 
 > ⚠️ Keep your type signatures SIMPLE.
+> ⚠️ I'm far less confident about this code than the other versions.
 
 If your type signatures are difficult to follow, you might be on the wrong path.
 Here we've simplified our types a little so instead of `D.Error` we can return
 a `Maybe User`.
 
-#! Now our `Nothing` branch also becomes easier. Instead of having to return a
-`Result D.Error User`, we can return a `Maybe User` type. Far easier to handle
-and build the error type — it's just a String! See below for `D.Error` version:
+1. #! Our `Nothing` branch now becomes easier:
+    - `Result D.Error User` becomes `Maybe User`.
+    - We don't have to worry about a complicated `D.Error` type.
+2. Instead of the `Nothing` branch evaluating to `Nothing`, we use `Maybe.andThen`.
+    - This will evaluate to `Nothing` if the first map returns `Nothing`.
+
+#! Here's how our code used to look, when we returned `Result D.Error User`:
 
     - @ [`Json.Decode.Error`]
 
-This type signature is overly complicated:
+#! We now have a much simpler type signature to work from; our original type
+signature (below) was way more complicated to work with:
 
     Result x (Dict String D.Value) -> Result x (Maybe D.Value)
 
-Here is a type signature that's simpler. You could potentially use `Result.map`
-to implement it:
-
-    Dict String D.Value -> Maybe User
 -}
 getUserValue : Dict String D.Value -> Maybe User
 getUserValue dictionary =
-    case Dict.get "user" dictionary of
-        Just value ->
-            case D.decodeValue decodeUser value of
-                Ok user ->
-                    Just user
+    Dict.get "user" dictionary -- returns `Maybe Value`
+        |> Maybe.andThen -- returns `Nothing` if above value is `Nothing`.
+            (\maybeValue ->
+                case D.decodeValue decodeUser maybeValue of
+                    Ok user ->
+                        Just user
 
-                Err _ ->
-                    Nothing
+                    Err _ ->
+                        Nothing)
 
-        Nothing ->
-            Nothing
-
+{-| Now we've got to reassemble our dictionary
+-}
+putUserValue : User -> Dict String D.Value -> Dict String D.Value
+putUserValue user dictionary =
+    Debug.todo "Ai says it's `Dict.insert "user" (encodeUser user) dictionary`"
 
 {-| It's a little easier to re-encode.
+
+> Presumes both dictionary parts are `Value`s.
 
 1. `identity` returns the same value it takes ...
 2. So for both `(k -> String)` and `(v -> Value)` we can return itself.
