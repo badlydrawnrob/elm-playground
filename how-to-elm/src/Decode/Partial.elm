@@ -23,9 +23,13 @@ module Decode.Partial exposing (..)
 
     🚀 Keep your type signatures simple
     -----------------------------------
-    > It's easier to read `Maybe User -> User` than
-    > `Result x (Maybe D.Value) -> Result D.Error User`
-    > ... and far easier to reason about.
+    > It's easier to read `Maybe User -> User` than it is to read
+    > `Result x (Maybe D.Value) -> Result D.Error User` ... and FAR easier
+    > to reason about.
+
+    Whenever you see a difficult type signature, STOP. Sketch out the data flow
+    and determine if the types can be simplified. Perhaps your program is too
+    complicated or data types too nested (`Ok (Just value)`)
 
 
     ----------------------------------------------------------------------------
@@ -288,14 +292,13 @@ a `Maybe User`.
 2. Instead of the `Nothing` branch evaluating to `Nothing`, we use `Maybe.andThen`.
     - This will evaluate to `Nothing` if the first map returns `Nothing`.
 
-#! Here's how our code used to look, when we returned `Result D.Error User`:
+#! We now have a much simpler type signature to work from; Here's two examples
+from our original code that are WAY more complicated then they need to be:
 
-    - @ [`Json.Decode.Error`]
-
-#! We now have a much simpler type signature to work from; our original type
-signature (below) was way more complicated to work with:
-
+    Dict String D.Value -> Result D.Error User
     Result x (Dict String D.Value) -> Result x (Maybe D.Value)
+
+    - @ [`Json.Decode.Error`](https://tinyurl.com/decode-partial-0d86c38)
 
 -}
 getUserValue : Dict String D.Value -> Maybe User
