@@ -134,7 +134,7 @@ My goal is prototyping, so I'm a little lax, but for large programs with bigger 
 
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
-- [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (Might be a little outdated)
+- [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (might be a little outdated)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)[^4]
 - [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
@@ -150,6 +150,6 @@ My goal is prototyping, so I'm a little lax, but for large programs with bigger 
 
 [^3]: All (or most) of [Richard Feldmans talks](https://www.youtube.com/playlist?list=PL1u6QhVvC9FX1EZeIfIbG2VgVHWEyFofw)
 
-[^4]: I'm lazy, and not a proper programmer, so I rarely write unit tests. This isn't the _correct_ way, but Elm types give you quite a lot of guarantees, and I test the program as a regular user (or QA) might do. If any bugs arise, a visitor can raise a ticket and tests can be written.
+[^4]: I'm being a little lazy here. I don't consider myself a "proper" computer scientist (and I don't code that often); more a pragmatic programmer. My goal is prototyping, so I rarely write unit tests. This isn't the _correct_ way, but Elm types give a lot of guarantees: testing the program as a regular user (like a QA) might be enough. If any bugs arise, a visitor can raise a ticket and tests can be written.
 
 [^5]: There's an alternative by Dwayne called [Elm Conduit](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758)
