@@ -263,8 +263,8 @@ decodeAt =
 
 
 -- Method #3: `Json.Decode.dict` -----------------------------------------------
--- > ⚠️ Dealing with these functions without `Msg` types is a hassle. There's lots
--- > of `Ok`s and `Just`s hanging around.
+-- > ⚠️ Using these functions without `Msg` types is a hassle. There's lots of
+-- > `Ok` results and `Just`s hanging around. Prefer simpler types.
 --
 -- Much more complicated than our previous examples: more steps to get our working
 -- dictionary and partial `User` decoded. Alternatively you could directly
@@ -299,6 +299,7 @@ decodeDict =
 {-| Get the `user` value from the dictionary
 
 > ⚠️ Keep your type signatures SIMPLE.
+> ⚠️ Prefer simpler type signatures where possible.
 > ⚠️ I was far less confident coding this up than our other decoders.
 
 If your type signatures are difficult to follow, you might be on the wrong path.
@@ -335,12 +336,13 @@ getUserValue dictionary =
 {-| Re-assemble our dictionary
 
 > `Dict.insert` will replace the existing value if it exists.
-> I've rearranged the argument order as the dictionary changes the least!
 
-We can curry the function with `Maybe.map (putUserValue dict) maybeUser`.
+We can curry the function with `Maybe.map (putUserValue dict) maybeUser` (I
+reordered the argument order for this purpose). Our `maybeUser` needs to handle
+both cases.
 
-Our `maybeUser` needs to handle both cases. The dictionary would contain the
-undecoded `items` value and (an optional) `user` value to update.
+The dictionary would contain the undecoded `items` value and (an optional)
+`user` value to update.
 -}
 putUserValue : Dict String D.Value -> User -> Dict String D.Value
 putUserValue dictionary user =
