@@ -29,49 +29,36 @@ module Decode.Partial exposing (..)
 
     Whenever you see a difficult type signature, STOP. Sketch out the data flow
     and determine if the types can be simplified. Perhaps your program is too
-    complicated or data types too nested (`Ok (Just value)`)
+    complicated or data types too nested (`Ok (Just value)`). Unless there's a
+    very good reason to use something more complciated, DON'T. YAGNI.
 
+    1. How easy is it to decode your values? How many steps?
+    2. What guarantees do you need? Can you avoid `Ok`s and `Just's?
+    3. Our two "direct" decoders are far easier than the `Dict` decoder.
+        - And they essentially do exactly the same thing.
+    4. Always ask: what are the benefits of this type? What are the negatives?
+        - If there's no obvious benefit, start with YAGNI mentality.
 
     ----------------------------------------------------------------------------
 
-    Using the `Dict`ionary method (it's tricky)
-    -------------------------------------------
-    > If you're going to use `Dict` then it's easier to use it for proper
-    > _fuller_ dictionary decoders, rather than this partial decoder!
-
-    - @ [`Json.Decode.dict`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#dict)
-
-    1. A Dict requires types to be the same (here they are both `Value`)
-    2. Pull out the `"user"` value (using simple type signatures as mentioned above)
-    3. Extract out the values, as simply as possible `(Ok (Just value))` -> `value`.
-    4. `decodeString (D.dict value) garden` returns `<internals>` (hidden values)
-
-    > Do you _really_ need to keep the full `Dict` around?
-
-    - Using `Json.Decode.andThen` with a `decodeUser` decoder is easier.
-    - Building up your record with `D.at` is way easier!
-
-    Dictionary return values:
-    -------------------------
+    Simplifying return values:
+    --------------------------
 
     > ⚠️ How complicated are your types?!
     > ⚠️ How difficult are your return values?
     > ⚠️ How easy is your code to read and understand?
 
-    What if our function looks like this: `D.decodeValue decodeUser value` and
-    returns `Result D.Error User`? We have a big problem!!! An `Error` type
-    looks a bit like this:
+    If our function `D.decodeValue decodeUser value` returns `Result D.Error User`
+    we have a big problem!!! An `Error` type looks a bit like this:
 
     ```
     Err (Failure ("Expecting a STRING") <internals>)
     Err (Failure ("Expecting an OBJECT with a field named `use`") <internals>)
     ```
 
-    `Error` isn't really supposed to be written out by hand; yet our function
-    could return a `Nothing`: what value do we return? It should be `D.Error`!
-    But that's hard to write! And on, and on, and on. Save yourself headaches.
-
-    If you see some code like this:
+    You're probably on the WRONG path if you're returning a `D.Error` outside of
+    a `Msg` type. `Error` isn't really supposed to be written out by hand; If your
+    return value is a `Result D.Error ...` rethink your types:
 
     ```
     getUserValue : Dict String D.Value -> Result D.Error User
@@ -84,11 +71,32 @@ module Decode.Partial exposing (..)
                 Debug.crash "The key was not found" -- What type should this be?
     ```
 
-    You're probably on the WRONG path. Instead we'd want to use:
+    How could this be simplified and save ourselves a big headache?
 
-    - `Json.Decode.at` or some other method to a full `Decoder User`
-    - Do a `case of` on the `Result` type and output `Result String User`, which
-      is a much simpler type to work with than `D.Error`.
+    1. Instead of `Result D.Error User` aim for `User` or `Maybe User`
+    2. Consider using a `case` statement on the `Result` type ...
+        - A `Result String User` is easier to work with (but (1) is best!)
+
+    ----------------------------------------------------------------------------
+
+    Using the `Dict`ionary method (it's tricky)
+    -------------------------------------------
+    > ⚠️ Expect a lot of unpacking of `Result` and `Maybe` types!
+    > ⚠️ What benefit are we gaining from using a dictionary type? Any?
+
+        - @ [`Json.Decode.dict`](https://package.elm-lang.org/packages/elm/json/latest/Json-Decode#dict)
+
+    1. A Dict requires types to be the same (here they are both `Value`s)
+    2. Pull out the `"user"` value (using simple type signatures as mentioned above)
+    3. Extract out the values, as simply as possible `(Ok (Just value))` -> `value`.
+    4. `decodeString (D.dict value) garden` returns `<internals>` (hidden values)
+
+    > I'd advise (in general) to only use `Dict`ionary decoders if you're
+    > planning to decode the whole object as a dictionary. Do you _really_ need
+    > to keep the full `Dict` around?
+
+    Consider using `Json.Decode.andThen` if you don't need to keep the `"items"`
+    value around. However, `D.at` is way easier!
 
     ----------------------------------------------------------------------------
 
@@ -96,7 +104,12 @@ module Decode.Partial exposing (..)
     --------
     > Imagine that it's a user profile/preference file!
 
-    1. Using `Json.Decode.Value` for a particular element (like a `List Record`)
+    1. We could use a `Json.Decode.Value` for a _part_ of a dictionary, if it's
+       unlikely to be updated (but might as well decode it and leave it alone)
+    2. Our dictionary style decoder results in a `Maybe User`.
+        - How confident are we there'll ALWAYS be a `user` value in our object?
+        - If we're 100% confident, `Dict.get` is probably overkill — just use a
+          simpler decoder (you can always use `D.nullable`)
 
 -}
 
@@ -250,18 +263,24 @@ decodeAt =
 
 
 -- Method #3: `Json.Decode.dict` -----------------------------------------------
--- This seems to be the most complicated solution, with more steps to fully
--- decode the `Value` we want (the `"user"` value). It'd be a lot easier to simply
--- (Json.Decode.at) the `"user"` value and decode it directly (discard the `Dict`)
--- but then there are _far easier_ ways to do that (rather than using `Dict`).
+-- > ⚠️ Dealing with these functions without `Msg` types is a hassle. There's lots
+-- > of `Ok`s and `Just`s hanging around.
 --
--- 1. Decode the `Dict` with `D.decodeString decodeDict garden`
---     - This will give you an `Ok` or `Err` value ...
---     - Unpack this in the `Msg` or use `Result.map` ...
--- 2. `Result.map getUserValue` to get a `Result D.Error User`
--- 3. Store our `User` in the `Model` and use it in the view.
+-- Much more complicated than our previous examples: more steps to get our working
+-- dictionary and partial `User` decoded. Alternatively you could directly
+-- `Json.Decode.at` the `"user"` dictionary, but our previous examples make that
+-- MUCH easier to do.
 --
--- #! Our encoder function is unfinished.
+-- Steps to use:
+--
+-- 1. Decode the `Dict` with `Http.expectJson` or `D.decodeString`
+--     - Will return an `Ok` or `Err` value ...
+--     - You can unpack these in a `Msg` or with `Result.map`
+-- 2. `Result.map getUserValue` with our `Ok (Dict.fromList ...)` result
+-- 3. Store our `Maybe User` value in the `Model`.
+--     - Do some work with our `User` values
+-- 4. Save our `User` value back into the `Dict` with `putUserValue`
+--     - You might have to use a `Maybe.map` here and curry the function.
 
 
 {-| This will return a dictionary of `Value`s
@@ -280,7 +299,7 @@ decodeDict =
 {-| Get the `user` value from the dictionary
 
 > ⚠️ Keep your type signatures SIMPLE.
-> ⚠️ I'm far less confident about this code than the other versions.
+> ⚠️ I was far less confident coding this up than our other decoders.
 
 If your type signatures are difficult to follow, you might be on the wrong path.
 Here we've simplified our types a little so instead of `D.Error` we can return
@@ -313,11 +332,19 @@ getUserValue dictionary =
                     Err _ ->
                         Nothing)
 
-{-| Now we've got to reassemble our dictionary
+{-| Re-assemble our dictionary
+
+> `Dict.insert` will replace the existing value if it exists.
+> I've rearranged the argument order as the dictionary changes the least!
+
+We can curry the function with `Maybe.map (putUserValue dict) maybeUser`.
+
+Our `maybeUser` needs to handle both cases. The dictionary would contain the
+undecoded `items` value and (an optional) `user` value to update.
 -}
-putUserValue : User -> Dict String D.Value -> Dict String D.Value
-putUserValue user dictionary =
-    Debug.todo "Ai says it's `Dict.insert "user" (encodeUser user) dictionary`"
+putUserValue : Dict String D.Value -> User -> Dict String D.Value
+putUserValue dictionary user =
+    Dict.insert "user" (encodeUser user) dictionary
 
 {-| It's a little easier to re-encode.
 
@@ -336,4 +363,4 @@ Dict.fromList [("items",<internals>),("user",<internals>)] : Dict.Dict String Va
 -}
 reEncode : Dict String D.Value -> String
 reEncode dictionary =
-    E.encode 0 (E.dict identity identity dictionary) -- presumes both parts are `Value`s.
+    E.encode 0 (E.dict identity identity dictionary)

@@ -19,6 +19,9 @@
 
 - The `"2:00"` problem and `"cur|sor"` (simplify your inputs)
 - DRAW! first and sketch out the problem routes (how many steps to do a thing?)
+- Think about ALL THE POSSIBLE types, their benefits, their negatives
+    - E.g: Partial dictionary decoder results in lots of `Ok`s and `Maybe`s to unpack.
+    - What benefits, EXACTLY, do we gain from this more complicated type?
 - Simplify your types (`SingleField.elm` and is this necessary?)
 - `Passport.elm` and removing problems from your learning frame
     - The "checklist for validating" is very useful
