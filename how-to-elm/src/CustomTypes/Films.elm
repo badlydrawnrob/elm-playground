@@ -12,7 +12,7 @@ module CustomTypes.Films exposing (..)
 
         Make the spec less dumb!
         Remember that comments can become outdated if code changes:
-        @ [Previous spec]
+        @ [Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
 
     The sentence method
     -------------------
