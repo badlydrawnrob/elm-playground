@@ -74,8 +74,9 @@ module CustomTypes.Songs exposing (..)
       deep, which adds complexity (how to pass a `Song` to a `Song`?!)
 
 
-    ---------------------------------------------------------
-    The previous version looked like this (storing `Result`):
+    ----------------------------------------------------------------------------
+    The previous version looked like this (storing `Result`). You shouldn't be
+    storing computed data like this:
 
         type alias Validate a
             = Result String a
@@ -85,7 +86,11 @@ module CustomTypes.Songs exposing (..)
               , valid : Validate a
               }
 
-    ---------------------------------------------------------
+        - @ [Songs first version](https://github.com/badlydrawnrob/elm-playground/blob/71fda7d64bc716665b8fbe5b1230b41fcb17dedf/how-to-elm/src/CustomTypes/Songs.elm)
+        - @ [Songs alt `UserInput` type](https://github.com/badlydrawnrob/elm-playground/blob/71fda7d64bc716665b8fbe5b1230b41fcb17dedf/how-to-elm/src/CustomTypes/SongsAlt.elm)
+        - @ [Failed experiments](https://github.com/badlydrawnrob/elm-playground/blob/71fda7d64bc716665b8fbe5b1230b41fcb17dedf/how-to-elm/src/CustomTypes/SongsEditable.elm)
+
+    ----------------------------------------------------------------------------
 
     The sentence method
     -------------------
