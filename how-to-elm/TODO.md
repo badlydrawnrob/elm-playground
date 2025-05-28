@@ -4,6 +4,11 @@
 > The goal is to code as LITTLE as possible.
 > The goal is to create as SIMPLE code as possible.
 
+Ideally have ONE idea per card (that is, the knowledge points you're trying to learn) — for example `Films.elm` could be around app architecture decisions. `Songs.elm` could be around custom types, and so on.
+
+
+## Some changes
+
 For example, the `/CustomTypes` section has some bad habits:
 
 1. Show a `Result.mapX` (this only shows the `Err` that's first)
