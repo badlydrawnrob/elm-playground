@@ -30,6 +30,27 @@ module CustomTypes.Films exposing (..)
         to the review form (what's the best UI for this?)."
     "Finally, expect a slow 4G connection (how do I load this quickly?)"
 
+    Wishlist
+    --------
+    > #! Group these and order them ...
+    > #! A `json` list can start with `[]` no objects, but can't be saved with
+    >    no objects! It's all or nothing.
+
+    1. Only the `/films` endpoint is available, reviews are implicit (don't need `/films/:id` endpoint)
+    2. Save the review API result to the Film review form
+    3. User must have `Cred` to perform action (on their films)
+    4. Multiple reviews can be added to the film (user is admin)
+    5. Errors are displayed on SAVE (not automatically)
+    6. Films show full details and all reviews (no preview state)
+    7. A review only needs simple error checking `isEmpty` (maybe `Result.andMap`)
+    8. Do we have minimal data and minimal state? (what can be removed?)
+    9. All images must be small jpegs (and fast loading)
+    10. A user's `Cred` is read-only (opaque type; it gets setup by Auth0)
+    11. Do we get any benefit out of `Review` being a custom type? (not stringly typed)
+    12. @rtfeldman `List Validated` used for the `Film` type
+
+    ----------------------------------------------------------------------------
+
     The customer journey
     --------------------
     > Where do you start? Sketch out the user story.
@@ -140,9 +161,16 @@ module CustomTypes.Films exposing (..)
 
 -}
 
+import Html exposing (text)
+
+import Iso8601
 import Time
+
 import Url as U exposing (fromString, toString, builder)
 import Url.Builder as UB exposing (absolute, crossOrigin)
+
+import Json.Decode as D exposing (Decoder)
+import Json.Encode as E
 
 
 -- Model -----------------------------------------------------------------------
@@ -167,7 +195,7 @@ type alias Model =
     -- Errors
     , error : List String -- #! Only our `Film` form needs this
     -- State
-    , serverState : ServerState -- Loading, LoadingSlowly, Success, Error
+    , serverState : Server
     , formState : FormState -- NoForm, EditForm
     }
 
@@ -180,8 +208,8 @@ type Server a
     | Error String -- Error message
 
 -- Form ------------------------------------------------------------------------
--- Here we'll need two forms, one for a `Film` and one for `Review`. Our `Film`
--- forms have two states: new and update.
+-- We have two form states for `Film` but we'll keep our `Review` simple and handle
+-- that within our `Msg`.
 
 type Form
     = NewFilm
@@ -202,6 +230,9 @@ type Form
 --    @ https://realworld-docs.netlify.app/specifications/frontend/routing/
 --
 -- (1) Alternatively this could be a flat record, not a custom type!
+--     - I've shortened `Internals` for convenience. In Elm Spa they're used as
+--       "read only" data that shouldn't be accessed directly. See the original:
+--     - @ https://tinyurl.com/elm-spa-article-internals
 -- (2) A film can have zero reviews (`null` value in the json)
 -- (3) How can we narrow the types with extensible records?
 --     - @ https://ckoster22.medium.com/advanced-types-in-elm-extensible-records-67e9d804030d
@@ -209,45 +240,122 @@ type Form
 type alias Film
     = Film Internals (Maybe (List Review)) -- #! (1) (2)
 
-type alias FilmID
+type FilmID
     = FilmID Int -- Convert from `json-server` ID
+
+type alias ImageID
+    = String
 
 type alias Internals =
     { id : FilmID
     , title : String
     , trailer : Url
     , summary : String
-    , image : Url -- Eventually `-S`, `-M`, `-L`
-    , tags : Maybe (List String) -- Optional
+    , image : ImageID -- #! One size, eventually `-S`, `-M`, `-L`
+    , tags : Maybe (List String) -- Optional (`null` allowed)
     }
 
-type alias FilmRecord a -- #! (3) Is this really required?
+type alias FilmMeta a -- #! (3) Is this really required?
     = { a
         | id : FilmID
         , title : String
         , trailer : Url
         , summary : String
+        , image : ImageID
         , tags : Maybe (List String) -- Optional
       }
+
+decodeFilm : Decoder Film
+decodeFilm =
+    D.map2 Film
+        decodeFilmMeta
+        (D.list decodeReviews)
+
+decodeFilmMeta : Decoder Internals
+decodeFilmMeta =
+    D.map6 Internals
+        (D.field "id" (D.map FilmID D.string))
+        (D.field "title" string)
+        (D.field "trailer" (D.map U.fromString D.string))
+        (D.field "summary" D.string)
+        (D.field "image" D.string)
+        (D.field "tags" (D.nullable (D.list D.string)))
 
 
 -- Review ----------------------------------------------------------------------
 -- (1) Records are useful for different fields with the same type, or lots of
 --     values to be stored/accessed publically. Otherwise, consider using a
 --     custom type. A custom type also allows you to AVOID nested records.
+-- (2) We'll utilize `rtfeldman/elm-iso8601-date-strings` to convert times
+--     - @ https://timestampgenerator.com/
+-- (3) Stars can only ever be a number between 1-5. See "Cardinality":
+--     - @ https://guide.elm-lang.org/appendix/types_as_sets#cardinality
+--     - We don't allow `.5` decimal points, and round up if a review has them.
 
 type Review
     = Review TimeStamp Name Stars String -- #! (1)
 
 type alias TimeStamp
-    = Time.Posix -- #! Change to ISO (rtfeldman)?
+    = Time.Posix -- (2)
 
 type Name
     = Name String -- This could be more complex
 
 type Stars
-    = Stars Int
+    = One
+    | Two
+    | Three
+    | Four
+    | Five
 
+starsToNumber : Stars -> Int
+starsToNumber star =
+    case star of
+        One   -> 1
+        Two   -> 2
+        Three -> 3
+        Four  -> 4
+        Five  -> 5
+
+decodeReview : Decoder Review
+decodeReview =
+    D.map4 Review
+        (D.field "timestamp" Iso8601.decoder)
+        (D.field "name" D.string)
+        (D.field "review" D.string)
+        (D.field "stars" decodeStars)
+
+decodeStars : Decoder Stars
+decodeStars =
+    let
+        decodeNumber number =
+            case number of
+                1 -> One
+                2 -> Two
+                3 -> Three
+                4 -> Four
+                5 -> Five
+    in
+    D.string |> D.andThen decodeNumber
+
+
+-- Http ------------------------------------------------------------------------
+-- See the `data-playground/mocking/films` repo
+
+url : String
+url = "http://localhost:3000/films"
+
+getFilms : Result Http.Error (List Film)
+getFilms =
+    Http.get
+        { url = "https://elm-lang.org/assets/public-opinion.txt"
+        , expect = Http.expectJson GotFilms (D.list decodeFilm)
+        }
+
+-- Messages --------------------------------------------------------------------
+
+type Msg =
+    GotFilms (Result Http.Error (List Film)) -- #! Should be a `Maybe`
 
 -- Film functions --------------------------------------------------------------
 -- Add, edit, delete, save, orderBy stars total (update server right away)
@@ -262,3 +370,6 @@ type Stars
 --         consider using a `viewInput` function to reduce duplication.
 -- Images: lazy load the images with `loading="lazy"`
 --         How does `Html.Lazy` work? Any benefits?
+
+-- main =
+--     text (Debug.toString (D.decodeString
