@@ -162,11 +162,12 @@ module CustomTypes.Films exposing (..)
 -}
 
 import Html exposing (text)
+import Http
 
 import Iso8601
 import Time
 
-import Url as U exposing (fromString, toString, builder)
+import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
 
 import Json.Decode as D exposing (Decoder)
@@ -195,8 +196,8 @@ type alias Model =
     -- Errors
     , error : List String -- #! Only our `Film` form needs this
     -- State
-    , serverState : Server
-    , formState : FormState -- NoForm, EditForm
+    , serverState : Server (List Film) -- #! Is this correct?
+    , formState : Form -- NoForm, EditForm
     }
 
 -- Server ----------------------------------------------------------------------
@@ -213,7 +214,7 @@ type Server a
 
 type Form
     = NewFilm
-    | EditFilm FilmId -- reviews do NOT have an ID
+    | EditFilm FilmID -- reviews do NOT have an ID
 
 
 -- Film ------------------------------------------------------------------------
@@ -237,11 +238,11 @@ type Form
 -- (3) How can we narrow the types with extensible records?
 --     - @ https://ckoster22.medium.com/advanced-types-in-elm-extensible-records-67e9d804030d
 
-type alias Film
+type Film
     = Film Internals (Maybe (List Review)) -- #! (1) (2)
 
 type FilmID
-    = FilmID Int -- Convert from `json-server` ID
+    = FilmID String -- #! `json-server` unfortunately stores IDs as `String`
 
 type alias ImageID
     = String
@@ -249,7 +250,7 @@ type alias ImageID
 type alias Internals =
     { id : FilmID
     , title : String
-    , trailer : Url
+    , trailer : Maybe Url
     , summary : String
     , image : ImageID -- #! One size, eventually `-S`, `-M`, `-L`
     , tags : Maybe (List String) -- Optional (`null` allowed)
@@ -259,7 +260,7 @@ type alias FilmMeta a -- #! (3) Is this really required?
     = { a
         | id : FilmID
         , title : String
-        , trailer : Url
+        , trailer : Maybe Url
         , summary : String
         , image : ImageID
         , tags : Maybe (List String) -- Optional
@@ -269,14 +270,14 @@ decodeFilm : Decoder Film
 decodeFilm =
     D.map2 Film
         decodeFilmMeta
-        (D.list decodeReviews)
+        (D.nullable (D.list decodeReview))
 
 decodeFilmMeta : Decoder Internals
 decodeFilmMeta =
     D.map6 Internals
         (D.field "id" (D.map FilmID D.string))
-        (D.field "title" string)
-        (D.field "trailer" (D.map U.fromString D.string))
+        (D.field "title" D.string)
+        (D.field "trailer" (D.map U.fromString D.string)) -- #! Forces a `Maybe`
         (D.field "summary" D.string)
         (D.field "image" D.string)
         (D.field "tags" (D.nullable (D.list D.string)))
@@ -293,7 +294,7 @@ decodeFilmMeta =
 --     - We don't allow `.5` decimal points, and round up if a review has them.
 
 type Review
-    = Review TimeStamp Name Stars String -- #! (1)
+    = Review TimeStamp Name String Stars -- #! (1)
 
 type alias TimeStamp
     = Time.Posix -- (2)
@@ -321,7 +322,7 @@ decodeReview : Decoder Review
 decodeReview =
     D.map4 Review
         (D.field "timestamp" Iso8601.decoder)
-        (D.field "name" D.string)
+        (D.field "name" (D.map Name D.string))
         (D.field "review" D.string)
         (D.field "stars" decodeStars)
 
@@ -330,13 +331,14 @@ decodeStars =
     let
         decodeNumber number =
             case number of
-                1 -> One
-                2 -> Two
-                3 -> Three
-                4 -> Four
-                5 -> Five
+                1 -> D.succeed One
+                2 -> D.succeed Two
+                3 -> D.succeed Three
+                4 -> D.succeed Four
+                5 -> D.succeed Five
+                _ -> D.fail "This is not the number you're looking for!"
     in
-    D.string |> D.andThen decodeNumber
+    D.int |> D.andThen decodeNumber
 
 
 -- Http ------------------------------------------------------------------------
@@ -345,7 +347,7 @@ decodeStars =
 url : String
 url = "http://localhost:3000/films"
 
-getFilms : Result Http.Error (List Film)
+getFilms : Cmd Msg
 getFilms =
     Http.get
         { url = "https://elm-lang.org/assets/public-opinion.txt"
