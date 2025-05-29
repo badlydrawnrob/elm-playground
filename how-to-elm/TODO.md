@@ -6,6 +6,12 @@
 
 Ideally have ONE idea per card (that is, the knowledge points you're trying to learn) — for example `Films.elm` could be around app architecture decisions. `Songs.elm` could be around custom types, and so on.
 
+## Bugs
+
+1. A recurring error is html or js caching, so new changes don't show.
+    - Use `elm-watch` or flush the cache (#! what about end-user's browser?)
+    - [Force clear cache with js](https://locall.host/force-clear-browser-cache-javascript)
+
 
 ## Some changes
 
