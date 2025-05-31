@@ -10,7 +10,7 @@ module CustomTypes.Films exposing (..)
     you need to know before you start coding? Can you encapsulate everything we
     need to know about the program in 1-2 Markdown pages?
 
-        Make the spec less dumb!
+        -Make the spec less dumb!-
         Remember that comments can become outdated if code changes:
         @ [Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
 
@@ -32,29 +32,42 @@ module CustomTypes.Films exposing (..)
 
     Wishlist
     --------
-    > #! Group these and order them ...
-    > #! A `json` list can start with `[]` no objects, but can't be saved with
-    >    no objects! It's all or nothing.
+    > 1. Do we have minimal state and minimal data? (Reduce!)
+    > 2. Our `json` endpoint could start with `[]` zero objects ... but we
+    >    can't save to the server without any objects!
 
-    1. Only the `/films` endpoint is available, reviews are implicit (don't need `/films/:id` endpoint)
-    2. Save the review API result to the Film review form
-    3. User must have `Cred` to perform action (on their films)
-    4. Multiple reviews can be added to the film (user is admin)
-    5. Errors are displayed on SAVE (not automatically)
-    6. Films show full details and all reviews (no preview state)
-    7. A review only needs simple error checking `isEmpty` (maybe `Result.andMap`)
-    8. Do we have minimal data and minimal state? (what can be removed?)
-    9. All images must be small jpegs (and fast loading)
-    10. A user's `Cred` is read-only (opaque type; it gets setup by Auth0)
-    11. Do we get any benefit out of `Review` being a custom type? (not stringly typed)
-    12. @rtfeldman `List Validated` used for the `Film` type
+    1. The only endpoint is `/films`. We're not worried about `:id` endpoints.
+        - A `Review` is implicitly tied to a `Film`.
+        - Errors are displayed on SAVE (not automatically)
+        - Errors use @rtfeldman's `List Validated` type
+    2. `Film` has no `Preview` state (like Elm Spa)
+        - All `Film` data is loaded if it exists on the server.
+        - You can limit what is shown in the `List Film` view.
+    3. All image URLs must be `jpeg` format and small (for fast loading)
+        - Add `loading="lazy"` to the `img` tag for the view
+    4. A `Review` must have an existing `Film` to attach itself to.[^1]
+        - Multiple reviews can be added to a film (the user is an admin)
+        - Errors are simple (`isEmpty`). Everything is required.
+        - We can implement `Result.andMap` to check for `null` values.
+    5. We can ping a `/reviews` API (from `data-playground` repo) to:
+        - Search a review by `:id` (a bit like an ISBN number)
+        - Copy the review to the `Review` form
+    6. The end-user must have `Cred` (an existing logged-in account)
+        - Only then can they perform any actions (add, edit, delete, save)
+        - Ideally this type is read-only (opaque type; it's setup by Auth0)
+
+    [^1]: Does `Review` really need to be a custom type? In Dwayne's Elm Spa,
+          he primarily uses records. Either way stringly typed is risky:
+
+          - @ https://tinyurl.com/dwayne-elm-spa-article-record
+          - @ https://dev.to/dwayne/yet-another-tour-of-an-open-source-elm-spa-1672#:~:text=The%20Page.*%20modules
 
     ----------------------------------------------------------------------------
 
     The customer journey
     --------------------
-    > Where do you start? Sketch out the user story.
-    > What app architecture decisions did other apps choose? (Rotten Tomatoes)
+    > ⚠️ Where do you start? Sketch out the user story.
+    > 🔍 What app architecture decisions did other apps choose? (Rotten Tomatoes)
 
     Start with the end-user's experience in mind. Is it performing as they
     would expect? Do they _really_ need this feature?
@@ -66,6 +79,17 @@ module CustomTypes.Films exposing (..)
     5. Do they have the correct permissions do do this? (only their films)
     6. Are there restrictions in place (e.g: only ONE review per user)? (No)
     7. Are we displaying errors right away, or on SAVE?
+
+        🤔 Example: Our "Add Review" from an API state
+        ----------------------------------------------
+        > What's the expected behaviour? What's easier for the user?
+
+        Right now we're directly saving the `Review` to the review form.
+        This makes things quicker, but not necessarily easier ...
+
+        "What if the user already has some data in the review form?"
+        "What if they want to add a review to a film that doesn't exist?"
+        "What if the film isn't what they wanted. How do they rectify that?"
 
 
     Handling state
@@ -161,44 +185,88 @@ module CustomTypes.Films exposing (..)
 
 -}
 
-import Html exposing (text)
+import Browser
+import Html exposing (Html, text)
 import Http
-
 import Iso8601
+import Json.Decode as D exposing (Decoder)
+import Json.Encode as E
+import Process
+import Random
+import Task
 import Time
-
 import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
 
-import Json.Decode as D exposing (Decoder)
-import Json.Encode as E
+import Debug
 
 
 -- Model -----------------------------------------------------------------------
 -- Our man in a van holds a list of films, we want to simplify data where we can.
 -- On building our `Film`, we need to convert our `String` inputs to a proper
 -- data type.
+--
+-- (1) The van will probably start with an `[]` empty state
+--     - A new van man's server will have no films (very likely)
+-- (2) The `timestamp` should NOT be entered by the user, only set by Elm.
+--     For this reason, it's a hidden field (not visible in the view). It's only
+--     used if we ping the `/reviews` API to get a review.
+-- (3) ⏰ Is your 4g connection slow? Notify users with `LoadingSlowly` state.
+--     - @ https://tinyurl.com/elm-spa-loading-slowly
+--     - His version is much more granular (`model.comments = LoadingSlowly` etc)
 
 type alias Model =
-    { van : List Film
+    { van : Maybe (List Film) -- (1)
     -- The `Film` form
     -- #! Let `json-server` handle the ID (as would a real server)
+    -- #! Remember not to store computed data! Everything is a `String`
     , title : String
     , trailer : String -- convert to `URL`
     , image : String -- #! An image uploader could be used (later)
     , summary : String
-    , tags : Maybe (List String)
+    , tags : String
     -- The `Review` form
-    -- TimeStamp handled by Elm (not user input)
+    , timestamp: Time.Posix -- #! (2)
+    , name : String
+    , review : String
     , rating : Int
-    , reviewer : String -- Short text
-    , description : String -- Long text
     -- Errors
-    , error : List String -- #! Only our `Film` form needs this
+    , errors : List String -- #! Only our `Film` form needs this
     -- State
-    , serverState : Server (List Film) -- #! Is this correct?
-    , formState : Form -- NoForm, EditForm
+    , formState : Form
+    , loadedState : Server (List Film) -- #! Is this correct?
     }
+
+init : () -> (Model, Cmd Msg)
+init _ =
+    ({ van = Just []
+      -- The `Film` form
+      , title = ""
+      , trailer = ""
+      , image = ""
+      , summary = ""
+      , tags = ""
+      -- The `Review` form
+      , timestamp = Time.millisToPosix 0 -- Initial timestamp
+      , name = ""
+      , review = ""
+      , rating = 0
+      -- Errors
+      , errors = []
+      -- State
+      , formState = NewFilm
+      , loadedState = Loading
+      }
+    -- 🔄 Initial command to load films
+    , Cmd.batch
+        [ getFilms
+        -- ⏰ @rtfeldman's trick for slow loading data. This is in a `Loading`
+        -- package and comes with an error message and a spinner icon ...
+        -- @ https://github.com/rtfeldman/elm-spa-example/blob/master/src/Loading.elm
+        , Task.perform (\_ -> PassedSlowLoadingThreshold) Process.sleep 500
+    ]
+    )
+
 
 -- Server ----------------------------------------------------------------------
 
@@ -223,9 +291,10 @@ type Form
 -- sure how but uses `Article.previewDecoder`) with a `List (Article Preview)`.
 -- The individual `Article.elm` outputs an `Article Full` type.
 --
--- Both `Article`s have an `Internals` record (`Article.internalsDecoder`), with
--- a `Slug` type (can be generated from `Url.Parser.custom`). So either grab the
--- slug from the URL, or the articles API endpoint.
+-- Both `Article`s have an `Internals` record (`Article.internalsDecoder`). It
+-- contains a `Slug` type which is generated from the `/articles` server endpoint,
+-- or from the `/articles/slug` url with `Url.Parser.custom` (from `Json.Decode.Pipeline`).
+-- The `Slug` is likely the SQL string ID within the database.
 --
 --    @ https://web.archive.org/web/20190714180457/https://elm-spa-example.netlify.com/
 --    @ https://realworld-docs.netlify.app/specifications/frontend/routing/
@@ -284,6 +353,11 @@ decodeFilmMeta =
 
 
 -- Review ----------------------------------------------------------------------
+-- No `null` values allowed for a review! Add it or don't.
+-- #! It might be an idea to use `Json.Decode.Pipeline`s `required` fields here.
+-- #! Consider if these fields are going to be directly accessed or not. If so,
+--    a record might be a better choice.
+--
 -- (1) Records are useful for different fields with the same type, or lots of
 --     values to be stored/accessed publically. Otherwise, consider using a
 --     custom type. A custom type also allows you to AVOID nested records.
@@ -293,7 +367,7 @@ decodeFilmMeta =
 --     - @ https://guide.elm-lang.org/appendix/types_as_sets#cardinality
 --     - We don't allow `.5` decimal points, and round up if a review has them.
 
-type Review
+type alias Review
     = Review TimeStamp Name String Stars -- #! (1)
 
 type alias TimeStamp
@@ -301,6 +375,16 @@ type alias TimeStamp
 
 type Name
     = Name String -- This could be more complex
+
+{-| If I'm accessing every field, why bother with a custom type?
+
+> A record may be a better choice if you're publically accessing fields.
+> Otherwise you have to set getters for each custom type field value.
+
+- @ https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Article.elm#L66
+
+-}
+review
 
 type Stars
     = One
@@ -321,9 +405,9 @@ starsToNumber star =
 decodeReview : Decoder Review
 decodeReview =
     D.map4 Review
-        (D.field "timestamp" Iso8601.decoder)
-        (D.field "name" (D.map Name D.string))
-        (D.field "review" D.string)
+        (D.field "timestamp" Iso8601.decoder) -- Handled by Elm
+        (D.field "name" (D.map Name D.string)) -- Short text
+        (D.field "review" D.string) -- Long text
         (D.field "stars" decodeStars)
 
 decodeStars : Decoder Stars
@@ -342,22 +426,110 @@ decodeStars =
 
 
 -- Http ------------------------------------------------------------------------
--- See the `data-playground/mocking/films` repo
+-- See the `data-playground/mocking/films` repo.
 
 url : String
-url = "http://localhost:3000/films"
+url = "http://localhost:3000"
 
 getFilms : Cmd Msg
 getFilms =
     Http.get
-        { url = "https://elm-lang.org/assets/public-opinion.txt"
+        { url = url ++ "/films"
         , expect = Http.expectJson GotFilms (D.list decodeFilm)
         }
 
+getReview : Int -> Cmd Msg
+getReview reviewID =
+    Http.get
+        { url = url ++ "/reviews" ++ "/" ++ String.fromInt reviewID
+        , expect = Http.expectJson GotReview decodeReview
+        }
+
+
+-- Randomiser ------------------------------------------------------------------
+-- This saves us having to manually add a review ID when using `getReview`
+
+randomNumber : Cmd Msg
+randomNumber =
+    let
+        oneToTen : Random.Generator Int
+        oneToTen =
+            Random.int 1 10
+    in
+    Random.generate GotNumber oneToTen
+
+
+-- View ------------------------------------------------------------------------
+-- (1) There's two ways to display our `Review` from the API call.
+--     - Either we directly add it into the `Review` form
+--     - We display it in a separate `Review` view, with an "Add Review" button
+
+
 -- Messages --------------------------------------------------------------------
 
-type Msg =
-    GotFilms (Result Http.Error (List Film)) -- #! Should be a `Maybe`
+type Msg
+    = ClickedRandom
+    | ClickedAddReview
+    | GotNumber Int
+    | GotFilms (Result Http.Error (List Film))
+    | GotReview (Result Http.Error Review)
+    | PassedSlowLoadingThreshold
+
+
+-- Update functions ------------------------------------------------------------
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        ClickedRandom ->
+            ( model, randomNumber )
+
+        GotFilms (Ok films) ->
+            -- Update the model with the list of films
+            ( { model
+                | van = films
+                , loadedState = Success films
+              },
+            Cmd.none
+            )
+
+        GotFilms (Err error) ->
+            -- Handle the error (e.g: display an error message)
+            -- #! Remember that Ai (copilot) hallucinates. There is no
+            -- `Http.errorToString` function in Elm (but `Json.Decode` does!)
+            ( { model
+                | errors = [ "Failed to load films: " ++ Debug.toString error ]
+                , loadedState = Error "Failed to load films"
+              }
+            , Cmd.none )
+
+        GotNumber number ->
+            -- Use the random number to get a review
+            ( model, getReview number )
+
+        GotReview (Ok review) ->
+            ( { model
+                | timestamp = review.timestamp
+                , name = review.name
+                , review = review.review
+                , rating = starsToNumber review.stars
+              },
+            Cmd.none
+            )
+
+        PassedSlowLoadingThreshold ->
+            -- In Elm Spa it doesn't directly change to `LoadingSlowly`, but
+            -- checks the state first. If `Loaded` then it does nothing.
+            case model.loadedState of
+                Loading ->
+                    -- If we're still loading, we can switch to LoadingSlowly
+                    ( { model | loadedState = LoadingSlowly }
+                    , Cmd.none )
+
+                _ ->
+                    -- Otherwise, ignore the message: do nothing.
+                    ( model, Cmd.none )
+
 
 -- Film functions --------------------------------------------------------------
 -- Add, edit, delete, save, orderBy stars total (update server right away)
@@ -365,6 +537,39 @@ type Msg =
 
 -- Review functions ------------------------------------------------------------
 -- Add, delete, orderBy stars (update film once you're done)
+--
+-- #! How do we handle the timestamp? It has these states. If (2) is true, then
+--    the user changes their review it's going to cause us some pain.
+--    1. Initial state (nothing)
+--    2. A review is added from the reviews API
+--    3. A review is added from the form
+
+
+-- View ------------------------------------------------------------------------
+-- (1) #! It may actually be a better idea to have a `model.form` nested record
+--     and we can then NARROW THE TYPES for `viewFilms model.form films`.
+
+view : Model -> Html Msg
+view model =
+    case model.loadedState of
+        Loading ->
+            text "Loading films..."
+
+        LoadingSlowly ->
+            text "Loading films slowly..."
+
+        Success films ->
+            viewFilms model films
+
+        Error errorMsg ->
+            text ("Error loading films: " ++ errorMsg)
+
+viewFilms : Model -> List Film -> Html Msg
+viewFilms model films =
+    -- (1) Consider using a `viewFilm` function to reduce duplication
+    --     - This is a good idea if you have multiple film views.
+    --     - You can also use `Html.Lazy` to lazy load the films.
+    text ("Films loaded: " ++ String.fromInt (List.length films))
 
 
 -- View forms ------------------------------------------------------------------
@@ -372,6 +577,22 @@ type Msg =
 --         consider using a `viewInput` function to reduce duplication.
 -- Images: lazy load the images with `loading="lazy"`
 --         How does `Html.Lazy` work? Any benefits?
+
+
+-- Main ------------------------------------------------------------------------
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+main : Program () Model Msg
+main =
+    Browser.element
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
 
 -- main =
 --     text (Debug.toString (D.decodeString
