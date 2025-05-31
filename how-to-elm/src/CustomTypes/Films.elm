@@ -532,11 +532,11 @@ view model =
 viewFilmForm : Model -> Html Msg
 viewFilmForm model =
     div []
-        [ viewInput "text" Title "Title" model.title
-        , viewInput "text" Trailer "Trailer URL" model.trailer
-        , viewInput "text" Image "Image URL" model.image
-        , viewInput "text" Summary "Summary" model.summary
-        , viewInput "text" Tags "Tags (comma separated)" model.tags
+        [ viewInput "text" InputTitle "Title" model.title
+        , viewInput "text" InputTrailer "Trailer URL" model.trailer
+        , viewInput "text" InputImage "Image URL" model.image
+        , viewInput "text" InputSummary "Summary" model.summary
+        , viewInput "text" InputTags "Tags (comma separated)" model.tags
         , button [ onClick ClickedAddFilm ] [ text "Add Review" ]
         ]
 
@@ -578,15 +578,15 @@ type Msg
     | GotReview (Result Http.Error Review)
     | PassedSlowLoadingThreshold
     -- Film form
-    | Title String
-    | Trailer String
-    | Image String
-    | Summary String
-    | Tags String
+    | InputTitle String
+    | InputTrailer String
+    | InputImage String
+    | InputSummary String
+    | InputTags String
     -- Review form
-    | Name String
-    | Review String
-    | Rating String
+    | InputName String
+    | InputReview String
+    | InputRating String
 
 
 -- Update functions ------------------------------------------------------------
@@ -650,48 +650,48 @@ update msg model =
                     -- Otherwise, ignore the message: do nothing.
                     ( model, Cmd.none )
 
-        Title str ->
+        InputTitle str ->
             ( { model | title = str }
             , Cmd.none
             )
 
-        Trailer str ->
+        InputTrailer str ->
             -- Update the trailer in the model
             ( { model | trailer = str }
             , Cmd.none
             )
 
-        Image str ->
+        InputImage str ->
             -- Update the trailer in the model
             ( { model | image = str }
             , Cmd.none
             )
 
-        Summary str ->
+        InputSummary str ->
             -- Update the trailer in the model
             ( { model | summary = str }
             , Cmd.none
             )
 
-        Tags str ->
+        InputTags str ->
             -- Update the trailer in the model
             ( { model | tags = str }
             , Cmd.none
             )
 
-        Name str ->
+        InputName str ->
             -- Update the trailer in the model
             ( { model | name = str }
             , Cmd.none
             )
 
-        Review str ->
+        InputReview str ->
             -- Update the trailer in the model
             ( { model | review = str }
             , Cmd.none
             )
 
-        Rating str ->
+        InputRating str ->
             -- Update the trailer in the model
             ( { model | rating = str }
             , Cmd.none
