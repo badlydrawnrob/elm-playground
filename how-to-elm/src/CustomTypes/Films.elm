@@ -14,6 +14,10 @@ module CustomTypes.Films exposing (..)
         Remember that comments can become outdated if code changes:
         @ [Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
 
+    You find out A LOT along the way, once you start designing and building. For
+    example, see "The `TimeStamp` problem" below!
+
+
     The sentence method
     -------------------
     > Using the sentence method to break down the problem!
@@ -186,7 +190,7 @@ module CustomTypes.Films exposing (..)
 -}
 
 import Browser
-import Html exposing (Html, text)
+import Html exposing (Html, div, main_, text, input, button, h1)
 import Http
 import Iso8601
 import Json.Decode as D exposing (Decoder)
@@ -199,6 +203,7 @@ import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
 
 import Debug
+import CustomTypes.Songs exposing (Input(..))
 
 
 -- Model -----------------------------------------------------------------------
@@ -208,6 +213,8 @@ import Debug
 --
 -- (1) The van will probably start with an `[]` empty state
 --     - A new van man's server will have no films (very likely)
+--     - #! Is this the best way to represent the server? Could you have the
+--       whole model within the `Server a` type?
 -- (2) The `timestamp` should NOT be entered by the user, only set by Elm.
 --     For this reason, it's a hidden field (not visible in the view). It's only
 --     used if we ping the `/reviews` API to get a review.
@@ -216,7 +223,7 @@ import Debug
 --     - His version is much more granular (`model.comments = LoadingSlowly` etc)
 
 type alias Model =
-    { van : Maybe (List Film) -- (1)
+    { van : Server (Maybe (List Film)) -- #! (1)
     -- The `Film` form
     -- #! Let `json-server` handle the ID (as would a real server)
     -- #! Remember not to store computed data! Everything is a `String`
@@ -231,15 +238,16 @@ type alias Model =
     , review : String
     , rating : Int
     -- Errors
-    , errors : List String -- #! Only our `Film` form needs this
+    -- #! Currently this is VERY flexible and we're using it for the
+    -- `Server` state errors also. That might be a bad idea!
+    , errors : List String
     -- State
     , formState : Form
-    , loadedState : Server (List Film) -- #! Is this correct?
     }
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ({ van = Just []
+    ({ van = Loading
       -- The `Film` form
       , title = ""
       , trailer = ""
@@ -255,7 +263,6 @@ init _ =
       , errors = []
       -- State
       , formState = NewFilm
-      , loadedState = Loading
       }
     -- 🔄 Initial command to load films
     , Cmd.batch
@@ -353,38 +360,73 @@ decodeFilmMeta =
 
 
 -- Review ----------------------------------------------------------------------
--- No `null` values allowed for a review! Add it or don't.
--- #! It might be an idea to use `Json.Decode.Pipeline`s `required` fields here.
--- #! Consider if these fields are going to be directly accessed or not. If so,
---    a record might be a better choice.
+-- Do not allow any `null` values for a review! Add it or don't.
 --
--- (1) Records are useful for different fields with the same type, or lots of
---     values to be stored/accessed publically. Otherwise, consider using a
---     custom type. A custom type also allows you to AVOID nested records.
--- (2) We'll utilize `rtfeldman/elm-iso8601-date-strings` to convert times
+-- Review custom type (changed to a record)
+-- ----------------------------------------
+-- > TL;DR: Both methods are possible, but using a record type is simpler.
+-- > If I'm regularly accessing every field, is a custom type the best choice?
+--
+-- We started with a `Review` custom type, which is very handy if you're wanting
+-- to put boundaries on how your type is created and consumed (for example, only
+-- allow it to be generated from a server call). However. It turns out we need to
+-- decode into a `Review` in a couple of places:
+--
+--    - When we get a review from the `/reviews/:id` API endpoint
+--    - When we decode from a `List Film` and want to access the reviews
+--
+-- The first one demands one of two routes:
+--
+--    - Our previous custom type requires all fields to be unpacked within the
+--      `Msg` (we're not saving to the model): e.g: `(Review timestamp _ _)`
+--    - Or, we use a record type, which is quicker and easier to access. Our
+--      "getter" functions are ready-made for us: `review.timestamp`.
+--
+-- What are records useful for?
+--
+--    Records are useful for different fields with the same type, or lots of
+--    values to be stored/accessed publically. Otherwise, consider using a
+--    custom type. A custom type also allows you to AVOID nested records.
+--
+-- The `Article` example from Elm Spa
+-- ----------------------------------
+-- In this package we're accessing our review fields in two places, and storing
+-- them in one place (each `Film.reviews` record) in our update function. It's
+-- important to be aware of the guarantees you're looking to create with a
+-- custom type, and not just set "getters" (and especially not "setters") for
+-- every single field.
+--
+-- The `src/Article.elm` example below is only created from a server call, and
+-- (I think) the `src/Page/Article/Editor.elm` only displays the form data (in
+-- new or edit mode) and we don't create an `Article a` directly. Ever. @rtfeldman
+-- has this to say about "getters" and "setters":
+--
+--    - @ ⚠️ [Beware of "getters"](https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Article.elm#L66)
+--
+-- Notes
+-- -----
+-- (1) We'll utilize `rtfeldman/elm-iso8601-date-strings` to convert times
 --     - @ https://timestampgenerator.com/
--- (3) Stars can only ever be a number between 1-5. See "Cardinality":
+-- (2) Stars can only ever be a number between 1-5. See "Cardinality":
 --     - @ https://guide.elm-lang.org/appendix/types_as_sets#cardinality
 --     - We don't allow `.5` decimal points, and round up if a review has them.
 
-type alias Review
-    = Review TimeStamp Name String Stars -- #! (1)
+type alias Review =
+    { timestamp : TimeStamp -- (1)
+    , name : Name
+    , review : String
+    , rating : Stars -- (2)
+    }
 
 type alias TimeStamp
-    = Time.Posix -- (2)
+    = Time.Posix -- (1)
 
 type Name
     = Name String -- This could be more complex
 
-{-| If I'm accessing every field, why bother with a custom type?
-
-> A record may be a better choice if you're publically accessing fields.
-> Otherwise you have to set getters for each custom type field value.
-
-- @ https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Article.elm#L66
-
--}
-review
+nameToString : Name -> String
+nameToString (Name name) =
+    name
 
 type Stars
     = One
@@ -461,19 +503,90 @@ randomNumber =
 
 -- View ------------------------------------------------------------------------
 -- (1) There's two ways to display our `Review` from the API call.
---     - Either we directly add it into the `Review` form
---     - We display it in a separate `Review` view, with an "Add Review" button
+--     - Directly add it to the review form if successfully loaded
+--     - Display a separate `Review` view with an "Add Review" button (bipass the form)
+-- (2) #! It may actually be a better idea to have a `model.form` nested record
+--     and we can then NARROW THE TYPES for `viewFilms model.form films`.
+-- (3) We also need a film form, but that could be housed outside the `viewFilms`
+--     function. Also consider `Html.Lazy` to lazy load the films.
+
+view : Model -> Html Msg
+view model =
+    case model.van of
+        Loading ->
+            text "Loading films..."
+
+        LoadingSlowly ->
+            text "Loading films slowly..."
+
+        Success films ->
+            main [] [
+                h1 [] [ text "Films" ]
+                , viewFilmForm model
+                , viewFilms films
+            ]
+
+        Error errorMsg ->
+            text ("Error loading films: " ++ errorMsg)
+
+viewFilmForm : Model -> Html Msg
+viewFilmForm model =
+    div []
+        [ viewInput "text" Title "Title" model.title
+        , viewInput "text" Trailer "Trailer URL" model.trailer
+        , viewInput "text" Image "Image URL" model.image
+        , viewInput "text" Summary "Summary" model.summary
+        , viewInput "text" Tags "Tags (comma separated)" model.tags
+        , button [ onClick ClickedAddFilm ] [ text "Add Review" ]
+        ]
+
+{- (3) -}
+viewFilms : Maybe (List) -> Html Msg
+viewFilms maybeFilms =
+    case maybeFilms of
+        Just films ->
+            ul []
+                (List.map viewFilm films)
+
+        Nothing ->
+            text "No films yet!"
+
+viewFilm : Film -> Html msg
+viewFilm film =
+    div []
+        [ text ("Film: " ++ film.internals.title)
+        , text ("Trailer: " ++ Debug.toString film.internals.trailer)
+        , text ("Image: " ++ film.internals.image)
+        , text ("Summary: " ++ film.internals.summary)
+        , text ("Tags: " ++ Debug.toString film.internals.tags)
+        , text ("Reviews: " ++ Debug.toString (Maybe.map List.length film.reviews))
+        ]
+
+viewInput : String -> (String -> msg) -> String -> String -> Html msg
+viewInput t p v toMsg =
+  input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 
 -- Messages --------------------------------------------------------------------
 
 type Msg
-    = ClickedRandom
+    = ClickedAddFilm
+    | ClickedRandom
     | ClickedAddReview
-    | GotNumber Int
     | GotFilms (Result Http.Error (List Film))
+    | GotNumber Int
     | GotReview (Result Http.Error Review)
     | PassedSlowLoadingThreshold
+    -- Film form
+    | Title String
+    | Trailer String
+    | Image String
+    | Summary String
+    | Tags String
+    -- Review form
+    | Name String
+    | Review String
+    | Rating String
 
 
 -- Update functions ------------------------------------------------------------
@@ -484,13 +597,26 @@ update msg model =
         ClickedRandom ->
             ( model, randomNumber )
 
-        GotFilms (Ok films) ->
-            -- Update the model with the list of films
+        ClickedAddFilm ->
+            Debug.todo "Make the film form work"
+
+        ClickedAddReview ->
+            Debug.todo "Make the review form work"
+
+        GotFilms (Ok []) ->
+            -- If our van is empty (from the server) we notify:
             ( { model
-                | van = films
-                , loadedState = Success films
-              },
-            Cmd.none
+                | van = Success Nothing
+              }
+            , Cmd.none
+            )
+
+        GotFilms (Ok films) ->
+            -- Otherwise update the model with current list of films
+            ( { model
+                | van = Success (Just films)
+              }
+            , Cmd.none
             )
 
         GotFilms (Err error) ->
@@ -498,8 +624,7 @@ update msg model =
             -- #! Remember that Ai (copilot) hallucinates. There is no
             -- `Http.errorToString` function in Elm (but `Json.Decode` does!)
             ( { model
-                | errors = [ "Failed to load films: " ++ Debug.toString error ]
-                , loadedState = Error "Failed to load films"
+                | van = Error "Failed to load films"  ++ Debug.toString error
               }
             , Cmd.none )
 
@@ -508,27 +633,111 @@ update msg model =
             ( model, getReview number )
 
         GotReview (Ok review) ->
-            ( { model
-                | timestamp = review.timestamp
-                , name = review.name
-                , review = review.review
-                , rating = starsToNumber review.stars
-              },
-            Cmd.none
+            ( addTemporaryReview review
+            , Cmd.none
             )
 
         PassedSlowLoadingThreshold ->
             -- In Elm Spa it doesn't directly change to `LoadingSlowly`, but
             -- checks the state first. If `Loaded` then it does nothing.
-            case model.loadedState of
+            case model.van of
                 Loading ->
                     -- If we're still loading, we can switch to LoadingSlowly
-                    ( { model | loadedState = LoadingSlowly }
+                    ( { model | van = LoadingSlowly }
                     , Cmd.none )
 
                 _ ->
                     -- Otherwise, ignore the message: do nothing.
                     ( model, Cmd.none )
+
+        Title str ->
+            ( { model | title = str }
+            , Cmd.none
+            )
+
+        Trailer str ->
+            -- Update the trailer in the model
+            ( { model | trailer = str }
+            , Cmd.none
+            )
+
+        Image str ->
+            -- Update the trailer in the model
+            ( { model | image = str }
+            , Cmd.none
+            )
+
+        Summary str ->
+            -- Update the trailer in the model
+            ( { model | summary = str }
+            , Cmd.none
+            )
+
+        Tags str ->
+            -- Update the trailer in the model
+            ( { model | tags = str }
+            , Cmd.none
+            )
+
+        Name str ->
+            -- Update the trailer in the model
+            ( { model | name = str }
+            , Cmd.none
+            )
+
+        Review str ->
+            -- Update the trailer in the model
+            ( { model | review = str }
+            , Cmd.none
+            )
+
+        Rating str ->
+            -- Update the trailer in the model
+            ( { model | rating = str }
+            , Cmd.none
+            )
+
+
+{-| Adding our review API result to the review form
+
+> ⚠️ Our review form expects strings!
+> ⚠️ We could've simply had an "Add Review" button (and not used the form)
+> ⚠️ Or used a `Status a` type and saved to the model `Loaded Review`
+
+I decided not to bother saving to the model and storing it temporarily. We'll
+just use the values as strings (like our form). Our decoded `Review` has a
+`timestamp` and `name` as custom types. This function helps us re-use our review
+form when we've pinged the review API!
+
+## The `TimeStamp` problem
+
+> ⚠️ Our `TimeStamp` is a bit tricksy.
+
+The end-user never need know there's a timestamp there. Elm handles that. However,
+our `/reviews/:id` API already has timestamps in ISO 8601 format, so we decode
+that and use it in a hidden `viewInput "text" _ "Timestamp"` field.
+
+The problem lies in if the user manually edits the review before saving, as now
+we have a ROGUE TIMESTAMP! We can either:
+
+(a) Bipass the form completely and have a "SAVE Review" button (from API)
+(b) Use `readonly` in our `viewInput` value, with a "CLEAR Form" button. That way
+    there's no way for the user to edit the API review, they'll have to clear the
+    form and start again.
+
+    - @ https://www.w3schools.com/tags/att_input_readonly.asp
+
+Alternatively, you can make sure that EVERY SINGLE FIELD is made to be user-editable
+and you'll never have any clashes.
+-}
+addTemporaryReview : Review -> Model
+addTemporaryReview review =
+    { model
+      | timestamp = Iso8601.fromTime review.timestamp
+      , name = nameToString review.name
+      , review = review.review
+      , rating = String.fromInt (starsToNumber review.rating)
+    }
 
 
 -- Film functions --------------------------------------------------------------
@@ -538,43 +747,17 @@ update msg model =
 -- Review functions ------------------------------------------------------------
 -- Add, delete, orderBy stars (update film once you're done)
 --
--- #! How do we handle the timestamp? It has these states. If (2) is true, then
---    the user changes their review it's going to cause us some pain.
---    1. Initial state (nothing)
---    2. A review is added from the reviews API
---    3. A review is added from the form
+-- #! If `"timestamp"` field is empty, generate a timestamp
+-- #! If `"timestamp"` field contains a `Review.timestamp`, use that one.
+--
+-- The ideal situation would be to have ZERO hidden form fields, and just generate
+-- it when creating a `Film.review`.
 
 
--- View ------------------------------------------------------------------------
--- (1) #! It may actually be a better idea to have a `model.form` nested record
---     and we can then NARROW THE TYPES for `viewFilms model.form films`.
 
-view : Model -> Html Msg
-view model =
-    case model.loadedState of
-        Loading ->
-            text "Loading films..."
-
-        LoadingSlowly ->
-            text "Loading films slowly..."
-
-        Success films ->
-            viewFilms model films
-
-        Error errorMsg ->
-            text ("Error loading films: " ++ errorMsg)
-
-viewFilms : Model -> List Film -> Html Msg
-viewFilms model films =
-    -- (1) Consider using a `viewFilm` function to reduce duplication
-    --     - This is a good idea if you have multiple film views.
-    --     - You can also use `Html.Lazy` to lazy load the films.
-    text ("Films loaded: " ++ String.fromInt (List.length films))
 
 
 -- View forms ------------------------------------------------------------------
--- Inputs: every input field has it's own message
---         consider using a `viewInput` function to reduce duplication.
 -- Images: lazy load the images with `loading="lazy"`
 --         How does `Html.Lazy` work? Any benefits?
 
@@ -593,6 +776,3 @@ main =
         , subscriptions = subscriptions
         , view = view
         }
-
--- main =
---     text (Debug.toString (D.decodeString
