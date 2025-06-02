@@ -528,6 +528,13 @@ logoutUrl auth0Config federated returnTo =
 
 ## The Management API
 
+> The `access_token` is NOT the same as a Management API key ...
+
+Using the access token grants fewer privaleges than the Management API, which is
+better for our SPA example as a security measure:
+
+- @ [Difference between Management key and Access token](https://community.auth0.com/t/how-to-return-full-profile-when-updating-user-metadata/186604/5)
+
 1. Make sure your `Auth0 Management API` is enabled in `Applications -> APIs`
 2. Select the API and get the `Identifier` unique ID.
 3. Add this to your `/audience` parameter in the `auth0AuthorizeURL` function.
@@ -542,14 +549,18 @@ simple and only use ONE API (the Management API).
 ## Return values
 
 > This function only returns a `"user_metadata" record, not the full profile.
+> Update your `Profile.user_metadata` (manually) within your update function.
 
-You'll have to ping the `/userinfo` endpoint again, or update your `Profile.user_metadata`
-value within your update function.
+```
+GotMeta (Ok meta) ->
+    ( { model | profile = updateProfileWithMeta meta model.profile }
+    , Cmd.none
+    )
+```
 
-- ⚠️ Our `AccessToken` caches the old values, so won't display updated `user_metadata`!
-
-It's best to update your `model.profile.user_metadata` manually, or get a new
-AccessToken` with the login url.
+⚠️ Otherwise, you'll have to ping the `/userinfo` endpoint again. Our `AccessToken`
+caches the old values, so won't display updated `user_metadata`! You'd have to
+get a new `AccessToken` with the login url.
 
 
 ## Security
