@@ -49,6 +49,7 @@ module CustomTypes.Films exposing (..)
         - You can limit what is shown in the `List Film` view.
     3. All image URLs must be `jpeg` format and small (for fast loading)
         - Add `loading="lazy"` to the `img` tag for the view
+        - @ https://web.dev/explore/fast (🚀 TIPS ON LOADING QUICKLY)
     4. A `Review` must have an existing `Film` to attach itself to.[^1]
         - Multiple reviews can be added to a film (the user is an admin)
         - Errors are simple (`isEmpty`). Everything is required.
@@ -59,6 +60,8 @@ module CustomTypes.Films exposing (..)
     6. The end-user must have `Cred` (an existing logged-in account)
         - Only then can they perform any actions (add, edit, delete, save)
         - Ideally this type is read-only (opaque type; it's setup by Auth0)
+    7. Consider using `Array` or `List.take` or `List.indexedMap`
+        - The latter allows us to generate an index for each list item.
 
     [^1]: Does `Review` really need to be a custom type? In Dwayne's Elm Spa,
           he primarily uses records. Either way stringly typed is risky:
@@ -190,7 +193,9 @@ module CustomTypes.Films exposing (..)
 -}
 
 import Browser
-import Html exposing (Html, div, main_, text, input, button, h1)
+import Html exposing (Html, button, div, h1, input, main_, text, ul, li)
+import Html.Attributes exposing (placeholder, type_, value)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Iso8601
 import Json.Decode as D exposing (Decoder)
@@ -204,6 +209,7 @@ import Url.Builder as UB exposing (absolute, crossOrigin)
 
 import Debug
 import CustomTypes.Songs exposing (Input(..))
+import Html exposing (a)
 
 
 -- Model -----------------------------------------------------------------------
@@ -233,7 +239,7 @@ type alias Model =
     , summary : String
     , tags : String
     -- The `Review` form
-    , timestamp: Time.Posix -- #! (2)
+    , timestamp: String -- #! (2)
     , name : String
     , review : String
     , rating : Int
@@ -243,6 +249,7 @@ type alias Model =
     , errors : List String
     -- State
     , formState : Form
+    , formReview : Bool
     }
 
 init : () -> (Model, Cmd Msg)
@@ -263,6 +270,7 @@ init _ =
       , errors = []
       -- State
       , formState = NewFilm
+      , formReview = False
       }
     -- 🔄 Initial command to load films
     , Cmd.batch
@@ -306,12 +314,15 @@ type Form
 --    @ https://web.archive.org/web/20190714180457/https://elm-spa-example.netlify.com/
 --    @ https://realworld-docs.netlify.app/specifications/frontend/routing/
 --
--- (1) Alternatively this could be a flat record, not a custom type!
---     - I've shortened `Internals` for convenience. In Elm Spa they're used as
---       "read only" data that shouldn't be accessed directly. See the original:
---     - @ https://tinyurl.com/elm-spa-article-internals
+-- (1) Alternatively this could be a flat record, not a custom type! Technically
+--     we don't really need this data structure. I'm accessing the `Internals`
+--     directly (with the ability to edit it).
+--     - ⚠️ Within the Elm Spa example, `Internals` is read-only and the `Article`
+--       type is only ever created from the server (and decoded into this type).
+--         - @ https://tinyurl.com/elm-spa-article-internals
 -- (2) A film can have zero reviews (`null` value in the json)
--- (3) How can we narrow the types with extensible records?
+-- (3) How can we narrow the types with extensible records? Which ones are useful,
+--     and which superfluous?
 --     - @ https://ckoster22.medium.com/advanced-types-in-elm-extensible-records-67e9d804030d
 
 type Film
@@ -332,15 +343,19 @@ type alias Internals =
     , tags : Maybe (List String) -- Optional (`null` allowed)
     }
 
-type alias FilmMeta a -- #! (3) Is this really required?
+type alias FilmForm a -- #! (3) Is this really required?
     = { a
-        | id : FilmID
+        | id : String
         , title : String
-        , trailer : Maybe Url
+        , trailer : String
         , summary : String
-        , image : ImageID
-        , tags : Maybe (List String) -- Optional
+        , image : String
+        , tags : String -- Optional
       }
+
+filmData : Film -> Internals
+filmData (Film internals _) =
+    internals
 
 decodeFilm : Decoder Film
 decodeFilm =
@@ -417,6 +432,14 @@ type alias Review =
     , review : String
     , rating : Stars -- (2)
     }
+
+type alias ReviewForm a
+    = { a
+        | timestamp : String
+        , name : String
+        , review : String
+        , rating : String
+      }
 
 type alias TimeStamp
     = Time.Posix -- (1)
@@ -502,13 +525,18 @@ randomNumber =
 
 
 -- View ------------------------------------------------------------------------
--- (1) There's two ways to display our `Review` from the API call.
+-- Also consider `Html.Lazy` to lazy load the films.
+--
+-- (1) It may actually be a better idea to have a `model.form` nested record and
+--     then we could narrow the types and pass into the `viewFilms model.form films`
+--     function. For now forms are housed OUTSIDE the `viewFilms` function.
+--     - @ https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Login.elm#L120
+-- (2) There's two ways to display our `Review` from the API call.
 --     - Directly add it to the review form if successfully loaded
---     - Display a separate `Review` view with an "Add Review" button (bipass the form)
--- (2) #! It may actually be a better idea to have a `model.form` nested record
---     and we can then NARROW THE TYPES for `viewFilms model.form films`.
--- (3) We also need a film form, but that could be housed outside the `viewFilms`
---     function. Also consider `Html.Lazy` to lazy load the films.
+--     - Display the review with an "Add Review" button (bipass the form)
+-- (3) #! We should try to NARROW THE TYPES as much as possible. Within the branches
+--     such as `Success films` ideally we'd only be working with the `List Film`,
+--     and not other parts of the `Model`.
 
 view : Model -> Html Msg
 view model =
@@ -520,14 +548,19 @@ view model =
             text "Loading films slowly..."
 
         Success films ->
-            main [] [
+            main_ [] [
                 h1 [] [ text "Films" ]
-                , viewFilmForm model
-                , viewFilms films
+                , viewFilmForm model -- ^ What about UpdateForm?
+                , viewReviewForm model -- ^ What about Film ID?
+                , viewFilms films -- (1)
             ]
 
         Error errorMsg ->
             text ("Error loading films: " ++ errorMsg)
+
+viewInput : String -> (String -> msg) -> String -> String -> Html msg
+viewInput t p v toMsg =
+  input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 viewFilmForm : Model -> Html Msg
 viewFilmForm model =
@@ -540,31 +573,46 @@ viewFilmForm model =
         , button [ onClick ClickedAddFilm ] [ text "Add Review" ]
         ]
 
-{- (3) -}
-viewFilms : Maybe (List) -> Html Msg
+{- (1) #! (3) -}
+viewFilms : Maybe (List Film) -> Html Msg
 viewFilms maybeFilms =
     case maybeFilms of
         Just films ->
             ul []
                 (List.map viewFilm films)
 
+
         Nothing ->
             text "No films yet!"
 
-viewFilm : Film -> Html msg
-viewFilm film =
-    div []
-        [ text ("Film: " ++ film.internals.title)
-        , text ("Trailer: " ++ Debug.toString film.internals.trailer)
-        , text ("Image: " ++ film.internals.image)
-        , text ("Summary: " ++ film.internals.summary)
-        , text ("Tags: " ++ Debug.toString film.internals.tags)
-        , text ("Reviews: " ++ Debug.toString (Maybe.map List.length film.reviews))
+viewFilm : Film -> Html Msg
+viewFilm f =
+    let
+        film = filmData f
+    in
+    li []
+        [ text ("Film: " ++ film.title)
+        , text ("Trailer: " ++ Debug.toString film.trailer)
+        , text ("Image: " ++ film.image)
+        , text ("Summary: " ++ film.summary)
+        , text ("Tags: " ++ Debug.toString film.tags)
+        , button [ onClick (ClickedAddReview film.id) ] [ text "Add a review for this film" ]
         ]
 
-viewInput : String -> (String -> msg) -> String -> String -> Html msg
-viewInput t p v toMsg =
-  input [ type_ t, placeholder p, value v, onInput toMsg ] []
+{- (2) -}
+viewReviewForm : FilmID -> ReviewForm a -> Html Msg
+viewReviewForm filmID model =
+    div []
+        [ viewInput "text" InputName "Name" model.name
+        , viewInput "text" InputReview "Review" model.review
+        , viewInput "text" InputRating "Rating" model.rating
+        , input
+            [ type_ "hidden"
+            , placeholder "TimeStamp"
+            , value model.timestamp
+            , onInput InputTimeStamp
+            ] []
+        ]
 
 
 -- Messages --------------------------------------------------------------------
@@ -572,7 +620,7 @@ viewInput t p v toMsg =
 type Msg
     = ClickedAddFilm
     | ClickedRandom
-    | ClickedAddReview
+    | ClickedAddReview FilmID
     | GotFilms (Result Http.Error (List Film))
     | GotNumber Int
     | GotReview (Result Http.Error Review)
@@ -584,6 +632,7 @@ type Msg
     | InputSummary String
     | InputTags String
     -- Review form
+    | InputTimeStamp String -- Hidden (only used for reviews API)
     | InputName String
     | InputReview String
     | InputRating String
@@ -615,6 +664,7 @@ update msg model =
             -- Otherwise update the model with current list of films
             ( { model
                 | van = Success (Just films)
+                , formReview = True -- #! Only display if there's films!
               }
             , Cmd.none
             )
@@ -624,7 +674,7 @@ update msg model =
             -- #! Remember that Ai (copilot) hallucinates. There is no
             -- `Http.errorToString` function in Elm (but `Json.Decode` does!)
             ( { model
-                | van = Error "Failed to load films"  ++ Debug.toString error
+                | van = Error ("Failed to load films"  ++ Debug.toString error)
               }
             , Cmd.none )
 
@@ -633,7 +683,7 @@ update msg model =
             ( model, getReview number )
 
         GotReview (Ok review) ->
-            ( addTemporaryReview review
+            ( addTemporaryReview review model
             , Cmd.none
             )
 
@@ -650,50 +700,53 @@ update msg model =
                     -- Otherwise, ignore the message: do nothing.
                     ( model, Cmd.none )
 
+        -- Film form
+
         InputTitle str ->
             ( { model | title = str }
             , Cmd.none
             )
 
         InputTrailer str ->
-            -- Update the trailer in the model
             ( { model | trailer = str }
             , Cmd.none
             )
 
         InputImage str ->
-            -- Update the trailer in the model
             ( { model | image = str }
             , Cmd.none
             )
 
         InputSummary str ->
-            -- Update the trailer in the model
             ( { model | summary = str }
             , Cmd.none
             )
 
         InputTags str ->
-            -- Update the trailer in the model
             ( { model | tags = str }
             , Cmd.none
             )
 
+        -- Review form
+
         InputName str ->
-            -- Update the trailer in the model
             ( { model | name = str }
             , Cmd.none
             )
 
         InputReview str ->
-            -- Update the trailer in the model
             ( { model | review = str }
             , Cmd.none
             )
 
         InputRating str ->
-            -- Update the trailer in the model
             ( { model | rating = str }
+            , Cmd.none
+            )
+
+        -- #! Only used if pulling from the `reviews/:id` API
+        InputTimeStamp str ->
+            ( { model | review = str }
             , Cmd.none
             )
 
@@ -730,8 +783,8 @@ we have a ROGUE TIMESTAMP! We can either:
 Alternatively, you can make sure that EVERY SINGLE FIELD is made to be user-editable
 and you'll never have any clashes.
 -}
-addTemporaryReview : Review -> Model
-addTemporaryReview review =
+addTemporaryReview : Review -> Model -> Model
+addTemporaryReview review model =
     { model
       | timestamp = Iso8601.fromTime review.timestamp
       , name = nameToString review.name
@@ -765,7 +818,7 @@ addTemporaryReview review =
 -- Main ------------------------------------------------------------------------
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
   Sub.none
 
 main : Program () Model Msg
