@@ -29,10 +29,11 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
 1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
     - In general I use as little javascript as possible: set it and forget it.
 
-## Tools
+## Tools and guides
 
 1. [Elm Watch](https://lydell.github.io/elm-watch/) (live reload your app)
-2. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^4]
+2. [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (common ways of Elm-ing)
+3. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^4]
 
 
 [^1]: Coming back after 2-3 months off and I'm rusty as fuck!
