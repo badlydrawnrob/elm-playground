@@ -227,12 +227,29 @@ import Html exposing (a)
 -- (3) ⏰ Is your 4g connection slow? Notify users with `LoadingSlowly` state.
 --     - @ https://tinyurl.com/elm-spa-loading-slowly
 --     - His version is much more granular (`model.comments = LoadingSlowly` etc)
+--
+-- Moving from a flat model to nested forms
+-- ---------------------------------------
+-- > I'm not sure if this was the right decision but ...
+--
+-- Within the `Success (Maybe List Film)` branch we have to access some type of
+-- edit/review form because we're trying to EDIT "IN-PLACE" within the `viewFilms`
+-- function. If our model is flat, we have to pass in THE WHOLE MODEL (or maybe
+-- use extensible records), which doesn't feel quite right if we're trying to
+-- narrow the types of our functions.
+--
+--     @ https://discourse.elm-lang.org/t/domain-driven-type-narrowing/7753
+--
+-- See the "Form" section for more information.
 
 type alias Model =
     { van : Server (Maybe (List Film)) -- #! (1)
     -- The `Film` form
-    -- #! Let `json-server` handle the ID (as would a real server)
-    -- #! Remember not to store computed data! Everything is a `String`
+
+
+    --
+    , new: FilmForm
+    , update: UpdateFilm
     , title : String
     , trailer : String -- convert to `URL`
     , image : String -- #! An image uploader could be used (later)
@@ -292,12 +309,76 @@ type Server a
     | Error String -- Error message
 
 -- Form ------------------------------------------------------------------------
--- We have two form states for `Film` but we'll keep our `Review` simple and handle
--- that within our `Msg`.
+-- > We have three form types: new, update, review.
+-- > It's important to consider your UI and UX routes while planning.
+--
+-- You also need to consider where in the UI these forms are going to show. Are
+-- they ...
+--
+-- (a) All ABOVE `viewFilms`,
+-- (b) Launching a MODEL WINDOW for all the forms,
+-- (c) EDITING IN-PLACE _within_ the `viewFilms` function?
+--
+-- If we decide our new film form is above `viewFilms`, but our edit/review
+-- forms are editing in-place then we have at least three available options:[^1]
+--
+-- 1. A flat `Model` with every single form field (originally).
+--    - We aren't able to narrow our types here, the full `model` is needed in
+--      our view functions.
+-- 2. A single `Form` type (with all possible forms), or split them up into
+--    a `NewForm` (above `viewFilms`) and `UpdateForm` (edit/review) which would
+--    be visible on button click within `viewFilms` function.
+--
+-- Anywhere we have a custom type, we need to `case` on ALL branches. If we had
+-- a single `Form` type (with all possible forms) we'd end up with two empty
+-- `text ""` branches above the `viewFilms` function.
+--
+-- [^1]: There is one other route, which is to change the `Film` type to hold it's
+--       own form data as well, such as `Film Internals (Maybe (List Review)) Form`
+--       but there's a couple of problems with this:
+--
+--       1. Elm Spa example `/Page/Article/Editor.elm` is where I got this idea
+--          from, similar to it's `Status` type (which holds all the state).
+--          That view is a lot more simple than ours however. It's just a form.
+--          The form has different states (new, edit, so on). The `Status` type
+--          looks like `Editing Slug _ Form`. The `Article` is not in the view.
+--       2. The Elm Spa example also has it's own route (which is something like)
+--          `/article/new` or `/article/slug` and is therefore only interested in
+--          updating ONE single article.
+--       3. This package has a `List Form`, so we're updating MULTIPLE films on
+--          the same page — a VERY DIFFERENT UI DECISION to Elm Spa — and we've
+--          also decided two things:
+--          - We're keeping server updates to a minimum, editing locally, then
+--            hitting a "save to the server" button (this might not be great UX).
+--          - We're keeping the `List Form` in the view at all times. This means
+--            our program design decisions are different to the Elm Spa example.
 
-type Form
-    = NewFilm
-    | EditFilm FilmID -- reviews do NOT have an ID
+{-| We let our `json-server` handle the ID field
+
+> Remember it's better to not store computed data: just use `String`s!
+-}
+type alias FilmForm =
+    { title : String
+    , trailer : String -- convert to `URL`
+    , image : String -- #! An image uploader could be used (later)
+    , summary : String
+    , tags : String
+    }
+
+{-| #! This could be simplified into it's own type `NewFilm _ _ _`
+
+And then checked for errors within the `Msg` update -}
+type alias ReviewForm =
+    { timestamp : String
+    , name : String
+    , review : String
+    , rating : String
+    }
+
+type UpdateFilm
+    = NoForm
+    | NewFilm FilmID Film
+    | AddReview
 
 
 -- Film ------------------------------------------------------------------------
