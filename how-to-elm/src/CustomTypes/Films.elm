@@ -221,10 +221,7 @@ import Html exposing (a)
 --     - A new van man's server will have no films (very likely)
 --     - #! Is this the best way to represent the server? Could you have the
 --       whole model within the `Server a` type?
--- (2) The `timestamp` should NOT be entered by the user, only set by Elm.
---     For this reason, it's a hidden field (not visible in the view). It's only
---     used if we ping the `/reviews` API to get a review.
--- (3) ⏰ Is your 4g connection slow? Notify users with `LoadingSlowly` state.
+-- (2) ⏰ Is your 4g connection slow? Notify users with `LoadingSlowly` state.
 --     - @ https://tinyurl.com/elm-spa-loading-slowly
 --     - His version is much more granular (`model.comments = LoadingSlowly` etc)
 --
@@ -245,28 +242,11 @@ import Html exposing (a)
 type alias Model =
     { van : Server (Maybe (List Film)) -- #! (1)
     -- The `Film` form
-
-
-    --
     , new: FilmForm
-    , update: UpdateFilm
-    , title : String
-    , trailer : String -- convert to `URL`
-    , image : String -- #! An image uploader could be used (later)
-    , summary : String
-    , tags : String
-    -- The `Review` form
-    , timestamp: String -- #! (2)
-    , name : String
-    , review : String
-    , rating : Int
-    -- Errors
-    -- #! Currently this is VERY flexible and we're using it for the
-    -- `Server` state errors also. That might be a bad idea!
+    , update: EditInPlace
+    -- Errors: currently very flexible and probably using it for too many
+    -- unrelated errors? Might be a bad idea.
     , errors : List String
-    -- State
-    , formState : Form
-    , formReview : Bool
     }
 
 init : () -> (Model, Cmd Msg)
@@ -292,7 +272,7 @@ init _ =
     -- 🔄 Initial command to load films
     , Cmd.batch
         [ getFilms
-        -- ⏰ @rtfeldman's trick for slow loading data. This is in a `Loading`
+        -- (2) ⏰ @rtfeldman's trick for slow loading data. This is in a `Loading`
         -- package and comes with an error message and a spinner icon ...
         -- @ https://github.com/rtfeldman/elm-spa-example/blob/master/src/Loading.elm
         , Task.perform (\_ -> PassedSlowLoadingThreshold) Process.sleep 500
@@ -367,9 +347,15 @@ type alias FilmForm =
 
 {-| #! This could be simplified into it's own type `NewFilm _ _ _`
 
-And then checked for errors within the `Msg` update -}
+And then checked for errors within the `Msg` update.
+
+1. The `timestamp` should NOT be entered by the user, only set by Elm.
+   For this reason, it's a hidden field (not visible in the view). It's only
+   used if we ping the `/reviews` API to get a review.
+
+-}
 type alias ReviewForm =
-    { timestamp : String
+    { timestamp : String -- #! (1)
     , name : String
     , review : String
     , rating : String
@@ -377,7 +363,7 @@ type alias ReviewForm =
 
 type EditInPlace
     = NoForm
-    | UpdateFilm FilmID Film
+    | UpdateFilm FilmID FilmForm
     | AddReview
 
 
