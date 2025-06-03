@@ -375,9 +375,9 @@ type alias ReviewForm =
     , rating : String
     }
 
-type UpdateFilm
+type EditInPlace
     = NoForm
-    | NewFilm FilmID Film
+    | UpdateFilm FilmID Film
     | AddReview
 
 
