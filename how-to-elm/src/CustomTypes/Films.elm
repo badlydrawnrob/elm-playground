@@ -253,21 +253,11 @@ init : () -> (Model, Cmd Msg)
 init _ =
     ({ van = Loading
       -- The `Film` form
-      , title = ""
-      , trailer = ""
-      , image = ""
-      , summary = ""
-      , tags = ""
-      -- The `Review` form
-      , timestamp = Time.millisToPosix 0 -- Initial timestamp
-      , name = ""
-      , review = ""
-      , rating = 0
+      , new = FilmForm "" "" "" "" ""
+      -- The `Edit/Review` form
+      , update = NoForm
       -- Errors
       , errors = []
-      -- State
-      , formState = NewFilm
-      , formReview = False
       }
     -- 🔄 Initial command to load films
     , Cmd.batch
@@ -352,6 +342,8 @@ And then checked for errors within the `Msg` update.
 1. The `timestamp` should NOT be entered by the user, only set by Elm.
    For this reason, it's a hidden field (not visible in the view). It's only
    used if we ping the `/reviews` API to get a review.
+2. We needn't display the form until we actually need it!
+    - When a user clicks the `edit` or `review` button, we can make it visible.
 
 -}
 type alias ReviewForm =
@@ -362,7 +354,7 @@ type alias ReviewForm =
     }
 
 type EditInPlace
-    = NoForm
+    = NoForm -- #! (2)
     | UpdateFilm FilmID FilmForm
     | AddReview
 
@@ -409,16 +401,6 @@ type alias Internals =
     , image : ImageID -- #! One size, eventually `-S`, `-M`, `-L`
     , tags : Maybe (List String) -- Optional (`null` allowed)
     }
-
-type alias FilmForm a -- #! (3) Is this really required?
-    = { a
-        | id : String
-        , title : String
-        , trailer : String
-        , summary : String
-        , image : String
-        , tags : String -- Optional
-      }
 
 filmData : Film -> Internals
 filmData (Film internals _) =
@@ -499,14 +481,6 @@ type alias Review =
     , review : String
     , rating : Stars -- (2)
     }
-
-type alias ReviewForm a
-    = { a
-        | timestamp : String
-        , name : String
-        , review : String
-        , rating : String
-      }
 
 type alias TimeStamp
     = Time.Posix -- (1)
@@ -641,6 +615,11 @@ viewFilmForm model =
         ]
 
 {- (1) #! (3) -}
+{- -----------------------------------------------------------------------------
+    WE COULD'VE PROBABLY GOT AWAY WITH USING AN EXTENSIBLE TYPE HERE, TO ADD A
+    `FILMFORM` TO THE `viewFilms` VIEW, BUT WE'D STILL HAVE TO PASS THROUGH
+    THE WHOLE `MODEL` AND THEREFORE NOT QUITE NARROWING THE TYPES!!!
+----------------------------------------------------------------------------- -}
 viewFilms : Maybe (List Film) -> Html Msg
 viewFilms maybeFilms =
     case maybeFilms of
