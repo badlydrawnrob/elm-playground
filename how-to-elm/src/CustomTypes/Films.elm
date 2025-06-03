@@ -39,6 +39,7 @@ module CustomTypes.Films exposing (..)
     > 1. Do we have minimal state and minimal data? (Reduce!)
     > 2. Our `json` endpoint could start with `[]` zero objects ... but we
     >    can't save to the server without any objects!
+    > 3. Have we narrowed the types as much as we can do?
 
     1. The only endpoint is `/films`. We're not worried about `:id` endpoints.
         - A `Review` is implicitly tied to a `Film`.
@@ -303,9 +304,10 @@ type Server a
 -- a single `Form` type (with all possible forms) we'd end up with two empty
 -- `text ""` branches above the `viewFilms` function.
 --
--- [^1]: There is one other route, which is to change the `Film` type to hold it's
---       own form data as well, such as `Film Internals (Maybe (List Review)) Form`
---       but there's a couple of problems with this:
+-- [^1]: ⚠️ There is one other route, which is to change the `Film` type to hold
+--       it's own form data as well: `Film Internals (Maybe (List Review)) Form`
+--       but there's a couple of problems with this (although in some ways it
+--       makes our `viewFilms` functions A LOT nicer due to narrow types):
 --
 --       1. Elm Spa example `/Page/Article/Editor.elm` is where I got this idea
 --          from, similar to it's `Status` type (which holds all the state).
@@ -356,7 +358,7 @@ type alias ReviewForm =
 type EditInPlace
     = NoForm -- #! (2)
     | UpdateFilm FilmID FilmForm
-    | AddReview
+    | AddReview FilmID ReviewForm
 
 
 -- Film ------------------------------------------------------------------------
@@ -565,19 +567,23 @@ randomNumber =
     Random.generate GotNumber oneToTen
 
 
+
+
+--------------------------------------------------------------------------------
+-- - @ https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Login.elm#L120
+--------------------------------------------------------------------------------
+
+
 -- View ------------------------------------------------------------------------
 -- Also consider `Html.Lazy` to lazy load the films.
 --
--- (1) It may actually be a better idea to have a `model.form` nested record and
---     then we could narrow the types and pass into the `viewFilms model.form films`
---     function. For now forms are housed OUTSIDE the `viewFilms` function.
---     - @ https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Login.elm#L120
--- (2) There's two ways to display our `Review` from the API call.
+-- (1) The "add new film" form will be housed outside (above) the `viewFilms` view,
+--     but the "edit/add review" forms will be housed inside `viewFilms`.
+-- (2) #! There's two ways to display our `Review` from the API call.
 --     - Directly add it to the review form if successfully loaded
 --     - Display the review with an "Add Review" button (bipass the form)
--- (3) #! We should try to NARROW THE TYPES as much as possible. Within the branches
---     such as `Success films` ideally we'd only be working with the `List Film`,
---     and not other parts of the `Model`.
+-- (3) We've tried to NARROW THE TYPES as much as possible. So within the `Success`
+--     branch we only have our `EditInPlace` types.
 
 view : Model -> Html Msg
 view model =
@@ -591,9 +597,8 @@ view model =
         Success films ->
             main_ [] [
                 h1 [] [ text "Films" ]
-                , viewFilmForm model -- ^ What about UpdateForm?
-                , viewReviewForm model -- ^ What about Film ID?
-                , viewFilms films -- (1)
+                , viewFilmForm model.new -- ^ What about UpdateForm?
+                , viewFilms model.update films -- (1)
             ]
 
         Error errorMsg ->
@@ -603,59 +608,74 @@ viewInput : String -> (String -> msg) -> String -> String -> Html msg
 viewInput t p v toMsg =
   input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
-viewFilmForm : Model -> Html Msg
-viewFilmForm model =
+{- #! If I'm sharing this viewFilmForm then I need a different button ...
+
+For the `ClickedEditFilm ID` function. and maybe a `Maybe FilmID` param -}
+viewFilmForm : FilmForm -> Html Msg
+viewFilmForm form =
     div []
-        [ viewInput "text" InputTitle "Title" model.title
-        , viewInput "text" InputTrailer "Trailer URL" model.trailer
-        , viewInput "text" InputImage "Image URL" model.image
-        , viewInput "text" InputSummary "Summary" model.summary
-        , viewInput "text" InputTags "Tags (comma separated)" model.tags
-        , button [ onClick ClickedAddFilm ] [ text "Add Review" ]
+        [ viewInput "text" InputTitle "Title" form.title
+        , viewInput "text" InputTrailer "Trailer URL" form.trailer
+        , viewInput "text" InputImage "Image URL" form.image
+        , viewInput "text" InputSummary "Summary" form.summary
+        , viewInput "text" InputTags "Tags (comma separated)" form.tags
+        , button [ onClick ClickedAddFilm ] [ text "Add a new film" ]
         ]
 
 {- (1) #! (3) -}
-{- -----------------------------------------------------------------------------
-    WE COULD'VE PROBABLY GOT AWAY WITH USING AN EXTENSIBLE TYPE HERE, TO ADD A
-    `FILMFORM` TO THE `viewFilms` VIEW, BUT WE'D STILL HAVE TO PASS THROUGH
-    THE WHOLE `MODEL` AND THEREFORE NOT QUITE NARROWING THE TYPES!!!
------------------------------------------------------------------------------ -}
-viewFilms : Maybe (List Film) -> Html Msg
-viewFilms maybeFilms =
+viewFilms : EditInPlace -> Maybe (List Film) -> Html Msg
+viewFilms forms maybeFilms =
     case maybeFilms of
         Just films ->
             ul []
-                (List.map viewFilm films)
+                (List.map (viewFilm forms) films)
 
 
         Nothing ->
             text "No films yet!"
 
-viewFilm : Film -> Html Msg
-viewFilm f =
+{-| ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
+
+I DON'T THINK THIS IS GOING TO WORK, ACTUALLY AS EVERY FILM WOULD BE PUT IN
+THIS FUCKING STATE!!! IT NEEDS TO BE FOR A SINGLE FILM ONLY!!!
+
+LOOK OVER ELM SPA EXAMPLES AND OTHER FORMS WITH ELM GUIDES FOR CLUES>>>>>
+
+-}
+viewFilm : EditInPlace -> Film -> Html Msg
+viewFilm forms f =
     let
         film = filmData f
     in
-    li []
-        [ text ("Film: " ++ film.title)
-        , text ("Trailer: " ++ Debug.toString film.trailer)
-        , text ("Image: " ++ film.image)
-        , text ("Summary: " ++ film.summary)
-        , text ("Tags: " ++ Debug.toString film.tags)
-        , button [ onClick (ClickedAddReview film.id) ] [ text "Add a review for this film" ]
-        ]
+    case forms of
+        NoForm ->
+            li []
+                [ text ("Film: " ++ film.title)
+                , text ("Trailer: " ++ Debug.toString film.trailer)
+                , text ("Image: " ++ film.image)
+                , text ("Summary: " ++ film.summary)
+                , text ("Tags: " ++ Debug.toString film.tags)
+                , button [ onClick (ClickedEditFilm film.id) ] [ text "Edit the film" ]
+                , button [ onClick (ClickedAddReview film.id) ] [ text "Add a review" ]
+                ]
+
+        UpdateFilm id form ->
+            viewFilmForm form -- #! I need to add a `FilmID` here
+
+        AddReview id form ->
+            viewReviewForm id form
 
 {- (2) -}
-viewReviewForm : FilmID -> ReviewForm a -> Html Msg
-viewReviewForm filmID model =
+viewReviewForm : FilmID -> ReviewForm -> Html Msg
+viewReviewForm filmID form =
     div []
-        [ viewInput "text" InputName "Name" model.name
-        , viewInput "text" InputReview "Review" model.review
-        , viewInput "text" InputRating "Rating" model.rating
+        [ viewInput "text" InputName "Name" form.name
+        , viewInput "text" InputReview "Review" form.review
+        , viewInput "text" InputRating "Rating" form.rating
         , input
             [ type_ "hidden"
             , placeholder "TimeStamp"
-            , value model.timestamp
+            , value form.timestamp
             , onInput InputTimeStamp
             ] []
         ]
@@ -664,7 +684,7 @@ viewReviewForm filmID model =
 -- Messages --------------------------------------------------------------------
 
 type Msg
-    = ClickedAddFilm
+    = ClickedAddFilm -- #! If I'm sharing a `
     | ClickedRandom
     | ClickedAddReview FilmID
     | GotFilms (Result Http.Error (List Film))
