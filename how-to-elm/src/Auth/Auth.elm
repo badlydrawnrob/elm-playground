@@ -22,13 +22,13 @@ module Auth.Auth exposing (..)
     Bugs
     ----
     1. There's no refresh function, as it seems like a hassle.
-        - Notify the user they'll have to login again.
+        - Notify the user they'll have to login again after `<expiry> seconds`.
     2. `AccessToken` is NOT invalidated when user clicks the `logoutUrl`
         - Have a short expiry time and DO NOT STORE IT.
     3. Elm caches the js, so sometimes changing a line doesn't work.
         - Set the browser to no-cache mode?
     4. `Decoder a` and `(Result Http.Error a)` make things a wee bit confusing,
-       but much easier to extend the package.
+       but much easier to extend the package with your own decoder/messages.
     5. Session management and documentation is a bit of a shit show. Lots of
        different APIs and usecases:
         - @ https://auth0.com/blog/application-session-management-best-practices/
@@ -40,21 +40,22 @@ module Auth.Auth exposing (..)
     > First check your code for errors!
     > https://jwt.io/ to check the access token.
 
-    1. Extract the `access_token` from the URL and split out the necessary parts.
+    1. ✏️ Extract the `access_token` from the URL and split out the necessary parts.
         - Have all messages working in a single `elm reactor` session.
-    2. Add an `expiry` counter that saves to `localStorage` (which will work with
+    2. ✏️ Add an `expiry` counter that saves to `localStorage` (which will work with
        any API endpoint, such as my Python one.
-    3. Ping the `/userinfo` endpoint or update `Profile UserMeta _` after the
+    3. ✏️ Ping the `/userinfo` endpoint or update `Profile UserMeta _` after the
        `user_metadata` has been updated.
+    4. ✏️ `Url` in Elm lang is a headache. Try out Elm Land. Unfortunately `Url`
+        requires Elm to take control of `Browser.application` (the whole page).
+        Alternatively ...
+        - Check url state with javascript and pass temporary access token value
     4. Figure out how to extract `IdToken` and if it's worth doing.
+        - Holds the EXPIRY TIME, `user_id`, audiences, scope, etc
+        - Most of this we know (set) within our program functions however.
     5. See if any other functions could be useful for the `Auth0` package
         - extract functions?
-    6. `URL` in Elm lang is a headache. Try out Elm Land.
-        - You could check the url with javascript, then pass it in a temporary
-          variable to Elm.
-        - `URL` requires `Browser.application`, which takes control of the whole
-          page.
-    7. Have Mike, or someone you trust look over the code for security issues.
+    6. Have someone you trust look over the code for security issues.
 
 
     The API
