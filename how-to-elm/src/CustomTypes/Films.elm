@@ -12,7 +12,11 @@ module CustomTypes.Films exposing (..)
 
         -Make the spec less dumb!-
         Remember that comments can become outdated if code changes:
-        @ [Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
+        @ [v1: Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
+        @ [v2: Getting closer spec](...)
+
+        -See the films API-
+        @ `badlydrawnrob/data-playground/mocking/films`
 
     You find out A LOT along the way, once you start designing and building. For
     example, see "The `TimeStamp` problem" below!
@@ -21,7 +25,6 @@ module CustomTypes.Films exposing (..)
     The sentence method
     -------------------
     > Using the sentence method to break down the problem!
-    > We've mocked up a films API for this program in the `data-playground` repo!
 
     "You're a video man with a van full of films."
         "You need to log each film and send it to the server."
@@ -34,162 +37,94 @@ module CustomTypes.Films exposing (..)
         to the review form (what's the best UI for this?)."
     "Finally, expect a slow 4G connection (how do I load this quickly?)"
 
-    Wishlist
-    --------
-    > 1. Do we have minimal state and minimal data? (Reduce!)
-    > 2. Our `json` endpoint could start with `[]` zero objects ... but we
-    >    can't save to the server without any objects!
-    > 3. Have we narrowed the types as much as we can do?
-
-    1. The only endpoint is `/films`. We're not worried about `:id` endpoints.
-        - A `Review` is implicitly tied to a `Film`.
-        - Errors are displayed on SAVE (not automatically)
-        - Errors use @rtfeldman's `List Validated` type
-    2. `Film` has no `Preview` state (like Elm Spa)
-        - All `Film` data is loaded if it exists on the server.
-        - You can limit what is shown in the `List Film` view.
-    3. All image URLs must be `jpeg` format and small (for fast loading)
-        - Add `loading="lazy"` to the `img` tag for the view
-        - @ https://web.dev/explore/fast (🚀 TIPS ON LOADING QUICKLY)
-    4. A `Review` must have an existing `Film` to attach itself to.[^1]
-        - Multiple reviews can be added to a film (the user is an admin)
-        - Errors are simple (`isEmpty`). Everything is required.
-        - We can implement `Result.andMap` to check for `null` values.
-    5. We can ping a `/reviews` API (from `data-playground` repo) to:
-        - Search a review by `:id` (a bit like an ISBN number)
-        - Copy the review to the `Review` form
-    6. The end-user must have `Cred` (an existing logged-in account)
-        - Only then can they perform any actions (add, edit, delete, save)
-        - Ideally this type is read-only (opaque type; it's setup by Auth0)
-    7. Consider using `Array` or `List.take` or `List.indexedMap`
-        - The latter allows us to generate an index for each list item.
-
-    [^1]: Does `Review` really need to be a custom type? In Dwayne's Elm Spa,
-          he primarily uses records. Either way stringly typed is risky:
-
-          - @ https://tinyurl.com/dwayne-elm-spa-article-record
-          - @ https://dev.to/dwayne/yet-another-tour-of-an-open-source-elm-spa-1672#:~:text=The%20Page.*%20modules
-
-    ----------------------------------------------------------------------------
-
-    The customer journey
+    Simplifying the spec
     --------------------
-    > ⚠️ Where do you start? Sketch out the user story.
-    > 🔍 What app architecture decisions did other apps choose? (Rotten Tomatoes)
+    > We have A LOT going on in a single page. Consider ...
 
-    Start with the end-user's experience in mind. Is it performing as they
-    would expect? Do they _really_ need this feature?
+    1. Make each atomic state change it's own page (`/film/:id`/ add review)
+    2. Do we have minimal state and minimal data? (Reduce!)
+    3. Have we narrowed the types as much as we could do?
 
-    1. Are our endpoints public, private or non-existant? (e.g: reviews have no public url)
-    2. Is there one obvious way to do it? User intent == obvious UI/UX?
-    3. Does a user need to be logged in to perform an action? (Yes!)
-    4. What are we allowing the user to do? (add, edit, order, delete)
-    5. Do they have the correct permissions do do this? (only their films)
-    6. Are there restrictions in place (e.g: only ONE review per user)? (No)
-    7. Are we displaying errors right away, or on SAVE?
-
-        🤔 Example: Our "Add Review" from an API state
-        ----------------------------------------------
-        > What's the expected behaviour? What's easier for the user?
-
-        Right now we're directly saving the `Review` to the review form.
-        This makes things quicker, but not necessarily easier ...
-
-        "What if the user already has some data in the review form?"
-        "What if they want to add a review to a film that doesn't exist?"
-        "What if the film isn't what they wanted. How do they rectify that?"
-
-
-    Handling state
-    --------------
-    > Prefer minimal state wherever you see it.
-
-    - What are all the possible states and how do we represent them?
-    - Can we create some guarantees to make impossible states impossible?
-    - Can any of these states be simplified or removed?
-    - Is the complexity really needed? (two endpoints -vs- one)
-
-        @ https://www.youtube.com/watch?v=x1FU3e0sT1I (make data structures)
-        @ https://sporto.github.io/elm-patterns/basic/impossible-states.html
-        @ https://elm-radio.com/episode/life-of-a-file/ (which data struture?)
-
-    -Film state:-
-    Would we have a short description for `List Film` and then full details for
-    `Film`? Or would we just have a single `Film` type with all the details?
-    Are we deleting our `Film`s one-by-one or all at once?
-
-    -Review state:-
-    In @rtfeldman's Elm Spa a comment can be `Editing ""` (empty), `Editing str`,
-    or `Sending str`. The server must respond with an `Ok` (or `Err`) before
-    another comment is allowed. In our version, we're saving a `Review` locally
-    first, then `updateFilm` to send to server. We also need to make sure a `Film`
-    already exists to create a review.
-
-    -Loading state:-
-    > A single `Status` for our `List Film` is enough.
-    Elm Spa also has a `Status` type with `Loaded a` states for both comments and
-    articles. This is overkill for our purposes (we don't ping the server right
-    away for comments).
-
-        @ https://realworld-docs.netlify.app/
-        @ https://tinyurl.com/elm-spa-article-status-type
-
-
-    The data
-    --------
-    > The life of a file (decisions and tradeoffs)
-    > Prefer minimal data wherever possible
-
-    1. Imagine that we've already created our http server!
-    2. What's the minimal amount of data do we need to store? (e.g: film, reviews)
-    3. Are we pulling from a single endpoint, or multiple? (e.g: get all reviews)
-    4. What does our SQL schema look like? (e.g: film, reviews by film ID)
-    5. How do our endpoint functions work? (e.g: `film/:id` -> implicit `List Review` w/ full text)
-    6. What is our resulting json structure? (e.g: film with full-text reviews)
-    7. How can we make life easier? (same `.jpg` file format, `[ID]` -> `ID`)
+    Assumptions
+    -----------
+    1. Our http server is already built with a single `/films` endpoint
+    2. We output `json` with `List Film` (each film contains full reviews)
+    3. Our SQL schema looks like this:
 
     Film                        Review
     | ID | Title      | ... |   | Timestamp  | Film ID | Name | Stars | Review |
     |----|------------|-----|   |------------|---------|------|-------|--------|
     | 1  | The Matrix | ... |   | 2023-10-01 | 1       | ...  | 5     | ...    |
 
-    I've simplified the `Review` type similar to how @rtfeldman deals with his
-    `Comment` type in Elm Spa example, and I've removed the `ID` field (which might
-    not be best practice for SQL):
 
-        @ https://tinyurl.com/clickedPostComment-Article (line 404)
-        @ https://tinyurl.com/spa-ArticleComment-post (`Http.send` is deprecated)
+    Wishlist
+    --------
+    > Our van is an endpoint. It starts with `[]` zero objects.
+    > We're not allowed to push to the server without any `Film`s.
 
-    Another thing to note is that some ORMs return `List (Film, Review)` tuples,
-    so you can grab both film and review without having to make a second API call.
+    We have three forms: add, edit, add review. The add form is above the
+    `List Film` when it's visible. The other forms can be edited in place (within
+    the `Film` it's editing)
 
-    Translating to Elm data structures
-    ----------------------------------
-    > How are we're going to translate this into Elm data structures?
+    1. The only endpoint is `/films`. We have no individual `:id` endpoint.
+        - A `Review` is implicitly tied to a `Film`.
+    2. `Film` has no `Preview` state (like Elm Spa)
+        - All `Film` data is loaded if it exists on the server.
+        - Don't display all `Film.fields` if you need a preview view.
+    3. All image URLs must be `jpeg` format and small (for fast loading)
+        - Add `loading="lazy"` to the `img` tag for the view
+        - @ https://web.dev/explore/fast (🚀 TIPS ON LOADING QUICKLY)
+    4. A `Film` must exist before a `Review` can be made.[^1]
+        - The `FilmID` is required to add a review (Elm Spa uses `/slug`)
+        - Multiple reviews can be added to a film (the user is an admin)
+    5. We have access to a `/reviews` API (see the films API above) to:
+        - Search a review by `:id` (a bit like an ISBN number)
+        - Add the review to the list (or manually create one instead)[^2]
+    6. The end-user must have `Cred` (an existing logged-in account)
+        - They can only peform actions (add, edit, delete, save) if logged in.
+        - This type is read-only (an opaque type; generated by Auth0)
+    7. Consider using `Array` or `List.take` or `List.indexedMap`
+        - The latter allows us to generate an index for each list item.
 
-    1. What's READ ONLY data? What do we expose fully with our Elm types? (e.g: IDs)
-    2. Where are custom types useful? Where are they not giving any benefit?
+    [^1]: Don't use a custom type unless you need to. We don't gain much if our
+          `Review` type is a custom type (our first draft) rather than a record.
 
+    [^2]: Avoid the `TimeStamp` problem. Reviews in the films API already have a
+          timestamp. If we added that review to the reviews form, we'd need a
+          hidden `"timestamp"` field. If a user then manually edits that form, for
+          example to create their own review, our `TimeStamp` could get out of
+          sync. Only Elm should be able to generate a `TimeStamp` (not the user).
 
-    Error handling
+    ----------------------------------------------------------------------------
+
+    Paper prototyping the customer journey
+    --------------------------------------
+    > ⚠️ Sketch out the potential routes before you start to code
+
+    There are so many micro-decisions to make about your program. How the user
+    interacts with it, your server endpoints, how often you're pinging the server,
+    how the customer journey affects state, and therefore your types.
+
+    Reduce, reduce, reduce the possible states of your program!!!
+
+    - Prefer minimal data wherever possible
+    - What are all the possible states and how do we represent them?
+    - Can we create some guarantees to make impossible states impossible?
+    - Can any of these states be simplified or removed?
+    - Are any of our types read-only
+
+    Helpful videos
     --------------
-    > In this program, we're checking errors on SAVE event only.
+    @ https://www.youtube.com/watch?v=x1FU3e0sT1I (make data structures)
+    @ https://sporto.github.io/elm-patterns/basic/impossible-states.html
+    @ https://elm-radio.com/episode/life-of-a-file/ (which data struture?)
+    @ https://discourse.elm-lang.org/t/domain-driven-type-narrowing/7753 (narrow types)
 
-    1. Is our error checking simple or complex? (e.g: only check for non-empty string)
-    2. Which error handling method? (e.g: @rtfeldman's `List Validated` -vs- `Result.andMap`)
-        - I'll use both methods to show what's possible!
-    3. Be strict with your `Int` types for `Stars` ...
-        - Avoid the `"2:00"` problem (too many potential states)
-
-
-    Our server assumptions
-    ----------------------
-    1. We perform an SQL join to get individual `Film`s reviews.
-    2. Our server endpoint `/films` returns the full film and all it's reviews
-        - No need to ping a separate review API endpoint (or batch `Cmd`s)
-        - No need for an `Article Preview`-style type.
-    3. We use the `ID` of the `Film` (rather than Elm Spa's `article-slug`)
-        - @ https://realworld-docs.netlify.app/specifications/backend/api-response-format/#single-article
+    Elm Spa as an example (@rtfeldman)
+    ----------------------------------
+    1. The login page has a simple `model.form` fields setup
+    2. Article uses `Status a` for `model.article` and `model.comments`
+    3. Editor has a more complex `Status` type (holds every state possible)
 
 -}
 
@@ -214,52 +149,72 @@ import Html exposing (a)
 
 
 -- Model -----------------------------------------------------------------------
--- Our man in a van holds a list of films, we want to simplify data where we can.
--- On building our `Film`, we need to convert our `String` inputs to a proper
--- data type.
---
--- (1) The van will probably start with an `[]` empty state
---     - A new van man's server will have no films (very likely)
---     - #! Is this the best way to represent the server? Could you have the
---       whole model within the `Server a` type?
--- (2) ⏰ Is your 4g connection slow? Notify users with `LoadingSlowly` state.
---     - @ https://tinyurl.com/elm-spa-loading-slowly
---     - His version is much more granular (`model.comments = LoadingSlowly` etc)
---
--- Moving from a flat model to nested forms
--- ---------------------------------------
--- > I'm not sure if this was the right decision but ...
---
--- Within the `Success (Maybe List Film)` branch we have to access some type of
--- edit/review form because we're trying to EDIT "IN-PLACE" within the `viewFilms`
--- function. If our model is flat, we have to pass in THE WHOLE MODEL (or maybe
--- use extensible records), which doesn't feel quite right if we're trying to
--- narrow the types of our functions.
---
---     @ https://discourse.elm-lang.org/t/domain-driven-type-narrowing/7753
---
--- See the "Form" section for more information.
 
+{-| Using a flatter model
+
+> ⚠️ Make concrete decisions about your model and program. You can always change
+> things later, but being wishy-washy can add confusion.
+
+1. Our `Model` assumes an empty van to start `[]`
+2. We simplify and reduce the data wherever we can
+3. Our form inputs are just `Strings` (converted to `Film` on save)
+4. We'll also assume a slow 4g connection (`LoadingSlowly`)
+     - @ https://tinyurl.com/elm-spa-loading-slowly (both comments and article)
+
+
+## Why not custom types?
+
+> #! There are at least two other routes we could've taken
+
+We're sticking to a flat model for this program. There are cleverer ways to do it,
+whereby a type holds ALL the state (including the form) and all possible states
+are encapsulated in a single type (used in a nested `model.form`).
+
+As our form and `model.state` aren't bound together, we need to take care our
+model doesn't get into an impossible state. Only ONE form should be visible at
+any one point in time. `Add/Edit` states will share the same form fields. This is
+not the best way, but it's good to have an example where we haven't fully narrowed
+the types and our guarantees aren't 100%.
+
+-}
 type alias Model =
     { van : Server (Maybe (List Film)) -- #! (1)
     -- The `Film` form
-    , new: FilmForm
-    , update: EditInPlace
-    -- Errors: currently very flexible and probably using it for too many
-    -- unrelated errors? Might be a bad idea.
+    -- #! Our `json-server` provides the `String` ID
+    , title : String
+    , trailer : String
+    , image : String
+    , summary : String
+    , tags : String
+    -- The `Review` form
+    -- #! Elm automatically generates a `TimeStamp` value.
+    , name : String
+    , review : String
+    , rating : String
+    -- The state of the form (only ONE visible at any time)
+    , state: Form
+    -- Any form errors we need to display
     , errors : List String
     }
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ({ van = Loading
-      -- The `Film` form
-      , new = FilmForm "" "" "" "" ""
-      -- The `Edit/Review` form
-      , update = NoForm
-      -- Errors
-      , errors = []
-      }
+    ({ van : Loading
+       -- The `Film` form
+       , title : ""
+       , trailer : ""
+       , image : ""
+       , summary : ""
+       , tags : ""
+       -- The `Review` form
+       , name : ""
+       , review : ""
+       , rating : ""
+       -- The state of the form (only ONE visible at any time)
+       , state: NoForm
+       -- Any form errors we need to display
+       , errors : []
+    }
     -- 🔄 Initial command to load films
     , Cmd.batch
         [ getFilms
@@ -280,112 +235,84 @@ type Server a
     | Error String -- Error message
 
 -- Form ------------------------------------------------------------------------
--- > We have three form types: new, update, review.
--- > It's important to consider your UI and UX routes while planning.
---
--- You also need to consider where in the UI these forms are going to show. Are
--- they ...
---
--- (a) All ABOVE `viewFilms`,
--- (b) Launching a MODEL WINDOW for all the forms,
--- (c) EDITING IN-PLACE _within_ the `viewFilms` function?
---
--- If we decide our new film form is above `viewFilms`, but our edit/review
--- forms are editing in-place then we have at least three available options:[^1]
---
--- 1. A flat `Model` with every single form field (originally).
---    - We aren't able to narrow our types here, the full `model` is needed in
---      our view functions.
--- 2. A single `Form` type (with all possible forms), or split them up into
---    a `NewForm` (above `viewFilms`) and `UpdateForm` (edit/review) which would
---    be visible on button click within `viewFilms` function.
---
--- Anywhere we have a custom type, we need to `case` on ALL branches. If we had
--- a single `Form` type (with all possible forms) we'd end up with two empty
--- `text ""` branches above the `viewFilms` function.
---
--- [^1]: ⚠️ There is one other route, which is to change the `Film` type to hold
---       it's own form data as well: `Film Internals (Maybe (List Review)) Form`
---       but there's a couple of problems with this (although in some ways it
---       makes our `viewFilms` functions A LOT nicer due to narrow types):
---
---       1. Elm Spa example `/Page/Article/Editor.elm` is where I got this idea
---          from, similar to it's `Status` type (which holds all the state).
---          That view is a lot more simple than ours however. It's just a form.
---          The form has different states (new, edit, so on). The `Status` type
---          looks like `Editing Slug _ Form`. The `Article` is not in the view.
---       2. The Elm Spa example also has it's own route (which is something like)
---          `/article/new` or `/article/slug` and is therefore only interested in
---          updating ONE single article.
---       3. This package has a `List Form`, so we're updating MULTIPLE films on
---          the same page — a VERY DIFFERENT UI DECISION to Elm Spa — and we've
---          also decided two things:
---          - We're keeping server updates to a minimum, editing locally, then
---            hitting a "save to the server" button (this might not be great UX).
---          - We're keeping the `List Form` in the view at all times. This means
---            our program design decisions are different to the Elm Spa example.
+-- Any time we've got a `Form` state we'll need to case on each branch, even if
+-- we're not interested in that state in the `view` function. You can use empty
+-- `text ""` values if needed.
 
-{-| We let our `json-server` handle the ID field
+type Form
+    = NoForm
+    | NewFilm
+    | EditFilm FilmID
+    | AddReview FilmID
 
-> Remember it's better to not store computed data: just use `String`s!
--}
-type alias FilmForm =
-    { title : String
-    , trailer : String -- convert to `URL`
-    , image : String -- #! An image uploader could be used (later)
-    , summary : String
-    , tags : String
-    }
+{-| Narrowing the types
 
-{-| #! This could be simplified into it's own type `NewFilm _ _ _`
+> Helps to make our type signatures "feel" more narrow ...
 
-And then checked for errors within the `Msg` update.
+Even if it's the whole `Model` we're passing into our functions. When are these
+useful? When are they superfluous?
 
-1. The `timestamp` should NOT be entered by the user, only set by Elm.
-   For this reason, it's a hidden field (not visible in the view). It's only
-   used if we ping the `/reviews` API to get a review.
-2. We needn't display the form until we actually need it!
-    - When a user clicks the `edit` or `review` button, we can make it visible.
+- @ https://ckoster22.medium.com/advanced-types-in-elm-extensible-records-67e9d804030d
+
+## Notes
+
+> We could've used better types here ...
+
+If we were using custom types we could've done something like:
+
+```elm
+type FilmState
+    = NewFilm (List Problem) Form
+    | EditFilm FilmID (List Problem) Form
+    | AddReview FilmID (List Problem) Form
+```
+
+Or gotten even _more_ specific and used our `Film _ _ _` types more scope, by
+including the `Form` within those `Film` type branches. This allows us to be more
+specific and have more guarantees about our code base.
 
 -}
-type alias ReviewForm =
-    { timestamp : String -- #! (1)
-    , name : String
-    , review : String
-    , rating : String
+type alias FilmForm r =
+    { r
+        | title : String
+        , trailer : Server
+        , image : String
+        , summary : String
+        , tags : String
     }
 
-type EditInPlace
-    = NoForm -- #! (2)
-    | UpdateFilm FilmID FilmForm
-    | AddReview FilmID ReviewForm
+{-| Narrowing the types
+
+1. `TimeStamp` should NOT be entered by the user, only set by Elm.
+    - We've avoided this problem by NOT adding `/reviews/:id` API calls to the
+      form fields.
+2. Don't display the form until we actually need it! (Use buttons)
+3. Only ONE form should be available at any one time.
+
+-}
+type alias ReviewForm r =
+    { r
+        | name : String
+        , review : String
+        , rating : String
+    }
 
 
 -- Film ------------------------------------------------------------------------
--- Consider whether you're pulling from `/films` or `/films/:id`. The Elm Spa by
--- @rtfeldman pulls in the articles feed on the `Home.elm` page (I'm not 100%
--- sure how but uses `Article.previewDecoder`) with a `List (Article Preview)`.
--- The individual `Article.elm` outputs an `Article Full` type.
---
--- Both `Article`s have an `Internals` record (`Article.internalsDecoder`). It
--- contains a `Slug` type which is generated from the `/articles` server endpoint,
--- or from the `/articles/slug` url with `Url.Parser.custom` (from `Json.Decode.Pipeline`).
--- The `Slug` is likely the SQL string ID within the database.
---
---    @ https://web.archive.org/web/20190714180457/https://elm-spa-example.netlify.com/
---    @ https://realworld-docs.netlify.app/specifications/frontend/routing/
---
--- (1) Alternatively this could be a flat record, not a custom type! Technically
---     we don't really need this data structure. I'm accessing the `Internals`
---     directly (with the ability to edit it).
---     - ⚠️ Within the Elm Spa example, `Internals` is read-only and the `Article`
---       type is only ever created from the server (and decoded into this type).
---         - @ https://tinyurl.com/elm-spa-article-internals
--- (2) A film can have zero reviews (`null` value in the json)
--- (3) How can we narrow the types with extensible records? Which ones are useful,
---     and which superfluous?
---     - @ https://ckoster22.medium.com/advanced-types-in-elm-extensible-records-67e9d804030d
 
+{-| Our Film data structures
+
+> We're using ONE endpoint only (`/films`) unlike Elm Spa example which uses
+> two endpoints (`/films/:id` and `/films/:id/comments`). We also don't distinguish
+> between displays: a `Film` is always a film (see `Article Preview` and
+> `Article.previewDecoder` in Elm Spa)
+
+As this is not an opaque type (we're updating it directly, it isn't read-only) we
+technically don't need `Internals` type written like this, but we'll utilise it anyway.
+
+We could've just used a flat `type alias Record` here.
+
+-}
 type Film
     = Film Internals (Maybe (List Review)) -- #! (1) (2)
 
@@ -426,57 +353,35 @@ decodeFilmMeta =
 
 
 -- Review ----------------------------------------------------------------------
--- Do not allow any `null` values for a review! Add it or don't.
---
--- Review custom type (changed to a record)
--- ----------------------------------------
--- > TL;DR: Both methods are possible, but using a record type is simpler.
--- > If I'm regularly accessing every field, is a custom type the best choice?
---
--- We started with a `Review` custom type, which is very handy if you're wanting
--- to put boundaries on how your type is created and consumed (for example, only
--- allow it to be generated from a server call). However. It turns out we need to
--- decode into a `Review` in a couple of places:
---
---    - When we get a review from the `/reviews/:id` API endpoint
---    - When we decode from a `List Film` and want to access the reviews
---
--- The first one demands one of two routes:
---
---    - Our previous custom type requires all fields to be unpacked within the
---      `Msg` (we're not saving to the model): e.g: `(Review timestamp _ _)`
---    - Or, we use a record type, which is quicker and easier to access. Our
---      "getter" functions are ready-made for us: `review.timestamp`.
---
--- What are records useful for?
---
---    Records are useful for different fields with the same type, or lots of
---    values to be stored/accessed publically. Otherwise, consider using a
---    custom type. A custom type also allows you to AVOID nested records.
---
--- The `Article` example from Elm Spa
--- ----------------------------------
--- In this package we're accessing our review fields in two places, and storing
--- them in one place (each `Film.reviews` record) in our update function. It's
--- important to be aware of the guarantees you're looking to create with a
--- custom type, and not just set "getters" (and especially not "setters") for
--- every single field.
---
--- The `src/Article.elm` example below is only created from a server call, and
--- (I think) the `src/Page/Article/Editor.elm` only displays the form data (in
--- new or edit mode) and we don't create an `Article a` directly. Ever. @rtfeldman
--- has this to say about "getters" and "setters":
---
---    - @ ⚠️ [Beware of "getters"](https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Article.elm#L66)
---
--- Notes
--- -----
--- (1) We'll utilize `rtfeldman/elm-iso8601-date-strings` to convert times
---     - @ https://timestampgenerator.com/
--- (2) Stars can only ever be a number between 1-5. See "Cardinality":
---     - @ https://guide.elm-lang.org/appendix/types_as_sets#cardinality
---     - We don't allow `.5` decimal points, and round up if a review has them.
 
+{-| Our Review data structures
+
+> Records are useful for different fields with the same type, or lots of
+> values to be stored/accessed publically. Otherwise, consider using a
+> custom type. A custom type also allows you to AVOID nested records.
+
+The first version of this allowed a random `/reviews/:id` API to be directly added
+to the review form. This had a serious potential bug, where the timestamp from
+the review got added to a hidden form field (and `readonly` added to form fields).
+
+- What if a user edited one of the form fields?
+- What if a user deleted the form and started again?
+
+Our `TimeStamp` could've gotten out of sync. So it's safer for us to save a review
+from that API directly to the `List Review`. We could always allow the user to
+modify it later on.
+
+## Notes
+
+> Do not allow any `null` values for a review! Add it or don't.
+
+1. We'll utilize `rtfeldman/elm-iso8601-date-strings` to convert times
+    - @ https://timestampgenerator.com/
+2. Stars can only ever be a number between 1-5. See "Cardinality":
+    - @ https://guide.elm-lang.org/appendix/types_as_sets#cardinality
+    - We don't allow `.5` decimal points, and round up if a review has them.
+
+-}
 type alias Review =
     { timestamp : TimeStamp -- (1)
     , name : Name
@@ -488,12 +393,13 @@ type alias TimeStamp
     = Time.Posix -- (1)
 
 type Name
-    = Name String -- This could be more complex
+    = Name String
 
 nameToString : Name -> String
 nameToString (Name name) =
     name
 
+{- Be strict with your `Int` types for `Stars` and avoid the "2:00" problem -}
 type Stars
     = One
     | Two
@@ -576,15 +482,14 @@ randomNumber =
 
 -- View ------------------------------------------------------------------------
 -- Also consider `Html.Lazy` to lazy load the films.
---
--- (1) The "add new film" form will be housed outside (above) the `viewFilms` view,
---     but the "edit/add review" forms will be housed inside `viewFilms`.
--- (2) #! There's two ways to display our `Review` from the API call.
---     - Directly add it to the review form if successfully loaded
---     - Display the review with an "Add Review" button (bipass the form)
--- (3) We've tried to NARROW THE TYPES as much as possible. So within the `Success`
---     branch we only have our `EditInPlace` types.
 
+{-| Our view functions
+
+1. Add Film form is outside the `viewFilms` view.
+2. Edit and Add Review are edited-in-place (within the `Film`)
+3. Try to narrow the types as much as possible
+
+-}
 view : Model -> Html Msg
 view model =
     case model.van of
@@ -597,32 +502,14 @@ view model =
         Success films ->
             main_ [] [
                 h1 [] [ text "Films" ]
-                , viewFilmForm model.new -- ^ What about UpdateForm?
-                , viewFilms model.update films -- (1)
+                , viewFilmForm model
+                , viewFilms model films -- (1)
             ]
 
         Error errorMsg ->
             text ("Error loading films: " ++ errorMsg)
 
-viewInput : String -> (String -> msg) -> String -> String -> Html msg
-viewInput t p v toMsg =
-  input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
-{- #! If I'm sharing this viewFilmForm then I need a different button ...
-
-For the `ClickedEditFilm ID` function. and maybe a `Maybe FilmID` param -}
-viewFilmForm : FilmForm -> Html Msg
-viewFilmForm form =
-    div []
-        [ viewInput "text" InputTitle "Title" form.title
-        , viewInput "text" InputTrailer "Trailer URL" form.trailer
-        , viewInput "text" InputImage "Image URL" form.image
-        , viewInput "text" InputSummary "Summary" form.summary
-        , viewInput "text" InputTags "Tags (comma separated)" form.tags
-        , button [ onClick ClickedAddFilm ] [ text "Add a new film" ]
-        ]
-
-{- (1) #! (3) -}
 viewFilms : EditInPlace -> Maybe (List Film) -> Html Msg
 viewFilms forms maybeFilms =
     case maybeFilms of
@@ -634,51 +521,108 @@ viewFilms forms maybeFilms =
         Nothing ->
             text "No films yet!"
 
-{-| ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
+viewFilmOrForm : Form -> Film -> Html Msg
+viewFilmOrForm formState film =
+    case formState of
+        NoForm ->
+            viewFilm film
 
-I DON'T THINK THIS IS GOING TO WORK, ACTUALLY AS EVERY FILM WOULD BE PUT IN
-THIS FUCKING STATE!!! IT NEEDS TO BE FOR A SINGLE FILM ONLY!!!
+        NewFilm ->
+            viewFilm film
 
-LOOK OVER ELM SPA EXAMPLES AND OTHER FORMS WITH ELM GUIDES FOR CLUES>>>>>
+        EditFilm filmID ->
+            viewFilmForm (Just film.id) (filmData film) editFilmButton
+
+        AddReview filmID ->
+            viewReviewForm filmID (filmData film) addReviewButton
+
+{-| #! THIS NEEDS TIDYING UP: WOULD BE EASIER IF IN OWN MODULE!!! -}
+viewFilm : Film -> Html Msg
+viewFilm film =
+    let
+        data = filmData film
+    in
+    li []
+        [ h1 [] [ text data.title ]
+        , div [] [ text data.summary ]
+        , case data.trailer of
+            Just url ->
+                a [ href (U.toString url) ] [ text "Watch trailer" ]
+
+            Nothing ->
+                text "No trailer available"
+        , case data.image of
+            "" ->
+                text "No image available"
+
+            imageUrl ->
+                img [ src imageUrl, loading "lazy" ] []
+        , case film.reviews of
+            Just reviews ->
+                ul [] (List.map viewReview reviews)
+
+            Nothing ->
+                text "No reviews yet!"
+        ]
+
+viewInput : String -> (String -> msg) -> String -> String -> Html msg
+viewInput t p v toMsg =
+  input [ type_ t, placeholder p, value v, onInput toMsg ] []
+
+{-| ⚠️ Here's a little hacky
+
+> Remember that our `onSubmit` state is in the FORM (not button)
+
+Because we aren't encapsulating all form state within a `Film` or `Form` type,
+we've got to do a bit of an icky `Nothing` or `Just FilmID` case in the update
+function.
+
+## Better safe than sorry ...
+
+We could also `case formState of` and have our Add Review form within this function
+also, but just to be safe we'll split that out into another function.
 
 -}
-viewFilm : EditInPlace -> Film -> Html Msg
-viewFilm forms f =
-    let
-        film = filmData f
-    in
-    case forms of
-        NoForm ->
-            li []
-                [ text ("Film: " ++ film.title)
-                , text ("Trailer: " ++ Debug.toString film.trailer)
-                , text ("Image: " ++ film.image)
-                , text ("Summary: " ++ film.summary)
-                , text ("Tags: " ++ Debug.toString film.tags)
-                , button [ onClick (ClickedEditFilm film.id) ] [ text "Edit the film" ]
-                , button [ onClick (ClickedAddReview film.id) ] [ text "Add a review" ]
-                ]
+viewFilmForm : Maybe FilmID -> FilmForm a -> Html Msg -> Html Msg
+viewFilmForm maybeFilmID form button =
+    form [ onSubmit (ClickedSave maybeFilmID) ] -- #! Case on this in update function
+        [ viewInput "text" InputTitle "Title" form.title
+        , viewInput "text" InputTrailer "Trailer URL" form.trailer
+        , viewInput "text" InputImage "Image URL" form.image
+        , viewInput "text" InputSummary "Summary" form.summary
+        , viewInput "text" InputTags "Tags (comma separated)" form.tags
+        , button
+        ]
 
-        UpdateFilm id form ->
-            viewFilmForm form -- #! I need to add a `FilmID` here
-
-        AddReview id form ->
-            viewReviewForm id form
-
-{- (2) -}
-viewReviewForm : FilmID -> ReviewForm -> Html Msg
-viewReviewForm filmID form =
-    div []
+viewReviewForm : FilmID -> ReviewForm a -> Html Msg -> Html Msg
+viewReviewForm filmID form button =
+    form [ onSubmit (ClickedAddReview filmID) ] -- #! Case on this in update function
         [ viewInput "text" InputName "Name" form.name
         , viewInput "text" InputReview "Review" form.review
         , viewInput "text" InputRating "Rating" form.rating
-        , input
-            [ type_ "hidden"
-            , placeholder "TimeStamp"
-            , value form.timestamp
-            , onInput InputTimeStamp
-            ] []
+        , button
         ]
+
+addFilmButton : Html msg
+addFilmButton =
+    saveFilmButton "Add a new film"
+
+editFilmButton : Html msg
+editFilmButton =
+    saveFilmButton "Edit the film"
+
+addReviewButton : Html msg
+addReviewButton =
+    saveFilmButton "Add a review"
+
+saveFilmButton : String -> Html msg
+saveFilmButton caption =
+    button [ class "button" ]
+        [ text caption ]
+
+
+
+
 
 
 -- Messages --------------------------------------------------------------------
