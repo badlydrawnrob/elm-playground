@@ -129,9 +129,9 @@ module CustomTypes.Films exposing (..)
 -}
 
 import Browser
-import Html exposing (Html, button, div, h1, input, main_, text, ul, li)
-import Html.Attributes exposing (placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (..)
+import Html.Attributes exposing (attribute, class, href, placeholder, src, type_, value)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Iso8601
 import Json.Decode as D exposing (Decoder)
@@ -142,10 +142,7 @@ import Task
 import Time
 import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
-
-import Debug
-import CustomTypes.Songs exposing (Input(..))
-import Html exposing (a)
+import Platform.Cmd as Cmd
 
 
 -- Model -----------------------------------------------------------------------
@@ -191,29 +188,33 @@ type alias Model =
     , name : String
     , review : String
     , rating : String
+    -- The API review we grabbed
+    , apiReview : Maybe Review
     -- The state of the form (only ONE visible at any time)
-    , state: Form
+    , formState: Form
     -- Any form errors we need to display
     , errors : List String
     }
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ({ van : Loading
+    ({ van = Loading
        -- The `Film` form
-       , title : ""
-       , trailer : ""
-       , image : ""
-       , summary : ""
-       , tags : ""
+       , title = ""
+       , trailer = ""
+       , image = ""
+       , summary = ""
+       , tags = ""
        -- The `Review` form
-       , name : ""
-       , review : ""
-       , rating : ""
+       , name = ""
+       , review = ""
+       , rating = ""
+       -- Have we grabbed a review from our API?
+       , apiReview = Nothing
        -- The state of the form (only ONE visible at any time)
-       , state: NoForm
+       , formState = NoForm
        -- Any form errors we need to display
-       , errors : []
+       , errors = []
     }
     -- 🔄 Initial command to load films
     , Cmd.batch
@@ -221,7 +222,7 @@ init _ =
         -- (2) ⏰ @rtfeldman's trick for slow loading data. This is in a `Loading`
         -- package and comes with an error message and a spinner icon ...
         -- @ https://github.com/rtfeldman/elm-spa-example/blob/master/src/Loading.elm
-        , Task.perform (\_ -> PassedSlowLoadingThreshold) Process.sleep 500
+        , Task.perform (\_ -> PassedSlowLoadingThreshold) (Process.sleep 500)
     ]
     )
 
@@ -275,7 +276,7 @@ specific and have more guarantees about our code base.
 type alias FilmForm r =
     { r
         | title : String
-        , trailer : Server
+        , trailer : String
         , image : String
         , summary : String
         , tags : String
@@ -312,9 +313,17 @@ technically don't need `Internals` type written like this, but we'll utilise it 
 
 We could've just used a flat `type alias Record` here.
 
+## Notes
+
+1. Our `Film` type needn't be a custom type really
+    - It isn't read-only and we're updating it directly (not via server)
+2. #! We're being a little inconsistant with accessor functions:
+    - How often do we need to access particular values?
+    - Should they be accessed `internals.directly` or `internals`?
+
 -}
 type Film
-    = Film Internals (Maybe (List Review)) -- #! (1) (2)
+    = Film Internals (Maybe (List Review)) -- #! (1)
 
 type FilmID
     = FilmID String -- #! `json-server` unfortunately stores IDs as `String`
@@ -333,7 +342,15 @@ type alias Internals =
 
 filmData : Film -> Internals
 filmData (Film internals _) =
-    internals
+    internals -- #! (2)
+
+filmReviews : Film -> Maybe (List Review)
+filmReviews (Film _ maybeReviews) =
+    maybeReviews
+
+getFilmID : Film -> FilmID
+getFilmID (Film internals _) =
+    internals.id -- #! (2)
 
 decodeFilm : Decoder Film
 decodeFilm =
@@ -442,20 +459,20 @@ decodeStars =
 -- Http ------------------------------------------------------------------------
 -- See the `data-playground/mocking/films` repo.
 
-url : String
-url = "http://localhost:3000"
+urlAPI : String
+urlAPI = "http://localhost:3000"
 
 getFilms : Cmd Msg
 getFilms =
     Http.get
-        { url = url ++ "/films"
+        { url = urlAPI ++ "/films"
         , expect = Http.expectJson GotFilms (D.list decodeFilm)
         }
 
 getReview : Int -> Cmd Msg
 getReview reviewID =
     Http.get
-        { url = url ++ "/reviews" ++ "/" ++ String.fromInt reviewID
+        { url = urlAPI ++ "/reviews" ++ "/" ++ String.fromInt reviewID
         , expect = Http.expectJson GotReview decodeReview
         }
 
@@ -502,80 +519,155 @@ view model =
         Success films ->
             main_ [] [
                 h1 [] [ text "Films" ]
-                , viewFilmForm model
-                , viewFilms model films -- (1)
+                -- #! Using `Nothing` here is a bit hacky!
+                , viewFilmForm Nothing model addFilmButton
+                -- #! We haven't narrowed the types enough, as we'll still need
+                -- to access the `model.formFields` later on. Worse still, we're
+                -- not being specific enough about which form fields are needed and
+                -- sharing fields between Add/Edit forms :(
+                , viewFilms model.formState films model -- (1)
             ]
 
         Error errorMsg ->
             text ("Error loading films: " ++ errorMsg)
 
 
-viewFilms : EditInPlace -> Maybe (List Film) -> Html Msg
-viewFilms forms maybeFilms =
+viewFilms : Form -> Maybe (List Film) -> Model -> Html Msg
+viewFilms formState maybeFilms model =
     case maybeFilms of
         Just films ->
+            -- #! We were supposed to have a list here, but because we've got
+
             ul []
-                (List.map (viewFilm forms) films)
+                (List.map (viewFilmOrForm formState model) films) -- #! Edit form only
 
 
         Nothing ->
             text "No films yet!"
 
-viewFilmOrForm : Form -> Film -> Html Msg
-viewFilmOrForm formState film =
+{-| #! ⚠️ Our caseing is a little CRAZY!
+
+> Because our types aren't 100% encapsulated, we need to case on all the things.
+
+Alternatively we could be more sure that a film is in an `EditFilm` state, and
+provide everything we need to know about it's state to the particular `Film` that
+needs editing. Then we wouldn't have to worry about `NoForm` or `NewFilm`.
+
+## Notes
+
+1. We're also doing a lot more casing than is necessary!
+    - With a different type structure we could've narrowed the types a bit.
+
+```elm
+if selectedFilmID == filmID then
+    case filmState of
+        Film EditMode _ _ ->
+            ...
+        Film AddReviewMode _ _ ->
+            ...
+else
+    viewFilm film
+```
+
+-}
+viewFilmOrForm : Form -> Model -> Film -> Html Msg
+viewFilmOrForm formState model film =
+    let
+        filmID = getFilmID film
+    in
     case formState of
         NoForm ->
-            viewFilm film
+            viewFilm film -- No need for form fields
 
         NewFilm ->
-            viewFilm film
+            viewFilm film -- No need for form fields
 
-        EditFilm filmID ->
-            viewFilmForm (Just film.id) (filmData film) editFilmButton
+        EditFilm selectedFilmID ->
+            if selectedFilmID == filmID then
+                -- #! ⚠️ If we've selected a film to edit, we'll need to send
+                -- along the whole `Model` just to access the form fields.
+                viewFilmForm (Just filmID) model editFilmButton
+            else
+                viewFilm film
 
-        AddReview filmID ->
-            viewReviewForm filmID (filmData film) addReviewButton
+        AddReview selectedFilmID ->
+            if selectedFilmID == filmID then
+                -- #! ⚠️ If we've selected a film to edit, we'll need to send
+                -- along the whole `Model` just to access the form fields.
+                viewReviewFormOrRandom filmID model
+            else
+                viewFilm film
 
 {-| #! THIS NEEDS TIDYING UP: WOULD BE EASIER IF IN OWN MODULE!!! -}
 viewFilm : Film -> Html Msg
 viewFilm film =
     let
         data = filmData film
+        reviews = filmReviews film
     in
     li []
         [ h1 [] [ text data.title ]
         , div [] [ text data.summary ]
-        , case data.trailer of
-            Just url ->
-                a [ href (U.toString url) ] [ text "Watch trailer" ]
+        , viewTrailor data.trailer
+        , img [ src data.image, attribute "loading" "lazy" ] []
+        , viewReviews reviews
+        ]
 
+viewTrailor : Maybe Url -> Html msg
+viewTrailor maybeUrl =
+    case maybeUrl of
+        Just url ->
+            a [ href (U.toString url) ] [ text "Watch trailer" ]
+
+        Nothing ->
+            text "No trailer available"
+
+viewReviews : Maybe (List Review) -> Html msg
+viewReviews maybeReviews =
+    case maybeReviews of
+        Just reviews ->
+            ul [] (List.map viewReview reviews)
+
+        Nothing ->
+            text "No reviews yet!"
+
+viewReview : Review -> Html msg
+viewReview review =
+    li []
+        [ text ("Review by " ++ nameToString review.name)
+        , text ("Rating: " ++ String.fromInt (starsToNumber review.rating))
+        , text ("Review: " ++ review.review)
+        , text ("Timestamp: " ++ Iso8601.fromTime review.timestamp)
+        ]
+
+viewReviewFormOrRandom : FilmID -> Model -> Html Msg
+viewReviewFormOrRandom filmID model =
+    div []
+        [ viewReviewForm filmID model addReviewButton
+        , case model.apiReview of
             Nothing ->
-                text "No trailer available"
-        , case data.image of
-            "" ->
-                text "No image available"
-
-            imageUrl ->
-                img [ src imageUrl, loading "lazy" ] []
-        , case film.reviews of
-            Just reviews ->
-                ul [] (List.map viewReview reviews)
-
-            Nothing ->
-                text "No reviews yet!"
+                button [ onClick (ClickedRandom) ] [ text "Get a random review" ]
+            Just review ->
+                saveAPIReviewButton filmID review
         ]
 
 viewInput : String -> (String -> msg) -> String -> String -> Html msg
-viewInput t p v toMsg =
+viewInput t toMsg p v =
   input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
-{-| ⚠️ Here's a little hacky
+{-| ⚠️ Here's a little hacky form
 
-> Remember that our `onSubmit` state is in the FORM (not button)
+> Remember that our `onSubmit` state is in the FORM (not button) ..
 
-Because we aren't encapsulating all form state within a `Film` or `Form` type,
-we've got to do a bit of an icky `Nothing` or `Just FilmID` case in the update
-function.
+We need a `Maybe FilmID` here as we're sharing the view between Add/Edit and we've
+no other way to know which is which. We could've encapsulated this better like:
+
+```elm
+type Form
+    = NewForm (List Problem) FilmForm
+    | EditForm FilmID (List Problem) FilmForm
+    | ...
+```
 
 ## Better safe than sorry ...
 
@@ -585,7 +677,7 @@ also, but just to be safe we'll split that out into another function.
 -}
 viewFilmForm : Maybe FilmID -> FilmForm a -> Html Msg -> Html Msg
 viewFilmForm maybeFilmID form button =
-    form [ onSubmit (ClickedSave maybeFilmID) ] -- #! Case on this in update function
+    Html.form [ onSubmit (ClickedSaveFilm maybeFilmID) ] -- #! Case on this in update function
         [ viewInput "text" InputTitle "Title" form.title
         , viewInput "text" InputTrailer "Trailer URL" form.trailer
         , viewInput "text" InputImage "Image URL" form.image
@@ -596,7 +688,7 @@ viewFilmForm maybeFilmID form button =
 
 viewReviewForm : FilmID -> ReviewForm a -> Html Msg -> Html Msg
 viewReviewForm filmID form button =
-    form [ onSubmit (ClickedAddReview filmID) ] -- #! Case on this in update function
+    Html.form [ onSubmit (ClickedAddReview filmID) ] -- #! Case on this in update function
         [ viewInput "text" InputName "Name" form.name
         , viewInput "text" InputReview "Review" form.review
         , viewInput "text" InputRating "Rating" form.rating
@@ -620,17 +712,35 @@ saveFilmButton caption =
     button [ class "button" ]
         [ text caption ]
 
+{-| Another way to add a review — from our `/reviews/:id` API
 
+> We've simplified the `TimeStamp` problem by avoiding adding to the form
 
+We store the review temporarily and have a simple "Add Review" button so the user
+can add it automatically. We could always give them an option to edit the review
+if we wanted.
 
+-}
+saveAPIReviewButton : FilmID -> Review -> Html Msg
+saveAPIReviewButton filmID review =
+    button [ class "button", onClick (ClickedAddReview filmID) ]
+        [ text ("Add review by " ++ nameToString review.name)
+        , text " (Rating: "
+        , text (String.fromInt (starsToNumber review.rating))
+        , text ")"
+        ]
 
 
 -- Messages --------------------------------------------------------------------
+-- ⚠️ Is it better to have ONE message per action, or share messages between two
+-- different (but similar) actions? (Example: an API click that requires a
+-- `Review`, -vs- a form click that generates a `Review` on validation)
 
 type Msg
-    = ClickedAddFilm -- #! If I'm sharing a `
+    = ClickedAddReview FilmID
+    | ClickedAddAPIReview FilmID Review
+    | ClickedSaveFilm (Maybe FilmID) -- #! Shared by Add/Edit
     | ClickedRandom
-    | ClickedAddReview FilmID
     | GotFilms (Result Http.Error (List Film))
     | GotNumber Int
     | GotReview (Result Http.Error Review)
@@ -656,10 +766,36 @@ update msg model =
         ClickedRandom ->
             ( model, randomNumber )
 
-        ClickedAddFilm ->
-            Debug.todo "Make the film form work"
+        ClickedSaveFilm maybeFilmID ->
+            case maybeFilmID of
+                Just filmID ->
+                    -- If we have a film ID, we're editing an existing film
+                    Debug.todo "Make the film form work"
 
-        ClickedAddReview ->
+                Nothing ->
+                    -- Otherwise, we're adding a new film
+                    Debug.todo "Make the film form work"
+
+        ClickedAddAPIReview filmID review ->
+            -- If we're in this branch, our `model.van` should have films
+            case model.van of
+                -- #! ⚠️ You could use `Maybe.map` here instead!!!
+                Success (Just films) ->
+                    ( { model
+                            | van =
+                                Success (Just (updateFilms (updateReviews filmID review) films))
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    -- If we don't have a film, we can't add the review
+                    -- This should never error (I don't think)
+                    ( { model | errors = [ "Cannot add review without a film" ] }
+                    , Cmd.none
+                    )
+
+        ClickedAddReview filmID ->
             Debug.todo "Make the review form work"
 
         GotFilms (Ok []) ->
@@ -672,9 +808,7 @@ update msg model =
 
         GotFilms (Ok films) ->
             -- Otherwise update the model with current list of films
-            ( { model
-                | van = Success (Just films)
-                , formReview = True -- #! Only display if there's films!
+            ( { model | van = Success (Just films)
               }
             , Cmd.none
             )
@@ -693,7 +827,12 @@ update msg model =
             ( model, getReview number )
 
         GotReview (Ok review) ->
-            ( addTemporaryReview review model
+            ( { model | apiReview = Just review }
+            , Cmd.none
+            )
+
+        GotReview (Err _) ->
+            ( { model | errors = [ "Failed to load review" ] }
             , Cmd.none
             )
 
@@ -760,47 +899,26 @@ update msg model =
             , Cmd.none
             )
 
+updateFilms : (Film -> Film) -> List Film -> List Film
+updateFilms transform films =
+    List.map transform films
 
-{-| Adding our review API result to the review form
+updateReviews : FilmID -> Review -> Film -> Film
+updateReviews filmID review film =
+    if filmID == getFilmID film then
+        addReviewToFilm review film
+    else
+        film -- No change if the film ID doesn't match
 
-> ⚠️ Our review form expects strings!
-> ⚠️ We could've simply had an "Add Review" button (and not used the form)
-> ⚠️ Or used a `Status a` type and saved to the model `Loaded Review`
+addReviewToFilm : Review -> Film -> Film
+addReviewToFilm review (Film internals reviews) =
+    case reviews of
+        Just hasReviews ->
+            -- If we have reviews, add the new one to the BACK of the list
+            Film internals (Just (hasReviews ++ [ review ]))
 
-I decided not to bother saving to the model and storing it temporarily. We'll
-just use the values as strings (like our form). Our decoded `Review` has a
-`timestamp` and `name` as custom types. This function helps us re-use our review
-form when we've pinged the review API!
-
-## The `TimeStamp` problem
-
-> ⚠️ Our `TimeStamp` is a bit tricksy.
-
-The end-user never need know there's a timestamp there. Elm handles that. However,
-our `/reviews/:id` API already has timestamps in ISO 8601 format, so we decode
-that and use it in a hidden `viewInput "text" _ "Timestamp"` field.
-
-The problem lies in if the user manually edits the review before saving, as now
-we have a ROGUE TIMESTAMP! We can either:
-
-(a) Bipass the form completely and have a "SAVE Review" button (from API)
-(b) Use `readonly` in our `viewInput` value, with a "CLEAR Form" button. That way
-    there's no way for the user to edit the API review, they'll have to clear the
-    form and start again.
-
-    - @ https://www.w3schools.com/tags/att_input_readonly.asp
-
-Alternatively, you can make sure that EVERY SINGLE FIELD is made to be user-editable
-and you'll never have any clashes.
--}
-addTemporaryReview : Review -> Model -> Model
-addTemporaryReview review model =
-    { model
-      | timestamp = Iso8601.fromTime review.timestamp
-      , name = nameToString review.name
-      , review = review.review
-      , rating = String.fromInt (starsToNumber review.rating)
-    }
+        Nothing ->
+            Film internals reviews
 
 
 -- Film functions --------------------------------------------------------------
