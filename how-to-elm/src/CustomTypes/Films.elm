@@ -6,17 +6,28 @@ module CustomTypes.Films exposing (..)
     > Aim to keep your wishlist and architecture simple.
     > Have it written down somewhere, where it's easy to glance at.
 
+    Here's a proof-of-concept (one way to do it) film form management package.
+    We're still missing quite a bit, and our types aren't ideal, but it works:
+
+    - Form validation
+    - Fancy CSS
+    - Some `Form` state management
+
+    Make the spec less dumb!
+    ------------------------
+    > Films API: `badlydrawnrob/data-playground/mocking/films`
+
     Can you write your spec in a single sentence? A page? How much detail do
     you need to know before you start coding? Can you encapsulate everything we
     need to know about the program in 1-2 Markdown pages?
 
-        -Make the spec less dumb!-
-        Remember that comments can become outdated if code changes:
-        @ [v1: Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
-        @ [v2: Getting closer spec](...)
+    Remember that comments can become outdated if code changes:
 
-        -See the films API-
-        @ `badlydrawnrob/data-playground/mocking/films`
+        @ [v1: Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
+        @ v2: Getting closer spec (our current code base)
+            - ⚠️ Types aren't perfect and it's A LOT of state to manage
+              either use "atomic" routes (`/film/:id/edit`) or simplify the types
+              to encapsulate all state (`EditFilm record problems form`)
 
     You find out A LOT along the way, once you start designing and building. For
     example, see "The `TimeStamp` problem" below!
@@ -143,6 +154,7 @@ import Time
 import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
 import Platform.Cmd as Cmd
+import Platform.Cmd as Cmd
 
 
 -- Model -----------------------------------------------------------------------
@@ -180,7 +192,7 @@ type alias Model =
     -- #! Our `json-server` provides the `String` ID
     , title : String
     , trailer : String
-    , image : String
+    , poster : String
     , summary : String
     , tags : String
     -- The `Review` form
@@ -202,7 +214,7 @@ init _ =
        -- The `Film` form
        , title = ""
        , trailer = ""
-       , image = ""
+       , poster = ""
        , summary = ""
        , tags = ""
        -- The `Review` form
@@ -212,7 +224,7 @@ init _ =
        -- Have we grabbed a review from our API?
        , apiReview = Nothing
        -- The state of the form (only ONE visible at any time)
-       , formState = NoForm
+       , formState = NewFilm
        -- Any form errors we need to display
        , errors = []
     }
@@ -241,8 +253,7 @@ type Server a
 -- `text ""` values if needed.
 
 type Form
-    = NoForm
-    | NewFilm
+    = NewFilm
     | EditFilm FilmID
     | AddReview FilmID
 
@@ -277,7 +288,7 @@ type alias FilmForm r =
     { r
         | title : String
         , trailer : String
-        , image : String
+        , poster : String
         , summary : String
         , tags : String
     }
@@ -328,7 +339,7 @@ type Film
 type FilmID
     = FilmID String -- #! `json-server` unfortunately stores IDs as `String`
 
-type alias ImageID
+type alias PosterID
     = String
 
 type alias Internals =
@@ -336,9 +347,13 @@ type alias Internals =
     , title : String
     , trailer : Maybe Url
     , summary : String
-    , image : ImageID -- #! One size, eventually `-S`, `-M`, `-L`
+    , poster : PosterID -- #! One size, eventually `-S`, `-M`, `-L`
     , tags : Maybe (List String) -- Optional (`null` allowed)
     }
+
+posterUrl : String
+posterUrl =
+    "http://localhost:3000/poster/"
 
 filmData : Film -> Internals
 filmData (Film internals _) =
@@ -356,7 +371,7 @@ decodeFilm : Decoder Film
 decodeFilm =
     D.map2 Film
         decodeFilmMeta
-        (D.nullable (D.list decodeReview))
+        (D.field "reviews" (D.nullable (D.list decodeReview)))
 
 decodeFilmMeta : Decoder Internals
 decodeFilmMeta =
@@ -365,8 +380,17 @@ decodeFilmMeta =
         (D.field "title" D.string)
         (D.field "trailer" (D.map U.fromString D.string)) -- #! Forces a `Maybe`
         (D.field "summary" D.string)
-        (D.field "image" D.string)
+        ((D.field "poster" (D.list D.string)
+            |> D.andThen decodePoster))
         (D.field "tags" (D.nullable (D.list D.string)))
+
+{-| ⚠️ Change the poster value shape (a bit hacky) -}
+decodePoster : List String -> Decoder PosterID
+decodePoster posterList =
+    if List.length posterList == 1 then
+        D.succeed (List.head posterList |> Maybe.withDefault "")
+    else
+        D.fail "Poster list must have exactly one item"
 
 
 -- Review ----------------------------------------------------------------------
@@ -519,12 +543,23 @@ view model =
         Success films ->
             main_ [] [
                 h1 [] [ text "Films" ]
+                , button [ onClick CancelAllForms ]
+                    [ text "Cancel all forms and reset to `NewFilm` state" ]
                 -- #! Using `Nothing` here is a bit hacky!
-                , viewFilmForm Nothing model addFilmButton
-                -- #! We haven't narrowed the types enough, as we'll still need
-                -- to access the `model.formFields` later on. Worse still, we're
-                -- not being specific enough about which form fields are needed and
-                -- sharing fields between Add/Edit forms :(
+                , case model.formState of
+                    NewFilm ->
+                        viewFilmForm Nothing model addFilmButton
+
+                    EditFilm _ ->
+                        text ""
+
+                    AddReview _ ->
+                        text ""
+                , hr [] []
+                -- #! We haven't narrowed the types enough!!!
+                -- We need `model.formFields` later on in order to change the state
+                -- correctly. Even worse, we're sharing the film form between the
+                -- Add Form state and Edit Form state :(
                 , viewFilms model.formState films model -- (1)
             ]
 
@@ -547,6 +582,7 @@ viewFilms formState maybeFilms model =
 
 {-| #! ⚠️ Our caseing is a little CRAZY!
 
+> ⚠️ Our state is becoming quite hard to manage ...
 > Because our types aren't 100% encapsulated, we need to case on all the things.
 
 Alternatively we could be more sure that a film is in an `EditFilm` state, and
@@ -576,15 +612,12 @@ viewFilmOrForm formState model film =
         filmID = getFilmID film
     in
     case formState of
-        NoForm ->
-            viewFilm film -- No need for form fields
-
         NewFilm ->
             viewFilm film -- No need for form fields
 
         EditFilm selectedFilmID ->
             if selectedFilmID == filmID then
-                -- #! ⚠️ If we've selected a film to edit, we'll need to send
+                -- #! If we've selected a film to edit, we'll need to send
                 -- along the whole `Model` just to access the form fields.
                 viewFilmForm (Just filmID) model editFilmButton
             else
@@ -592,11 +625,16 @@ viewFilmOrForm formState model film =
 
         AddReview selectedFilmID ->
             if selectedFilmID == filmID then
-                -- #! ⚠️ If we've selected a film to edit, we'll need to send
+                -- #! If we've selected a film to edit, we'll need to send
                 -- along the whole `Model` just to access the form fields.
                 viewReviewFormOrRandom filmID model
             else
                 viewFilm film
+
+
+viewPoster : String -> Html msg
+viewPoster id =
+    img [ src (posterUrl ++ id), attribute "loading" "lazy" ] []
 
 {-| #! THIS NEEDS TIDYING UP: WOULD BE EASIER IF IN OWN MODULE!!! -}
 viewFilm : Film -> Html Msg
@@ -605,12 +643,18 @@ viewFilm film =
         data = filmData film
         reviews = filmReviews film
     in
-    li []
-        [ h1 [] [ text data.title ]
-        , div [] [ text data.summary ]
-        , viewTrailor data.trailer
-        , img [ src data.image, attribute "loading" "lazy" ] []
-        , viewReviews reviews
+    div [ class "film"]
+        [ li []
+            [ h1 [] [ text data.title ]
+            , div [] [ text data.summary ]
+            , viewTrailor data.trailer
+            , viewPoster data.poster
+            , viewReviews reviews
+            ]
+        , button [ onClick (ClickedAddReview data.id) ]
+            [ text "Add a review" ]
+        , button [ onClick (ClickedEditFilm data.id) ]
+            [ text "Edit film" ]
         ]
 
 viewTrailor : Maybe Url -> Html msg
@@ -646,7 +690,7 @@ viewReviewFormOrRandom filmID model =
         [ viewReviewForm filmID model addReviewButton
         , case model.apiReview of
             Nothing ->
-                button [ onClick (ClickedRandom) ] [ text "Get a random review" ]
+                button [ onClick ClickedRandom ] [ text "Get a random review" ]
             Just review ->
                 saveAPIReviewButton filmID review
         ]
@@ -680,7 +724,7 @@ viewFilmForm maybeFilmID form button =
     Html.form [ onSubmit (ClickedSaveFilm maybeFilmID) ] -- #! Case on this in update function
         [ viewInput "text" InputTitle "Title" form.title
         , viewInput "text" InputTrailer "Trailer URL" form.trailer
-        , viewInput "text" InputImage "Image URL" form.image
+        , viewInput "text" InputPoster "Poster URL" form.poster
         , viewInput "text" InputSummary "Summary" form.summary
         , viewInput "text" InputTags "Tags (comma separated)" form.tags
         , button
@@ -723,7 +767,7 @@ if we wanted.
 -}
 saveAPIReviewButton : FilmID -> Review -> Html Msg
 saveAPIReviewButton filmID review =
-    button [ class "button", onClick (ClickedAddReview filmID) ]
+    button [ class "button", onClick (ClickedAddAPIReview filmID review) ]
         [ text ("Add review by " ++ nameToString review.name)
         , text " (Rating: "
         , text (String.fromInt (starsToNumber review.rating))
@@ -737,9 +781,12 @@ saveAPIReviewButton filmID review =
 -- `Review`, -vs- a form click that generates a `Review` on validation)
 
 type Msg
-    = ClickedAddReview FilmID
+    = CancelAllForms
+    | ClickedAddReview FilmID
     | ClickedAddAPIReview FilmID Review
+    | ClickedEditFilm FilmID
     | ClickedSaveFilm (Maybe FilmID) -- #! Shared by Add/Edit
+    | ClickedSaveReview FilmID
     | ClickedRandom
     | GotFilms (Result Http.Error (List Film))
     | GotNumber Int
@@ -748,7 +795,7 @@ type Msg
     -- Film form
     | InputTitle String
     | InputTrailer String
-    | InputImage String
+    | InputPoster String
     | InputSummary String
     | InputTags String
     -- Review form
@@ -762,19 +809,19 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        ClickedRandom ->
-            ( model, randomNumber )
+    case Debug.log "Messages" msg of
+        CancelAllForms ->
+            -- Reset the form state to `NewFilm`
+            ( { model | formState = NewFilm, errors = [] }
+            , Cmd.none
+            )
 
-        ClickedSaveFilm maybeFilmID ->
-            case maybeFilmID of
-                Just filmID ->
-                    -- If we have a film ID, we're editing an existing film
-                    Debug.todo "Make the film form work"
+        ClickedAddReview filmID ->
+            ( { model
+                | formState = AddReview filmID
+              }
+            , Cmd.none)
 
-                Nothing ->
-                    -- Otherwise, we're adding a new film
-                    Debug.todo "Make the film form work"
 
         ClickedAddAPIReview filmID review ->
             -- If we're in this branch, our `model.van` should have films
@@ -784,6 +831,12 @@ update msg model =
                     ( { model
                             | van =
                                 Success (Just (updateFilms (updateReviews filmID review) films))
+                            -- #! ⚠️ Reset the form state: This could get quite
+                            -- confusing eventually! Perhaps it'd be better to
+                            -- hold all state in on `Status` type?
+                            , apiReview = Nothing
+                            , formState = NewFilm
+                            , errors = []
                       }
                     , Cmd.none
                     )
@@ -795,8 +848,42 @@ update msg model =
                     , Cmd.none
                     )
 
-        ClickedAddReview filmID ->
-            Debug.todo "Make the review form work"
+        ClickedEditFilm filmID ->
+            ( { model
+                | formState = EditFilm filmID
+              }
+            , Cmd.none)
+
+        ClickedRandom ->
+            ( model, randomNumber )
+
+        ClickedSaveFilm maybeFilmID ->
+            case maybeFilmID of
+                Just filmID ->
+                    -- If we have a film ID, we're editing an existing film
+                    ( { model
+                        | formState = NewFilm -- Reset to NewFilm after saving
+                        , errors = [ Debug.todo "Make the film form work" ] -- Clear any previous errors
+                      }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    -- Otherwise, we're adding a new film
+                    ( { model
+                        | formState = NewFilm -- Reset to NewFilm after saving
+                        , errors = [ Debug.todo "Make the film form work" ] -- Clear any previous errors
+                      }
+                    , Cmd.none
+                    )
+
+        ClickedSaveReview filmID ->
+            ( { model
+                | formState = NewFilm -- Reset to NewFilm after saving
+                , errors = [ Debug.todo "Make the review form work" ] -- Clear any previous errors
+            }
+            , Cmd.none
+            )
 
         GotFilms (Ok []) ->
             -- If our van is empty (from the server) we notify:
@@ -861,8 +948,8 @@ update msg model =
             , Cmd.none
             )
 
-        InputImage str ->
-            ( { model | image = str }
+        InputPoster str ->
+            ( { model | poster = str }
             , Cmd.none
             )
 
@@ -924,15 +1011,6 @@ addReviewToFilm review (Film internals reviews) =
 -- Film functions --------------------------------------------------------------
 -- Add, edit, delete, save, orderBy stars total (update server right away)
 
-
--- Review functions ------------------------------------------------------------
--- Add, delete, orderBy stars (update film once you're done)
---
--- #! If `"timestamp"` field is empty, generate a timestamp
--- #! If `"timestamp"` field contains a `Review.timestamp`, use that one.
---
--- The ideal situation would be to have ZERO hidden form fields, and just generate
--- it when creating a `Film.review`.
 
 
 
