@@ -117,6 +117,21 @@ so you can grab both film and review without having to make a second API call.
 > TL;DR: Both methods are possible, but using a record type is simpler.
 > If I'm regularly accessing every field, is a custom type the best choice?
 
+
+1. Only use custom types when needed!!!
+    - Are we creating a READ-ONLY type (that gets from the server?)
+    - Or are we allowing that type to be created anywhere in our app?
+    - This will have a big bearing on how our program/types are generated
+
+
+
+
+
+
+
+
+
+
 We started with a `Review` custom type, which is very handy if you're wanting
 to put boundaries on how your type is created and consumed (for example, only
 allow it to be generated from a server call). However. It turns out we need to
@@ -265,3 +280,40 @@ viewReviewForm filmID form =
             ] []
         ]
 ```
+
+
+> ⚠️ Our review form expects strings!
+> ⚠️ We could've simply had an "Add Review" button (and not used the form)
+> ⚠️ Or used a `Status a` type and saved to the model `Loaded Review`
+
+I decided not to bother saving to the model and storing it temporarily. We'll
+just use the values as strings (like our form). Our decoded `Review` has a
+`timestamp` and `name` as custom types. This function helps us re-use our review
+form when we've pinged the review API!
+
+## The `TimeStamp` problem
+
+> ⚠️ Our `TimeStamp` is a bit tricksy.
+
+The end-user never need know there's a timestamp there. Elm handles that. However,
+our `/reviews/:id` API already has timestamps in ISO 8601 format, so we decode
+that and use it in a hidden `viewInput "text" _ "Timestamp"` field.
+
+The problem lies in if the user manually edits the review before saving, as now
+we have a ROGUE TIMESTAMP! We can either:
+
+(a) Bipass the form completely and have a "SAVE Review" button (from API)
+(b) Use `readonly` in our `viewInput` value, with a "CLEAR Form" button. That way
+    there's no way for the user to edit the API review, they'll have to clear the
+    form and start again.
+
+    - @ https://www.w3schools.com/tags/att_input_readonly.asp
+
+Alternatively, you can make sure that EVERY SINGLE FIELD is made to be user-editable
+and you'll never have any clashes.
+
+
+--------------------------------------------------------------------------------
+Adding the API review must know which filmID it's using
+so it needs to be within the right branch inside the particular `Film`
+--------------------------------------------------------------------------------
