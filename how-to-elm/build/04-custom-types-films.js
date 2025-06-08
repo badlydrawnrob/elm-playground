@@ -762,7 +762,7 @@ ${indent.repeat(level)}}`;
   var WEBSOCKET_TOKEN = "95fb94f3-7f53-4481-9b1e-04a3d1c24aa0";
   var TARGET_NAME = "My target name";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1749310028096"
+    "1749410273021"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -9018,7 +9018,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$CustomTypes$Films$Loading = {$: 'Loading'};
-var $author$project$CustomTypes$Films$NoForm = {$: 'NoForm'};
+var $author$project$CustomTypes$Films$NewFilm = {$: 'NewFilm'};
 var $author$project$CustomTypes$Films$PassedSlowLoadingThreshold = {$: 'PassedSlowLoadingThreshold'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$CustomTypes$Films$GotFilms = function (a) {
@@ -9065,16 +9065,6 @@ var $author$project$CustomTypes$Films$decodePoster = function (posterList) {
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$map6 = _Json_map6;
-var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$nullable = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
-			]));
-};
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$CustomTypes$Films$decodeFilmMeta = A7(
 	$elm$json$Json$Decode$map6,
@@ -9099,8 +9089,7 @@ var $author$project$CustomTypes$Films$decodeFilmMeta = A7(
 	A2(
 		$elm$json$Json$Decode$field,
 		'tags',
-		$elm$json$Json$Decode$nullable(
-			$elm$json$Json$Decode$list($elm$json$Json$Decode$string))));
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)));
 var $author$project$CustomTypes$Films$Name = function (a) {
 	return {$: 'Name', a: a};
 };
@@ -10000,8 +9989,7 @@ var $author$project$CustomTypes$Films$decodeFilm = A3(
 	A2(
 		$elm$json$Json$Decode$field,
 		'reviews',
-		$elm$json$Json$Decode$nullable(
-			$elm$json$Json$Decode$list($author$project$CustomTypes$Films$decodeReview))));
+		$elm$json$Json$Decode$list($author$project$CustomTypes$Films$decodeReview)));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -10801,7 +10789,7 @@ var $author$project$CustomTypes$Films$getFilms = $elm$http$Http$get(
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$CustomTypes$Films$init = function (_v0) {
 	return _Utils_Tuple2(
-		{apiReview: $elm$core$Maybe$Nothing, errors: _List_Nil, formState: $author$project$CustomTypes$Films$NoForm, name: '', poster: '', rating: '', review: '', summary: '', tags: '', title: '', trailer: '', van: $author$project$CustomTypes$Films$Loading},
+		{apiReview: $elm$core$Maybe$Nothing, errors: _List_Nil, formState: $author$project$CustomTypes$Films$NewFilm, name: '', poster: '', rating: '', review: '', summary: '', tags: '', title: '', trailer: '', van: $author$project$CustomTypes$Films$Loading},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
@@ -10819,6 +10807,12 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$CustomTypes$Films$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
+var $author$project$CustomTypes$Films$AddReview = function (a) {
+	return {$: 'AddReview', a: a};
+};
+var $author$project$CustomTypes$Films$EditFilm = function (a) {
+	return {$: 'EditFilm', a: a};
+};
 var $author$project$CustomTypes$Films$Error = function (a) {
 	return {$: 'Error', a: a};
 };
@@ -10826,6 +10820,36 @@ var $author$project$CustomTypes$Films$LoadingSlowly = {$: 'LoadingSlowly'};
 var $author$project$CustomTypes$Films$Success = function (a) {
 	return {$: 'Success', a: a};
 };
+var $author$project$CustomTypes$Films$filmData = function (_v0) {
+	var internals = _v0.a;
+	return internals;
+};
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$CustomTypes$Films$getFilmID = function (_v0) {
+	var internals = _v0.a;
+	return internals.id;
+};
+var $author$project$CustomTypes$Films$filterFilmsByID = F2(
+	function (filmID, films) {
+		return A2(
+			$elm$core$List$filter,
+			function (film) {
+				return _Utils_eq(
+					$author$project$CustomTypes$Films$getFilmID(film),
+					filmID);
+			},
+			films);
+	});
 var $author$project$CustomTypes$Films$GotReview = function (a) {
 	return {$: 'GotReview', a: a};
 };
@@ -10837,6 +10861,16 @@ var $author$project$CustomTypes$Films$getReview = function (reviewID) {
 		});
 };
 var $elm$core$Debug$log = _Debug_log;
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$CustomTypes$Films$GotNumber = function (a) {
 	return {$: 'GotNumber', a: a};
@@ -10988,6 +11022,50 @@ var $author$project$CustomTypes$Films$randomNumber = function () {
 	return A2($elm$random$Random$generate, $author$project$CustomTypes$Films$GotNumber, oneToTen);
 }();
 var $elm$core$Debug$toString = _Debug_toString;
+var $elm$url$Url$addPort = F2(
+	function (maybePort, starter) {
+		if (maybePort.$ === 'Nothing') {
+			return starter;
+		} else {
+			var port_ = maybePort.a;
+			return starter + (':' + $elm$core$String$fromInt(port_));
+		}
+	});
+var $elm$url$Url$addPrefixed = F3(
+	function (prefix, maybeSegment, starter) {
+		if (maybeSegment.$ === 'Nothing') {
+			return starter;
+		} else {
+			var segment = maybeSegment.a;
+			return _Utils_ap(
+				starter,
+				_Utils_ap(prefix, segment));
+		}
+	});
+var $elm$url$Url$toString = function (url) {
+	var http = function () {
+		var _v0 = url.protocol;
+		if (_v0.$ === 'Http') {
+			return 'http://';
+		} else {
+			return 'https://';
+		}
+	}();
+	return A3(
+		$elm$url$Url$addPrefixed,
+		'#',
+		url.fragment,
+		A3(
+			$elm$url$Url$addPrefixed,
+			'?',
+			url.query,
+			_Utils_ap(
+				A2(
+					$elm$url$Url$addPort,
+					url.port_,
+					_Utils_ap(http, url.host)),
+				url.path)));
+};
 var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$CustomTypes$Films$updateFilms = F2(
 	function (transform, films) {
@@ -10997,24 +11075,14 @@ var $author$project$CustomTypes$Films$addReviewToFilm = F2(
 	function (review, _v0) {
 		var internals = _v0.a;
 		var reviews = _v0.b;
-		if (reviews.$ === 'Just') {
-			var hasReviews = reviews.a;
-			return A2(
-				$author$project$CustomTypes$Films$Film,
-				internals,
-				$elm$core$Maybe$Just(
-					_Utils_ap(
-						hasReviews,
-						_List_fromArray(
-							[review]))));
-		} else {
-			return A2($author$project$CustomTypes$Films$Film, internals, reviews);
-		}
+		return A2(
+			$author$project$CustomTypes$Films$Film,
+			internals,
+			_Utils_ap(
+				reviews,
+				_List_fromArray(
+					[review])));
 	});
-var $author$project$CustomTypes$Films$getFilmID = function (_v0) {
-	var internals = _v0.a;
-	return internals.id;
-};
 var $author$project$CustomTypes$Films$updateReviews = F3(
 	function (filmID, review, film) {
 		return _Utils_eq(
@@ -11025,42 +11093,39 @@ var $author$project$CustomTypes$Films$update = F2(
 	function (msg, model) {
 		var _v0 = A2($elm$core$Debug$log, 'Messages', msg);
 		switch (_v0.$) {
-			case 'ClickedRandom':
-				return _Utils_Tuple2(model, $author$project$CustomTypes$Films$randomNumber);
-			case 'ClickedSaveFilm':
-				var maybeFilmID = _v0.a;
-				if (maybeFilmID.$ === 'Just') {
-					var filmID = maybeFilmID.a;
-					return _Debug_todo(
-						'CustomTypes.Films',
+			case 'CancelAllForms':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{errors: _List_Nil, formState: $author$project$CustomTypes$Films$NewFilm, poster: '', summary: '', tags: '', title: '', trailer: ''}),
+					$elm$core$Platform$Cmd$none);
+			case 'ClickedAddReview':
+				var filmID = _v0.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
 						{
-							start: {line: 791, column: 21},
-							end: {line: 791, column: 31}
-						})('Make the film form work');
-				} else {
-					return _Debug_todo(
-						'CustomTypes.Films',
-						{
-							start: {line: 795, column: 21},
-							end: {line: 795, column: 31}
-						})('Make the film form work');
-				}
+							formState: $author$project$CustomTypes$Films$AddReview(filmID)
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'ClickedAddAPIReview':
 				var filmID = _v0.a;
 				var review = _v0.b;
-				var _v2 = model.van;
-				if ((_v2.$ === 'Success') && (_v2.a.$ === 'Just')) {
-					var films = _v2.a.a;
+				var _v1 = model.van;
+				if (_v1.$ === 'Success') {
+					var films = _v1.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
+								apiReview: $elm$core$Maybe$Nothing,
+								errors: _List_Nil,
+								formState: $author$project$CustomTypes$Films$NewFilm,
 								van: $author$project$CustomTypes$Films$Success(
-									$elm$core$Maybe$Just(
-										A2(
-											$author$project$CustomTypes$Films$updateFilms,
-											A2($author$project$CustomTypes$Films$updateReviews, filmID, review),
-											films)))
+									A2(
+										$author$project$CustomTypes$Films$updateFilms,
+										A2($author$project$CustomTypes$Films$updateReviews, filmID, review),
+										films))
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -11073,35 +11138,120 @@ var $author$project$CustomTypes$Films$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'ClickedAddReview':
+			case 'ClickedEditFilm':
 				var filmID = _v0.a;
-				return _Debug_todo(
-					'CustomTypes.Films',
-					{
-						start: {line: 817, column: 13},
-						end: {line: 817, column: 23}
-					})('Make the review form work');
-			case 'GotFilms':
-				if (_v0.a.$ === 'Ok') {
-					if (!_v0.a.a.b) {
+				var _v2 = model.van;
+				if (_v2.$ === 'Success') {
+					var films = _v2.a;
+					var _v3 = $elm$core$List$head(
+						A2($author$project$CustomTypes$Films$filterFilmsByID, filmID, films));
+					if (_v3.$ === 'Just') {
+						var film = _v3.a;
+						var fields = $author$project$CustomTypes$Films$filmData(film);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									van: $author$project$CustomTypes$Films$Success($elm$core$Maybe$Nothing)
+									formState: $author$project$CustomTypes$Films$EditFilm(fields.id),
+									poster: fields.poster,
+									summary: fields.summary,
+									tags: $elm$core$String$concat(
+										A2($elm$core$List$intersperse, ' ', fields.tags)),
+									title: fields.title,
+									trailer: A2(
+										$elm$core$Maybe$withDefault,
+										'',
+										A2($elm$core$Maybe$map, $elm$url$Url$toString, fields.trailer))
 								}),
 							$elm$core$Platform$Cmd$none);
 					} else {
-						var films = _v0.a.a;
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									van: $author$project$CustomTypes$Films$Success(
-										$elm$core$Maybe$Just(films))
+									errors: _List_fromArray(
+										['Cannot edit film that does not exist'])
 								}),
 							$elm$core$Platform$Cmd$none);
 					}
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								errors: _List_fromArray(
+									['Cannot edit film without a van'])
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'ClickedRandom':
+				return _Utils_Tuple2(model, $author$project$CustomTypes$Films$randomNumber);
+			case 'ClickedSaveFilm':
+				var maybeFilmID = _v0.a;
+				if (maybeFilmID.$ === 'Just') {
+					var filmID = maybeFilmID.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								errors: _List_fromArray(
+									[
+										_Debug_todo(
+										'CustomTypes.Films',
+										{
+											start: {line: 938, column: 38},
+											end: {line: 938, column: 48}
+										})('Make the film form work')
+									]),
+								formState: $author$project$CustomTypes$Films$NewFilm
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								errors: _List_fromArray(
+									[
+										_Debug_todo(
+										'CustomTypes.Films',
+										{
+											start: {line: 947, column: 38},
+											end: {line: 947, column: 48}
+										})('Make the film form work')
+									]),
+								formState: $author$project$CustomTypes$Films$NewFilm
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'ClickedSaveReview':
+				var filmID = _v0.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							errors: _List_fromArray(
+								[
+									_Debug_todo(
+									'CustomTypes.Films',
+									{
+										start: {line: 955, column: 30},
+										end: {line: 955, column: 40}
+									})('Make the review form work')
+								]),
+							formState: $author$project$CustomTypes$Films$NewFilm
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'GotFilms':
+				if (_v0.a.$ === 'Ok') {
+					var films = _v0.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								van: $author$project$CustomTypes$Films$Success(films)
+							}),
+						$elm$core$Platform$Cmd$none);
 				} else {
 					var error = _v0.a.a;
 					return _Utils_Tuple2(
@@ -11139,8 +11289,8 @@ var $author$project$CustomTypes$Films$update = F2(
 						$elm$core$Platform$Cmd$none);
 				}
 			case 'PassedSlowLoadingThreshold':
-				var _v3 = model.van;
-				if (_v3.$ === 'Loading') {
+				var _v5 = model.van;
+				if (_v5.$ === 'Loading') {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -11214,6 +11364,7 @@ var $author$project$CustomTypes$Films$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$CustomTypes$Films$CancelAllForms = {$: 'CancelAllForms'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -11240,7 +11391,25 @@ var $author$project$CustomTypes$Films$saveFilmButton = function (caption) {
 };
 var $author$project$CustomTypes$Films$addFilmButton = $author$project$CustomTypes$Films$saveFilmButton('Add a new film');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $author$project$CustomTypes$Films$ClickedSaveFilm = function (a) {
 	return {$: 'ClickedSaveFilm', a: a};
 };
@@ -11266,7 +11435,6 @@ var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 'MayPreventDefault', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$preventDefaultOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -11352,14 +11520,16 @@ var $author$project$CustomTypes$Films$viewFilmForm = F3(
 	});
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$CustomTypes$Films$editFilmButton = $author$project$CustomTypes$Films$saveFilmButton('Edit the film');
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$CustomTypes$Films$filmData = function (_v0) {
-	var internals = _v0.a;
-	return internals;
+var $author$project$CustomTypes$Films$ClickedAddReview = function (a) {
+	return {$: 'ClickedAddReview', a: a};
 };
+var $author$project$CustomTypes$Films$ClickedEditFilm = function (a) {
+	return {$: 'ClickedEditFilm', a: a};
+};
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$CustomTypes$Films$filmReviews = function (_v0) {
-	var maybeReviews = _v0.b;
-	return maybeReviews;
+	var reviews = _v0.b;
+	return reviews;
 };
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$virtual_dom$VirtualDom$attribute = F2(
@@ -11654,16 +11824,11 @@ var $author$project$CustomTypes$Films$viewReview = function (review) {
 				'Timestamp: ' + $rtfeldman$elm_iso8601_date_strings$Iso8601$fromTime(review.timestamp))
 			]));
 };
-var $author$project$CustomTypes$Films$viewReviews = function (maybeReviews) {
-	if (maybeReviews.$ === 'Just') {
-		var reviews = maybeReviews.a;
-		return A2(
-			$elm$html$Html$ul,
-			_List_Nil,
-			A2($elm$core$List$map, $author$project$CustomTypes$Films$viewReview, reviews));
-	} else {
-		return $elm$html$Html$text('No reviews yet!');
-	}
+var $author$project$CustomTypes$Films$viewReviews = function (reviews) {
+	return A2(
+		$elm$html$Html$ul,
+		_List_Nil,
+		A2($elm$core$List$map, $author$project$CustomTypes$Films$viewReview, reviews));
 };
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$href = function (url) {
@@ -11671,50 +11836,6 @@ var $elm$html$Html$Attributes$href = function (url) {
 		$elm$html$Html$Attributes$stringProperty,
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$url$Url$addPort = F2(
-	function (maybePort, starter) {
-		if (maybePort.$ === 'Nothing') {
-			return starter;
-		} else {
-			var port_ = maybePort.a;
-			return starter + (':' + $elm$core$String$fromInt(port_));
-		}
-	});
-var $elm$url$Url$addPrefixed = F3(
-	function (prefix, maybeSegment, starter) {
-		if (maybeSegment.$ === 'Nothing') {
-			return starter;
-		} else {
-			var segment = maybeSegment.a;
-			return _Utils_ap(
-				starter,
-				_Utils_ap(prefix, segment));
-		}
-	});
-var $elm$url$Url$toString = function (url) {
-	var http = function () {
-		var _v0 = url.protocol;
-		if (_v0.$ === 'Http') {
-			return 'http://';
-		} else {
-			return 'https://';
-		}
-	}();
-	return A3(
-		$elm$url$Url$addPrefixed,
-		'#',
-		url.fragment,
-		A3(
-			$elm$url$Url$addPrefixed,
-			'?',
-			url.query,
-			_Utils_ap(
-				A2(
-					$elm$url$Url$addPort,
-					url.port_,
-					_Utils_ap(http, url.host)),
-				url.path)));
 };
 var $author$project$CustomTypes$Films$viewTrailor = function (maybeUrl) {
 	if (maybeUrl.$ === 'Just') {
@@ -11738,50 +11859,66 @@ var $author$project$CustomTypes$Films$viewFilm = function (film) {
 	var reviews = $author$project$CustomTypes$Films$filmReviews(film);
 	var data = $author$project$CustomTypes$Films$filmData(film);
 	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('film')
+			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$h1,
+				$elm$html$Html$li,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(data.title)
+						A2(
+						$elm$html$Html$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(data.title)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(data.summary)
+							])),
+						$author$project$CustomTypes$Films$viewTrailor(data.trailer),
+						$author$project$CustomTypes$Films$viewPoster(data.poster),
+						$author$project$CustomTypes$Films$viewReviews(reviews)
 					])),
 				A2(
-				$elm$html$Html$div,
-				_List_Nil,
+				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(data.summary)
+						$elm$html$Html$Events$onClick(
+						$author$project$CustomTypes$Films$ClickedAddReview(data.id))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Add a review')
 					])),
-				$author$project$CustomTypes$Films$viewTrailor(data.trailer),
-				$author$project$CustomTypes$Films$viewPoster(data.poster),
-				$author$project$CustomTypes$Films$viewReviews(reviews)
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$CustomTypes$Films$ClickedEditFilm(data.id))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Edit film')
+					]))
 			]));
 };
 var $author$project$CustomTypes$Films$ClickedRandom = {$: 'ClickedRandom'};
 var $author$project$CustomTypes$Films$addReviewButton = $author$project$CustomTypes$Films$saveFilmButton('Add a review');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
+var $author$project$CustomTypes$Films$ClickedAddAPIReview = F2(
+	function (a, b) {
+		return {$: 'ClickedAddAPIReview', a: a, b: b};
 	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$CustomTypes$Films$ClickedAddReview = function (a) {
-	return {$: 'ClickedAddReview', a: a};
-};
 var $author$project$CustomTypes$Films$saveAPIReviewButton = F2(
 	function (filmID, review) {
 		return A2(
@@ -11790,7 +11927,7 @@ var $author$project$CustomTypes$Films$saveAPIReviewButton = F2(
 				[
 					$elm$html$Html$Attributes$class('button'),
 					$elm$html$Html$Events$onClick(
-					$author$project$CustomTypes$Films$ClickedAddReview(filmID))
+					A2($author$project$CustomTypes$Films$ClickedAddAPIReview, filmID, review))
 				]),
 			_List_fromArray(
 				[
@@ -11861,8 +11998,6 @@ var $author$project$CustomTypes$Films$viewFilmOrForm = F3(
 	function (formState, model, film) {
 		var filmID = $author$project$CustomTypes$Films$getFilmID(film);
 		switch (formState.$) {
-			case 'NoForm':
-				return $author$project$CustomTypes$Films$viewFilm(film);
 			case 'NewFilm':
 				return $author$project$CustomTypes$Films$viewFilm(film);
 			case 'EditFilm':
@@ -11878,9 +12013,10 @@ var $author$project$CustomTypes$Films$viewFilmOrForm = F3(
 		}
 	});
 var $author$project$CustomTypes$Films$viewFilms = F3(
-	function (formState, maybeFilms, model) {
-		if (maybeFilms.$ === 'Just') {
-			var films = maybeFilms.a;
+	function (formState, films, model) {
+		if (!films.b) {
+			return $elm$html$Html$text('No films yet!');
+		} else {
 			return A2(
 				$elm$html$Html$ul,
 				_List_Nil,
@@ -11888,8 +12024,6 @@ var $author$project$CustomTypes$Films$viewFilms = F3(
 					$elm$core$List$map,
 					A2($author$project$CustomTypes$Films$viewFilmOrForm, formState, model),
 					films));
-		} else {
-			return $elm$html$Html$text('No films yet!');
 		}
 	});
 var $author$project$CustomTypes$Films$view = function (model) {
@@ -11913,7 +12047,28 @@ var $author$project$CustomTypes$Films$view = function (model) {
 							[
 								$elm$html$Html$text('Films')
 							])),
-						A3($author$project$CustomTypes$Films$viewFilmForm, $elm$core$Maybe$Nothing, model, $author$project$CustomTypes$Films$addFilmButton),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$CustomTypes$Films$CancelAllForms)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Cancel all forms and reset to `NewFilm` state')
+							])),
+						function () {
+						var _v1 = model.formState;
+						switch (_v1.$) {
+							case 'NewFilm':
+								return A3($author$project$CustomTypes$Films$viewFilmForm, $elm$core$Maybe$Nothing, model, $author$project$CustomTypes$Films$addFilmButton);
+							case 'EditFilm':
+								return $elm$html$Html$text('');
+							default:
+								return $elm$html$Html$text('');
+						}
+					}(),
+						A2($elm$html$Html$hr, _List_Nil, _List_Nil),
 						A3($author$project$CustomTypes$Films$viewFilms, model.formState, films, model)
 					]));
 		default:

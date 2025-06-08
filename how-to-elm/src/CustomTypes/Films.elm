@@ -10,9 +10,10 @@ module CustomTypes.Films exposing (..)
     It's a rough and ready proof-of-concept that's imperfect. Here are the things
     that haven't been done yet:
 
-    - Form validation  - Fancy CSS   - Some `Form` state management
+    - Form posting / validation   - Fancy CSS    - Some `Form` state management
 
     Here's the core learning points
+    ===============================
 
     1. NEVER use a `Maybe` when a `[]` will do (it adds complexity artifacts)
         - We can avoid LOTS of unpacking and packing (or `Maybe.map`ing here)
@@ -29,7 +30,7 @@ module CustomTypes.Films exposing (..)
     4. Atomic endpoints are FAR, FAR, FAR easier than lots of page state.
         - `/films` to add a film, `/films/:id/edit` to edit a film
         - And perhaps a `/films/:id/reviews` to add a review
-    5. Your spec is always dumb for the first 2-3 drafts
+    5. ⚠️ YOUR SPEC IS ALWAYS DUMB for the first 2-3 drafts
         - @ [Original spec](https://tinyurl.com/elm-playground-spec)
         - Sometimes you find this out along the way, but aim to nail it
         - Sketch it out, write it down, find a way to make it less dumb
@@ -41,6 +42,14 @@ module CustomTypes.Films exposing (..)
         - Adding a random review to the review form means we worry about bugs
         - Our `TimeStamp` could get out of whack if fields are user-editable
             - We'd also need a `"hidden"` field and read-only form fields
+    8. Try to create GUARANTEES. Functions like `filterFilmsByID` (getting the
+       `List.head` should NEVER FAIL.
+        - Again try to make impossible states impossible!
+        - `Film` should probably be in it's own package with functions?
+    9. ⚠️ Be careful of infinite loops!!!
+        - If the http server isn't running the `Loading` state runs forever ..
+        - It took a few refreshes of `elm-watch` to fix the damn thing
+        - There needs to be a STOP LOADING or RETRY LOADING state!
 
 
     Make the spec less dumb!
@@ -203,7 +212,7 @@ the types and our guarantees aren't 100%.
 
 -}
 type alias Model =
-    { van : Server (Maybe (List Film)) -- #! (1)
+    { van : Server (List Film) -- #! (1)
     -- The `Film` form
     -- #! Our `json-server` provides the `String` ID
     , title : String
@@ -372,7 +381,7 @@ We could've just used a flat `type alias Record` here.
 
 -}
 type Film
-    = Film Internals (Maybe (List Review)) -- #! (1)
+    = Film Internals (List Review) -- #! (1)
 
 type FilmID
     = FilmID String -- #! `json-server` unfortunately stores IDs as `String`
@@ -386,7 +395,7 @@ type alias Internals =
     , trailer : Maybe Url
     , summary : String
     , poster : PosterID -- #! One size, eventually `-S`, `-M`, `-L`
-    , tags : Maybe (List String) -- Optional (`null` allowed)
+    , tags : List String -- #! Optional is not `null`, it's `[]` empty!!!
     }
 
 posterUrl : String
@@ -401,15 +410,15 @@ getFilmID : Film -> FilmID
 getFilmID (Film internals _) =
     internals.id -- #! (2)
 
-filmReviews : Film -> Maybe (List Review)
-filmReviews (Film _ maybeReviews) =
-    maybeReviews
+filmReviews : Film -> List Review
+filmReviews (Film _ reviews) =
+    reviews
 
 decodeFilm : Decoder Film
 decodeFilm =
     D.map2 Film
         decodeFilmMeta
-        (D.field "reviews" (D.nullable (D.list decodeReview)))
+        (D.field "reviews" (D.list decodeReview)) -- #! Optional, but NOT `null` (use empty list)
 
 decodeFilmMeta : Decoder Internals
 decodeFilmMeta =
@@ -420,7 +429,7 @@ decodeFilmMeta =
         (D.field "summary" D.string)
         ((D.field "poster" (D.list D.string)
             |> D.andThen decodePoster))
-        (D.field "tags" (D.nullable (D.list D.string)))
+        (D.field "tags" (D.list D.string))
 
 {-| ⚠️ Change the poster value shape (a bit hacky) -}
 decodePoster : List String -> Decoder PosterID
@@ -605,18 +614,15 @@ view model =
             text ("Error loading films: " ++ errorMsg)
 
 
-viewFilms : Form -> Maybe (List Film) -> Model -> Html Msg
-viewFilms formState maybeFilms model =
-    case maybeFilms of
-        Just films ->
-            -- #! We were supposed to have a list here, but because we've got
-
-            ul []
-                (List.map (viewFilmOrForm formState model) films) -- #! Edit form only
-
-
-        Nothing ->
+viewFilms : Form -> List Film -> Model -> Html Msg
+viewFilms formState films model =
+    case films of
+        [] ->
             text "No films yet!"
+
+        _ ->
+            ul []
+                (List.map (viewFilmOrForm formState model) films)
 
 {-| #! ⚠️ Our caseing is a little CRAZY!
 
@@ -704,14 +710,10 @@ viewTrailor maybeUrl =
         Nothing ->
             text "No trailer available"
 
-viewReviews : Maybe (List Review) -> Html msg
-viewReviews maybeReviews =
-    case maybeReviews of
-        Just reviews ->
-            ul [] (List.map viewReview reviews)
-
-        Nothing ->
-            text "No reviews yet!"
+{- Returns an empty list if no reviews -}
+viewReviews : List Review -> Html msg
+viewReviews reviews =
+    ul [] (List.map viewReview reviews)
 
 viewReview : Review -> Html msg
 viewReview review =
@@ -873,10 +875,10 @@ update msg model =
             -- If we're in this branch, our `model.van` should have films
             case model.van of
                 -- #! ⚠️ You could use `Maybe.map` here instead!!!
-                Success (Just films) ->
+                Success films ->
                     ( { model
                             | van =
-                                Success (Just (updateFilms (updateReviews filmID review) films))
+                                Success (updateFilms (updateReviews filmID review) films)
                             -- #! ⚠️ Reset the form state: This could get quite
                             -- confusing eventually! Perhaps it'd be better to
                             -- hold all state in on `Status` type?
@@ -896,14 +898,10 @@ update msg model =
 
         ClickedEditFilm filmID ->
             case model.van of
-                Success (Just films) ->
+                Success films ->
+                    -- #! ⚠️ We should be able to guarantee this function always
+                    -- returns a valid film. It should never fail
                     case List.head (filterFilmsByID filmID films) of
-                        Nothing ->
-                            -- If we don't have a film, we can't edit it
-                            ( { model | errors = [ "Cannot edit film that does not exist" ] }
-                            , Cmd.none
-                            )
-
                         Just film ->
                             -- If we have a film, we can edit it
                             let
@@ -915,9 +913,15 @@ update msg model =
                                 , trailer = Maybe.map U.toString fields.trailer |> Maybe.withDefault ""
                                 , summary = fields.summary
                                 , poster = fields.poster
-                                , tags = fields.tags |> Maybe.map (List.intersperse " ") |> Maybe.map String.concat |> Maybe.withDefault ""
+                                , tags = fields.tags |> (List.intersperse " ") |> String.concat
                             }
                             , Cmd.none)
+
+                        Nothing ->
+                            -- If we don't have a film, we can't edit it
+                            ( { model | errors = [ "Cannot edit film that does not exist" ] }
+                            , Cmd.none
+                            )
 
                 _ ->
                     -- If we don't have a film, we can't edit it
@@ -956,17 +960,11 @@ update msg model =
             , Cmd.none
             )
 
-        GotFilms (Ok []) ->
-            -- If our van is empty (from the server) we notify:
-            ( { model
-                | van = Success Nothing
-              }
-            , Cmd.none
-            )
-
+        -- ⚠️ It doesn't matter if our films are `[]` empty or not. Just return
+        -- them and let the view functions worry about the empty case.
         GotFilms (Ok films) ->
-            -- Otherwise update the model with current list of films
-            ( { model | van = Success (Just films)
+            ( { model
+                | van = Success films
               }
             , Cmd.none
             )
@@ -1070,13 +1068,7 @@ updateReviews filmID review film =
 
 addReviewToFilm : Review -> Film -> Film
 addReviewToFilm review (Film internals reviews) =
-    case reviews of
-        Just hasReviews ->
-            -- If we have reviews, add the new one to the BACK of the list
-            Film internals (Just (hasReviews ++ [ review ]))
-
-        Nothing ->
-            Film internals reviews
+    Film internals (reviews ++ [review])
 
 filterFilmsByID : FilmID -> List Film -> List Film
 filterFilmsByID filmID films =
