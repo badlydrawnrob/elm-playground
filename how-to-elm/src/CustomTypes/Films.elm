@@ -12,6 +12,7 @@ module CustomTypes.Films exposing (..)
     - Form validation
     - Fancy CSS
     - Some `Form` state management
+    - USE `Maybe` TYPES AS LITTLE AS POSSIBLE!!!
 
     Make the spec less dumb!
     ------------------------
@@ -155,6 +156,7 @@ import Url as U exposing (Url)
 import Url.Builder as UB exposing (absolute, crossOrigin)
 import Platform.Cmd as Cmd
 import Platform.Cmd as Cmd
+import List exposing (filter)
 
 
 -- Model -----------------------------------------------------------------------
@@ -240,12 +242,30 @@ init _ =
 
 
 -- Server ----------------------------------------------------------------------
+-- ⚠️ You can have a map function for brevity, or always `case` on the `Success a`
+-- type (and `_` ignore the rest). It's up to you.
 
 type Server a
     = Loading
     | LoadingSlowly
     | Success a
     | Error String -- Error message
+
+{-| Ai generated mapping function -}
+serverMap : (a -> b) -> Server a -> Server b
+serverMap mapFn server =
+    case server of
+        Loading ->
+            Loading
+
+        LoadingSlowly ->
+            LoadingSlowly
+
+        Success a ->
+            Success (mapFn a)
+
+        Error errorMsg ->
+            Error errorMsg
 
 -- Form ------------------------------------------------------------------------
 -- Any time we've got a `Form` state we'll need to case on each branch, even if
@@ -359,13 +379,13 @@ filmData : Film -> Internals
 filmData (Film internals _) =
     internals -- #! (2)
 
-filmReviews : Film -> Maybe (List Review)
-filmReviews (Film _ maybeReviews) =
-    maybeReviews
-
 getFilmID : Film -> FilmID
 getFilmID (Film internals _) =
     internals.id -- #! (2)
+
+filmReviews : Film -> Maybe (List Review)
+filmReviews (Film _ maybeReviews) =
+    maybeReviews
 
 decodeFilm : Decoder Film
 decodeFilm =
@@ -812,7 +832,15 @@ update msg model =
     case Debug.log "Messages" msg of
         CancelAllForms ->
             -- Reset the form state to `NewFilm`
-            ( { model | formState = NewFilm, errors = [] }
+            ( { model
+                | formState = NewFilm
+                , title = ""
+                , trailer = ""
+                , summary = ""
+                , poster = ""
+                , tags = ""
+                , errors = []
+              }
             , Cmd.none
             )
 
@@ -849,10 +877,35 @@ update msg model =
                     )
 
         ClickedEditFilm filmID ->
-            ( { model
-                | formState = EditFilm filmID
-              }
-            , Cmd.none)
+            case model.van of
+                Success (Just films) ->
+                    case List.head (filterFilmsByID filmID films) of
+                        Nothing ->
+                            -- If we don't have a film, we can't edit it
+                            ( { model | errors = [ "Cannot edit film that does not exist" ] }
+                            , Cmd.none
+                            )
+
+                        Just film ->
+                            -- If we have a film, we can edit it
+                            let
+                                fields = filmData film
+                            in
+                            ( { model
+                                | formState = EditFilm fields.id
+                                , title = fields.title
+                                , trailer = Maybe.map U.toString fields.trailer |> Maybe.withDefault ""
+                                , summary = fields.summary
+                                , poster = fields.poster
+                                , tags = fields.tags |> Maybe.map (List.intersperse " ") |> Maybe.map String.concat |> Maybe.withDefault ""
+                            }
+                            , Cmd.none)
+
+                _ ->
+                    -- If we don't have a film, we can't edit it
+                    ( { model | errors = [ "Cannot edit film without a van" ] }
+                    , Cmd.none
+                    )
 
         ClickedRandom ->
             ( model, randomNumber )
@@ -1006,6 +1059,10 @@ addReviewToFilm review (Film internals reviews) =
 
         Nothing ->
             Film internals reviews
+
+filterFilmsByID : FilmID -> List Film -> List Film
+filterFilmsByID filmID films =
+    List.filter (\film -> getFilmID film == filmID) films
 
 
 -- Film functions --------------------------------------------------------------
