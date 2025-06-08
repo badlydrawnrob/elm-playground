@@ -10,7 +10,7 @@ module CustomTypes.Films exposing (..)
     It's a rough and ready proof-of-concept that's imperfect. Here are the things
     that haven't been done yet:
 
-    - Form posting / validation   - Fancy CSS    - Some `Form` state management
+    * Form posting / validation   * Fancy CSS    * Some `Form` state management
 
     Here's the core learning points
     ===============================
