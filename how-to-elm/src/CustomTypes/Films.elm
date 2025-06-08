@@ -15,11 +15,12 @@ module CustomTypes.Films exposing (..)
     Here's the core learning points
     ===============================
 
-    1. NEVER use a `Maybe` when a `[]` will do (it adds complexity artifacts)
+    1. ⚠️ NEVER use a `Maybe` when a `[]` will do (it adds complexity artifacts)
+        - @ [Original (commit 35f7f70)](https://tinyurl.com/why-are-you-using-maybe)
         - We can avoid LOTS of unpacking and packing (or `Maybe.map`ing here)
         - If you must use `Maybe`, `Maybe.map` is useful in a pipeline ...
         - But you might want to unpack it with pattern matching inside a `case`
-    2. Try to avoid impossible states
+    2. Try to avoid impossible states when there's a guarantee available.
         - If you've got a note in your code saying "this should never happen ..."
         - Then your types are probably wrong. Make impossible states impossible!
     3. Our Add/Edit forms share the same fields and view
