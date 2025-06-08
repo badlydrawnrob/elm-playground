@@ -5,37 +5,64 @@ module CustomTypes.Films exposing (..)
     ============================================================================
     > Aim to keep your wishlist and architecture simple.
     > Have it written down somewhere, where it's easy to glance at.
+    > @ [Films API](https://github.com/badlydrawnrob/data-playground/mocking/films)
 
-    Here's a proof-of-concept (one way to do it) film form management package.
-    We're still missing quite a bit, and our types aren't ideal, but it works:
+    It's a rough and ready proof-of-concept that's imperfect. Here are the things
+    that haven't been done yet:
 
-    - Form validation
-    - Fancy CSS
-    - Some `Form` state management
-    - USE `Maybe` TYPES AS LITTLE AS POSSIBLE!!!
+    - Form validation  - Fancy CSS   - Some `Form` state management
+
+    Here's the core learning points
+
+    1. Never use a `Maybe` when a `[]` will do (it adds complexity artifacts)
+        - We can avoid LOTS of unpacking and packing (or `Maybe.map`ing here)
+        - If you must use `Maybe`, `Maybe.map` is useful in a pipeline ...
+        - But you might want to unpack it with pattern matching inside a `case`
+    2. Try to avoid impossible states
+        - If you've got a note in your code saying "this should never happen ..."
+        - Then your types are probably wrong. Make impossible states impossible!
+    3. Our Add/Edit forms share the same fields and view
+        - The view isn't too much of a problem ...
+        - But we should probably encapsulate the form state better ... like a
+          `EditFilm (List Problem) Form` type (or within the `Film` type)
+        - A flat model is fine for a single form, but gets messy with multiple
+    4. Atomic endpoints are FAR, FAR, FAR easier than lots of page state.
+        - `/films` to add a film, `/films/:id/edit` to edit a film
+        - And perhaps a `/films/:id/reviews` to add a review
+    5. Your spec is always dumb for the first 2-3 drafts
+        - @ [Original spec](https://tinyurl.com/elm-playground-spec)
+        - Sometimes you find this out along the way, but aim to nail it
+        - Sketch it out, write it down, find a way to make it less dumb
+        - Paper prototypes / user testing are cheaper and quicker
+    6. Keep your comments up-to-date and short. For full notes, create a document
+       or article you can refer to.
+        - Aim for ONE idea per `/how-to-elm` package.
+    7. Simple decisions have big ripple effects: the "TimeStamp" problem
+        - Adding a random review to the review form means we worry about bugs
+        - Our `TimeStamp` could get out of whack if fields are user-editable
+            - We'd also need a `"hidden"` field and read-only form fields
+
 
     Make the spec less dumb!
     ------------------------
-    > Films API: `badlydrawnrob/data-playground/mocking/films`
+    1. Can you write your spec in a single sentence?
+    2. Is it starting to gather into a few lines (the sentence method)
+    3. Do you end up with a PDF full of 16 pages of code and notes?
+    4. Have we minimised the state of the page and data?**
+    5. Are our types as narrow as they could be?
 
-    Can you write your spec in a single sentence? A page? How much detail do
-    you need to know before you start coding? Can you encapsulate everything we
-    need to know about the program in 1-2 Markdown pages?
+    Try to encapsulate everything we need to know about the program in
+    1-2 Markdown pages. If there are learning points along the way, add them to
+    Anki, your notes, or a dedicated article.
 
-    Remember that comments can become outdated if code changes:
-
-        @ [v1: Previous spec](https://tinyurl.com/elm-playground-less-dumb-spec)
-        @ v2: Getting closer spec (our current code base)
-            - ⚠️ Types aren't perfect and it's A LOT of state to manage
-              either use "atomic" routes (`/film/:id/edit`) or simplify the types
-              to encapsulate all state (`EditFilm record problems form`)
-
-    You find out A LOT along the way, once you start designing and building. For
-    example, see "The `TimeStamp` problem" below!
+    **A balance of user-experience and developer pain. We really don't need an
+      opaque type like `Film` here (it's purpose for Elm Spa is different to ours
+      as it's generated from the server) and it's not read-only. We might want
+      to consider changing our app architecture similarly to Elm Spa.
 
 
-    The sentence method
-    -------------------
+    The sentence method (our van man)
+    ---------------------------------
     > Using the sentence method to break down the problem!
 
     "You're a video man with a van full of films."
@@ -49,13 +76,6 @@ module CustomTypes.Films exposing (..)
         to the review form (what's the best UI for this?)."
     "Finally, expect a slow 4G connection (how do I load this quickly?)"
 
-    Simplifying the spec
-    --------------------
-    > We have A LOT going on in a single page. Consider ...
-
-    1. Make each atomic state change it's own page (`/film/:id`/ add review)
-    2. Do we have minimal state and minimal data? (Reduce!)
-    3. Have we narrowed the types as much as we could do?
 
     Assumptions
     -----------
@@ -91,7 +111,7 @@ module CustomTypes.Films exposing (..)
         - Multiple reviews can be added to a film (the user is an admin)
     5. We have access to a `/reviews` API (see the films API above) to:
         - Search a review by `:id` (a bit like an ISBN number)
-        - Add the review to the list (or manually create one instead)[^2]
+        - Add the review to the list (or manually create one instead)
     6. The end-user must have `Cred` (an existing logged-in account)
         - They can only peform actions (add, edit, delete, save) if logged in.
         - This type is read-only (an opaque type; generated by Auth0)
@@ -100,12 +120,6 @@ module CustomTypes.Films exposing (..)
 
     [^1]: Don't use a custom type unless you need to. We don't gain much if our
           `Review` type is a custom type (our first draft) rather than a record.
-
-    [^2]: Avoid the `TimeStamp` problem. Reviews in the films API already have a
-          timestamp. If we added that review to the reviews form, we'd need a
-          hidden `"timestamp"` field. If a user then manually edits that form, for
-          example to create their own review, our `TimeStamp` could get out of
-          sync. Only Elm should be able to generate a `TimeStamp` (not the user).
 
     ----------------------------------------------------------------------------
 
@@ -242,8 +256,6 @@ init _ =
 
 
 -- Server ----------------------------------------------------------------------
--- ⚠️ You can have a map function for brevity, or always `case` on the `Success a`
--- type (and `_` ignore the rest). It's up to you.
 
 type Server a
     = Loading
@@ -251,7 +263,13 @@ type Server a
     | Success a
     | Error String -- Error message
 
-{-| Ai generated mapping function -}
+{-| Ai generated mapping function
+
+> ⚠️ You can have a map function for brevity, or always use `case` in update
+
+You should only be mapping on a `Success a` branch really. And even then
+you might as well just `case` on that branch and `_` for the rest.
+-}
 serverMap : (a -> b) -> Server a -> Server b
 serverMap mapFn server =
     case server of
