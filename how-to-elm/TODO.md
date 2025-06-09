@@ -31,6 +31,10 @@ Also go through the notes, have some concrete examples at hand, and tidy some th
     - You could narrow the types with a `model.reviewForm` so you pass in less of the model
     - Or you could have the review form OUTSIDE of the `Success films` branch
 
+## URL
+
+1. **[Lydells](https://package.elm-lang.org/packages/lydell/elm-app-url/latest/) app url type** (simpler than Url package)
+2. Elm Land url (look up some examples)
 
 ## Elm Land
 
