@@ -19,7 +19,7 @@ module CustomTypes.Films exposing (..)
         - @ [Original (commit 35f7f70)](https://tinyurl.com/why-are-you-using-maybe)
         - We can avoid LOTS of unpacking and packing (or `Maybe.map`ing here)
         - If you must use `Maybe`, `Maybe.map` is useful in a pipeline ...
-        - But you might want to unpack it with pattern matching inside a `case`
+            - Pattern matching inside an update function's `case` is better?
     2. Try to avoid impossible states when there's a guarantee available.
         - If you've got a note in your code saying "this should never happen ..."
         - Then your types are probably wrong. Make impossible states impossible!
