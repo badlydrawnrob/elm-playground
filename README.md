@@ -98,6 +98,7 @@ My goal is prototyping, so I'm a little lax, but for large programs with bigger 
 - [Exercism](https://exercism.org/tracks/elm)'s Elm track
 - [7 GUIs](https://eugenkiss.github.io/7guis/tasks/) for practice
 - [Elm Workshop](https://sporto.github.io/elm-workshop/) (e.g: [stopwatch](https://sporto.github.io/elm-workshop/05-effects/02-start.html))
+- [Other courses](https://www.classcentral.com/report/best-elm-courses/)
 
 ### 🎞️ Helpful talks
 
@@ -140,8 +141,10 @@ My goal is prototyping, so I'm a little lax, but for large programs with bigger 
 
 ### Larger programs
 
-- [Elm Spa](https://github.com/rtfeldman/elm-spa-example) example (by @rtfeldman)[^5]
-- [Elk Herd](https://github.com/mzero/elk-herd) (by @mzero)
+- [Elm Spa #1](https://github.com/rtfeldman/elm-spa-example) (by @rtfeldman)[^5]
+- [Elm Spa #2](https://github.com/elm-land/realworld-app) (Elm Land version)
+- [Elm Spa #3](https://github.com/dwayne/elm-conduit) (@dwayne's [version](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758))
+- [Elk Herd](https://github.com/mzero/elk-herd) (by @mzero but it's complex)
 
 
 [^1]: Meaning efficient with my time, not lazy (ok, a little lazy). A simple route with less code and complexity? I'll take it. Take this [carousel](https://github.com/erkal/erkal.github.io/blob/main/pages/Carousel/Carousel.elm) in Elm, for example. Want to be a great programmer? Go ahead, take your time! Prefer the easy route? Use [`scroll-snap`](https://css-tricks.com/css-only-carousel/) with CSS. It all depends on your vision: I'd rather have more time to pursue other things, keep things simple.
@@ -152,4 +155,4 @@ My goal is prototyping, so I'm a little lax, but for large programs with bigger 
 
 [^4]: I'm being a little lazy here. I don't consider myself a "proper" computer scientist (and I don't code that often); more a pragmatic programmer. My goal is prototyping, so I rarely write unit tests. This isn't the _correct_ way, but Elm types give a lot of guarantees: testing the program as a regular user (like a QA) might be enough. If any bugs arise, a visitor can raise a ticket and tests can be written.
 
-[^5]: There's an alternative by Dwayne called [Elm Conduit](https://discourse.elm-lang.org/t/announcing-dwayne-elm-conduit-a-replacement-for-rtfeldman-elm-spa-example/9758)
+[^5]: Hopefully these three examples give an understanding of how to do Elm on a larger scale. Elm without a framework like [Elm Land](https://elm.land/) needs quite a lot of plumbing, so hopefully there'll be "one way to do it" when [Elm Studio](https://elm.studio/) eventually comes out. Alas, even that's imperfect as (I've been told) it's not plain old SQL and has abstractions to make the backend work.
