@@ -31,6 +31,7 @@ module File.ImageForm exposing (..)
 
     Handy tools:
     ------------
+    > @ https://uploadcare.com/api/ (alternative to ImageBB)
 
     1. Encode an image as `base64` string
         @ https://www.base64-image.de/
@@ -180,6 +181,7 @@ postImage expiration key file =
         , headers = []
         , url = buildUrl expiration key
         , body =
+            -- You could use `Http.fileBody` for other APIs!
             Http.multipartBody
                 [ Http.stringPart "image" file ]
         , expect = Http.expectJson SentImage decodeImage

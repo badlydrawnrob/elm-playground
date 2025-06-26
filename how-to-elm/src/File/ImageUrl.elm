@@ -29,6 +29,7 @@ module File.ImageUrl exposing (..)
 
     Handy tools:
     ------------
+    > @ https://uploadcare.com/api/ (alternative to ImageBB)
 
     1. Encode an image as `base64` string
         @ https://www.base64-image.de/
