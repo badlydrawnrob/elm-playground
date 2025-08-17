@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="http://elm-in-action.com/styles.css">
+    </head>
+
+    <body>
+        <div id="app"></div>  <!-- #1: Our Elm application renders here -->
+
+        <script src="app.js"></script>  <!-- #1: Our src file will get compiled into app.js -->
+        <script>
+            Elm.PhotoFolders.init({node: document.getElementById("app")});  // #3: The Elm object comes from app.js
+        </script>
+    </body>
+</html>

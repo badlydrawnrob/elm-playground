@@ -129,7 +129,7 @@ See http://tinyurl.com/elm-in-action-refactor-status
 
 1. See this diff. Now we `case` on the model in both `view` and `update`. Why do we have to do this?
 2. [Destructuring](https://github.com/badlydrawnrob/elm-playground/commit/9300630ac479894e37904f834662edd0f12557b9#r1382554700). We use `first :: rest` which we wrapped in `()` brackets. Explain.
-3. Explain the difference between our original random function and the new `random.uniform` one.
+3. Explain the difference between our original random function (which used an `Array`) and the new `random.uniform` one. In general it seems easier (at least when fetching from a server).
 
 
 ### The `<|`, `|>` operator
@@ -181,28 +181,17 @@ It might be useful, but I'm not going to save this to memory. If and when I need
 
 ### Design choices and tradeoffs
 
-1. Pages 323—328 are good overviews of making design decisions about the model — especially about trying to rule out bugs in our design. "Guarantees" that the compiler can give us.
-2. It’s generally a good idea to keep our types as narrow as possible, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
-3. SHARING CODE BETWEEN UPDATE BRANCHES — Usually, the simplest way to share code is to extract common logic into a helper func- tion and call it from both places. This is just as true for update as it is for any func- tion, so let’s do that!
-4. Note that you can pass a model (record) to another helper function, like our `applyFilters` function. It first applies changes to the model, then passes through to the `applyFilters` helper which also adds further changes to the model.
+1. **Pages 323—328 are good overviews of making design decisions about the model** — especially about trying to rule out bugs in our design. "Guarantees" that the compiler can give us.
+2. **It’s generally a good idea to keep our types as narrow as possible**, so we’d like to avoid passing `viewLoaded` the entire `Model` if we can. However, that’s not a refactor we need to do right now.
+3. **Note that you can pass a model (record) to another helper function**, like our `applyFilters` function. It first applies changes to the model, then passes through to the `applyFilters` helper which also adds further changes to the model.
+    - **Sharing code between update branches** Usually, the simplest way to share code is to extract common logic into a helper func- tion and call it from both places. This is just as true for update as it is for any func- tion, so let’s do that!
     - You can do this on `update` in any branch
     - So if you need to add a filter, for instance, you'd need to call the function **on load**, **on change**, etc.
     - Give an example that's simpler than the slider.
     - Take care — you'd need to `Tuple.pair` and add `Cmd.none` in the _helper function_ so it's taking a model and returning a `(model, Cmd.none)`
-5. <s>Elm’s division operator (/) works only if you give it two Float values. The `Basics.toFloat` function converts an Int to a Float, so `toFloat model.hue` converts `model.hue` from an `Int` to a `Float—at` which point we can divide it by 11 as normal.</s> — this doesn't seem true in 0.19.1
-6. Working with Ports and external javascript also has **a problem with _timing_**. If the javascript loads _before_ the `Loaded` state happens, your javascript might not work on page load. See "browsers repaint the DOM" on page 151 of pdf. See also `requestAnimationFrame`.
-7. Cmd and Sub are both parameterized on the type of message they produce. We noted earlier that `setFilters` returns a `Cmd msg` (as opposed to `Cmd Msg`) because it is a command that **produces no message after it completes**. In contrast, activityChanges returns a `Sub msg`, but **here `msg` refers to the `type` of message** returned by the `(String -> msg)` function we pass to `activityChanges`.
-8. Flags and decoding javascript values with `Json.Decode.Value`
-
-> Whereas it’s normal for setFilters to return Cmd msg, it would be bizarre for activityChanges to return Sub msg. After all, a Cmd msg is a command that has an effect but never sends a message to update—but sub- scriptions do not run effects. Their whole purpose is to send messages to update. Subscribing to a Sub msg would be like listening to a disconnected phone line: not terribly practical.
 
 
-
-## Chapter 06
-
-> **I do not understand the `view` tests — probably about 50% of it.**
->
-> I'll have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
+## Chapter 06 to-dos
 
 1. Why does this function return `(Err 1)`
  unchanged? (tip: look at the type signature). You'd use `Result.mapError` instead.
@@ -211,16 +200,32 @@ It might be useful, but I'm not going to save this to memory. If and when I need
  Result.map : (a -> b) -> Result x a -> Result x b
  Result.map String.fromInt (Err 1) -- == (Err 1)
  ```
-2. Accessing a record value by just using `List.map` with a `.key` "function", for records. It's exactly the same as an anonymous function `(\record -> record.title)` — it takes a record and returns the content of it's title field.
-3. Briefly explain how we [reduced this code down](http://tinyurl.com/elm-lang-json-decode-test) (we were checking the entire decoder but now we're just checking the optional field)
-4. `decodeValue` is quicker than converting into a string, and decoding from a string. Make a note of the difference between using a hardcoded test, vs a fuzz test.
-5. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
-6. It's also quite tricky to know which parts of `PhotoGroove` we need to expose (or which we need to import into `PhotoGrooveTest`) as there's a lot of moving parts. Perhaps this gets easier with practice.
-7. Writing tests seems to (sometimes) take almost as long as writing bloody code. So I need to look at various ways to do it that keeps time down. One way is to look at functions as black boxes and only check inputs and outputs — and not just replicating the code functionality which seems wasteful.
-    - For view we're randomly generating urls to pass through to our view. This seems a bit wasteful of time to me.
+2. **Accessing a record value by just using `List.map` with a `.key` "function"**, for records. It's exactly the same as an anonymous function `(\record -> record.title)` — it takes a record and returns the content of it's title field.
+3. **Briefly explain how we [reduced this code down](http://tinyurl.com/elm-lang-json-decode-test)** (we were checking the entire decoder but now we're just checking the optional field)
+4. **`decodeValue` is quicker than converting into a string, and decoding from a string.** Make a note of the difference between using a hardcoded test, vs a fuzz test.
 
 
 
+
+## Chapter 07 to-dos
+
+> ...
+
+1. Explain why a `Dict` is better (for this purpose) than a `List Photo`. We need to compare the `selectedPhotoUrl` with one in the `List Photo`. See Notes if you get stuck.
+2. [`Maybe.andThen`](http://tinyurl.com/elm-lang-maybe-and-then) instead of [nested `Just` or `Nothing`](https://github.com/badlydrawnrob/elm-playground/commit/a7abdf386b9c8de655b14b20ee0b2635d56345e7#r138991332) case expressions. (It's easier to write when both `Maybe` types return the same `Nothing -> Value`)
+    - It's a tad hard to understand as the value from the first `Maybe` gets handed to the second `Maybe` if it succeeds (is not `Nothing`).
+    - Using the `|>` pipeline makes it a bit easier to read/understand.
+3. Design and refactoring: Using [some dummy data](https://github.com/badlydrawnrob/elm-playground/commit/dfc1661e869d24adfabf44ead51739e56863f0af#r138991666) when you're starting to build out your functions until you're ready to pull from the server.
+    - **Pretend we’re already able to decode some useful Photo data from the server.**
+4. `type Folder` — how does this know when to STOP and not an infinite loop? Other recursive functions like a list have an `Empty` which stops them recursing. Perhaps because it's a record we just have to stop adding subfolders.
+    - Seems like an `[]` empty list is enough.
+    - What's the **inline pattern matching** that `Listing 7.6` (pg 221 pdf) means?
+    - `viewFolder` is a recursive function that navigates the `tree` of `Folder`.
+    - It takes a bit of getting your head around this recursive function, using `(Folder folder)` and `.subfolders` record field to grab the values. Each subfolder is a list, and some `subfolders` in turn hold a `Folder` with another record.
+    - Think of it as simple data, not Html (might help wrapping your head around function)
+5. In general I think I'm going to have to research into `trees` and `nodes` with recursive functions. It's using `List.indexMapped` etc. Might need to scrub up on some theory as it's kind of difficult.
+    - https://livebook.manning.com/concept/elm/folderpath
+    - **Starting from `7.2.2` it gets tricky to understand ... pg 223 in pdf.**
 
 
 
@@ -248,11 +253,39 @@ It might be useful, but I'm not going to save this to memory. If and when I need
     - Make links between `Big Bang` in Racket lang and Elm's runtime
 8. How do we migrate from a simple static `Model` (that `main` consumes), to `Browser.element` and beyond?
 9. [Destructuring](http://tinyurl.com/eia-destructure-firstUrl), both in `case` and in `functions` like this example.
+10. Comparing `andThen` and `map` for both `Result` and `Maybe` — **see bottom of pg 216 in PDF**.
 
-
-## Various design decisions:
+### Various design decisions:
 
 - `Loaded Photo (List Photo) String` ([non-empty list](http://tinyurl.com/eia-design-decisions-nonempty))
+
+
+
+
+
+## Things for someday/never ...
+
+### Chapter 05
+
+1. <s>Elm’s division operator (/) works only if you give it two Float values. The `Basics.toFloat` function converts an Int to a Float, so `toFloat model.hue` converts `model.hue` from an `Int` to a `Float—at` which point we can divide it by 11 as normal.</s> — this doesn't seem true in 0.19.1
+2. Working with Ports and external javascript also has **a problem with _timing_**. If the javascript loads _before_ the `Loaded` state happens, your javascript might not work on page load. See "browsers repaint the DOM" on page 151 of pdf. See also `requestAnimationFrame`.
+3. Cmd and Sub are both parameterized on the type of message they produce. We noted earlier that `setFilters` returns a `Cmd msg` (as opposed to `Cmd Msg`) because it is a command that **produces no message after it completes**. In contrast, activityChanges returns a `Sub msg`, but **here `msg` refers to the `type` of message** returned by the `(String -> msg)` function we pass to `activityChanges`.
+4. Flags and decoding javascript values with `Json.Decode.Value`
+
+> Whereas it’s normal for setFilters to return Cmd msg, it would be bizarre for activityChanges to return Sub msg. After all, a Cmd msg is a command that has an effect but never sends a message to update—but sub- scriptions do not run effects. Their whole purpose is to send messages to update. Subscribing to a Sub msg would be like listening to a disconnected phone line: not terribly practical.
+
+
+
+### Chapter 06
+
+> **I do not understand the `view` tests — probably about 50% of it.**
+>
+> I'll have to re-read this chapter — not sure it's a good idea to try and commit them to Anki cards.
+
+1. Sometimes it's quite difficult to know what type signature to give more difficult functions (especially when using pipeline) — see `testSlider` in `Notes.elm`
+2. It's also quite tricky to know which parts of `PhotoGroove` we need to expose (or which we need to import into `PhotoGrooveTest`) as there's a lot of moving parts. Perhaps this gets easier with practice.
+3. Writing tests seems to (sometimes) take almost as long as writing bloody code. So I need to look at various ways to do it that keeps time down. One way is to look at functions as black boxes and only check inputs and outputs — and not just replicating the code functionality which seems wasteful.
+    - For view we're randomly generating urls to pass through to our view. This seems a bit wasteful of time to me.
 
 
 
