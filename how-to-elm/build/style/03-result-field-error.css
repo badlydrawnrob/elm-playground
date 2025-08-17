@@ -1,0 +1,16 @@
+/* -----------------------------------------------------------------------------
+// Field Error with a single input (using `Result`)
+// ========================================================================== */
+
+body {
+  width: 800px;
+  margin: 0 auto;
+}
+
+form.float-input {
+  margin-top: 40px;
+}
+
+.display-result {
+  margin-top: 20px;
+}

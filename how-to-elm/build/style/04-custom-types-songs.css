@@ -1,0 +1,42 @@
+.wrapper {
+  margin 0 auto;
+  padding: 40px;
+  width: 70%;
+
+
+  &.empty {
+    color: red;
+  }
+}
+
+.form-songs {
+
+  input {
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    display: flex;
+
+    .collapse + .collapse {
+      margin-left: 20px;
+    }
+  }
+
+  .form-error {
+    color: red;
+    margin: 0 0 20px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Thema styles example (not a great one)
+----------------------------------------------------------------------------- */
+
+.album {
+
+}
+
+.album-song {
+
+}

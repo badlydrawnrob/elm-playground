@@ -1,0 +1,10 @@
+{
+    "targets": {
+        "My target name": {
+            "inputs": [
+                "src/CustomTypes/Films.elm"
+            ],
+            "output": "build/04-custom-types-films.js"
+        }
+    }
+}

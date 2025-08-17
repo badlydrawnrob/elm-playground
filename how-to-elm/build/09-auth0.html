@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>SPA SDK Sample</title>
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+  </head>
+  <style>
+    a, p, button { margin-right: 10px; }
+  </style>
+
+  <body>
+    <div id="main" class="main"></div>
+
+    <script src="09-auth0.js?v=1.8"></script>
+    <script>
+      Elm.Auth.Auth.init({
+        node: document.getElementById('main')
+      });
+
+      // The alternative is to use their SPA SDK, but it seems like a massive
+      // hassle to set up with Ports. Sticking to this method for now.
+
+      var currentURL = window.location.href;
+      // document.querySelector('.example').textContent = currentURL;
+
+      if (window.location.href.indexOf("#access_token=") !== -1) {
+        console.log("Access URL:", currentURL);
+      } else {
+        console.log('Not an access URL:', currentURL);
+      }
+    </script>
+  </body>
+</html>

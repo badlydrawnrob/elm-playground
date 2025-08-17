@@ -1,0 +1,254 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fswiss\fcharset0 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red255\green255\blue255;\red78\green77\blue78;
+\red29\green136\blue198;\red22\green21\blue22;\red18\green79\blue146;\red246\green246\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c100000\c100000\c100000;\cssrgb\c38039\c37647\c38039;
+\cssrgb\c11373\c60784\c81961\c10196;\cssrgb\c11373\c10980\c11373\c3922;\cssrgb\c7059\c39216\c63922;\cssrgb\c97255\c97255\c97255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid1\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # Managing `json`\
+\
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \cf2 \cb3 \expnd0\expndtw0\kerning0
+If I\'92m the one who created the JSON in the first place, I encode the JSON so that it\'92s easy to decode it to a nice type in Elm (or TypeScript or whatever the client is written in).\cb1 \
+\
+\cb3 If I\'92m decoding JSON from a third party, I start with designing the types for it as nicely as I can. Then I write decoders that decode into those nice types. Those decoders might need to do stuff like defaulting a missing field to an empty list (if that\'92s what I\'92ve got in my type), or converting an Int into a String, or fail on some impossible case that the JSON allows for but should never happen in practice, etc.\cb1 \
+\
+\cb3 (If that\'92s what you are asking.)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729870782047239?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 4:39 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf2 \cb5 @Simon Lydell}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0Sort of, although that\'92s all good information and I agree that it\'92s dependant on \'93internal\'94 or \'93external\'94 (potentially messy) json. It seems when dealing with external json you don\'92t use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Maybe
+\fs30 \AppleTypeServices \cb3 \'a0much and just default to as nice a type as possible.\cb1 \
+\
+\cb3 To clarify what I was asking: If I have control over my\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 form->json
+\fs30 \AppleTypeServices \cb3 \'a0and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 json->Model
+\fs30 \AppleTypeServices \cb3 \'a0with required and optional fields, is it preferable to use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Maybe
+\fs30 \AppleTypeServices \cb3 \'a0types, or simply render them from the server as optional defaults (an empty string or list, for example).\cb1 \
+\
+\cb3 I\'92ve been recommended to ignore (not add) optional fields when encoding to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 json
+\fs30 \AppleTypeServices \cb3 \'a0 either way.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729870997837109?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 4:43 PM}}\cb1 \
+\cb3 It seems when dealing with external json you don\'92t use Maybe much and just default to as nice a type as possible.\cb1 \
+\
+\cb3 That was just an example. I use Maybe sometimes when I think it\'92s the best.\cb1 \
+\
+\cb3 If I have control over my form->json and json->Model with required and optional fields, is it preferable to use Maybe types, or simply render them from the server as optional defaults (an empty string or list, for example).\cb1 \
+\
+\cb3 Do you mean that when you are creating the JSON, you are doing it in a language will optional object fields, such as a server written in JavaScript?\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729871818060149?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 4:56 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf2 \cb5 @Simon Lydell}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\cb3 \'a0Do you mean that when you are creating the JSON, you are doing it in a language will optional object fields, such as a server written in JavaScript?\cb1 \
+\
+\cb3 No, I mean a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Http.post
+\fs30 \AppleTypeServices \cb3 \'a0form with elm to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 jsonbin
+\fs30 \AppleTypeServices \cb3 \'a0or similar (send and retrieve), which I have full control over. Perhaps you\'92ve got a record with a required image, but optional comments, for instance.\cb1 \
+\
+\cb3 Depending on the\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 List Image
+\fs30 \AppleTypeServices \cb3 \'a0some would have comments and others wouldn\'92t.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729872093771109?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 5:01 PM}}\cb1 \
+\cb3 When using\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Encode.object
+\fs30 \AppleTypeServices \cb3 \'a0I find it easier to set \'93optional fields\'94 to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Encode.null
+\fs30 \AppleTypeServices \cb3 \'a0rather than omitting the field. (The code is simpler.)\cb1 \
+\
+\cb3 When decoding, it\'92s \'93safer\'94 with fields set to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 null
+\fs30 \AppleTypeServices \cb3 \'a0than truly optional fields.\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.optionalField "misspelled-field" Decode.string
+\fs30 \AppleTypeServices \cb3 \'a0will succeed even though the field is misspelled. While\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.field "misspelled-field" (Decode.nullable Decode.string)
+\fs30 \AppleTypeServices \cb3 \'a0would fail.\cb1 \
+\
+\cb3 Oh, and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.optionalField
+\fs30 \AppleTypeServices \cb3 \'a0comes from\'a0{\field{\*\fldinst{HYPERLINK "https://elm.dmy.fr/packages/elm-community/json-extra/latest/Json-Decode-Extra#optionalField"}}{\fldrslt \cf7 Json.Decode.Extra}}. Use that for optional fields, never\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Decode.maybe
+\fs30 \AppleTypeServices \cb3 . That function should be banished. (Or use decode pipeline, afair it\'92s safe too.)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729874644957969?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 5:44 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf2 \cb5 @Simon Lydell}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0\cb1 \
+\cb3 \'a0That\'92s the opposite advice I got from\'a0{\field{\*\fldinst{HYPERLINK "https://discourse.elm-lang.org/t/staying-sane-with-maybe-maybe-vs-type/9897/11?u=badlydrawnrob"}}{\fldrslt \cf7 Sebastian}}. I inferred from that link to\'a0
+\f2\i not
+\f0\i0 \'a0use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 null
+\fs30 \AppleTypeServices \cb3 \'a0or default data in the\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 json
+\fs30 \AppleTypeServices \cb3 .\cb1 \
+\
+\cb3 It seems\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Decode.Pipeline
+\fs30 \AppleTypeServices \cb3 \'a0treats\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 null
+\fs30 \AppleTypeServices \cb3 \'a0the same way it treats no entry at all with\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 optional
+\fs30 \AppleTypeServices \cb3 , so that\'92s handy \'85\'a0
+\f2\i But
+\f0\i0 \'a0as you say, both\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 "key"
+\fs30 \AppleTypeServices \cb3 \'a0 and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 "ke"
+\fs30 \AppleTypeServices \cb3 \'a0 (mispelled) with optional succeed, rather than throwing an error.\cb1 \
+\
+\cb3 So both\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.optionalField
+\fs30 \AppleTypeServices \cb3 \'a0and\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.nullable
+\fs30 \AppleTypeServices \cb3 \'a0fail for missing key, wrongly spelled key, and wrong data type? It seems you lean towards\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 null
+\fs30 \AppleTypeServices \cb3 \'a0for most optional cases. And\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 nullable
+\fs30 \AppleTypeServices \cb3 \'a0seems to be a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Maybe
+\fs30 \AppleTypeServices \cb3 \'a0wrapped in a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Result
+\fs30 \AppleTypeServices \cb3 \'a0(which also takes a fair bit to unpack).\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb6 decoder =\
+    D.succeed (\\value -> \{ key = value \})\
+    |> optional "key" (D.nullable string) Nothing\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \AppleTypeServices \cf2 \
+\cb3 This works, but I foresee a few problems:\cb1 \
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0\cf2 \cb3 \kerning1\expnd0\expndtw0 {\listtext	1	}\expnd0\expndtw0\kerning0
+Wrongly typed keys on both sides (Elm and Json)\cb1 \
+\ls1\ilvl0\cb3 \kerning1\expnd0\expndtw0 {\listtext	2	}\expnd0\expndtw0\kerning0
+Anything outside the decoder that isn\'92t catered for (other\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 key
+\fs30 \AppleTypeServices \cb3 /
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 value
+\fs30 \AppleTypeServices \cb3 \'a0pairs) gets ignored (doesn\'92t fail)\cb1 \
+\ls1\ilvl0\cb3 \kerning1\expnd0\expndtw0 {\listtext	3	}\expnd0\expndtw0\kerning0
+I guess ideally you\'92d have a schema to enforce all the things.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \
+\cb3 I think Elm could benefit from some \'93there\'92s one way to do it\'94 tips. The more I think about it the more I confuse myself\'a0\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729875013101499?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 5:50 PM}}\cb1 \
+\cb3 I read that link quickly, and I\'92m not sure if I was the opposite of anything.\cb1 \
+\
+\cb3 Anyway, most of this doesn\'92t really matter. Do whatever you feel like, and learn from your bugs. I used to use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Decode.maybe
+\fs30 \AppleTypeServices \cb3 \'a0until it caused bugs in production. I used to model things with lots of String and Maybe, until I forgot what all those strings and Nothings meant.\cb1 \
+\
+\cb3 The things we are discussing here are just details to take Elm to a next level. Like, if plain JavaScript is level 0, then \'93just wing it\'94 Elm is level 9 and \'93learn from the pros Elm\'94 is level 10 \'96 just a small increment \'93better\'94.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729875638379579?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 6:00 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf2 \cb5 @Simon Lydell}}\cb5 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0\cb1 \
+\
+\cb3 \'a0I guess you\'92re right, a great deal of this is nuance. So TL;DR is optional fields should generally be set to\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 null
+\fs30 \AppleTypeServices \cb3 \'a0and they\'92ll automatically be converted to a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Maybe
+\fs30 \AppleTypeServices \cb3 \'a0with\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 nullable
+\fs30 \AppleTypeServices \cb3 . Or use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 optional
+\fs30 \AppleTypeServices \cb3 \'a0with a default. I\'92m not a huge fan of\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Maybe
+\fs30 \AppleTypeServices \cb3 \'a0 as it happens. I keep forgetting things like\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 String.toInt
+\fs30 \AppleTypeServices \cb3 \'a0need unpacking.\cb1 \
+\
+\cb3 But I like your levels 0-10\'a0\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\cb3 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729875753597659?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 6:02 PM}}\cb1 \
+\cb3 Btw, you can have defaults with\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Json.Decode.nullable
+\fs30 \AppleTypeServices \cb3 \'a0too:\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb6 Decode.field "my-field" (Decode.nullable Decode.string |> Decode.map (Maybe.withDefault ""))
+\fs30 \AppleTypeServices \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf2 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb8 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf2 \cb8 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729876120200509?thread_ts=1729869682.738249&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf4 Yesterday at 6:08 PM}}\cb1 \
+\cb8 I guess you could use a helper function for that.\'a0I\'92ll\'a0try a few things out and see how it goes. Do please pass on any helpful links on good/bad practice with decoders if you have any. Thanks!\cb1 \
+}

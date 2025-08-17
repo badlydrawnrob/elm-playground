@@ -56,6 +56,7 @@ Looking back at some of the [Racket lang challenges](https://github.com/badlydra
 
 > 1. How do we sketch out and prioritise new feature requests? Start with the Model!
 > 2. How do you take [a large code base](https://github.com/badlydrawnrob/elm-playground/issues/12) and distill it down for an Anki card in just a few lines? Or, do you link through to the full program/file?
+> 3. If you find yourself using `Maybe` everywhere, it's worth examining your `type` and `type alias` definitions to see if you can model your application data for a more precise representation.
 
 
 ## Chapter 04 to-dos

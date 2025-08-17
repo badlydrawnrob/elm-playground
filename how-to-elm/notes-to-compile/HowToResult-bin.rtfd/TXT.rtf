@@ -1,0 +1,220 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\froman\fcharset0 Times-Bold;\f2\froman\fcharset0 Times-Italic;
+\f3\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red0\green0\blue0;\red22\green21\blue22;
+\red22\green21\blue22;\red78\green77\blue78;\red29\green136\blue198;\red18\green79\blue146;\red115\green115\blue115;
+\red22\green21\blue22;\red22\green21\blue22;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c100000\c100000;\cssrgb\c0\c0\c0;\cssrgb\c11373\c10980\c11373\c3922;
+\cssrgb\c11373\c10980\c11373\c70196;\cssrgb\c38039\c37647\c38039;\cssrgb\c11373\c60784\c81961\c10196;\cssrgb\c7059\c39216\c63922;\cssrgb\c52549\c52549\c52549;
+\cssrgb\c11373\c10980\c11373;\cssrgb\c11373\c10980\c11373\c12941;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid1\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs30 \cf0 \cb2 \expnd0\expndtw0\kerning0
+Struggling how best to loop a bunch of\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Result String a
+\fs30 \AppleTypeServices \cb2 \'a0(
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 UserInput
+\fs30 \AppleTypeServices \cb2 \'a0type) to make sure all are valid. Previously I was using:\cb1 \
+\
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 type alias Validate a\
+    = Result String a\
+\
+type alias UserInput a\
+    = \{ input : String\
+      , valid : Validate a\
+      \}\
+\
+getValid : UserInput String -> UserInput Int -> UserInput Int -> Maybe Song\
+getValid song mins secs =\
+    case (song.valid, mins.valid, secs.valid) of\
+        (Ok songTitle, Ok minutes, Ok seconds) ->\
+            Just (Song songTitle (minutes, seconds))\
+        _ ->\
+            Nothing\cb1 \
+
+\fs30 \AppleTypeServices \cb2 Destructuring with a tuple. Now I have more input fields I\'92m not quite sure how to loop them (I can\'92t use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 List.map
+\fs30 \AppleTypeServices \cb2 \'a0as they\'92re different types.\cb1 \
+\
+\cb2 Use\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Result.map
+\fs30 \AppleTypeServices \cb2 ? Create a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 type alias AllValidFields
+\fs30 \AppleTypeServices \cb2 \'a0record and destructure that?\cb1 \
+\
+\cb2 I also have a second form that does a similar thing with different number of records, so I\'92d either have to abstract the function or have two similar ones. Currently drawing a blank!\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \cf5 11 replies\
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b\fs30 \cf0 \
+\cb2 perkee (he)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729791608256439?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Thursday at 6:40 PM}}\cb1 \
+\cb2 I\'92m pondering what happens if you don\'92t store validity, just store the user input (which is all strings) and then\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 getValid
+\fs30 \AppleTypeServices \cb2 \'a0the totality of those strings\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729791889527179?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 \cb2 6:44}}\
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 ggeeennnnnerallllyyyyy mostly and as a rule of thumb (asterisk, ymmv, no warranty implied; take this with a grain of salt; you cannot sue me) we tend to store external inputs in the model. \'93Inputs\'94 comprises: things the user has typed, values fetched from the server, values provided by the server at page load. I don\'92t store computed values in there; I compute them in the functions where they are needed. If I need them in a few places they go in a\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 let\'85in
+\fs30 \AppleTypeServices \cb2 \'a0block; if they get used in the functions called by another function, I pass them around.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf0 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\i \cf0 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\i0\b\fs30 \cf0 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729800764575319?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Thursday at 9:12 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UJ7FB2S9H"}}{\fldrslt \cf0 \cb7 @perkee (he)}}\cb7 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \'a0Hmm. Well, I felt like it was a nice way to view errors in place (\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/badlydrawnrob/elm-playground/blob/master/how-to-elm/src/CustomTypes/Songs.elm"}}{\fldrslt \cf8 full example here}}) and there doesn\'92t seem any one way to do form validation.\'a0\cb7 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0CL0AS3V"}}{\fldrslt \cf0 @rtfeldman}}\
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \'a0does it\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/rtfeldman/elm-spa-example/blob/master/src/Page/Login.elm"}}{\fldrslt \cf8 like this}}\'a0but I don\'92t fully understand it. There\'92s a lot going on. The gist is a list of problems\'a0(a problem type, but essentially a list of strings). I understand my version a lot easier!\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729801030249159?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 \cb2 9:17}}\
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cf0 \cb4 getValid
+\fs30 \AppleTypeServices \cb2 \'a0over a list of strings would be easier to do, but not sure how\'a0you\'92d\'a0view them in place (under the user input field). So if I understand your meaning you\'92d store the\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 String
+\fs30 \AppleTypeServices \cb2 \'a0user inputs and the `List Song` but not the\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Ok
+\fs30 \AppleTypeServices \cb2 /
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Err
+\fs30 \AppleTypeServices \cb2 \'a0values? Is that an Elm thing or a functional programming thing? And why?\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf0 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729801331320239?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Thursday at 9:22 PM}}\cb1 \
+\cb2 I also want to avoid computing those valid string conversions in more than one place. I think rtfeldmans version is only worried about strings, not other data types (like\'a0
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 String.toInt
+\fs30 \AppleTypeServices \cb2 \'a0etc)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf0 \
+\cb2 perkee (he)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729802792300139?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Thursday at 9:46 PM}}\cb1 \
+\cb2 Well, I felt like it was a nice way to view errors in place\cb1 \
+\cb2 if you calculate errors for each field in the view function you can still have this\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf0 \
+\cb2 minibill\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729812791460069?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Yesterday at 12:33 AM}}\cb1 \
+\cb2 Things that can help:\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0\cf0 \cb2 \kerning1\expnd0\expndtw0 {\listtext	1	}\expnd0\expndtw0\kerning0
+Result.map2/map3/...\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0\cf8 \cb2 \kerning1\expnd0\expndtw0 {\listtext	2	}{\field{\*\fldinst{HYPERLINK "https://package.elm-lang.org/packages/elmcraft/core-extra/latest/Result-Extra#andMap"}}{\fldrslt \expnd0\expndtw0\kerning0
+https://package.elm-lang.org/packages/elmcraft/core-extra/latest/Result-Extra#andMap}}\cf0 \cb1 \expnd0\expndtw0\kerning0
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf0 \
+\cb2 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729869351333999?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Yesterday at 4:15 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UJ7FB2S9H"}}{\fldrslt \cf0 \cb7 @perkee (he)}}\cb7 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \'a0True. I wonder if it affects performance at all running all those error functions at once rather than individually as user types.\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729869373262489?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 \cb2 4:16}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U3S9BH05U"}}{\fldrslt \cf0 \cb7 @minibill}}\cb7 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 \'a0Would you mind providing a quick example?\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf0 \
+\cb2 minibill\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b0 \cf0 \cb2 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729940177709189?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 Today at 11:56 AM}}\cb1 \
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cb4 Result.map3\
+  (\\songTitle minutes seconds -> Song songTitle (minutes, seconds))\
+  song.valid\
+  mins.valid\
+  secs.valid\
+  |> Result.toMaybe\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \AppleTypeServices \cf9 \cb2 (edited)
+\fs30 \cf0 \cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0K8VHA6B/p1729940217739089?thread_ts=1729790395.044309&cid=C0K8VHA6B"}}{\fldrslt 
+\fs24 \cf6 \cb2 11:56}}\
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \AppleTypeServices\AppleTypeServicesF65539 \cf0 \cb4 Ok (\\songTitle minutes seconds -> Song songTitle (minutes, seconds)\
+  |> Result.Extra.andMap song.valid\
+  |> Result.Extra.andMap mins.valid\
+  |> Result.Extra.andMap secs.valid\cb1 \
+\pard\pardeftab720\partightenfactor0
+\AppleTypeServices \cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\fs36 \cf5 \
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs30 \cf10 \cb11 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs36 \cf5 \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs30 \cf10 \cb11 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs36 \cf5 \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\fs24 \cf0 \
+}
