@@ -2,11 +2,11 @@
 
 > Have a clear learning frame and concrete outcomes in mind ...
 
-**"Programming Elm" is for the beginner to intermediate** and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on.
+**"Programming Elm" is for the beginner to intermediate** and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on though.
 
 **My learning frame is "Elm (no js), Python, SQLite, simple data, low state, web app prototypes".** I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
 
-**I have ideas for digital products and need a working prototype to validate an idea.** The goal is to do this in as _little code as possible_ (which may be different from _your_ goals) — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team.
+**I have ideas for digital products and need a working prototype to validate an idea.** The goal is to do this in as _little code as possible_ — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team.
 
 **Unless you code 5+ hours every single day (which I don't), building web apps will be a slow process.** Vibe coding and Ai agents are on the rise, which speed things up, but we're a long way off Ai building our businesses for us (for Elm at least). A clear learning frame for everything you do reduces wasted time and effort.
 
@@ -27,14 +27,14 @@ For niche knowledge, rarely used functions, or easy to remember stuff, lean heav
 
 > It really depends how deeply you want to learn: is it within my learning frame?
 
-Elm is niche but boring and stable: unfortunately there's not enough tutorials for advanced stuff.
+Elm is niche but boring and stable: unfortunately there's not enough tutorials for advanced stuff, and to be honest larger apps get hard to understand and quite low-level (not as many frameworks for web apps). When faced with a complex option and a simple one, always prefer the latter.
 
 1. Lazy load cards. Chunk knowledge.
 2. Understanding comes first, then revision
 3. Is this piece of information essential?
 4. If not, consider leaving it out. Reduce.
 5. Create stories and drawings (make it fun)
-6. Isolate code and code in context.
+6. Isolate code examples as well as code in context.
 7. Refresh and consolidate knowledge regularly.
 8. Outsource esoteric code samples.
 9. Some things can be learned passively
@@ -54,8 +54,8 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 ### Other helpful tips
 
 1. **Act "as-if" the program already works**
-    - Write the type signatures, header statement
-    - Hard code bits of the program first (`json`, )
+    - Write the type signatures, header statement, etc
+    - Hard code bits of the program first (api, function body, `json`)
 2. **Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck**
     - Use tables of inputs and outputs (a [stepper](https://www.youtube.com/watch?v=TbW1_wn2his))
     - Use `Debug.log` to understand what's happening
@@ -76,7 +76,7 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 - Asking for help that isn't concrete enough (make it easy to help you)
 - Adding needless complexity that involves new learning (YAGNI)
 - Flip-flopping between tasks and learning goals (cognitive load)
-- Consuming too many books, articles, videos (stick to one at a time!)
+- Consuming too many books, articles, videos (stick to one at a time!)[^1]
 - Anything that takes me more than 2—4 hours per day (I have limited time)
 - Anything too academic that isn't suited to intermediate level (like the SICP book)
 - Anything involving complex state and interactions (conditional forms bring pain)
@@ -252,3 +252,6 @@ this =
     |> Debug.log "filtered"
     |> List.map (\n -> n * n)
 ```
+
+
+[^1]: Remember that any new language, factoid, or method can either be incremental (scaffolded learning) or tangental. You want to avoid at all costs tangental learning that's not directly impacting your goals, or within your chosen learning frame. Think of it like learning a new language: learning french and chinese at the same time will cause you pain — there's very little overlap between the two! The same goes for Elm and Go. However interesting it might be, they're very different (Elm and Python is hard enough!) and you've got to weigh up the benefits compared to the opportunity costs. SQLite and Postgres are by far more compatible, but SQLite is way easier to setup and migrate. The benefits must be (something like) 10x the opportunity cost of moving from one to the other; How many months will it take you to shift gears, get to production level? It's probably longer than you think! Is that microsecond of performance increase really worth 3 months of your time?
