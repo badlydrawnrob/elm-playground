@@ -57,12 +57,12 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 1. **Act "as-if" the program already works**
     - Write the type signatures, header statement, etc
     - Hard code bits of the program first (api, function body, `json`)
-2. **Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck**
+2. **Create a wishlist and get the easy parts done first**
+    - It's also better to write things down
+3. **Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck**
     - Use tables of inputs and outputs (a [stepper](https://www.youtube.com/watch?v=TbW1_wn2his))
     - Use `Debug.log` to understand what's happening
     - Work backwards (start with the outcome and reverse engineer)
-3. **Create a wishlist and get the easy parts done first**
-    - It's also better to write things down
 4. **Use a whiteboard, or sketch out the problem**
     - Spend 80% of your time thinking about the problem
     - Then 20% time coding with confidence
