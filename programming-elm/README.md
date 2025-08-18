@@ -2,13 +2,13 @@
 
 > Have a clear learning frame and concrete outcomes in mind ...
 
-**My learning frame is "Elm, Python, SQLite, simple data, low state, web app prototypes"** and I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
+**"Programming Elm" is for the beginner to intermediate** and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on.
 
-I have ideas for digital products and need a working prototype to validate an idea. The goal is to do this in as _little code as possible_ (which may be different from _your_ goals) — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team.
+**My learning frame is "Elm (no js), Python, SQLite, simple data, low state, web app prototypes".** I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
 
-Unless you code 5+ hours every single day (which I don't), building web apps will be a slow process. Vibe coding and Ai agents are on the rise, which speed things up, but we're a long way off Ai building our businesses for us (for Elm at least). A clear learning frame for everything you do reduces wasted time and effort.
+**I have ideas for digital products and need a working prototype to validate an idea.** The goal is to do this in as _little code as possible_ (which may be different from _your_ goals) — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team.
 
-"Programming Elm" is for the beginner to intermediate and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on.
+**Unless you code 5+ hours every single day (which I don't), building web apps will be a slow process.** Vibe coding and Ai agents are on the rise, which speed things up, but we're a long way off Ai building our businesses for us (for Elm at least). A clear learning frame for everything you do reduces wasted time and effort.
 
 
 ## Learning Programming Elm notes
@@ -53,15 +53,16 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 
 ### Other helpful tips
 
-1. Act "as-if" the program already works
+1. **Act "as-if" the program already works**
     - Write the type signatures, header statement
     - Hard code bits of the program first (`json`, )
-2. Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck
+2. **Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck**
     - Use tables of inputs and outputs (a [stepper](https://www.youtube.com/watch?v=TbW1_wn2his))
     - Use `Debug.log` to understand what's happening
     - Work backwards (start with the outcome and reverse engineer)
-3. Create a wishlist and get the easy parts done first
-4. Use a whiteboard, or sketch out the problem
+3. **Create a wishlist and get the easy parts done first**
+    - It's also better to write things down
+4. **Use a whiteboard, or sketch out the problem**
     - Spend 80% of your time thinking about the problem
     - Then 20% time coding with confidence
 
@@ -89,7 +90,7 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 4. `elm make src/Main.elm --output=app.js` compile project
 5. `elm reactor` start the server
 
-## Elm Watch commands
+## Elm Watch commands
 
 > Used in `06-build-larger-apps`
 
@@ -98,7 +99,7 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 3. `npx elm-watch hot` live reload with errors (and change compiler options)
 4. `npx elm-watch make --optimize` compile project
 
-## File naming
+## File naming
 
 Previously I used subfolders for working files:
 
