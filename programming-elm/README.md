@@ -1,140 +1,128 @@
 # README
 
-## Elm Commands
+> Have a clear learning frame and concrete outcomes in mind ...
 
-```terminal
-> elm --help
+**My learning frame is "Elm, Python, SQLite, simple data, low state, web app prototypes"** and I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
 
-> elm init
+I have ideas for digital products and need a working prototype to validate an idea. The goal is to do this in as _little code as possible_ (which may be different from _your_ goals) — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team.
 
-> elm install elm/json
+Unless you code 5+ hours every single day (which I don't), building web apps will be a slow process. Vibe coding and Ai agents are on the rise, which speed things up, but we're a long way off Ai building our businesses for us (for Elm at least). A clear learning frame for everything you do reduces wasted time and effort.
 
-> elm make src/Folder/ModuleName.elm --output=00-folder-module-name.js
-
-> elm reactor
-```
-
-## The reality of learning
-
-1. You'll lose it if you don't use it. Repeat!
-2. Making notes and Anki cards takes up quite a bit of time.
-3. Sometimes it's better to pick a new tutorial to rediscover learning points.
-4. Making a summary notebook is useful, but time consuming.
-5. Lean heavily on documentation where possible.
-6. Create clear examples and isolate code.
-7. Focused and passive learning (tutorials, videos, reading code)
-
-The timesinks are:
-
-- Learning difficult concepts that are niche
-- Asking wide-ranging questions that need a pair programmer
-- Adding needless complexity that involves new learning
-- Flip-flopping between tasks and learning goals
-- Consuming too many books, articles, videos
-
-I need a reasonable working prototype that works. It doesn't have to be perfect. It can use off-the-shelf tools. Some things can wait until a team is affordable.
+"Programming Elm" is for the beginner to intermediate and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on.
 
 
-## Things to avoid
+## Learning Programming Elm notes
 
-- Recursive functions (fuck that)
-- Complex data types and big programs
-- Stuff that takes more than 2-4 hours per day
-- Stuff that isn't suitable for intermediate students
-- Complex state and interactions
+The reality of learning is if you don't use it, you'll lose it; a little everyday goes a long way! When running through a tutorial or a book, my process is generally:
 
+1. Make notes (this can take up a lot of time)
+2. Group notes (that relate to each other)
+3. Cull notes (remove anything I have flashcards for already)
+4. Concrete examples (clear outcomes and well-shaped code)
+5. Focused and diffuse (two modes of learning)
 
-## The best way to learn (redux)
+For niche knowledge, rarely used functions, or easy to remember stuff, lean heavily on documentation or document it yourself in project files; refer to those later if your memory slips.
 
-> It really depends on how _deep_ you want the learning to be. Is it something I can look up in the documentation later? Will that be clear enough for me to do the job? Do I need proper examples to help me in the future?
+### Redux of helpful methods
+
+> It really depends how deeply you want to learn: is it within my learning frame?
+
+Elm is niche but boring and stable: unfortunately there's not enough tutorials for advanced stuff.
 
 1. Lazy load cards. Chunk knowledge.
-2. Is this piece of information essential?
-3. If not, consider leaving it out. Reduce.
-4. Create stories and drawings.
-5. Isolate code and code in context.
-6. Refresh your knowledge regularly.
-7. If you don't use it, you'll lose it.
+2. Understanding comes first, then revision
+3. Is this piece of information essential?
+4. If not, consider leaving it out. Reduce.
+5. Create stories and drawings (make it fun)
+6. Isolate code and code in context.
+7. Refresh and consolidate knowledge regularly.
 8. Outsource esoteric code samples.
 9. Some things can be learned passively
-10. Interleave learning (focused and diffuse)
+10. Some things can be learned just-in-time
+11. Interleave learning (focused and diffuse)
 
-A book packs A LOT in. You don't want to rewrite it if it's not necessary. Some books are easier to come back to (refresh learning) than others. Anki is good for short pieces of information. Stories are better for complex learning points. Example files often work too. Only use these once you understand how they work, and consolidate your learning.
+### Summary notebooks
 
-Elm is a niche language. There's not enough tutorials for the hard stuff.
+You might benefit from distilling learning down to a small summary notebook (as well as, or instead of flashcards) for highly useful information. Creating and managing notes and flashcards can be very time-consuming, so decide on a learning frame, use lazy loading, and use time wisely.
 
+### Other ways to learn
 
-## Do the simplest thing first!
+> Anki is great for short snippets of information, stories are better for complex learning points.
 
-> - Remember "How to Design Programs" problem solvers.
-> - You can act "as if" you've already got parts of the program running.
-> - For instance, hardcode `json` into the program before using `Http.get`.
-> - Create a wishlist and get the easy parts done first.
->
-> **Use a whiteboard and sketches** before diving into the code.
-> **Spend 80% of your time thinking about the problem**, then code with confidence.
+You can always refresh your learning with another tutorial or book. Flashcards and project files also work well together, flashcards to isolate the learning point and essential code, project files to revise code in-context. Try to group learning outcomes with different mediums: tutorials, videos, reading code, allow for focused and diffuse modes to take action and lock-in knowledge. Writing it out in your own words (comments, documentation, code examples), with memorable "stories" and examples really helps.
 
-- Carefully consider the data first.
-- But do "the enough" thing. Don't over prepare.
-- Always look for ways to simplify processes and data.
-- Only use custom types when they're an improvement on simple ones.
+### Other helpful tips
 
-You can always hardcode bits of your data and make them dynamic later. Use the compiler to help you refactor. For instance, you can change the shape of `json` data to fit your (simpler) model. These questions are necessary with `json`:
+1. Act "as-if" the program already works
+    - Write the type signatures, header statement
+    - Hard code bits of the program first (`json`, )
+2. Use the HTDP [design recipe](https://course.ccs.neu.edu/cs2500f18/design_recipe.html) when you get stuck
+    - Use tables of inputs and outputs (a [stepper](https://www.youtube.com/watch?v=TbW1_wn2his))
+    - Use `Debug.log` to understand what's happening
+    - Work backwards (start with the outcome and reverse engineer)
+3. Create a wishlist and get the easy parts done first
+4. Use a whiteboard, or sketch out the problem
+    - Spend 80% of your time thinking about the problem
+    - Then 20% time coding with confidence
 
-1. Is it always in the same shape?
-2. Are there some bits of data missing sometimes?
-3. Is there a better source for the data?
-4. Does the API have great support? (Consider ditching if not)
+### Avoid timesinks
 
-Think carefully about your data:
+> Stick to a learning frame of "will learn" and "won't learn" knowledge
 
-- Do you need non-empty lists?
-- Can you hold off on `Maybe.withDefault` until the very end?
-- Can you validate data reliably?
-
-
-## The sad (but real) truth
-
-> 1. **Do what you're good at.**
-> 2. **I'll repeat. Do what you're good at!**
-> 3. **You've got one life, so don't waste time.**
->
-> Programming is a HUGE investment in time. Ideally you want to learn only the things relevant to your project, or your goals. Unfortunately you often drop down rabbit holes when trying to solve problems.
->
-> - What are your goals?
-> - How much of these can be solved _without_ code?
-> - How long can you hold off without a team?
->
-> **Don't get bogged down in research.** Build just enough to turn a profit.
-> Then find someone better than you to take over when you can afford it.
-
-I don't have time to relearn the 60% of forgotten recursive learning HTDP taught me. I don't have patience to become a great programmer. I need to focus most of my time on high-level thinking, strategy, marketing, business, and sales. Then make great art (which won't be programming).
-
-- Some people make great developers
-- Some people's mind is a finely-tuned logic machine
-- Some people really _love_ it
-
-I'm not one of those people. Purely practical, or good to keep the grey matter alive. And that's OK. I'm happy to do simple forms, simple json, spreadsheets for a bit of data, AI for help, and GUI tools to do the rest.
-
-## What I'm _not_ for
-
-> - I'm not a database admin
-> - I don't need to do the heavy lifting
-> - I don't need to fall down rabbit holes
-> - I don't need deep knowledge
-
-I need to learn enough to teach, prototype, get by, and make money. I don't want to deal with virtual servers, postgres setup, big programs, or anything like that.
-I want to keep things simple and manageable. I don't need to learn SICP. Or maths. Or Haskell.
-
-It's a little like Mandarin, a nice idea, admire the caligraphy, but it has deminishing returns and doesn't align with my goals. Move on to saner pursuits that are better for my personality type and strengths.
+- Learning difficult concepts that are niche (do you really need it?)
+- Learning recursive functions (I've learned these before, very time consuming)
+- Learning complex data types and huge programs (prefer small and lean)
+- Asking for help that isn't concrete enough (make it easy to help you)
+- Adding needless complexity that involves new learning (YAGNI)
+- Flip-flopping between tasks and learning goals (cognitive load)
+- Consuming too many books, articles, videos (stick to one at a time!)
+- Anything that takes me more than 2—4 hours per day (I have limited time)
+- Anything too academic that isn't suited to intermediate level (like the SICP book)
+- Anything involving complex state and interactions (conditional forms bring pain)
 
 
+## Elm commands
+
+1. `elm --help` see help docs
+2. `elm init` initialise a project
+3. `elm install elm/json` install a [package](https://package.elm-lang.org)
+4. `elm make src/Main.elm --output=app.js` compile project
+5. `elm reactor` start the server
+
+## Elm Watch commands
+
+> Used in `06-build-larger-apps`
+
+1. `npm install --save-dev elm-watch` install [elm watch](https://github.com/lydell/elm-watch)
+2. `npx elm-watch init` initialise a project (may need to change `elm-watch.json`)
+3. `npx elm-watch hot` live reload with errors (and change compiler options)
+4. `npx elm-watch make --optimize` compile project
+
+## File naming
+
+Previously I used subfolders for working files:
+
+```elm
+module FolderName.FileName exposing (main) element
+```
+
+Which in the `html` file needed to be written like so:
+
+```html
+<script>
+Elm.FolderName.FileName.init({
+    node: document.getElementById('selector')
+});
+<!/script>
+```
 
 
 
-## To-Dos (chapter 5)
+## Lazy Loading notes to compile (and reduce)
 
-### Definitely add
+### Chapter 5
+
+#### Definitely add
 
 **First run through the app** and make sure you know how all the bits are working (even if it's a vague idea).
 Sketch it out, make it visual. Add in some useful videos or links that help.
@@ -167,15 +155,14 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 5. Using `let` and a `_` to temporarily print out `Debug.log String data` for testing.
 
 
-
-## Maybe add
+#### Maybe add
 
 1. How to reduce empty `div`s?
 2. Parse a URL segment `/:uuid`, `/#tag`
 3. Go over the two ways to use `Random` (array, uniform)
 
 
-## To-Dos (chapter 6)
+### Chapter 6
 
 > Reformatting a program is quite helpful. It shows how to simplify down a program by creating helper functions, union types rather than `bool` fields, and narrowing types. Storify it! Simple examples!
 >
@@ -239,7 +226,7 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
     - **If it's a really big set, for example many-to-many tags** from database, json, or whatever, should you stick to strings or convert to types?
 
 
-## To-dos (chapter 7)
+### Chapter 7
 
 > 1-3 just write a few basic `Debug` examples. One file is probably enough.
 
@@ -263,28 +250,4 @@ this =
     |> List.filter (\n -> n > 6)
     |> Debug.log "filtered"
     |> List.map (\n -> n * n)
-```
-
-
-
-## Renaming files, folders, script
-
-**Be careful of naming conventions and refactoring the model names.** Currently I'm using the chapter names for filenames, and storing each chapter's files in it's own `src/ChapterName/..` folder.
-
-```elm
-// So this ...
-module FileName exposing (main)
-// Becomes this ...
-module FolderName.FileName exposing (main) element
-```
-
-You'll also need to rename the script calling the Elm module in the `index.html` file. Something like this:
-
-```html
-<script>
-// The name of the module
-Elm.FolderName.FileName.init({
-    node: document.getElementById('selector') // the HTML element
-});
-<!/script>
 ```
