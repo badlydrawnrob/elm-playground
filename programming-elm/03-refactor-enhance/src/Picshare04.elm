@@ -33,9 +33,8 @@ module Picshare04 exposing (main)
 import Browser
 import Html exposing (..)
 -- START:imports
-import Html.Attributes
-    exposing
-        ( class, disabled, placeholder, src, type_, value )
+import Html.Attributes exposing
+    ( class, disabled, placeholder, src, type_, value )
 import Html.Events exposing (onClick, onInput, onSubmit)
 -- END:imports
 
