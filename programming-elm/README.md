@@ -23,23 +23,24 @@ The reality of learning is if you don't use it, you'll lose it; a little everyda
 
 For niche knowledge, rarely used functions, or easy to remember stuff, lean heavily on documentation or document it yourself in project files; refer to those later if your memory slips.
 
-### Redux of helpful methods
+### Helpful learning methods
 
 > It really depends how deeply you want to learn: is it within my learning frame?
 
 Elm is niche but boring and stable: unfortunately there's not enough tutorials for advanced stuff, and to be honest larger apps get hard to understand and quite low-level (not as many frameworks for web apps). When faced with a complex option and a simple one, always prefer the latter.
 
-1. Lazy load cards. Chunk knowledge.
-2. Understanding comes first, then revision
-3. Is this piece of information essential?
-4. If not, consider leaving it out. Reduce.
-5. Create stories and drawings (make it fun)
-6. Isolate code examples as well as code in context.
-7. Refresh and consolidate knowledge regularly.
-8. Outsource esoteric code samples.
+1. Create stories and drawings (make it fun)
+2. Is this piece of information essential?
+3. If not, consider leaving it out. Reduce.
+4. Interleave learning (focused and diffuse)
+5. Isolate code examples as well as code in context.
+6. Lazy load cards. Chunk knowledge.
+7. Outsource esoteric code samples.
+8. Refresh and consolidate knowledge regularly.
 9. Some things can be learned passively
 10. Some things can be learned just-in-time
-11. Interleave learning (focused and diffuse)
+11. Understanding comes first, then revision
+
 
 ### Summary notebooks
 
@@ -70,16 +71,16 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 
 > Stick to a learning frame of "will learn" and "won't learn" knowledge
 
-- Learning difficult concepts that are niche (do you really need it?)
-- Learning recursive functions (I've learned these before, very time consuming)
-- Learning complex data types and huge programs (prefer small and lean)
-- Asking for help that isn't concrete enough (make it easy to help you)
 - Adding needless complexity that involves new learning (YAGNI)
-- Flip-flopping between tasks and learning goals (cognitive load)
-- Consuming too many books, articles, videos (stick to one at a time!)[^1]
 - Anything that takes me more than 2—4 hours per day (I have limited time)
 - Anything too academic that isn't suited to intermediate level (like the SICP book)
 - Anything involving complex state and interactions (conditional forms bring pain)
+- Asking for help that isn't concrete enough (make it easy to help you)
+- Consuming too many books, articles, videos (stick to one at a time!)[^1]
+- Flip-flopping between tasks and learning goals (cognitive load)
+- Learning difficult concepts that are niche (do you really need it?)
+- Learning recursive functions (I've learned these before, very time consuming)
+- Learning complex data types and huge programs (prefer small and lean)
 
 
 ## Elm commands
