@@ -10,7 +10,7 @@ There's plenty of [javascript guides](https://eloquentjavascript.net/) out there
 
 > Elm is great for learning how to engineer.
 
-Start with [How To Design Programs](https://htdp.org/) and follow that up with Elm. It's **better designed**, more **consistent**, with **better compiler error messages** than [Python](https://github.com/badlydrawnrob/python-playground).
+Start with [How To Design Programs](https://htdp.org/) and follow that up with [Elm](https://elm-lang.org). It's **better designed**, more **consistent**, with **better compiler error messages** than [Python](https://github.com/badlydrawnrob/python-playground).
 
 After these two languages you'll have a decent grounding in Computer Science theory, and they're not too academic. I'm rubbish at maths, and am mostly focused on rapid prototyping, so I like to avoid deep academic learning. An artist ships!
 
@@ -131,7 +131,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 > It's also helpful to keep an offline library/docs when your wifi breaks (or the internet rots)
 > — there's an [app](https://ricks-apps.com/osx/sitesucker/index.html) for that.
 
-**Here's a wealth of resources for getting started with Elm.** Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with "Beginning Elm" or "Welcome to Elm" to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you!
+**Here's a wealth of resources for getting started with [Elm](https://elm-lang.org).** Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with "Beginning Elm" or "Welcome to Elm" to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you!
 
 ### 📖 Books
 
