@@ -87,8 +87,10 @@ priceCheck item =
 
 This is where Elm really shines, everything is easy to install and just works! The error messages are clear and helpful, guiding you towards a correct solution, and everything is built in (unlike Python with it's cryptic error messages, `None` values, and [many](https://typing.python.org/en/latest/#typing-related-tools) type checking packages).
 
+```elm
+checkout ["oat milk", 2, "marshmallows"]
+```
 ```terminal
->> checkout ["oat milk", 2, "marshmallows"]
 -- TYPE MISMATCH ---------------------------------------------------------- REPL
 
 The 2nd element of this list does not match all the previous elements:
@@ -166,7 +168,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 
 ### 🗺️ Real world examples
 
-- [How to elm](https://github.com/badlydrawnrob/elm-playground/tree/master/how-to-elm) (this repo, grouped by package type)
+- [How to Elm](https://github.com/badlydrawnrob/elm-playground/tree/master/how-to-elm) (this repo, grouped by package type)
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (might be a little outdated)
