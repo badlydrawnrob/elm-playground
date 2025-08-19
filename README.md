@@ -126,15 +126,16 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 
 ## Learning Elm
 
-> It's also helpful to keep an offline library/docs when your wifi breaks (or the internet rots) — there's an [app](https://ricks-apps.com/osx/sitesucker/index.html) for that.
+> It's also helpful to keep an offline library/docs when your wifi breaks (or the internet rots)
+> — there's an [app](https://ricks-apps.com/osx/sitesucker/index.html) for that.
 
-Here's a wealth of resources for getting started with Elm. Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with Beginning Elm or Welcome to Elm to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you!
+**Here's a wealth of resources for getting started with Elm.** Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with "Beginning Elm" or "Welcome to Elm" to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you!
 
 ### 📖 Books
 
 - [Beginning Elm](https://elmprogramming.com/)
-- [Elm in Action](https://www.manning.com/books/elm-in-action) ([chapter files](https://github.com/badlydrawnrob/elm-playground/tree/master/elm-in-action) in this repo)
-- [Programming Elm](https://pragprog.com/titles/jfelm/programming-elm/) ([chapter files](https://github.com/badlydrawnrob/elm-playground/tree/master/programming-elm) on this repo)
+- [Elm in Action](https://www.manning.com/books/elm-in-action) (chapter [files](https://github.com/badlydrawnrob/elm-playground/tree/master/elm-in-action) in this repo)
+- [Programming Elm](https://pragprog.com/titles/jfelm/programming-elm/) (chapter [files](https://github.com/badlydrawnrob/elm-playground/tree/master/programming-elm) on this repo)
 - [Learn Elm](https://elmcraft.org/learn/) (Elm Craft)
 
 ### 📚 Useful documentation
@@ -163,7 +164,7 @@ Here's a wealth of resources for getting started with Elm. Each list is ordered 
 6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
 
 
-### Real world examples
+### 🗺️ Real world examples
 
 - [How to elm](https://github.com/badlydrawnrob/elm-playground/tree/master/how-to-elm) (this repo, grouped by package type)
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
@@ -188,7 +189,7 @@ Here's a wealth of resources for getting started with Elm. Each list is ordered 
 - [Elm Doc Preview](https://github.com/dmy/elm-doc-preview) (great for offline documentation)
 - [Everything else](https://github.com/sporto/awesome-elm) (massive list)
 
-### Larger programs
+### 🚧 Larger programs
 
 - [Elm Spa #1](https://github.com/rtfeldman/elm-spa-example) (by @rtfeldman)[^6]
 - [Elm Spa #2](https://github.com/elm-land/realworld-app) (Elm Land version)
