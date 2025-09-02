@@ -4,7 +4,27 @@
 > The goal is to code as LITTLE as possible.
 > The goal is to create as SIMPLE code as possible.
 
-Ideally have ONE idea per card (that is, the knowledge points you're trying to learn) — for example `Films.elm` could be around app architecture decisions. `Songs.elm` could be around custom types, and so on.
+Books like Programming Elm, later stages of Elm in Action, and (haven't read it but) Practical Elm all make learning harder than it has to be with jargon and overly logical writing. Some things are very difficult to explain however, in statically typed functional languages.
+
+1. Always pick the option that seems "simplest" and easy to read
+    - The 5 finger rule (do I understand enough of it?)
+    - The read it later rule (future stupid self)
+    - @rtfeldman [forms](https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Settings.elm#L370) -vs- @dwayne [elm-form](https://package.elm-lang.org/packages/dwayne/elm-form/latest/)
+        - I find the former's design easier to understand (without tutorial) than the latter (less "magic" too)
+    - Easiest to hardest in top-to-bottom order (if in the same file)
+    - Never sacrifice readability for the sake of DRY (and abstractions)
+        - See the `SaladBuilder` example in Programming `type_ "radio"` button abstraction
+2. Always have a learning frame in mind
+3. Go through the files with this learning frame ...
+4. Cherry pick what's IN and what's OUT
+    - E.g: I'm NEVER going to write a file reader (like `Form.Passport`)
+5. Rearrange your `/how-to-elm` to reflect this new approach
+6. Aim for ONE learning point per package (at least in future)
+    - E.g: `Films.elm` could be around app architecture (multiple forms, -vs- one form per page)
+    - E.g: `Songs.elm` focuses on custom types, and so on.
+7. Action the learning in a REAL project quickly!
+
+
 
 ## Bugs
 
