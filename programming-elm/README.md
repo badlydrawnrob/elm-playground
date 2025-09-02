@@ -4,6 +4,8 @@
 
 **"Programming Elm" is for the beginner to intermediate** and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on though.
 
+Later chapters suggest to use Vite and Create Elm App, but I think this is overkill. I'm using [Elm Watch](https://lydell.github.io/elm-watch/) and for anything more involved, consider [Elm Land](https://elm.land).[^1]
+
 **My learning frame is "Elm (no js), Python, SQLite, simple data, low state, web app prototypes".** I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
 
 **I have ideas for digital products and need a working prototype to validate an idea.** The goal is to do this in as _little code as possible_ — using Ai to help, reducing state and user interface (UI) complexity, utilising tools like [Tally forms](https://tally.so)) and [paper prototyping](https://www.goodreads.com/en/book/show/941372.Paper_Prototyping) to get the job done. Advanced features and fancy stuff can wait until I can afford a team, and the _really_ hard part is marketing and sales, which should be 50% of output (at least).
@@ -76,7 +78,7 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 - Anything too academic that isn't suited to intermediate level (like the SICP book)
 - Anything involving complex state and interactions (conditional forms bring pain)
 - Asking for help that isn't concrete enough (make it easy to help you)
-- Consuming too many books, articles, videos (stick to one at a time!)[^1]
+- Consuming too many books, articles, videos (stick to one at a time!)[^2]
 - Flip-flopping between tasks and learning goals (cognitive load)
 - Learning difficult concepts that are niche (do you really need it?)
 - Learning recursive functions (I've learned these before, very time consuming)
@@ -102,13 +104,13 @@ You can always refresh your learning with another tutorial or book. Flashcards a
 
 ## File naming
 
-Previously I used subfolders for working files:
+If you decide to use subfolders for working files:
 
 ```elm
 module FolderName.FileName exposing (main) element
 ```
 
-Which in the `html` file needed to be written like so:
+Then initialise the app in you `html` file like so:
 
 ```html
 <script>
@@ -177,4 +179,6 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 
 
-[^1]: Remember that any new language, factoid, or method can either be incremental (scaffolded learning) or tangental. You want to avoid at all costs tangental learning that's not directly impacting your goals, or within your chosen learning frame. Think of it like learning a new language: learning french and chinese at the same time will cause you pain — there's very little overlap between the two! The same goes for Elm and Go. However interesting it might be, they're very different (Elm and Python is hard enough!) and you've got to weigh up the benefits compared to the opportunity costs. SQLite and Postgres are by far more compatible, but SQLite is way easier to setup and migrate. The benefits must be (something like) 10x the opportunity cost of moving from one to the other; How many months will it take you to shift gears, get to production level? It's probably longer than you think! Is that microsecond of performance increase really worth 3 months of your time?
+[^1]: Elm Land actually _does_ use Vite, and is **very** heavy on dependencies, so proceed with caution. On the flip side it's much, much, easier to get started with routing (urls) and authentication (shared models/msg) with Elm Land than it is following [Elm Spa](https://github.com/rtfeldman/elm-spa-example/blob/master/src/Route.elm)'s example.
+
+[^2]: Remember that any new language, factoid, or method can either be incremental (scaffolded learning) or tangental. You want to avoid at all costs tangental learning that's not directly impacting your goals, or within your chosen learning frame. Think of it like learning a new language: learning french and chinese at the same time will cause you pain — there's very little overlap between the two! The same goes for Elm and Go. However interesting it might be, they're very different (Elm and Python is hard enough!) and you've got to weigh up the benefits compared to the opportunity costs. SQLite and Postgres are by far more compatible, but SQLite is way easier to setup and migrate. The benefits must be (something like) 10x the opportunity cost of moving from one to the other; How many months will it take you to shift gears, get to production level? It's probably longer than you think! Is that microsecond of performance increase really worth 3 months of your time?
