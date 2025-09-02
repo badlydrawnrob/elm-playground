@@ -3,11 +3,18 @@ module Form.Passport exposing (..)
 {-| ----------------------------------------------------------------------------
     Parsing a `String` into a `Passport`
     ============================================================================
-    > ⭐ LESSON LEARNED: Keep your programs as simple as possible ...
-    > Text editing is difficult! It's hard labour! Parsing text is no joke!
-    > As I don't program enough to make it muscle-memory, it's best to avoid
-    > handling complicated cases like this. Keep the inputs dumb and simple,
-    > let Ai handle it, pick a GUI tool, find a good package to do it, OUTSOURCE!
+    > ⭐ LESSON LEARNED: I'm NOT the person to handle these sort of tasks,
+    > and should keep my programs as simple as possible!
+
+    1. Remember your learning frame. This isn't for you.
+    2. Text editing is difficult: if it isn't simple data types, skip it!
+    3. Manipulating text where there's a high degree of error is hard labour!
+    4. Parsing text is no joke: avoid, avoid, avoid!
+
+    I simply don't code often enough to make this stuff muscle-memory, so my
+    inputs and outputs should be as dumb and simple as possible ... let Ai help,
+    use a GUI tool, find a good package, or OUTSOURCE to a professional.
+
 
     For forms:
         - @ https://discourse.elm-lang.org/t/what-is-the-elm-way-to-validate-form-fields/9689
