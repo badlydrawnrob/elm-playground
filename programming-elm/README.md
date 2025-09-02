@@ -4,7 +4,7 @@
 
 **"Programming Elm" is for the beginner to intermediate** and packs a lot in (quite densely worded and wordy), so don't rewrite it (as a notebook) unless absolutely necessary. Some books are easier to come back to later; I don't think "Programming Elm" is quite that book. The working examples are very handy to look back on though.
 
-Later chapters suggest to use Vite and Create Elm App, but I think this is overkill. I'm using [Elm Watch](https://lydell.github.io/elm-watch/) and for anything more involved, consider [Elm Land](https://elm.land).[^1]
+**Later chapters suggest to use Vite and Create Elm App, but I think this is overkill.** I'm using [Elm Watch](https://lydell.github.io/elm-watch/) and for anything more involved, consider [Elm Land](https://elm.land).[^1] My motto is to use as few dependencies as necessary, and any dependency you do use should follow the [5 finger rule](https://github.com/badlydrawnrob/elm-playground/issues/45).
 
 **My learning frame is "Elm (no js), Python, SQLite, simple data, low state, web app prototypes".** I try to stick to that for everything I do and learn. This gives your learning shape, making it easier to say "yes" or "no" to the vast amount of learning resources (or even chapters in a book) you have at your disposal. You'll be bouncing off the walls otherwise, as there's so many resources and ways to learn how to program. As an example, simple web apps require very different learning to game design; although there's overlap at the beginning, at the intermediate level it forks into two very different learning paths.
 
