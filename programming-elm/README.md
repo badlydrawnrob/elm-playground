@@ -129,15 +129,11 @@ Elm.FolderName.FileName.init({
 **First run through the app** and make sure you know how all the bits are working (even if it's a vague idea).
 Sketch it out, make it visual. Add in some useful videos or links that help.
 
-1. If you're using a `Result` each `Result _ a` value must be the same type.
-    - For different types inside list of results, you'll need to contain them in a custom type.
-    - You can use `Result.mapX` to consume many results.
-2. It can be helpful to temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when refactoring ...
+1. It can be helpful to temporarily [disable some features](https://tinyurl.com/elm-playground-e752160) when refactoring ...
     - For example, from a `Just Photo` to a `Just (List Photo)` (so that we can still load it).
-3. `List.map` in ONE place with fewer arguments is preffered (abstraction with different update functions)
+2. `List.map` in ONE place with fewer arguments is preffered (abstraction with different update functions)
     - You must [lift the `Maybe Feed`](https://tinyurl.com/elm-playground-f54b4f6) every time and map it to a particular ID.
-4. Using `let _ = Debug.log "Some event" data in ...` just to print out and step for testing
-5. Parse a URL segment `/books/:uuid` and `/view/#tag` (I think I'm ditching Auth0 for simple Python JWT)
+3. ~~Parse a URL segment `/books/:uuid` and `/view/#tag`~~ (just use Elm Land)
 
 
 ### Chapter 6
@@ -146,30 +142,22 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 1. Write a short story that covers these changes above.
     - Have a checkbox, radio button, and dropdown example for forms
-2. Show when code becomes _harder_ to read (see `type_ "radio"` button abstraction)
-3. Could you improve line `292` with a `List.map` function?
+2. Could you improve line `292` with a `List.map` function?
     - List.map (viewToppings model.salad.toppings) [Tomatoes, Cucumbers, Onions]
     - You could have a `Type -> String` function for the labels
-4. Write a comparison of `List String` and `Set` with a fun example
+3. **Write a comparison of `List String` and `Set` with a fun example**
     - Set's API removes need for add/remove/check-already-added functions that would need to be created.
     - Set prevents duplicates and automatically sorts values
     - **What about very large sets (such as tags?)** (when to use custom types -vs- stringly typed)
         - If you're pulling in from an API (and have users adding tags) how do you manage that?
         - Think about it also from an SQL point of view.
-5. See line `468`. Is there an easier way to insert toppings?
-6. Simplify `onCheck` checkboxes
-    - It's a curried function that will add a `bool`, so your message would be:
-    - `ClickedCheckbox Option Bool`
-    - `onCheck (ClickedCheckbox Option)`
-7. **Add `ToggleTopping` [before and after](https://tinyurl.com/programming-elm-commit-efd9ed5) in `how-to-elm` forms**
+4. See line `468`. Is there an easier way to insert toppings?
+5. **Add `ToggleTopping` [before and after](https://tinyurl.com/programming-elm-commit-efd9ed5) in `how-to-elm` forms**
     - See also [this commit](https://github.com/badlydrawnrob/elm-playground/commit/f99ba126c691ef5c929f1e87d28408432400ae9e)
     - Also mention the downside of nested models `model.salad.toppings` and alternative
     - Prefer flat models! (use a custom type? See @rtfeldman and life of a file)
-8. Show a simple concat list example using a list of headings
-    - `addHeaders h1 otherHeaders` -> `(H1 [] [ text "title" ] :: rest)`
-    - [commit link here](https://github.com/badlydrawnrob/elm-playground/commit/cd1b22affe38e610460c9dc5f2e5610d86f8cb0e)
-9. pg. 122 and onwards isn't very well explained
-10. Add `Regex.contains` for validating emails as a gist?
+6. pg. 122 and onwards isn't very well explained
+7. Add `Regex.contains` for validating emails as a gist?
 
 
 
@@ -177,27 +165,16 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 > 1-3 just write a few basic `Debug` examples. One file is probably enough.
 
-1. Give a few basic examples of `Debug.log` (pg. 132). It seems useful for when you're uncertain how things work, but ideally you just treat the function like a black box and test the input/output.
-    - A single call
-    - A piped call
-    - Inspect `Json.Decode`r results (you can use within a case statement)
-2. Somewhere mention `Json.errorToString` as an option (just unwrap the `Err` value and wrap it in this)
-3. What are the essential tests you need to write and which ones are safe enough to leave off? I'm lazy and don't want to write them.
+1. Give a few basic examples of `Debug.log` (pg. 132)
+    - A `case (Debug.log "decoder" msg) of` to inspect a `Result`
+2. Use `Json.errorToString` for debugging the `Err _` value
+3. Generally I avoid testing
+    - Which errors are most important to guard against?
+    - What automated (GUI) ways of testing code are there?
     - How much coverage is enough for typed functional?
-4. Give a basic explanation of `Json.succeed` and see what alternatives (if any) for `Json.string |> Json.andThen decodeBreed`
-    - Search for "decoding custom types" and ask @sebastian what other methods are there (how he keeps his custom types in sync)
-    - See [here](https://stackoverflow.com/a/57248663) and [here](https://thoughtbot.com/blog/5-common-json-decoders)
+4. Pg. 141: Give on example of `Json.succeed` and what it is, using the `|> Json.andThen decodeBreed` example.
+    - Use [this link](https://thoughtbot.com/blog/5-common-json-decoders) in the Anki card
 
-
-```
-this =
-  list
-    |> List.map (\n -> n * 2)
-    |> Debug.log "doubled"
-    |> List.filter (\n -> n > 6)
-    |> Debug.log "filtered"
-    |> List.map (\n -> n * n)
-```
 
 
 [^1]: Remember that any new language, factoid, or method can either be incremental (scaffolded learning) or tangental. You want to avoid at all costs tangental learning that's not directly impacting your goals, or within your chosen learning frame. Think of it like learning a new language: learning french and chinese at the same time will cause you pain — there's very little overlap between the two! The same goes for Elm and Go. However interesting it might be, they're very different (Elm and Python is hard enough!) and you've got to weigh up the benefits compared to the opportunity costs. SQLite and Postgres are by far more compatible, but SQLite is way easier to setup and migrate. The benefits must be (something like) 10x the opportunity cost of moving from one to the other; How many months will it take you to shift gears, get to production level? It's probably longer than you think! Is that microsecond of performance increase really worth 3 months of your time?
