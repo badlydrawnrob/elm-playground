@@ -273,8 +273,8 @@ viewSelectDressing currentDressing =
         ]
 
 
-{- #! I feel like you should be able to `List.map` this function rather than having
-2 different functions:  `List.map toppings topping` where `toppings` has a
+{- #! I'd prefer to `List.map` this function in the above `div`, rather than 2
+different functions:  `List.map toppings topping` where `toppings` has a
 `type alias Topping = (Set String)` (sets must be comparable, not union types) -}
 viewToppingOption : String -> Topping -> Set String -> Html Msg
 viewToppingOption toppingLabel topping toppings =
@@ -285,10 +285,11 @@ viewToppingOption toppingLabel topping toppings =
                 , onCheck (SaladMsg << ToggleTopping topping)
                 ]
                 []
-            , text toppingLabel -- This could use the `toppingToString` function
+            , text toppingLabel -- #! This could use the `toppingToString` function
             ]
 
 
+{-| This could be enhanced by converting `Tomatoes -> "Tomatoes"` -}
 viewSelectToppings : Set String -> Html Msg
 viewSelectToppings toppings =
     div []
@@ -465,6 +466,8 @@ updateSalad msg salad =
         SetBase base ->
             { salad | base = base }
 
+        {- #! Here I think I'd prefer to split out into a package around the
+        toppings type, and have `.insert` and `.remove` as separate functions? -}
         ToggleTopping topping add ->
             let
                 updater =
