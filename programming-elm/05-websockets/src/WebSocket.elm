@@ -3,6 +3,8 @@ port module WebSocket exposing (listen, receive)
 {- WebSockets
    ----------
 
+   > See also https://guide.elm-lang.org/interop/ports.html
+
    This is a ports version of the `elm-lang/websocket` package,
    which is still waiting to be updated to the latest Elm version.
 

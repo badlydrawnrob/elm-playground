@@ -1,4 +1,4 @@
-module RealTime exposing (..)
+module PicShare exposing (..)
 
 {-| Communicating with the servers
     ------------------------------
@@ -76,6 +76,8 @@ module RealTime exposing (..)
     ----------------------------------------------------------------------------
     1. Tests are bit of a pain in the arse. But for important things, such as
        potential `Http.Error` of `Http.BadBody`, use `elm-test` or similar.
+    2. Try out another example of websockets like this one:
+        - @ https://guide.elm-lang.org/interop/ports.html
 
 -}
 

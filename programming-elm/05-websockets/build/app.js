@@ -5334,10 +5334,10 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$RealTime$LoadFeed = function (a) {
+var $author$project$PicShare$LoadFeed = function (a) {
 	return {$: 'LoadFeed', a: a};
 };
-var $author$project$RealTime$baseUrl = 'https://programming-elm.com/';
+var $author$project$PicShare$baseUrl = 'https://programming-elm.com/';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6126,7 +6126,7 @@ var $elm$http$Http$get = function (r) {
 		{body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$RealTime$Photo = F6(
+var $author$project$PicShare$Photo = F6(
 	function (id, url, caption, liked, comments, newComment) {
 		return {caption: caption, comments: comments, id: id, liked: liked, newComment: newComment, url: url};
 	});
@@ -6143,7 +6143,7 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 			decoder);
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$RealTime$photoDecoder = A2(
+var $author$project$PicShare$photoDecoder = A2(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$hardcoded,
 	'',
 	A3(
@@ -6166,20 +6166,20 @@ var $author$project$RealTime$photoDecoder = A2(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 						'id',
 						$elm$json$Json$Decode$int,
-						$elm$json$Json$Decode$succeed($author$project$RealTime$Photo)))))));
-var $author$project$RealTime$fetchFeed = $elm$http$Http$get(
+						$elm$json$Json$Decode$succeed($author$project$PicShare$Photo)))))));
+var $author$project$PicShare$fetchFeed = $elm$http$Http$get(
 	{
 		expect: A2(
 			$elm$http$Http$expectJson,
-			$author$project$RealTime$LoadFeed,
-			$elm$json$Json$Decode$list($author$project$RealTime$photoDecoder)),
-		url: $author$project$RealTime$baseUrl + 'feed'
+			$author$project$PicShare$LoadFeed,
+			$elm$json$Json$Decode$list($author$project$PicShare$photoDecoder)),
+		url: $author$project$PicShare$baseUrl + 'feed'
 	});
-var $author$project$RealTime$initialModel = {error: $elm$core$Maybe$Nothing, feed: $elm$core$Maybe$Nothing, streamQueue: _List_Nil};
-var $author$project$RealTime$init = function (_v0) {
-	return _Utils_Tuple2($author$project$RealTime$initialModel, $author$project$RealTime$fetchFeed);
+var $author$project$PicShare$initialModel = {error: $elm$core$Maybe$Nothing, feed: $elm$core$Maybe$Nothing, streamQueue: _List_Nil};
+var $author$project$PicShare$init = function (_v0) {
+	return _Utils_Tuple2($author$project$PicShare$initialModel, $author$project$PicShare$fetchFeed);
 };
-var $author$project$RealTime$LoadStreamPhoto = function (a) {
+var $author$project$PicShare$LoadStreamPhoto = function (a) {
 	return {$: 'LoadStreamPhoto', a: a};
 };
 var $elm$core$Basics$composeL = F3(
@@ -6188,12 +6188,12 @@ var $elm$core$Basics$composeL = F3(
 			f(x));
 	});
 var $author$project$WebSocket$receive = _Platform_incomingPort('receive', $elm$json$Json$Decode$string);
-var $author$project$RealTime$subscriptions = function (model) {
+var $author$project$PicShare$subscriptions = function (model) {
 	return $author$project$WebSocket$receive(
 		A2(
 			$elm$core$Basics$composeL,
-			$author$project$RealTime$LoadStreamPhoto,
-			$elm$json$Json$Decode$decodeString($author$project$RealTime$photoDecoder)));
+			$author$project$PicShare$LoadStreamPhoto,
+			$elm$json$Json$Decode$decodeString($author$project$PicShare$photoDecoder)));
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$WebSocket$listen = _Platform_outgoingPort('listen', $elm$json$Json$Encode$string);
@@ -6210,7 +6210,7 @@ var $elm$core$Maybe$map = F2(
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$String$trim = _String_trim;
-var $author$project$RealTime$saveNewComment = function (photo) {
+var $author$project$PicShare$saveNewComment = function (photo) {
 	var comment = $elm$core$String$trim(photo.newComment);
 	if (comment === '') {
 		return photo;
@@ -6227,18 +6227,18 @@ var $author$project$RealTime$saveNewComment = function (photo) {
 	}
 };
 var $elm$core$Basics$not = _Basics_not;
-var $author$project$RealTime$toggleLike = function (photo) {
+var $author$project$PicShare$toggleLike = function (photo) {
 	return _Utils_update(
 		photo,
 		{liked: !photo.liked});
 };
-var $author$project$RealTime$updateComment = F2(
+var $author$project$PicShare$updateComment = F2(
 	function (comment, photo) {
 		return _Utils_update(
 			photo,
 			{newComment: comment});
 	});
-var $author$project$RealTime$updatePhotoById = F3(
+var $author$project$PicShare$updatePhotoById = F3(
 	function (updatePhoto, id, feed) {
 		return A2(
 			$elm$core$List$map,
@@ -6247,15 +6247,15 @@ var $author$project$RealTime$updatePhotoById = F3(
 			},
 			feed);
 	});
-var $author$project$RealTime$updateFeed = F3(
+var $author$project$PicShare$updateFeed = F3(
 	function (updatePhoto, id, maybeFeed) {
 		return A2(
 			$elm$core$Maybe$map,
-			A2($author$project$RealTime$updatePhotoById, updatePhoto, id),
+			A2($author$project$PicShare$updatePhotoById, updatePhoto, id),
 			maybeFeed);
 	});
-var $author$project$RealTime$wsUrl = 'wss://programming-elm.com';
-var $author$project$RealTime$update = F2(
+var $author$project$PicShare$wsUrl = 'wss://programming-elm.com';
+var $author$project$PicShare$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'ToggleLike':
@@ -6264,7 +6264,7 @@ var $author$project$RealTime$update = F2(
 					_Utils_update(
 						model,
 						{
-							feed: A3($author$project$RealTime$updateFeed, $author$project$RealTime$toggleLike, id, model.feed)
+							feed: A3($author$project$PicShare$updateFeed, $author$project$PicShare$toggleLike, id, model.feed)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'UpdateComment':
@@ -6275,8 +6275,8 @@ var $author$project$RealTime$update = F2(
 						model,
 						{
 							feed: A3(
-								$author$project$RealTime$updateFeed,
-								$author$project$RealTime$updateComment(comment),
+								$author$project$PicShare$updateFeed,
+								$author$project$PicShare$updateComment(comment),
 								id,
 								model.feed)
 						}),
@@ -6287,7 +6287,7 @@ var $author$project$RealTime$update = F2(
 					_Utils_update(
 						model,
 						{
-							feed: A3($author$project$RealTime$updateFeed, $author$project$RealTime$saveNewComment, id, model.feed)
+							feed: A3($author$project$PicShare$updateFeed, $author$project$PicShare$saveNewComment, id, model.feed)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'LoadFeed':
@@ -6299,7 +6299,7 @@ var $author$project$RealTime$update = F2(
 							{
 								feed: $elm$core$Maybe$Just(photoList)
 							}),
-						$author$project$WebSocket$listen($author$project$RealTime$wsUrl));
+						$author$project$WebSocket$listen($author$project$PicShare$wsUrl));
 				} else {
 					var error = msg.a.a;
 					return _Utils_Tuple2(
@@ -6349,7 +6349,7 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$RealTime$errorMessage = function (error) {
+var $author$project$PicShare$errorMessage = function (error) {
 	if (error.$ === 'BadBody') {
 		return 'Sorry, we couldn\'t process your feed at this time.\n            We\'re working on it!';
 	} else {
@@ -6364,10 +6364,10 @@ var $elm$html$Html$Attributes$src = function (url) {
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $author$project$RealTime$SaveComment = function (a) {
+var $author$project$PicShare$SaveComment = function (a) {
 	return {$: 'SaveComment', a: a};
 };
-var $author$project$RealTime$UpdateComment = F2(
+var $author$project$PicShare$UpdateComment = F2(
 	function (a, b) {
 		return {$: 'UpdateComment', a: a, b: b};
 	});
@@ -6443,7 +6443,7 @@ var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$strong = _VirtualDom_node('strong');
-var $author$project$RealTime$viewComment = function (comment) {
+var $author$project$PicShare$viewComment = function (comment) {
 	return A2(
 		$elm$html$Html$li,
 		_List_Nil,
@@ -6459,7 +6459,7 @@ var $author$project$RealTime$viewComment = function (comment) {
 				$elm$html$Html$text(' ' + comment)
 			]));
 };
-var $author$project$RealTime$viewCommentList = function (comments) {
+var $author$project$PicShare$viewCommentList = function (comments) {
 	if (!comments.b) {
 		return $elm$html$Html$text('');
 	} else {
@@ -6474,24 +6474,24 @@ var $author$project$RealTime$viewCommentList = function (comments) {
 					A2(
 					$elm$html$Html$ul,
 					_List_Nil,
-					A2($elm$core$List$map, $author$project$RealTime$viewComment, comments))
+					A2($elm$core$List$map, $author$project$PicShare$viewComment, comments))
 				]));
 	}
 };
-var $author$project$RealTime$viewComments = function (photo) {
+var $author$project$PicShare$viewComments = function (photo) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$author$project$RealTime$viewCommentList(photo.comments),
+				$author$project$PicShare$viewCommentList(photo.comments),
 				A2(
 				$elm$html$Html$form,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('new-comment'),
 						$elm$html$Html$Events$onSubmit(
-						$author$project$RealTime$SaveComment(photo.id))
+						$author$project$PicShare$SaveComment(photo.id))
 					]),
 				_List_fromArray(
 					[
@@ -6503,7 +6503,7 @@ var $author$project$RealTime$viewComments = function (photo) {
 								$elm$html$Html$Attributes$placeholder('Add a comment...'),
 								$elm$html$Html$Attributes$value(photo.newComment),
 								$elm$html$Html$Events$onInput(
-								$author$project$RealTime$UpdateComment(photo.id))
+								$author$project$PicShare$UpdateComment(photo.id))
 							]),
 						_List_Nil),
 						A2(
@@ -6520,7 +6520,7 @@ var $author$project$RealTime$viewComments = function (photo) {
 					]))
 			]));
 };
-var $author$project$RealTime$ToggleLike = function (a) {
+var $author$project$PicShare$ToggleLike = function (a) {
 	return {$: 'ToggleLike', a: a};
 };
 var $elm$core$List$filter = F2(
@@ -6565,7 +6565,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$RealTime$viewLoveButton = function (photo) {
+var $author$project$PicShare$viewLoveButton = function (photo) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -6586,12 +6586,12 @@ var $author$project$RealTime$viewLoveButton = function (photo) {
 								_Utils_Tuple2('fa-heart', photo.liked)
 							])),
 						$elm$html$Html$Events$onClick(
-						$author$project$RealTime$ToggleLike(photo.id))
+						$author$project$PicShare$ToggleLike(photo.id))
 					]),
 				_List_Nil)
 			]));
 };
-var $author$project$RealTime$viewDetailedPhoto = function (photo) {
+var $author$project$PicShare$viewDetailedPhoto = function (photo) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -6615,7 +6615,7 @@ var $author$project$RealTime$viewDetailedPhoto = function (photo) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$RealTime$viewLoveButton(photo),
+						$author$project$PicShare$viewLoveButton(photo),
 						A2(
 						$elm$html$Html$h2,
 						_List_fromArray(
@@ -6626,17 +6626,17 @@ var $author$project$RealTime$viewDetailedPhoto = function (photo) {
 							[
 								$elm$html$Html$text(photo.caption)
 							])),
-						$author$project$RealTime$viewComments(photo)
+						$author$project$PicShare$viewComments(photo)
 					]))
 			]));
 };
-var $author$project$RealTime$viewFeed = function (maybePhoto) {
+var $author$project$PicShare$viewFeed = function (maybePhoto) {
 	if (maybePhoto.$ === 'Just') {
 		var feed = maybePhoto.a;
 		return A2(
 			$elm$html$Html$div,
 			_List_Nil,
-			A2($elm$core$List$map, $author$project$RealTime$viewDetailedPhoto, feed));
+			A2($elm$core$List$map, $author$project$PicShare$viewDetailedPhoto, feed));
 	} else {
 		return A2(
 			$elm$html$Html$div,
@@ -6650,8 +6650,8 @@ var $author$project$RealTime$viewFeed = function (maybePhoto) {
 				]));
 	}
 };
-var $author$project$RealTime$FlushStreamQueue = {$: 'FlushStreamQueue'};
-var $author$project$RealTime$viewStreamNotification = function (queue) {
+var $author$project$PicShare$FlushStreamQueue = {$: 'FlushStreamQueue'};
+var $author$project$PicShare$viewStreamNotification = function (queue) {
 	if (!queue.b) {
 		return $elm$html$Html$text('');
 	} else {
@@ -6662,7 +6662,7 @@ var $author$project$RealTime$viewStreamNotification = function (queue) {
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('stream-notification'),
-					$elm$html$Html$Events$onClick($author$project$RealTime$FlushStreamQueue)
+					$elm$html$Html$Events$onClick($author$project$PicShare$FlushStreamQueue)
 				]),
 			_List_fromArray(
 				[
@@ -6670,7 +6670,7 @@ var $author$project$RealTime$viewStreamNotification = function (queue) {
 				]));
 	}
 };
-var $author$project$RealTime$viewContent = function (model) {
+var $author$project$PicShare$viewContent = function (model) {
 	var _v0 = model.error;
 	if (_v0.$ === 'Just') {
 		var error = _v0.a;
@@ -6683,7 +6683,7 @@ var $author$project$RealTime$viewContent = function (model) {
 			_List_fromArray(
 				[
 					$elm$html$Html$text(
-					$author$project$RealTime$errorMessage(error))
+					$author$project$PicShare$errorMessage(error))
 				]));
 	} else {
 		return A2(
@@ -6691,12 +6691,12 @@ var $author$project$RealTime$viewContent = function (model) {
 			_List_Nil,
 			_List_fromArray(
 				[
-					$author$project$RealTime$viewStreamNotification(model.streamQueue),
-					$author$project$RealTime$viewFeed(model.feed)
+					$author$project$PicShare$viewStreamNotification(model.streamQueue),
+					$author$project$PicShare$viewFeed(model.feed)
 				]));
 	}
 };
-var $author$project$RealTime$view = function (model) {
+var $author$project$PicShare$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -6726,11 +6726,11 @@ var $author$project$RealTime$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$RealTime$viewContent(model)
+						$author$project$PicShare$viewContent(model)
 					]))
 			]));
 };
-var $author$project$RealTime$main = $elm$browser$Browser$element(
-	{init: $author$project$RealTime$init, subscriptions: $author$project$RealTime$subscriptions, update: $author$project$RealTime$update, view: $author$project$RealTime$view});
-_Platform_export({'RealTime':{'init':$author$project$RealTime$main(
+var $author$project$PicShare$main = $elm$browser$Browser$element(
+	{init: $author$project$PicShare$init, subscriptions: $author$project$PicShare$subscriptions, update: $author$project$PicShare$update, view: $author$project$PicShare$view});
+_Platform_export({'PicShare':{'init':$author$project$PicShare$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
