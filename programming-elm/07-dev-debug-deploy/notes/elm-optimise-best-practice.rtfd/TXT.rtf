@@ -1,0 +1,348 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 Monaco;
+\f3\fswiss\fcharset0 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red255\green255\blue255;\red78\green77\blue78;
+\red176\green0\blue52;\red22\green21\blue22;\red18\green79\blue146;\red221\green246\blue255;\red22\green21\blue22;
+\red29\green136\blue198;\red22\green21\blue22;\red246\green246\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c100000\c100000\c100000;\cssrgb\c38039\c37647\c38039;
+\cssrgb\c75294\c7451\c26275;\cssrgb\c11373\c10980\c11373\c3922;\cssrgb\c7059\c39216\c63922;\cssrgb\c89020\c97255\c100000;\cssrgb\c11373\c10980\c11373\c12941;
+\cssrgb\c11373\c60784\c81961\c10196;\cssrgb\c11373\c10980\c11373\c5882;\cssrgb\c97255\c97255\c97255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww25400\viewh15440\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs30 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756882452878439?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 7:54 AM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf5 \cb6 \strokec5 --optimize
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0just passes\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 --optimize
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0to\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 elm make
+\f1\fs30 \cf2 \cb3 \strokec2 .\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 To minify, I recommend using SWC via the postprocess feature.\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/lydell/elm-minification-benchmarks"}}{\fldrslt \cf7 \strokec7 https://github.com/lydell/elm-minification-benchmarks}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs24 \cf7 \strokec7 {{\NeXTGraphic 1f44d@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+\cf7 \
+\cb8 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0\fs36 \cf2 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756883593527229?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 8:13 AM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 FWIW I translated\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf7 \cb10 \strokec7 @Simon Lydell}}\'a0s SWC settings to an .swcrc format:\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf2 \cb6 \{\
+"$schema": "https://swc.rs/schema.json",\
+"minify": true,\
+"jsc": \{\
+    "minify": \{\
+        "compress": \{\
+            "pure_funcs": [ "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],\
+            "pure_getters": true,\
+            "unsafe_comps": true,\
+            "unsafe": true,\
+            "drop_console": true\
+        \},\
+        "mangle": \{\
+            "keep_fnames": false,\
+            "reserved": [ "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"]\
+        \}\
+    \}\
+\}\}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 {{\NeXTGraphic 1f440@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\partightenfactor0
+\cf2 \
+\cb11 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf7 \strokec7 {{\NeXTGraphic 1f44d@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\cb8 2\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0\fs36 \cf2 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756898245898819?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:17 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 That\'92s great, thanks\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf7 \cb10 \strokec7 @Simon Lydell}}\'a0\'85 what\'92s the benefit of that format\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UV2TAT083"}}{\fldrslt \cf7 \cb10 \strokec7 @ahankinson}}? Using\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 npx swc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0instead of\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 node
+\f1\fs30 \cf2 \cb3 \strokec2 ?\'a0Is that the only command you need to run if\'a0you\'92ve\'a0got the\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 .swcrc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file in root?\cb1 \
+\
+\cb3 Seems like a lot of work to setup and test all those minify tools, so big thanks!\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756898422357159?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:20 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Is you put it in your project directory you can just run\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 swc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0and it will pick up the settings from this file. The example\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf7 \cb10 \strokec7 @Simon Lydell}}\'a0uses in his GitHub repo requires a JS wrapper\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756898578544389?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:22 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Cool, the\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 swc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file seems a little easier. Do you always minify after building the\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 js
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file, or can you make and minify with the same command?\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756898880031889?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:28 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf5 \cb6 \strokec5 .swcrc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file, do you mean?\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756898982865559?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \cb3 \strokec4 12:29}}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Here is my full "production build" script:\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf2 \cb6 #!/bin/sh\
+\
+set -e\
+\
+js=$2\
+min=$3\
+\
+elm-optimize-level-2 --optimize-speed --output=$js $1\
+INITIAL_SIZE=$(wc -c < "$js")\
+\
+swc "$js" --out-file "$min"\
+\
+MINIFIED_SIZE=$(wc -c < "$min")\
+GZIPPED_SIZE=$(gzip -c "$min" | wc -c)\
+\
+# Convert to human-readable format\
+INITIAL_HR=$(numfmt --to=iec-i --suffix=B "$INITIAL_SIZE")\
+MINIFIED_HR=$(numfmt --to=iec-i --suffix=B "$MINIFIED_SIZE")\
+GZIPPED_HR=$(numfmt --to=iec-i --suffix=B "$GZIPPED_SIZE")\
+\
+# Display results with alignment\
+printf "%-18s %10s (%7s)  %s\\n" "Initial size:" "$INITIAL_SIZE bytes" "$\{INITIAL_HR\}" "$js"\
+printf "%-18s %10s (%7s)  %s\\n" "Minified size:" "$MINIFIED_SIZE bytes" "$\{MINIFIED_HR\}" "$min"\
+printf "%-18s %10s (%7s)\\n" "Gzipped size:" "$GZIPPED_SIZE bytes" "$\{GZIPPED_HR\}"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs30 \cf2 \cb3 (You can replace\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 elm-optimize-level-2 --optimize-speed
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0with\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 elm make --optimize
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0)\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756899030845929?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \cb3 \strokec4 12:30}}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 The\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 .swcrc
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file has\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 minify: true
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0so yes?\cb1 \
+\pard\pardeftab720\qr\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756899236783199?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \cb3 \strokec4 12:33}}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 My\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 package.json
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0file has the following entry in\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 scripts
+\f1\fs30 \cf2 \cb3 \strokec2 :\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf2 \cb6 "production:deploy": "./optimize.sh src/Main.elm dist/static/app.js dist/static/app.js"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs30 \cf2 \cb3 (Yes, I could probably collapse the two arguments at the end. The first is the JS output of the elm build, the second is the output of the minify step. It's a hangover from a previous workflow that I never got around to fixing.)\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs24 \cf7 \strokec7 {{\NeXTGraphic 1f4af@2x.png \width640 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\cb8 1\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0\fs36 \cf2 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\fs30 \cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756900201014109?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:50 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Cool. I imagine you gzip on the server?\'a0Are\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 optimize-level-2
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0compiles noticeably quicker enough to care?\'a0I\'92m\'a0building for poor data connectivity (my city can be unpredictable when busy) so faster the better.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756900394560539?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 12:53 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 TBH, I've not done a full comparison. If I were doing it now I might look at using the\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 lamdera
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0compiler instead of EOL2 since that hasn't (and won't) receive any more updates and it's starting to spit out deprecation errors. As I understand it,\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 lamdera
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0has worked in a few of the most prominent optimizations from EOL2, but I'm not entirely sure what they are, or in what version they're available.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756901460696409?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:11 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 That\'92s good to know. Yeah a few things are becoming a bit outdated, I swapped out \'93Create Elm App\'94 for elm-watch and try to keep the setup as simple as possible. I\'a0
+\f3\i assume
+\f1\i0 \'a0the Lamdera compiler is compatible with tools like elm-watch, but not sure if the benefits are worth the hassle.\cb1 \
+\
+\cb3 Perhaps\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U2FMN03NZ"}}{\fldrslt \cf7 \cb10 \strokec7 @supermario}}\'a0could add an optimise specific entry in the docs? It might also be nice to making it clearer on the\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/lamdera/compiler"}}{\fldrslt \cf7 \strokec7 https://github.com/lamdera/compiler}}\'a0repo why we\'92d use that over the default compiler. I\'92m unlikely to use Lamdera as a backend.\cb1 \
+\
+\cb3 It\'92s anyone\'92s guess how long we\'92ll be waiting for elm compiler updates, so it might be worth a shot. An installer/uninstaller\'a0for Mavericks+ (MacOS)\'a0would also be nice!\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756901520712849?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:12 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Installer?\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U0W9GDX3R-033394de858d-72.png \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Simon Lydell\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756901561904159?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:12 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 I assume the Lamdera compiler is compatible with elm-watch\cb1 \
+\
+\cb3 It is not, unfortunately. The hot reloading does not work with the Lamdera compiler. However, the Lamdera compiler might get elm-watch-like functionality in the future. First step:\'a0{\field{\*\fldinst{HYPERLINK "https://github.com/lamdera/compiler/pull/65"}}{\fldrslt \cf7 \strokec7 https://github.com/lamdera/compiler/pull/65}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756901701669259?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:15 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 A\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 .dmg
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0drag and drop thingy.\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf7 \cb10 \strokec7 @Simon Lydell}}\'a0that\'92s\'a0a shame, it would definitely make it more appealing if it came with that functionality and light dependencies.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-UV2TAT083-g16a628dbeac-72.jpg \width1080 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb3 ahankinson\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb3 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756901827311209?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:17 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 Ah.\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 brew install elm
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0works great for me. Also\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 yarn
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0 (or\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 npm
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0) global install. I almost never\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 .dmg
+\f1\fs30 \cf2 \cb3 \strokec2 \'a0install command-line tools anymore because it ends up putting things in strange places and messing with permissions.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb9 {{\NeXTGraphic T0CJ5UNHK-U07SYCY9BE3-d4d31eb16b41-72.png \width480 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 \cb12 Rob\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf2 \cb12 \'a0\'a0{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/archives/C0CJ3SBBM/p1756902157896399?thread_ts=1756849062.388809&cid=C0CJ3SBBM"}}{\fldrslt 
+\fs24 \cf4 \strokec4 Today at 1:22 PM}}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb12 Does it? I thought it was much the same as downloading with\'a0
+\f2\fs24 \cf5 \cb6 \strokec5 curl
+\f1\fs30 \cf2 \cb12 \strokec2 . I tend to shy away from brew and npm globals as\'a0I don\'92t\'a0trust their security. I feel a bit safer with a direct download.\cb1 \
+}

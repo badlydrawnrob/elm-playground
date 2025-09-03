@@ -167,15 +167,20 @@ Sketch it out, make it visual. Add in some useful videos or links that help.
 
 > 1-3 just write a few basic `Debug` examples. One file is probably enough.
 
-1. Give a few basic examples of `Debug.log` (pg. 132)
+1. Add an `--optimise` and minifier to the chapter
+    - See the notes for an explanation
+    - You'll want to gzip on the server
+    - The book deploys to [surge](https://surge.sh) with `npm` (pg 151)
+        - History of going down (currently `408` timeouts), so I wouldn't use for mission critical stuff.
+        - tiiny.host is alternative
+2. Give a few basic examples of `Debug.log` (pg. 132)
     - A `case (Debug.log "decoder" msg) of` to inspect a `Result`
-2. Use `Json.errorToString` for debugging the `Err _` value
-3. Generally I avoid testing
+3. Use `Json.errorToString` for debugging the `Err _` value
+4. Generally I avoid testing
     - Which errors are most important to guard against?
     - What automated (GUI) ways of testing code are there?
     - How much coverage is enough for typed functional?
-4. Pg. 141: Give on example of `Json.succeed` and what it is, using the `|> Json.andThen decodeBreed` example.
-    - Use [this link](https://thoughtbot.com/blog/5-common-json-decoders) in the Anki card
+
 
 
 
