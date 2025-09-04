@@ -7,7 +7,6 @@
  * Visit http://www.pragmaticprogrammer.com/titles/jfelm for more book information.
 ***/
 import React, { Component } from 'react';
-import './App.css';
 
 class App extends Component {
   constructor(props) {

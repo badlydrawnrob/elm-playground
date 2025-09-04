@@ -1,0 +1,32 @@
+// -----------------------------------------------------------------------------
+// Condensed styles
+// =============================================================================
+// I've not changed anything, just condensed it down to a single file, which we
+// can compile with lessc.
+
+html * {
+  box-sizing: border-box;
+}
+
+html *:focus {
+  outline: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+
+// App -------------------------------------------------------------------------
+
+@import "app";
+
+
+// Image upload ----------------------------------------------------------------
+
+@import "image-upload";
