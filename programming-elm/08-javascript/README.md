@@ -11,7 +11,7 @@ Remember that using anything javascript is going to come with a heavy dose of pa
 
 ## Elm Watch and esbuild (instead of webpack)
 
-Again I'm using Elm Watch for live reloading and `http-server` here. I've also made a few changes by adding `.less` files to `/src/style` and renaming `.js` files to `.jsx` and compile the lot with `npm run build`. You can see the full issue at [the book's repo](https://github.com/jfairbank/programming-elm.com/issues/16). For the purposes of this tutorial, I'm not interested in learning javascript, or spending ages learning how to wrestle with Parcel or Vite ... they're not very beginner friendly.
+Again I'm using Elm Watch for live reloading and `http-server` here. I've also made a few changes by adding `.less` files to `/src/style` and renaming `.js` files to `.jsx` and compile the lot with `npm run build`. You can see the full issue at [the book's repo](https://github.com/jfairbank/programming-elm.com/issues/17). For the purposes of this tutorial, I'm not interested in learning javascript, or spending ages learning how to wrestle with Parcel or Vite ... they're not very beginner friendly.
 
 ```terminal
 npm install elm-watch@beta
