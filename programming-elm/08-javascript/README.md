@@ -33,3 +33,22 @@ When we eventually want to release our app, we can optimize the build and copy o
 ```terminal
 npx elm-watch make --optimize
 ```
+
+## Embedding the Elm App
+
+> I looked through it and I can't be bothered to implement `ImageUpload` in the javascript way. Instead I'll just use the Elm `File` method, and populate `localStorage`.
+
+Perhaps only add ONE image to show it can be done. First add your form text ... then add this hacky update with ports.
+
+```javascript
+// Retrieve the note
+const note = localStorage.getItem('note')
+
+// Add or update a value
+note.field = { "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AA..."}
+
+// Reset the note object
+localStorage.setItem('note', JSON.stringify(note));
+```
+
+

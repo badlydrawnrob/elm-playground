@@ -15025,6 +15025,7 @@
       return {
         title: "",
         contents: "",
+        images: "",
         ...note
       };
     }
