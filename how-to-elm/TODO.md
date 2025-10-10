@@ -6,7 +6,25 @@
 
 Books like Programming Elm, later stages of Elm in Action, and (haven't read it but) Practical Elm all make learning harder than it has to be with jargon and overly logical writing. Some things are very difficult to explain however, in statically typed functional languages.
 
+Write a little about over-using custom types, or certain situations when they make sense.
+Write a little about complicated UI state and better to heavily paper prototype first (+ Tally).
+Write about the tradeoffs between developer ease and fancy user-experience.
+Write about your learning frame (and not doing things like `Passport` text processing)
+Write about the time it takes to do proper programming ...
+      and the fact that it's all moot if your fucking marketing doesn't work ...
+      so code as little as possible and validate your ideas in the easiest, fastest, way!
+Write about hiding behind research and practicing and not getting s* done ...
+      learn "just enough" and "just in time"
+
 1. Always pick the option that seems "simplest" and easy to read
+    - The `Films` setup is a bit mad in retrospect!
+        - BASICALLY AVOID FORMS UNTIL YOU KNOW EXACTLY WHAT WORKS (and what doesn't)
+            - Figure out the paper prototyping for a good while with Tally forms
+        - Sharing form fields is a bad idea (sharing a form view is ok)
+        - Lots of form state (and multi-forms) on a page gets complicated and hard to read?
+        - Thinking about types and complexity upfront is really essential.
+        - Reducing potential bugs by planning out data conflicts is helpful.
+        - Reducing state-per-page is a (poorer?) user experience but better developer one.
     - The 5 finger rule (do I understand enough of it?)
     - The read it later rule (future stupid self)
     - @rtfeldman [forms](https://github.com/rtfeldman/elm-spa-example/blob/cb32acd73c3d346d0064e7923049867d8ce67193/src/Page/Settings.elm#L370) -vs- @dwayne [elm-form](https://package.elm-lang.org/packages/dwayne/elm-form/latest/)
