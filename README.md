@@ -131,7 +131,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 > It's also helpful to keep an offline library/docs when your wifi breaks (or the internet rots)
 > — there's an [app](https://ricks-apps.com/osx/sitesucker/index.html) for that.
 
-**Here's a wealth of resources for getting started with [Elm](https://elm-lang.org).** Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with "Beginning Elm" or "Welcome to Elm" to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you!
+**Here's a wealth of resources for getting started with [Elm](https://elm-lang.org).** Each list is ordered by difficulty (beginners and easiest first). I'd suggest starting with "Beginning Elm" or "Welcome to Elm" to get a taste, move onto the books (or online courses), peruse the helpful talks, check out some real world examples, then it's up to you! You can also run Elm in the browser with [Ellie](https://ellie-app.com/) and [Elm.run](https://elm.run/repl/).
 
 ### 📖 Books
 
