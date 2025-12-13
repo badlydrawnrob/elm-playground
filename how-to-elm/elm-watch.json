@@ -2,9 +2,9 @@
     "targets": {
         "My target name": {
             "inputs": [
-                "src/CustomTypes/Films.elm"
+                "src/File/CSV.elm"
             ],
-            "output": "build/04-custom-types-films.js"
+            "output": "build/05-file-upload-csv.js"
         }
     }
 }
