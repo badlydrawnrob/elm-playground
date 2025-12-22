@@ -24,6 +24,13 @@ I'm not using `elm-format` in this repository, as I quite like my _own_ commenti
 6. See the [simplicity book](https://pragprog.com/titles/dtcode/simplicity/) and follow it's advice.
 
 
+## Build
+
+> Working examples by running `elm reactor` or using `/build/..` files.
+
+There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki programming flashcard](https://github.com/badlydrawnrob/anki) code examples before building your cards.
+
+
 ## Improvements
 
 1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
