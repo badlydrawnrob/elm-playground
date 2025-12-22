@@ -49,6 +49,10 @@ elm make src/Main.elm
 # Compile to javascript file
 elm make src/Main.elm --output=app.js
 
+# Has `elm.json` file but no `elm-stuff` folder
+# re-install packages (from local cache)
+elm make [file]
+
 # View in the browser
 elm reactor
 ```
@@ -172,6 +176,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 - [Andy Balaam's](https://www.artificialworlds.net/blog/category/elm/) Elm examples
 - [Built with Elm](https://www.builtwithelm.co)
 - [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (might be a little outdated)
+- [Elm destructuring](https://gist.github.com/yang-wei/4f563fbf81ff843e8b1e)
 - [Fuzz tests in Elm](https://freecontent.manning.com/writing-fuzz-tests-in-elm/)[^5]
 - [Sorting comparables](https://stacktracehq.com/blog/comparing-and-sorting-in-elm/) (record)
 
