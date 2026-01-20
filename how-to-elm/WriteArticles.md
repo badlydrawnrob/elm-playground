@@ -3,6 +3,13 @@
 Code should be simple to write and read.
 It's going to be read later; write for your stupid future self.
 
+
+## General Elm questions
+
+1. When to use a `Result` and when to use a `Maybe`?
+2. Is it better to not rely on general solutions? (problems are specific)
+
+
 ## Simplify the problem
 
 > Use the Tesla method to simplify the scope and processes
