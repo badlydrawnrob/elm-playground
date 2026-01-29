@@ -4,6 +4,7 @@ module CustomTypes.Songs exposing (..)
     Songs (the correct way to do user input) ⏰ 1 day
     ============================================================================
     > You shouldn't store computed values in the model!
+    > Is there a real need for a complex type over basic ones?
 
     Not only do you make excess work for yourself, but the code becomes more
     complicated. The previous version also used a custom `Album` and `Song` type,
