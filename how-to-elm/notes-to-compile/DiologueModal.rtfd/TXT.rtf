@@ -1,0 +1,406 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Monaco;\f2\froman\fcharset0 Times-BoldItalic;
+\f3\froman\fcharset0 Times-Italic;}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red18\green79\blue146;\red227\green243\blue249;
+\red246\green246\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c7059\c39216\c63922;\cssrgb\c90980\c96078\c98039;
+\cssrgb\c97255\c97255\c97255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Rob\'a0\'a0[3:56 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UJ65NMTFY"}}{\fldrslt \cf3 \cb4 \strokec3 @Laurent}} I've just recently been working with dialog and the 
+\f1 \cb5 HTMLDialogElement
+\f0 \cb1  which seems to work well \'85 is your original post below still your go to solution? I'm guessing there's no native Elm package available.\
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://discourse.elm-lang.org/t/native-html-element-dialog-modal-opening-closing/9232"}}{\fldrslt \cf3 \strokec3 https://discourse.elm-lang.org/t/native-html-element-dialog-modal-opening-closing/9232}}\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:06 PM]\
+You can't use a package because native modals still require JS to open (and optionally to close). There is a proposal to allow controlling through html attributes, but I don't believe any browser supports that yet\
+\
+\
+\
+Rob\'a0\'a0[4:10 PM]\
+Ah. So there's no way to visually hide/close with CSS? Ok I'll watch out for that proposal \'85 so ports are no good and it has to be a custom element?\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:11 PM]\
+With CSS?\
+\
+\
+\
+akoppela\'a0\'a0[4:11 PM]\
+Hmm, I think we are doing it with attribute\
+\
+\
+\
+Rob\'a0\'a0[4:12 PM]\
+Well, as in just using a class to visually show/hide the dialog. Using Elm to change the class. It wouldn't be dynamic though.\'a0(edited)\'a0\
+\
+\
+\
+Rob\'a0\'a0[4:13 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0J8D9M2P"}}{\fldrslt \cf3 \cb4 \strokec3 @akoppela}} Do you have an example on GitHub?\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:15 PM]\
+I think there's multiple things here.\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa40\partightenfactor0
+\ls1\ilvl0\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 you can use ports to open/close a native modal\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 native modals don't hide/show with CSS, they render on a separate layer from the rest of your DOM and have their own means for hiding/showing\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 there's some discussion of popover vs modal in the linked discussion, they are separate browser native features, make sure you're using the one that best fits your use case\
+\pard\pardeftab720\partightenfactor0
+\cf2 \
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:16 PM]\
+I personally {\field{\*\fldinst{HYPERLINK "https://github.com/wolfadex/elm-radix-ui/blob/main/public/elm-modal.js"}}{\fldrslt \cf3 \strokec3 use a separate means for handing the JS calls}}, though I'm not sure about the tradeoffs compared to the custom element\
+\
+\
+\
+akoppela\'a0\'a0[4:20 PM]\
+I checked we use combo with custom element\
+\
+\
+\
+akoppela\'a0\'a0[4:20 PM]\
+Custom elements are great way to extend Elm apps\
+\
+\
+\
+Rob\'a0\'a0[4:31 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UB0UX3FJ9"}}{\fldrslt \cf3 \cb4 \strokec3 @Wolfgang Schuster (wolfadex)}} Ah, I didn't realise they render on a separate layer. Whatever gets the job done really, I'm assuming 
+\f1 \cb5 dialog
+\f0 \cb1  saves you having to worry about positioning/background as it's handled for you.\
+\
+I don't fully understand that js snippet but will ask Ai. Thanks.\
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0J8D9M2P"}}{\fldrslt \cf3 \cb4 \strokec3 @akoppela}} So custom elements are a reliable method other than Wolfgangs suggestions.\
+\
+I'll take a look at some examples in the wild. If anyone else has a working example it'd be great to see it.\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:34 PM]\
+The settings modal here uses my approach {\field{\*\fldinst{HYPERLINK "https://personal-logger.lamdera.app/"}}{\fldrslt \cf3 \strokec3 https://personal-logger.lamdera.app/}}\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:36 PM]\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 <dialog>
+\f0 \cb1  has been around for quite a while. The piece that's new is 
+\f1 \cb5 dialog.showModal()
+\f0 \cb1  and 
+\f1 \cb5 dialog.closeModal()
+\f0 \cb1 . Those change the rendering of the dialog element. You can also use 
+\f1 \cb5 <dialog>
+\f0 \cb1  like so\
+
+\f1 \cb5 <dialog>\
+  <summamry>Some text here</summary>\
+  More text here\
+</dialog>\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 as a means for rendering accordions\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:38 PM]\
+I also have some code that uses the ports approach {\field{\*\fldinst{HYPERLINK "https://github.com/wolfadex/space-traders-ui/blob/d647fb9bdc7fa291254ce67f4ae1f6dcd235202a/public/index.html#L238-L248"}}{\fldrslt \cf3 \strokec3 https://github.com/wolfadex/space-traders-ui/blob/d647fb9bdc7fa291254ce67f4ae1f6dcd235202a/public/index.html#L238-L248}}\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:39 PM]\
+I guess I also wrote a web component for this at one time and completely forgot {{\NeXTGraphic 1f605@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬} {\field{\*\fldinst{HYPERLINK "https://github.com/wolfadex/wolfadex-components/blob/1ce0065e29742297e2b763158bc12304ac7aa731/simple-modal.js#L39"}}{\fldrslt \cf3 \strokec3 https://github.com/wolfadex/wolfadex-components/blob/1ce0065e29742297e2b763158bc12304ac7aa731/simple-modal.js#L39}}\
+\
+\
+\
+Rob\'a0\'a0[4:42 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UB0UX3FJ9"}}{\fldrslt \cf3 \cb4 \strokec3 @Wolfgang Schuster (wolfadex)}} Nice one, will check them out. Tangentially I've been playing around with Vimeo player API and it's really buggy for certain things, so yeah, I'd like to keep the JS very minimal. Have you tried Facebook on a crappy wifi connection? Unusable!\
+\
+\
+\
+ggpeti\'a0\'a0[6:57 PM]\
+Just today we discussed how to render modals with {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U01RDASUHGX"}}{\fldrslt \cf3 \cb4 \strokec3 @Hunor Gered}} and we settled on: 1 dialog config in the model, rendered in 1 place near the document root, modal users set the config then call showModal via port\
+\
+\
+\
+Rob\'a0\'a0[7:29 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U3URV5JQ2"}}{\fldrslt \cf3 \cb4 \strokec3 @ggpeti}} Cool. Did you manage to come away with any working examples?\
+\
+\
+\
+ggpeti\'a0\'a0[7:31 PM]\
+No, but I can try to elucidate further if it's unclear\
+\
+ggpeti\'a0\'a0[7:32 PM]\
+The config is a record with the title, contents and confirm action, and can be whatever you choose\
+\
+ggpeti\'a0\'a0[7:33 PM]\
+It is always rendered in the document but not visible\
+\
+ggpeti\'a0\'a0[7:33 PM]\
+until the showModal port cmd is sent\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[7:33 PM]\
+Without seeing the exact details, 1 benefit to {{\NeXTGraphic 261d-fe0f@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬} is that a modal can be kept open while navigating across pages in your app\
+\
+\
+\
+ggpeti\'a0\'a0[7:34 PM]\
+(criticism welcome)\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:09 PM]\
+Btw, the way to open a modal dialog without JS (only via attributes) that was mentioned briefly is this: {\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API"}}{\fldrslt \cf3 \strokec3 https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API}}\
+\
+It\'92s apparently supported by everything except Safari where it\'92s in the preview version. So still a bit new to be relied on, but we\'92re getting there!\
+\
+Haven\'92t tried it with Elm yet though.\
+\
+\
+MDN Web Docs\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API"}}{\fldrslt \cf3 \strokec3 Invoker Commands API - Web APIs | MDN}}\
+The Invoker Commands API provides a way to declaratively assign behaviors to buttons, allowing control of interactive elements when the button is enacted (clicked or invoked via a keypress, such as the spacebar or return key).\
+{\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API"}}{\fldrslt \cf3 \strokec3 https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API}}\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[8:12 PM]\
+Per {\field{\*\fldinst{HYPERLINK "https://caniuse.com/?search=commandfor"}}{\fldrslt \cf3 \strokec3 https://caniuse.com/?search=commandfor}} it looks like Safari supports it as of Nov 1st. Had no clue!\
+\
+\
+caniuse.com\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://caniuse.com/?search=commandfor"}}{\fldrslt \cf3 \strokec3 "commandfor" | Can I use... Support tables for HTML5, CSS3, etc}}\
+"Can I use" provides up-to-date browser support tables for support of front-end web technologies on desktop and mobile web browsers.\
+\
+\
+ggpeti\'a0\'a0[8:14 PM]\
+i wonder what's the real benefit of this for elm users, it's not exactly js-free as you'd still define the command via js.\
+\
+ggpeti\'a0\'a0[8:15 PM]\
+specifically, the dialog.showModal() call still needs to be done in js. not a big deal but I don't see this api offering an alternative to it\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:19 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://ellie-app.com/xkS3hpLQK7Ca1"}}{\fldrslt \cf3 \strokec3 https://ellie-app.com/xkS3hpLQK7Ca1}}\
+\
+\
+\
+ggpeti\'a0\'a0[8:21 PM]\
+ah the mdn page didn't mention that there is a predefined show-modal command\
+\
+ggpeti\'a0\'a0[8:22 PM]\
+or am I misunderstanding it?\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:22 PM]\
+Well, the page I linked to in turn links to docs specifically about 
+\f1 \cb5 command
+\f0 \cb1 : {\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command"}}{\fldrslt \cf3 \strokec3 https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command}}\
+\
+\
+MDN Web Docs\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command"}}{\fldrslt \cf3 \strokec3 : The Button element - HTML | MDN}}\
+{\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command"}}{\fldrslt \cf3 \strokec3 https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command}}\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:23 PM]\
+There seems to be 6 defined values, and then you can make your own starting with two dashes\
+\
+\
+\
+ggpeti\'a0\'a0[8:23 PM]\
+that's the missing piece. no port needed then\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[8:24 PM]\
+Thanks {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf3 \cb4 \strokec3 @Simon Lydell}}! So excited that this is available now. Still a bit bleeding edge for Safari and Firefox (only since Oct), but this'll be so nice to have!\
+\
+\
+\
+ggpeti\'a0\'a0[8:25 PM]\
+although still reliant on a text id, this is indeed nice\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:26 PM]\
+Yeah, ID:s can be annoying when doing very dynamic stuff.\
+\
+\
+\
+ggpeti\'a0\'a0[8:26 PM]\
+using a single modal element mitigates this somewhat, so I'm still committed to that architecture\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:32 PM]\
+Here\'92s a version where Elm listens for events to know if the dialog is open or not, in case that comes in handy: {\field{\*\fldinst{HYPERLINK "https://ellie-app.com/xkSjz8LcJTSa1"}}{\fldrslt \cf3 \strokec3 https://ellie-app.com/xkSjz8LcJTSa1}}\'a0(edited)\'a0\
+\
+\
+\
+[a-z]\'a0\'a0[8:47 PM]\
+Just adding to the comment about the dialog-modal not just toggling visibility, it does a lot of really useful things to do with capturing / preventing tabbing around the page when it's open which is a real pain for keyboard users and was tricky / error prone to implement with JS.\
+\
+A great improvement to the platform {{\NeXTGraphic 1f64c@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\
+\
+\
+cekrem\'a0\'a0[8:10 AM]\
+One way is to add/remove an 
+\f1 \cb5 open
+\f0 \cb1  class (from within Elm, of course), and to use a mutation observer on the JS side to trigger open() (or openModal or whatever) and close() on class add/remove.\
+\
+No need for ports in that case.\
+\
+cekrem\'a0\'a0[8:11 AM]\
+quite straight forward, and as has been mentioned: the native dialog adds quite a bit of stuff for free that's quite helpful, for modals it basically makes everything but the dialog inert ++\
+\
+\
+\
+Simon Lydell\'a0\'a0[8:12 AM]\
+I usually find it easier to use a web component than Mutation Observer, but that\'92s subjective\
+\
+\
+\
+cekrem\'a0\'a0[8:12 AM]\
+of course {{\NeXTGraphic 1f44d@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\'a0 ymmv\
+\
+\
+\
+cekrem\'a0\'a0[8:12 AM]\
+same concept, really\
+\
+\
+\
+Toncek\'a0\'a0[2:21 PM]\
+if Your moto is 
+\f2\i\b do as less as possible in javascript
+\f0\i0\b0  like Our was when we started to develop components, then this solution might help you.\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa40\partightenfactor0
+\ls2\ilvl0\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Canvas that captures Clicks outside children\
+\ls2\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Children that are fully customizable up to page needs.\
+\ls2\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Works nice with pattern matching ( multiple variants, backgrounds, sizes )\'85\
+\ls2\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Attach keydown subscription and track key for closing.\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 div [ fixed canvas with backdrop blur ]\
+    [ node "style" [] [ text "body \{ overflow: hidden; \}" ] --no scroll trick\
+    , div [ onClick CloseDialog\
+		  , class: fixed with top and left as 0 , 100% width and height ][]\
+    , div []\
+      [ div [custom classes, variants...]\
+        [ icon for closing dialog (x) -- CloseDialog\
+        , div [] Children\
+        ]\
+      ]\
+    ]\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 \
+\
+ggpeti\'a0\'a0[3:16 PM]\
+one downside of the 
+\f1 \cb5 command
+\f0 \cb1  approach is the lack of hook between button press and emission of the command. It is not compatible with the single-dialog approach, because between button press and dialog show I'd need to update and render the dialog state\
+\
+\
+\
+Simon Lydell\'a0\'a0[4:01 PM]\
+Do you mean that you get one frame of empty dialog? If so, making the "command" event listener synchronous should help\
+\
+\
+\
+ggpeti\'a0\'a0[4:02 PM]\
+depending on how you handle dialog close, you might get a frame of the last shown dialog\
+\
+ggpeti\'a0\'a0[4:03 PM]\
+wdym by making the event listener synchronous?\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:04 PM]\
+1 frame should be mostly imperceptible, no?\
+\
+\
+\
+ggpeti\'a0\'a0[4:04 PM]\
+absolutely not\
+\
+\
+\
+Wolfgang Schuster (wolfadex)\'a0\'a0[4:07 PM]\
+Looking at {\field{\*\fldinst{HYPERLINK "https://ellie-app.com/xmf2pz99yMMa1"}}{\fldrslt \cf3 \strokec3 https://ellie-app.com/xmf2pz99yMMa1}} and I'm not seeing the old count displayed. Or are you talking about something slightly different?\
+\
+\
+\
+Simon Lydell\'a0\'a0[4:08 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elm.dmy.fr/packages/elm/virtual-dom/latest/VirtualDom#Handler"}}{\fldrslt \cf3 \strokec3 https://elm.dmy.fr/packages/elm/virtual-dom/latest/VirtualDom#Handler}}\
+\
+By using 
+\f1 \cb5 Html.Events.stopPropagationOn "command"
+\f0 \cb1  instead of 
+\f1 \cb5 Html.Events.on "command"
+\f0 \cb1  we can force the rendering to happen immediately (synchronously) instead of at the next animation frame. So you won\'92t see any old stuff.\
+\
+\
+\
+Simon Lydell\'a0\'a0[4:10 PM]\
+(Note that the Elm debugger can fool you into thinking that an old frame 
+\f3\i can
+\f0\i0  be seen. That is not the case, and an oversight in the debugger.)\
+\
+\
+\
+ggpeti\'a0\'a0[4:11 PM]\
+got it, thanks. sync being bundled together with stopping propagation... well, it's a thing apparently.\'a0(edited)\'a0\
+\
+\
+\
+Simon Lydell\'a0\'a0[4:14 PM]\
+Yeah, I have never understood why those two things go together. (As a side note, that causes a problem even: {\field{\*\fldinst{HYPERLINK "https://github.com/elm/html/issues/188"}}{\fldrslt \cf3 \strokec3 https://github.com/elm/html/issues/188}})\
+\
+\
+\
+ggpeti\'a0\'a0[4:14 PM]\
+I've encountered that already, and as a principle I never use the event value from onCheck\
+}

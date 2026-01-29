@@ -1,0 +1,290 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red18\green79\blue146;\red227\green243\blue249;
+\red246\green246\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c7059\c39216\c63922;\cssrgb\c90980\c96078\c98039;
+\cssrgb\c97255\c97255\c97255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Rob\'a0\'a0[10:24 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U6D9MQCHZ"}}{\fldrslt \cf3 \cb4 \strokec3 @allenap}} {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U03C38M6UPK"}}{\fldrslt \cf3 \cb4 \strokec3 @jackbot}} You both seem to be Python people, so was wondering \'85 can you use 
+\f1 \cb5 uv
+\f0 \cb1  on the server in production? I can only seem to find people using it locally, or possibly Docker (which I doubt I\'92ll use).\'a0(edited)\'a0\
+\
+\
+\
+jackbot\'a0\'a0[11:03 PM]\
+I am interested in Python as a language, and use it for a bunch of personal scripts, but don't really use it in a production capacity (running an app server for instance), so I'll defer to others on this use case.\
+\
+I'll only say that I don't see any reason you wouldn't be able to use 
+\f1 \cb5 uv
+\f0 \cb1  for production deployments.\
+\
+\
+\
+Confidenceman02\'a0\'a0[1:33 AM]\
+You sure can!\
+\
+Confidenceman02\'a0\'a0[1:35 AM]\
+I\'92ve moved over to uv for basically everything. I manage all my python versions with uv also. It\'92s a wonderful tool.\
+\
+\
+\
+janiczek\'a0\'a0[6:26 AM]\
+I am using uv in production (well, github actions), yeah!\
+What I haven't figured out is whether I can do better than to prefix all calls with 
+\f1 \cb5 uv run
+\f0 \cb1 . Guess I could use the uv venv functionality to get stuff on the PATH?\
+\
+\
+\
+Confidenceman02\'a0\'a0[6:32 AM]\
+depending on what you are doing, the independent scripts feature is pretty cool. You can encapsulate all your calls in a python script with isolated dependencies. I use this a lot in docker entrypoint execution. {\field{\*\fldinst{HYPERLINK "https://docs.astral.sh/uv/guides/scripts/"}}{\fldrslt \cf3 \strokec3 https://docs.astral.sh/uv/guides/scripts/}}\
+\
+\
+docs.astral.sh\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://docs.astral.sh/uv/guides/scripts/"}}{\fldrslt \cf3 \strokec3 Running scripts | uv}}\
+A guide to using uv to run Python scripts, including support for inline dependency metadata, reproducible scripts, and more.\
+\
+\
+\
+Rob\'a0\'a0[11:41 AM]\
+Do you both have examples of the methods you\'92re using? I\'92m probably going to use a panel with Ubuntu that pre-installs Python, and seems 
+\f1 \cb5 pip install uv
+\f0 \cb1  is the easiest way rather than 
+\f1 \cb5 curl
+\f0 \cb1 . {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0D4VR7BP"}}{\fldrslt \cf3 \cb4 \strokec3 @janiczek}} I\'92ve never used GitHub Actions, do you add all package dependencies and run the app through the 
+\f1 \cb5 .yaml
+\f0 \cb1  file? How do you manage virtual environments and secrets?\
+\
+\
+\
+janiczek\'a0\'a0[11:50 AM]\
+I follow this:\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://docs.astral.sh/uv/guides/integration/github/"}}{\fldrslt \cf3 \strokec3 https://docs.astral.sh/uv/guides/integration/github/}}\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5     steps:\
+      - uses: actions/checkout@v4\
+\
+      - name: Install uv\
+        uses: astral-sh/setup-uv@v6\
+\
+      - name: Set up Python\
+        run: uv python install\
+\
+      - name: Install the project\
+        run: uv sync --locked --all-extras --dev\
+\
+      - name: Run something\
+        run: uv run python3 some_script.py\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 \
+docs.astral.sh\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://docs.astral.sh/uv/guides/integration/github/"}}{\fldrslt \cf3 \strokec3 Using uv in GitHub Actions | uv}}\
+A guide to using uv in GitHub Actions, including installation, setting up Python, installing dependencies, and more.\
+\
+\
+Rob\'a0\'a0[1:59 PM]\
+Nice thanks. Will try that out, looks straightforward enough!\
+\
+\
+ahankinson\'a0\'a0[3:27 PM]\
+I 
+\f1 \cb5 brew install uv
+\f0 \cb1  globally on Mac, and 
+\f1 \cb5 curl
+\f0 \cb1  install it on the Ubuntu servers. (Well, technically I use Ansible to fetch and install it, but it uses 
+\f1 \cb5 curl
+\f0 \cb1  or 
+\f1 \cb5 wget
+\f0 \cb1  somewhere there to download it.)\
+\
+Works great.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 uv
+\f0 \cb1  will create a virtualenv in your local folder. If you don't want to do 
+\f1 \cb5 uv run
+\f0 \cb1  you can do 
+\f1 \cb5 source .venv/bin/activate
+\f0 \cb1  and then you're using the virtualenv Python.\'a0 For a GH action that probably doesn't matter, but locally it's def. better.\
+\
+\
+\
+Rob\'a0\'a0[4:18 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UV2TAT083"}}{\fldrslt \cf3 \cb4 \strokec3 @ahankinson}} Yeah I want to do as little server admin as possible, so hoping CloudPanel does most of the maintenance (rather than Ansible). Locally I have my 
+\f1 \cb5 .zshrc
+\f0 \cb1  file with 
+\f1 \cb5 alias activate=\'91source .venv/bin/activate\'92
+\f0 \cb1  for ease, which I assume I could setup on live server\'92s cli.\
+\
+I 
+\f1 \cb5 activate
+\f0 \cb1  to add packages with uv, but still run apps inside the venv with 
+\f1 \cb5 uv run main.py
+\f0 \cb1  \'85 are you suggesting to use the 
+\f1 \cb5 python3
+\f0 \cb1  command instead?\
+\
+Otherwise it seems like you can pretty much just use uv the same way as local, including installing different Python versions? I was worried installing with 
+\f1 \cb5 curl
+\f0 \cb1  might screw things up if setting up sites with CloudPanel \'97 with the panel you can setup a site with Python pre-installed.\
+\
+I hate provisioning servers, so the easier the better! {{\NeXTGraphic 1f60a@2x.png \width880 \height880 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬} \'a0(edited)\'a0\
+\
+\
+\
+ahankinson\'a0\'a0[4:21 PM]\
+yeah, I think all the 
+\f1 \cb5 uv run
+\f0 \cb1  command does is activate the environment before running. I don't know the specifics, but for me I can just activate the environment, and then use the 
+\f1 \cb5 python3
+\f0 \cb1  command to run things.\
+\
+\
+\
+ahankinson\'a0\'a0[4:24 PM]\
+It it's helpful, this is the full Ansible role I have for my UV install:\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 - name: Make custom uv install directory\
+  file:\
+    name: "\{\{ python_install_dir \}\}"\
+    state: directory\
+    mode: 0755\
+\
+- name: Download UV Release\
+  unarchive:\
+    src: "{\field{\*\fldinst{HYPERLINK "https://github.com/astral-sh/uv/releases/download/%7B%7B"}}{\fldrslt \cf3 \strokec3 https://github.com/astral-sh/uv/releases/download/\{\{}} uv_version \}\}/uv-x86_64-unknown-linux-gnu.tar.gz"\
+    dest: "/tmp"\
+    remote_src: yes\
+\
+- name: Copy UV binaries\
+  copy:\
+    src: "/tmp/uv-x86_64-unknown-linux-gnu/\{\{ item \}\}"\
+    dest: "/usr/local/bin/\{\{ item \}\}"\
+    mode: 0755\
+    remote_src: true\
+  loop:\
+    - 'uv'\
+    - 'uvx'\
+\
+- name: Make standard Python version available\
+  shell: "/usr/local/bin/uv python install -i \{\{ python_install_dir \}\} \{\{ python_version \}\}"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 Where 
+\f1 \cb5 python_install_dir
+\f0 \cb1  is 
+\f1 \cb5 /opt/local
+\f0 \cb1  and 
+\f1 \cb5 python_version
+\f0 \cb1  is 
+\f1 \cb5 3.13
+\f0 \cb1 .\
+\
+\
+\
+ahankinson\'a0\'a0[4:25 PM]\
+It could probably be optimized in various ways, but I'll revisit it later\
+\
+\
+\
+Rob\'a0\'a0[4:29 PM]\
+Ok got it. I didn\'92t realise 
+\f1 \cb5 uv run
+\f0 \cb1  activated the environment (I always been running 
+\f1 \cb5 activate
+\f0 \cb1  first), good to know. I think their documentation could be a little better. That looks very similar to GitHub Actions 
+\f1 \cb5 yaml
+\f0 \cb1  file.\
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0D4VR7BP"}}{\fldrslt \cf3 \cb4 \strokec3 @janiczek}} Do you store secrets and environment variables with GitHub Actions, or some other (more secure?) method?\
+\
+\
+\
+janiczek\'a0\'a0[4:42 PM]\
+yeah the repo has some secrets configured in its settings that are reachable from within the github actions!\
+\
+\
+\
+Rob\'a0\'a0[4:58 PM]\
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0PQ3JKP1"}}{\fldrslt \cf3 \cb4 \strokec3 @dwayne}} That looks like a very interesting setup, thanks for writing it up!\
+\
+I\'92ve been looking at devbox as a solution and like the local isolated environments, but didn\'92t want to have to get involved learning Nix (and wasn\'92t sure if you need to understand Docker properly to make it work). GitHub Actions and an installed panel for Ubuntu feels easier, but like you say a longer setup can have benefits down the road. FYI I\'92m purposefully using SQLite as a database for easier migration / setup, so I\'92m not sure how far I\'92d get with Nix without proper tutorials. Ai might help I guess.\
+\
+I\'92ll look over that article and see how it feels. I didn\'92t realise 1password has a CLI, that\'92s pretty cool, and great so many people use 
+\f1 \cb5 uv
+\f0 \cb1  live!\'a0(edited)\'a0\
+\
+\
+\
+allenap\'a0\'a0[5:58 PM]\
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U07SYCY9BE3"}}{\fldrslt \cf3 \cb4 \strokec3 @Rob}} To echo what others have said: 
+\f1 \cb5 uv
+\f0 \cb1  is great in production.\
+\
+I often use it in a Docker container. Astral publishes images upon which you can build, but I've needed to pull it into an existing image, and the following 
+\f1 \cb5 Dockerfile
+\f0 \cb1  snippet is what I use:\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 # Install `uv` from Docker image; see\
+# {\field{\*\fldinst{HYPERLINK "https://github.com/astral-sh/uv/pkgs/container/uv/503963247?tag=0.8.15"}}{\fldrslt \cf3 \strokec3 https://github.com/astral-sh/uv/pkgs/container/uv/503963247?tag=0.8.15}}.\
+COPY --from=ghcr.io/astral-sh/uv:0.8.15@sha256:1eca97b33175f9c0896ec34f30e03ba0227efd8e38a9a0f6d12c6003eacb6faa /uv /uvx /usr/local/bin/\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 Maybe I'm quoting right from the docs, but it works.\
+\
+The image I'm building often already has a Python interpreter, so something I've done a couple of times to keep the image slimmer is ask 
+\f1 \cb5 uv
+\f0 \cb1  to always use that interpreter rather than downloading a new one. For that I add the following to 
+\f1 \cb5 pyproject.toml
+\f0 \cb1 :\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 # Use the system Python interpreter or require that one is\
+# explicitly installed with `uv python`, say.\
+python-downloads = "manual"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 The 
+\f1 \cb5 requires-python
+\f0 \cb1  setting needs to match what's on the system, or else 
+\f1 \cb5 uv
+\f0 \cb1  will return an error. Without the 
+\f1 \cb5 python-downloads
+\f0 \cb1  setting above it will automatically download a suitable interpreter. I prefer the error, so that I can see when versions are mismatched.\
+\
+You already have a lot of advice in this thread so I'll stop there. 
+\f1 \cb5 uv
+\f0 \cb1  is a complex tool that I'm still learning, but I certainly won't go back to anything else now.\
+\
+\
+adamdicarlo\'a0\'a0[9:30 PM]\
+Yeah, using Devbox also saves you from having to write your shell scripts to work on both macOS and Linux; normally, if you write a script on Linux using sed, find, grep, or newer bash features, there\'92s a good chance it will blow up on macOS with its crusty (non-GNU) tools and usually ancient bash.\'a0\
+\
+adamdicarlo\'a0\'a0[9:39 PM]\
+Ahem, with apologies to macOS. It has BSD versions of the standard command line tools, which are fine, but the GNU versions have extra, very useful features like 
+\f1 \cb5 sed -i
+\f0 \cb1 . \'a0(edited)\'a0\
+\
+adamdicarlo\'a0\'a0[9:42 PM]\
+So your scripts will work the same on Linux and macOS if you install 
+\f1 \cb5 bashInteractive
+\f0 \cb1  in devbox, and packages for other tools you use. That also means your scripts will work the same when running in CI!\
+}

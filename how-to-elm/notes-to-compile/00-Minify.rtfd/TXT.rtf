@@ -1,0 +1,221 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Monaco;\f2\froman\fcharset0 Times-Italic;
+}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red18\green79\blue146;\red227\green243\blue249;
+\red246\green246\blue246;\red78\green77\blue78;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c7059\c39216\c63922;\cssrgb\c90980\c96078\c98039;
+\cssrgb\c97255\c97255\c97255;\cssrgb\c38039\c37647\c38039;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Rob\'a0\'a0[10:37 PM]\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf3 \cb4 \strokec3 @Simon Lydell}} Enjoying using your 
+\f1 \cb5 elm-watch
+\f0 \cb1  plugin! Couple of questions, 
+\f1 \cb5 --optimize
+\f0 \cb1  isn\'92t minifying, but is it similar to your discussions on Discourse? {\field{\*\fldinst{HYPERLINK "https://tinyurl.com/lydell-elm-optimise"}}{\fldrslt \cf3 \strokec3 https://tinyurl.com/lydell-elm-optimise}} (possibly another thread). How does it compare to alternatives for file size etc?. Obviously while compiling in 
+\f1 \cb5 hot
+\f0 \cb1  mode it\'92s got some extra js there.\
+\
+\
+\
+Elm\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://tinyurl.com/lydell-elm-optimise"}}{\fldrslt \cf3 \strokec3 What I\'92ve learned about minifying Elm code}}\
+Summary The Elm Guide has a page on minification, but it\'92s not the end of the story. The UglifyJS command in the Elm Guide can be tweaked to produce slightly smaller code a tiny bit faster. But you can get even smaller by first running just parts of UglifyJS and then esbuild \'96 and much faster! Gzip is really unpredictable. Slightly increasing the minified size can sometimes decrease the gzipped size. If you\'92re OK with ~2% more of the original JS, you can run only esbuild in less than a second ...\
+Reading time\
+\
+6 Aug 2021\
+\
+\
+\
+\
+Simon Lydell\'a0\'a0[7:54 AM]\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 --optimize
+\f0 \cb1  just passes 
+\f1 \cb5 --optimize
+\f0 \cb1  to 
+\f1 \cb5 elm make
+\f0 \cb1 .\
+\
+To minify, I recommend using SWC via the postprocess feature. {\field{\*\fldinst{HYPERLINK "https://github.com/lydell/elm-minification-benchmarks"}}{\fldrslt \cf3 \strokec3 https://github.com/lydell/elm-minification-benchmarks}}\
+\
+\
+\
+ahankinson\'a0\'a0[8:13 AM]\
+FWIW I translated {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf3 \cb4 \strokec3 @Simon Lydell}} s SWC settings to an .swcrc format:\
+\
+
+\f1 \cb5 \{\
+"$schema": "https://swc.rs/schema.json",\
+"minify": true,\
+"jsc": \{\
+    "minify": \{\
+        "compress": \{\
+            "pure_funcs": [ "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],\
+            "pure_getters": true,\
+            "unsafe_comps": true,\
+            "unsafe": true,\
+            "drop_console": true\
+        \},\
+        "mangle": \{\
+            "keep_fnames": false,\
+            "reserved": [ "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"]\
+        \}\
+    \}\
+\}\}\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 Rob\'a0\'a0[12:17 PM]\
+That\'92s great, thanks {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf3 \cb4 \strokec3 @Simon Lydell}} \'85 what\'92s the benefit of that format {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/UV2TAT083"}}{\fldrslt \cf3 \cb4 \strokec3 @ahankinson}}? Using 
+\f1 \cb5 npx swc
+\f0 \cb1  instead of 
+\f1 \cb5 node
+\f0 \cb1 ? Is that the only command you need to run if you\'92ve got the 
+\f1 \cb5 .swcrc
+\f0 \cb1  file in root?\
+\
+Seems like a lot of work to setup and test all those minify tools, so big thanks!\
+\
+\
+\
+ahankinson\'a0\'a0[12:20 PM]\
+Is you put it in your project directory you can just run 
+\f1 \cb5 swc
+\f0 \cb1  and it will pick up the settings from this file. The example {\field{\*\fldinst{HYPERLINK "https://elmlang.slack.com/team/U0W9GDX3R"}}{\fldrslt \cf3 \cb4 \strokec3 @Simon Lydell}} uses in his GitHub repo requires a JS wrapper\
+\
+\
+\
+Rob\'a0\'a0[12:22 PM]\
+Cool, the 
+\f1 \cb5 swc
+\f0 \cb1  file seems a little easier. Do you always minify after building the 
+\f1 \cb5 js
+\f0 \cb1  file, or can you make and minify with the same command?\
+\
+\
+\
+ahankinson\'a0\'a0[12:28 PM]\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 .swcrc
+\f0 \cb1  file, do you mean?\
+\
+\
+\
+ahankinson\'a0\'a0[12:29 PM]\
+Here is my full "production build" script:\
+\
+
+\f1 \cb5 #!/bin/sh\
+\
+set -e\
+\
+js=$2\
+min=$3\
+\
+elm-optimize-level-2 --optimize-speed --output=$js $1\
+INITIAL_SIZE=$(wc -c < "$js")\
+\
+swc "$js" --out-file "$min"\
+\
+MINIFIED_SIZE=$(wc -c < "$min")\
+GZIPPED_SIZE=$(gzip -c "$min" | wc -c)\
+\
+# Convert to human-readable format\
+INITIAL_HR=$(numfmt --to=iec-i --suffix=B "$INITIAL_SIZE")\
+MINIFIED_HR=$(numfmt --to=iec-i --suffix=B "$MINIFIED_SIZE")\
+GZIPPED_HR=$(numfmt --to=iec-i --suffix=B "$GZIPPED_SIZE")\
+\
+# Display results with alignment\
+printf "%-18s %10s (%7s)  %s\\n" "Initial size:" "$INITIAL_SIZE bytes" "$\{INITIAL_HR\}" "$js"\
+printf "%-18s %10s (%7s)  %s\\n" "Minified size:" "$MINIFIED_SIZE bytes" "$\{MINIFIED_HR\}" "$min"\
+printf "%-18s %10s (%7s)\\n" "Gzipped size:" "$GZIPPED_SIZE bytes" "$\{GZIPPED_HR\}"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 (You can replace 
+\f1 \cb5 elm-optimize-level-2 --optimize-speed
+\f0 \cb1  with 
+\f1 \cb5 elm make --optimize
+\f0 \cb1  )\
+\
+ahankinson\'a0\'a0[12:30 PM]\
+The 
+\f1 \cb5 .swcrc
+\f0 \cb1  file has 
+\f1 \cb5 minify: true
+\f0 \cb1  so yes?\
+\
+ahankinson\'a0\'a0[12:33 PM]\
+My 
+\f1 \cb5 package.json
+\f0 \cb1  file has the following entry in 
+\f1 \cb5 scripts
+\f0 \cb1 :\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \cb5 "production:deploy": "./optimize.sh src/Main.elm dist/static/app.js dist/static/app.js"\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 (Yes, I could probably collapse the two arguments at the end. The first is the JS output of the elm build, the second is the output of the minify step. It's a hangover from a previous workflow that I never got around to fixing.)\
+\
+\
+\
+Rob\'a0\'a0[12:50 PM]\
+Cool. I imagine you gzip on the server? Are 
+\f1 \cb5 optimize-level-2
+\f0 \cb1  compiles noticeably quicker enough to care? I\'92m building for poor data connectivity (my city can be unpredictable when busy) so faster the better.\
+\
+\
+\
+ahankinson\'a0\'a0[12:53 PM]\
+TBH, I've not done a full comparison. If I were doing it now I might look at using the 
+\f1 \cb5 lamdera
+\f0 \cb1  compiler instead of EOL2 since that hasn't (and won't) receive any more updates and it's starting to spit out deprecation errors. As I understand it, 
+\f1 \cb5 lamdera
+\f0 \cb1  has worked in a few of the most prominent optimizations from EOL2, but I'm not entirely sure what they are, or in what version they're available.\
+\
+\
+Simon Lydell\'a0\'a0[1:12 PM]\
+\pard\pardeftab720\partightenfactor0
+\cf6 \strokec6 I assume the Lamdera compiler is compatible with elm-watch\
+\pard\pardeftab720\partightenfactor0
+\cf2 \strokec2 \
+\
+It is not, unfortunately. The hot reloading does not work with the Lamdera compiler. However, the Lamdera compiler might get elm-watch-like functionality in the future. First step: {\field{\*\fldinst{HYPERLINK "https://github.com/lamdera/compiler/pull/65"}}{\fldrslt \cf3 \strokec3 https://github.com/lamdera/compiler/pull/65}}\
+\
+\
+adamdicarlo\'a0\'a0[8:02 PM]\
+Brew uses a checksum to detect whether the package archive is corrupt or tampered with. {\field{\*\fldinst{HYPERLINK "https://github.com/Homebrew/homebrew-core/blob/main/Formula/e/elm.rb"}}{\fldrslt \cf3 \strokec3 See the Elm formula}} for instance. That\'92s a big part of what package managers do, and it saves you the step of manually running the checksum yourself on the archive you manually downloaded. While 
+\f2\i npm
+\f0\i0  (in particular) doesn\'92t have the best track record for security (
+\f2\i cough
+\f0\i0 , 
+\f1 \cb5 Nx
+\f0 \cb1 ) it\'92s IMO because so many people have access to publish packages, and packages have large dependency trees, making for a lot of attack surfaces.\
+\
+Brew, Nix (not to be confused with Nx, a build tool), aptitude, pacman, and other Linux distro package managers, and bundler, cargo, and other language package managers, all do hash checks and don\'92t have anywhere near the attack surface of the npm ecosystem.\
+\
+\
+\
+adamdicarlo\'a0\'a0[8:03 PM]\
+(Elm does hash checks as well. (How did I not mention that one, lol))\
+\
+\
+adamdicarlo\'a0\'a0[8:04 PM]\
+(The hashes come from the elm package registry server.)\
+\
+\
+Rob\'a0\'a0[11:42 AM]\
+Yes sorry, I was asking not telling! I\'92m hoping for NPM deleting the packages folder and reinstalling is enough to stop any attacks. Maybe I\'92ll use homebrew in future\
+}
