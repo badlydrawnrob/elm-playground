@@ -57,6 +57,16 @@ elm make [file]
 elm reactor
 ```
 
+### Useful commands
+
+```terminal
+# Try Elm in terminal
+elm repl
+
+# Check package changes
+elm diff elm/http 1.0.0 2.0.0
+```
+
 ### ⭐ Why Elm, then?
 
 #### Types and inference
@@ -162,12 +172,13 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 
 ### 🎞️ Helpful talks
 
-1. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
-2. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U) (good for teams)
-3. [Scaling Elm apps](https://www.youtube.com/watch?v=DoA4Txr4GUs)
-4. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^4]
-5. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
-6. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
+1. [Let's be mainstream!](https://www.youtube.com/watch?v=oYk8CKH7OhE)
+2. [Life of a file](https://www.youtube.com/watch?v=XpDsk374LDE)
+3. [Teaching Elm to beginners](https://www.youtube.com/watch?v=G-GhUxeYc1U) (good for teams)
+4. [Scaling Elm apps](https://www.youtube.com/watch?v=DoA4Txr4GUs)
+5. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^4]
+6. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
+7. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
 
 
 ### 🗺️ Real world examples
