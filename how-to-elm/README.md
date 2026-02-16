@@ -1,27 +1,29 @@
 # README
 
-> The good bits of Elm
-> It's a good idea to practice regularly![^1]
+> All the good bits of Elm ... (without `elm-format`)
 
-1. It forces you to build things without too many dependencies
-2. Some low-level detail must be done by the user (js makes you a bit lazy)
+It's better to practice a little and often, otherwise you'll get rusty.[^1]
 
-These can be a blessing and a curse, as some things might be better with a dedicated package, such as image uploads. For that you have to understand what `base64` is and how file uploads work.
+1. Elm can be quite low-level sometimes but it removes dependencies
+2. While prototyping routes see how much coding you can avoid doing
+3. Only code up forms if they're (a) simple (b) effective (c) fun
 
-I'm not using `elm-format` in this repository, as I quite like my _own_ commenting style.
+Elm with Ai is very hit-and-miss at the moment, but (in my rules) I try to reduce coding for the idea validation period; brutalist, minimalist, zen design. The API and database seems fine by hand, but it would be remiss to avoid Ai, which is now quite capable of paper-prototyping a UI very quickly. This can be tested with live users.
+
+Elm can later be used to code up an app properly, or outsourcing is an option. Certain areas of Elm are not particularly well developed, such as [image uploads](src/File/ImageForm.elm). A [cheap image service](https://uploadcare.com/) can be used, but you'll not get the fancy UI (ports maybe).
 
 
-## Rules
+## Rules for myself
 
-> I need to start setting rules for myself ...
-> How do I keep my programs simple? What's in? What's out?
+> Set a learning frame and some rules for yourself
+> What's in? What's out?[^2] How do I keep my programs simple?
 
-1. Is this file the **best practice** way of doing things?
-2. What format am I using? (custom headings or `elm-format`)
-3. What indentation style am I preferring? (`2` or `4` spaces)
-4. What's your **learning frame**? What's "in"? What's "out"?[^2]
-5. Could Ai do this quicker/better? Use that then!!![^3]
-6. See the [simplicity book](https://pragprog.com/titles/dtcode/simplicity/) and follow it's advice.
+**Don't repeat yourself** (one is enough, no duplicate examples)
+
+1. Is this **best practice** to the best of my knowledge?
+2. Is this something **Ai could do better**? Why break my back?[^3]
+3. Is there a tool I can use to spead up validation?[^4]
+4. Is this the [simplest](https://pragprog.com/titles/dtcode/simplicity/) program I could possibly make?
 
 
 ## Build
@@ -38,17 +40,19 @@ There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki p
 
 ## Tools and guides
 
-1. [Elm Watch](https://lydell.github.io/elm-watch/)[^4] (live reload your app)
+1. [Elm Watch](https://lydell.github.io/elm-watch/)[^5] (live reload your app)
 2. [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (common ways of Elm-ing)
-3. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^5]
+3. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^6]
 
 
 [^1]: Coming back after 2-3 months off and I'm rusty as fuck!
 
-[^2]: I'm using Elm as my go-to language and for that reason learning the details in a little more depth than, say, Python. However, my purpose is prototyping and I still want to keep my learning light. Some implementations (SPA, packages) get complicated quite quickly as an app scales.
+[^2]: Elm is generally my go-to language in terms of depth of learning. Python is extra. I'm more concerned with doing things the Elm way, but realise that as programs scale up they're generally a bit too complicated for me (a large Elm Spa, for example) ... so I keep learning light and aim for simplicity for prototyping. If it makes money, I can hire.
 
 [^3]: You can always "make it perfect" later, but time is of the essence. Can you mock it up? Iterate quicker without coding? Pair program with Ai or a professional programmer?
 
-[^4]: You'll need to manually point the `elm-watch.json` config to your current working package.
+[^4]: Tally forms, for example, is really excellent and worth using if forms are in any way complex. There's no point in spending hours on a form if it doesn't convert. Once you've got a working formula, you can code it up proper.
 
-[^5]: This is particularly frustrating. Sometimes Elm (or the browser) caches the output file, so if you make a line change (such as updating a string) it won't properly "reload" in your browser. You could possibly use _incognito mode_ (private) instead.
+[^5]: You'll need to manually point the `elm-watch.json` config to your current working package.
+
+[^6]: This is particularly frustrating. Sometimes Elm (or the browser) caches the output file, so if you make a line change (such as updating a string) it won't properly "reload" in your browser. You could possibly use _incognito mode_ (private) instead.

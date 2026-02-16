@@ -1,14 +1,15 @@
 module CustomTypes.Username exposing (Username, decoder, toString)
 
 {-| ----------------------------------------------------------------------------
-    A Simple `Username` type (@imported by `Cred.elm`)
+    An Opaque `Username` Type (consumed by `CustomTypes.Cred`)
     ============================================================================
-    ⚠️ Remember, `Username` is an OPAQUE TYPE and doesn't expose it's internals.
-    The ONLY way to get a `Username` is to decode one from `json`. To get the
-    `String`, we can expose the `toString` function, once we've decoded.
+    > See `CustomTypes.Cred` for more information on Opaque Types
 
-    It's quite nice to have each key element with it's own decoder and `toString`
-    function, for ease of naming conventions.
+    `Username` can only be created internally by this module, once it's been
+    decoded from the `Cred` endpoint. It's quite nice to have each key element
+    with it's own decoder and `toString` function, for ease of naming conventions.
+
+    This is how @rtfeldman does it in his Elm Spa example.
 -}
 
 import Json.Decode as Decode exposing (Decoder)

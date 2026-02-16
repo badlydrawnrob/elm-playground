@@ -2,9 +2,11 @@
 
 > 📅 "If I miss one day of practice, I notice it. If I miss two days, the critics notice it. If I miss three days, the audience notices it." — Ignacy Jan Paderewski
 
-**It's super easy to forget so aim to practice once per week!** This is the killer. If I step away from programming for a few weeks, you really feel the rust gathering. This repository is a testing ground for all things Elm, and it's a year-long learning curve to build bigger.
+**It's super easy to forget so aim to practice once per week!** A little every day is even better This is the killer; if I step away from programming for a few weeks, you really feel the rust gathering. It doesn't take too long to learn Elm, but give yourself 6-12 months to learn it deeply and you'll be a better programmer for it. Then you can build bigger!
 
-There's plenty of [javascript guides](https://eloquentjavascript.net/) out there, so the focus is squarely on a statically typed functional style, good habits, and shaping a good programmer. For a study aid, use [Anki flashcards](https://github.com/badlydrawnrob/anki) and a clear learning frame.[^1] They're great for revision, but no substitute for _building_ things.
+This is a testing ground for all things Elm; a great place to start learning. I'm squarely focused on statically typed functional programming in this repo, which will shape you as a programmer, instilling good habits. Elm compiles to javascript, but there's no need to learn js to use it (although there's a [good guide](https://eloquentjavascript.net/) here).
+
+As you evolve as a coder, you should carve out a clear learning frame.[^1] If you'd like a study aid, I've built a great little tool for memory called [Anki flashcards](https://github.com/badlydrawnrob/anki), which really helps lock-in best practices and syntax. While they're great for revision, it's no substitute for _building_ things.
 
 ## 🔰 Beginners
 
@@ -95,6 +97,32 @@ priceCheck item =
 ```terminal
 >> checkout shopping
 [2.5, 1.5, 1.5] : List Float
+```
+
+### Don't go crazy with types
+
+> When you first start using types it takes some getting used to.
+> Then you get a little advanced and you go a little types crazy!
+
+A good rule of thumb is: unless there's a very good reason not to, stick with simple types! Start basic and gradually increase it's complexity as and when needed (see "Life of a file" below). The examples below show the evolution of an `Album`, but `Maybe` is not needed! You can use a simple `[]` empty list instead.
+
+```elm
+-- Simple list of song titles
+[ "Absolute beginners", "Get back", "Those shoes"]
+
+-- Add more detail with a record
+[{ title = "Absolute beginners", runtime = (5,36)}]
+
+-- Gradually increase complexity as needed
+type Album
+  = Album (List Song)
+
+type alias Song
+  = { title : String, runtime : (Int, Int) }
+
+-- `Maybe` is best saved for potential missing values
+type Album
+  = Album (Maybe (List Song))
 ```
 
 #### Beautiful error messages
@@ -215,7 +243,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 - [Elk Herd](https://github.com/mzero/elk-herd) (by @mzero but it's complex)
 
 
-[^1]: A learning frame is what you are, and are not, prepared to learn. It's helpful to sketch this out upfront and stick to it. It can change over time, but setting goals and limits keeps you focused. What is it you need to learn, exactly? Here's [an example](https://github.com/badlydrawnrob/elm-playground/tree/master/programming-elm) of a learning frame.
+[^1]: A learning frame is what you are, and are not, prepared to learn. It's helpful to sketch this out upfront and stick to it. It can change over time, but setting goals and limits keeps you focused. What is it you need to learn, exactly? What's the outcome you're looking to achieve? Here's [an example](https://github.com/badlydrawnrob/elm-playground/tree/master/programming-elm) of a learning frame.
 
 [^2]: Meaning efficient with my time, not lazy (ok, a little lazy). A simple route with less code and complexity? I'll take it. Take this [carousel](https://github.com/erkal/erkal.github.io/blob/main/pages/Carousel/Carousel.elm) in Elm, for example. Want to be a great programmer? Go ahead, take your time! Prefer the easy route? Use [`scroll-snap`](https://css-tricks.com/css-only-carousel/) with CSS. It all depends on your vision: I'd rather have more time to pursue other things, keep things simple.
 
