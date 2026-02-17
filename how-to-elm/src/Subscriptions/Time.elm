@@ -8,7 +8,8 @@ module Subscriptions.Time exposing (..)
         @ https://package.elm-lang.org/packages/elm/time/latest/
 
     Time in programming is quite complex. So far, I've only had to deal with a
-    time that's AWARE (as in, using a timezone).
+    time that's AWARE (as in, using a timezone). The upside to doing everything
+    low-level without dependencies is that it's unlikely to break!
 
     `paused : Bool` (original) -> `running: Bool` as code reads better.
 
@@ -46,6 +47,7 @@ module Subscriptions.Time exposing (..)
     ----------------------------------------------------------------------------
     1. ✅ Ability to turn off (pause) the clock
     2. `Time.minutes` does not have leading `0`
+        - @ https://sporto.github.io/elm-workshop/05-effects/05-format-time.html
     3. Design a digital clock using `elm/html`
         - Fonts, colors, `elm/svg` clock face with red second hand.
 -}
