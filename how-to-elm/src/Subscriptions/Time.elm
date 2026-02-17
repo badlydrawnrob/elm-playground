@@ -1,61 +1,65 @@
 module Subscriptions.Time exposing (..)
 
+{-| ----------------------------------------------------------------------------
+    Subscriptions: Time (slightly more complex)
+    ============================================================================
+    > For more about `Time` in programming, see `/words/time.md`.
+
+        @ https://package.elm-lang.org/packages/elm/time/latest/
+
+    Time in programming is quite complex. So far, I've only had to deal with a
+    time that's AWARE (as in, using a timezone).
+
+    `paused : Bool` (original) -> `running: Bool` as code reads better.
+
+
+    Tasks
+    -----
+    > 🔍 Tasks are async operations that are tricky to understand.
+
+        @ https://tinyurl.com/ohanhi-tasks-in-modern-elm
+        @ https://package.elm-lang.org/packages/elm/core/latest/Task
+
+    We use a `Task.perform` to setup our timezone (takes a `Task Never a` that
+    never fails); later we update the `Time.every` minute.
+
+
+    Cmd
+    ---
+    You need to briefly understand a command. Basically we're sending a message
+    outside of Elm to get/set the timezone.
+
+
+    Subscriptions
+    -------------
+    We "pull" in from the outside world by subscribing to JS time. A subscription
+    is given some configuration, and you describe how to to produce `Msg` values.
+
+
+    Debug
+    -----
+    Very useful for checking if the `model.running` is on or off.
+
+
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    1. ✅ Ability to turn off (pause) the clock
+    2. `Time.minutes` does not have leading `0`
+    3. Design a digital clock using `elm/html`
+        - Fonts, colors, `elm/svg` clock face with red second hand.
+-}
+
 import Browser
-import CmdSubHttp exposing (Msg)
 import Html exposing (..)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Task
 import Time
-
-
-{-| Taking the time ...
--------------------
-
-    I don't really understand `Time` that well, nor using `Task`, so would
-    need to seek out better tutorials or documentation. I guess `Task` is to
-    generate `Cmd -> Msg` sync or async.
-
-    1. [x] Ability to `TurnOffClock` with an `onClick` handler and `if/else`
-       statement in the `subscriptions` function. Turn the `Time.every` off.
-    2. [x] Make the digital clock look nicer (fonts, positioning)
-    3. [ ] Use `elm/svg` to make an analog clock with a red second hand!
-
-    ----------------------------------------------------------------------------
-
-    Between time zones based on ever-changing political boundaries and
-    inconsistent use of daylight saving time, human time should basically
-    never be stored in your `Model` or database! It is only for display!
-
-    POSIX Time
-    ----------
-
-    Everywhere you go on Earth, POSIX time is the same. It is just the
-    number of seconds elapsed since some arbitrary moment.
-
-    Time Zones
-    ----------
-
-    A “time zone” is a bunch of data that allows you to turn POSIX time into
-    human time. Basically, it's complicated — to show a human being a time,
-    you must always know the `Time.Posix` and `Time.Zone`.
-
-    This is handled in `View`, NOT the `Model`.
-
-    More info
-    ---------
-
-    See `elm/time` for more information on handling times. Especially if you're
-    working on scheduling, calendars, etc.
-
-      @ https://package.elm-lang.org/packages/elm/time/latest/
-
--}
-
+-- import Debug
 
 
 -- Main ------------------------------------------------------------------------
-
 
 main =
     Browser.element
@@ -68,18 +72,11 @@ main =
 
 
 -- Model -----------------------------------------------------------------------
--- #1: Getting `Time.Zone` is tricky. We created a `command` with
---     `Task.perform ... ...` — we command the runtime to give us the
---     `Time.Zone` wherever the code is running. See `Task` for more
---     information on how this works:
---
---       @ https://package.elm-lang.org/packages/elm/core/latest/Task
-
 
 type alias Model =
     { zone : Time.Zone
     , time : Time.Posix
-    , paused : Bool
+    , running : Bool
     }
 
 
@@ -109,54 +106,56 @@ update msg model =
             )
 
         AdjustTimeZone newZone ->
-            ( { model | zone = newZone }
+            ( { model
+              | zone = newZone
+              , running = True
+              }
             , Cmd.none
             )
 
         StopStartClock ->
-            ( { model | paused = not model.paused }
+            ( { model | running = not model.running }
             , Cmd.none
             )
 
 
 
 -- Subscriptions ---------------------------------------------------------------
--- #1: We use `1000` which means every second. We could've also said `60 * 1000`
---     for every minute, or `5 * 60 * 1000` for every five minutes.
---
---     We also need a function that turns the current time into a `Msg`. For
---     every second, the current time is going to turn into a `Tick <time>` for
---     our `update` function.
---
---     A subscription is given some configuration, and you describe how to
---     to produce `Msg` values.
 
 
+{-| Pull data from outside world. Clock is running? Send time. -}
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    if model.paused then
-        Sub.none
+subscriptions clock =
+    if clock.running then
+        Time.every 1000 Tick -- every second
 
     else
-        Time.every 1000 Tick
+        Sub.none
 
 
 
--- #1
--- View
+-- View ------------------------------------------------------------------------
+-- Not sure `viewHelper` makes it any easier to read, but it's shared now.
 
+viewTime : (Time.Zone -> Time.Posix -> Int) -> Model -> String
+viewTime zoneFunc m =
+    String.fromInt (zoneFunc m.zone m.time)
+
+viewTimeString : String -> String -> String -> Html msg
+viewTimeString hr min sec =
+    text (String.concat [hr, ":", min, ":", sec])
 
 view : Model -> Html Msg
 view model =
     let
         hour =
-            String.fromInt (Time.toHour model.zone model.time)
+            viewTime Time.toHour model
 
         minute =
-            String.fromInt (Time.toMinute model.zone model.time)
+            viewTime Time.toMinute model
 
         second =
-            String.fromInt (Time.toSecond model.zone model.time)
+            viewTime Time.toSecond model
     in
     div
         [ style "width" "200px"
@@ -166,16 +165,22 @@ view model =
             [ style "color" "red"
             , style "font-family" "system-ui"
             ]
-            [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
-        , viewButton model.paused
+            [ viewTimeString hour minute second ]
+        , viewButton model.running
         ]
 
 
-viewButton : Bool -> Html Msg
-viewButton switch =
-    case switch of
-        True ->
-            button [ onClick StopStartClock ] [ text "Turn on clock" ]
+btn : Msg -> String -> Html Msg
+btn msg label =
+    button [ onClick msg ] [ text label ]
 
-        False ->
-            button [ onClick StopStartClock ] [ text "Turn off clock" ]
+viewButton : Bool -> Html Msg
+viewButton running =
+    -- let
+    --     _ = Debug.log "is running?" running
+    -- in
+    if running then
+        btn StopStartClock "Turn off clock"
+
+    else
+        btn StopStartClock "Turn on clock"

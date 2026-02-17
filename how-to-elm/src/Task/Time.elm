@@ -3,38 +3,36 @@ module Task.Time exposing (main)
 {-| ----------------------------------------------------------------------------
     Tasks: a simple Time example
     ============================================================================
-    Original: @ https://sporto.github.io/elm-workshop/05-effects/04-tasks.html
-    We've got to do quite a bit manually, such as converting `Int` to `String`
-    days and hours.
+    > Original: @ https://sporto.github.io/elm-workshop/05-effects/04-tasks.html
+
+    The `Time` module asks us to do quite a bit manually: e.g: `Int`->`String`
+    for the day. See a detailed explanation of the important parts of time in
+    `/words/time.md`, and in `/python-playground/building-with-fast-api` where
+    we validate a JWT with a timestamp.
 
     See also: @ https://tinyurl.com/elm-spa-timestamp (Posix)
-              @ https://tinyurl.com/elm-spa-metadata-timestamp (ISO)
-              @ https://www.iso.org/iso-8601-date-and-time-format.html
+              @ https://tinyurl.com/elm-spa-metadata-timestamp (ISO String)
+              @ https://www.iso.org/iso-8601-date-and-time-format.html (What is?)
 
-              @ https://tinyurl.com/elm-lang-posix-alternative (better?)
               @ https://package.elm-lang.org/packages/justinmimbs/time-extra/1.2.0/
               @ https://discourse.elm-lang.org/t/date-and-time-conversion/9677
 
     Tasks
     -----
+    > `Task x Posix` should `Never` fail.
+
     `Time.now` is a `Task` that can never fail, so `Task.perform` can be used.
-    for this. Tasks with a potential `Error` need to be handled with `Task.attempt`.
+    If a `Task` does have a potential `Error`, we handle it with `Task.attempt`.
 
 
-    Notes
-    -----
-    1. `Task x Posix` should `Never` fail, as `Time.now` is a function that, so
-        the `Nothing` value isn't strictly necessary.
-    2. Getting the `pm` in the correct place may need another helper function ..
-
-
-    Time
-    ----
-    As mentioned, we must convert data to usable strings.
-
-    - `0` -> `"12pm"` (hour)
-    - `Mon` -> `"Monday" (weekday)
-
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    1. "This should never happen" problem
+        - Is `Nothing` really necessary? Our task can never fail.
+        - The only feasible reason it'd fail is slow data / no js
+        - An `""` empty string or default value could be used.
+    2. Integrate `ISO 8601` which our API will likely use.
 -}
 
 import Browser
