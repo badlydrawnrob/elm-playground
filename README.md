@@ -4,7 +4,9 @@
 
 **It's super easy to forget so aim to practice once per week!** A little every day is even better This is the killer; if I step away from programming for a few weeks, you really feel the rust gathering. It doesn't take too long to learn Elm, but give yourself 6-12 months to learn it deeply and you'll be a better programmer for it. Then you can build bigger!
 
-This is a testing ground for all things Elm; a great place to start learning. I'm squarely focused on statically typed functional programming in this repo, which will shape you as a programmer, instilling good habits. Elm compiles to javascript, but there's no need to learn js to use it (although there's a [good guide](https://eloquentjavascript.net/) here).
+## An Elm playground
+
+**This is a testing ground for all things Elm; a great place to start learning.** I'm squarely focused on statically typed functional programming in this repo, which will shape you as a programmer, instilling good habits. Elm compiles to javascript, but there's no need to learn js to use it (although there's a [good guide](https://eloquentjavascript.net/) here).
 
 As you evolve as a coder, you should carve out a clear learning frame.[^1] If you'd like a study aid, I've built a great little tool for memory called [Anki flashcards](https://github.com/badlydrawnrob/anki), which really helps lock-in best practices and syntax. While they're great for revision, it's no substitute for _building_ things.
 
@@ -19,22 +21,24 @@ After these two languages you'll have a decent grounding in Computer Science the
 
 ## 🚀 Getting started
 
-> 📖 I think the first and most important thing is that you've got to [have a goal and a vision](https://www.audible.co.uk/author/Arnold-Schwarzenegger/B000AP7VZW) — Arnie
+> 📖 The first and most important thing is that you've got to [have a goal and a vision](https://www.audible.co.uk/author/Arnold-Schwarzenegger/B000AP7VZW) — Arnie
 
-**Here are my goals:**
+**My learning goals:**
 
-1. Prototyping and validating a business idea
-2. Writing as little code as possible[^2]
-3. Teaching beginners (kids and adults)
+1. Brutalist, minimal, zen code, writing as little as possible[^2]
+2. Cut code down and cherry-pick the important stuff (just-in-time)
+3. Validating a business idea with paper prototyping
+4. Teach beginners, pre-CompSci, and entrepreneurs (kids and adults)
 
-**If I were to start over and learn again, I would:**
+**If I were learning from zero I would ...**
 
-1. Start with [HTDP](https://github.com/badlydrawnrob/racket-playground/tree/master/htdp) and then [Elm](https://www.manning.com/books/elm-in-action)
-2. Learn only a subset of CompSci[^3] (first two chapters of HTDP, for example)
-3. Learn the best practices for `http` servers, `json` and `REST` APIs
-4. Learn how to use Ai as a teacher, or for pair-programming
-5. Learn from a mentor (good habits and what _not_ to do)
-6. Learn how to frame and structure your learning (fail fast, just build!)
+1. Begin with [HTDP](https://github.com/badlydrawnrob/racket-playground/tree/master/htdp) and then [Elm](https://www.manning.com/books/elm-in-action) (not Python!)
+2. Build quickly and build that muscle memory (with live users)
+3. Find a great teacher and mentor (good habits / what _not_ to do)
+4. Learn how to frame and structure my learning (_barely_ learn it deeply)
+5. Understand best practices for APIs, HTTP, and JSON (essentials)
+6. Use Ai as a teacher and pair programming (with caution)
+7. Take a subset of CompSci[^3] and learn it thoroughly (e.g: web apps)
 
 ### Basic commands
 
@@ -71,7 +75,7 @@ elm diff elm/http 1.0.0 2.0.0
 
 ### ⭐ Why Elm, then?
 
-#### Types and inference
+#### Types and inference ...
 
 > Why do we need types? It's best illustrated by the old joke ...
 >
@@ -99,7 +103,7 @@ priceCheck item =
 [2.5, 1.5, 1.5] : List Float
 ```
 
-### Don't go crazy with types
+#### ... But don't go crazy with them
 
 > When you first start using types it takes some getting used to.
 > Then you get a little advanced and you go a little types crazy!
@@ -154,18 +158,28 @@ run into unexpected values partway through a List.map, List.foldl, etc. Read
 Hint: Try using String.fromInt to convert it to a string?
 ```
 
-#### Documenting your code
+#### Self-documenting code
+
+> You eventually get used to writing types, but also `elm-format`
 
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
 - Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
 
-#### Testing your code
 
-> 😌 I'm lazy, and rarely test, but it's good practice to.
+#### Dependencies, release cycle, testing
 
-This mindset will land you in trouble if you're using Python, or any language without strict typing. It's always wise to test your programs as your visitors would use them, as typing only [gets you so far](https://discourse.elm-lang.org/t/what-not-to-unit-test/3511). For example, I use [Bruno](https://www.usebruno.com/) to test my APIs, Hotjar for user testing, manual tests, ocassionally logs, but I generally don't write unit tests. Remember, Elm only checks data types; it won't guarantee your inputs and outputs are what you'd expect.
+> 😌 Piece of mind compared to other languages (like Python)
 
-My goal is prototyping; not testing is a calculated risk, as it (1) speeds up development, and (2) makes life easier for a one-man-show. Forgive me for being a little lax. For mission-critical production projects, finance, larger programs, or working in bigger teams, a lot can go wrong without tests!
+
+
+1. Less unit testing (if it compiles it works)
+2. No dependency hell (versioning and rarely break)
+3. No runtime errors (here's looking at you, javascript)
+4. Speeds up development (as you're confident it's correct)
+5. Types are enforced (without having to write them)
+6. No `None`, `null`, or `undefined`!
+
+I'm lazy, and rarely test prototypes, but it's good practice to. This mindset will land you in trouble if you're using Python, or any language without strict typing. In general I test my apps like a visitor would, or with a GUI, like [Bruno](https://www.usebruno.com/). Remember, Elm only checks data types; it won't guarantee your inputs and outputs are what you'd expect. For mission-critical production projects, finance, larger programs, or working in bigger teams, a lot can go wrong without tests!
 
 
 ## Learning Elm
@@ -207,6 +221,7 @@ My goal is prototyping; not testing is a calculated risk, as it (1) speeds up de
 5. [Making impossible states impossible](https://www.youtube.com/watch?v=IcgmSRJHu_8)[^4]
 6. [Make data structures](https://www.youtube.com/watch?v=x1FU3e0sT1I)
 7. [From Rails to Elm and Haskell](https://www.youtube.com/watch?v=5CYeZ2kEiOI&list=PLfc1FQC2AVoO5pibnlTz2Qj-UJ1DQXuSo)
+8. [Simple made easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
 
 
 ### 🗺️ Real world examples

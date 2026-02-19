@@ -3,16 +3,22 @@ module File.ImageForm exposing (..)
 {-| ----------------------------------------------------------------------------
     Image POST `--form` to server: `base64` with MultiPart
     ============================================================================
-    ⚠️ Improve the documentation of this file and it's example.
+    ✏️ Improve the documentation of this file and it's example.
 
-    As always, it's best to OUTSOURCE to Tally forms while validating and
-    deciding on architecture and design routes. When you're ready, use a reliable
-    image server. ImgBB works ok, but I couldn't get @ http://freeimage.host to
-    work. Also looks great is: @ https://uploadcare.com/
+    Poor UI and low-data are the fundamental things to improve, so focus on those
+    things first! Early prototypes can use Tally forms for paper prototyping the
+    `upload->convert->display` interface, and help shore up architecture and design
+    routes.
+
+    Remember, you've got to HOST these images; uploading is a small part! See
+    `src/ImageServer` for reliable image servers.  I tried and failed to get
+    @ http://freeimage.host working, so @ https://imgbb.com is fine for now.
 
 
     Learning
     --------
+    > ⚠️ How is the user experience of uploading from an iPhone?
+
     1. Try to avoid naming clashes with other Elm packages
     2. Avoid large files and error check for a file size limit
     3. Have a `LoadingSlowly` status for files `200kb`-`500kb`
@@ -24,8 +30,8 @@ module File.ImageForm exposing (..)
     > @ https://tinyurl.com/simplest-way-to-upload-img
     > @ https://github.com/badlydrawnrob/elm-playground/issues/43
 
-    Also see `elm/file` package for examples (Elm guide also)
-    The server must accept `base64` POST in the URL and allow CORS.
+    Also see `elm/file` package and Elm guid for examples.
+    Server must accept `base64` POST in the URL and allow CORS.
 
 
     Sentence method
@@ -52,7 +58,8 @@ module File.ImageForm exposing (..)
     @ https://base64.guru/converter/decode/image (base64->image)
     @ https://www.browserling.com/tools/strip-slashes (strips slashes json url)
 
-    > Convert to base64; copy from clipboard | convert to file format.
+    > 1. Convert to base64
+    > 2. Copy from clipboard | convert to file format
 
     ```terminal
     base64 image.jpg > base64.txt
@@ -60,14 +67,12 @@ module File.ImageForm exposing (..)
     ```
 
 
-    Questions
-    ---------
-    1. Why can `Task.perform` NEVER fail?
-
-
     ----------------------------------------------------------------------------
     WISHLIST
     ----------------------------------------------------------------------------
+    > ⚠️ Documentation and examples could be improved. Consider low-data 4g solutions
+    > like lazy-loading, 1x/2x/3x resolutions, multiple images, and so on.
+
     1. Could we handle the `ImageUrl` and view model better?
         - Is a `Maybe` type essential? (Or use `Maybe.map` in view)
         - Could our data structures and flow be improved?
@@ -90,6 +95,10 @@ module File.ImageForm exposing (..)
     6. Try and prettify the code and HTML
         - It looks like boilerplate right now
 
+    Questions
+    ---------
+    1. Why can `Task.perform` NEVER fail?
+
 -}
 
 import Browser
@@ -99,6 +108,7 @@ import Html exposing (Html, button, div, p, strong, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Http exposing (..)
+import File.ImageServer as Server
 import Json.Decode as D exposing (decodeString, Decoder)
 import Task
 import Url.Builder as UB
@@ -125,6 +135,9 @@ type alias Model =
   , imageName : String
   , imageUrl : ImageUrl
   }
+
+type alias ImageSize
+    = String
 
 init : () -> (Model, Cmd Msg)
 init _ =
@@ -169,12 +182,12 @@ Some servers can use `Http.request` and `Http.fileBody` for the file itself. Eit
 way the `<data-string>` should be URL % encoded.
 
 You can send multiple files with `Http.multipartBody` (see docs)  -}
-postImage : String -> String -> Base64 -> Cmd Msg
-postImage expiration key file =
+postImage : String -> Server.ApiKey -> Base64 -> Cmd Msg
+postImage expiration (Server.ApiKey str) file =
     Http.request
         { method = "POST"
         , headers = []
-        , url = buildUrl expiration key
+        , url = buildUrl expiration str
         , body =
             Http.multipartBody
                 [ Http.stringPart "image" file ]
@@ -221,13 +234,11 @@ update msg model =
 
     ImageLoaded base64 ->
         let
-            {-|
-                ⚠️ Strips the metadata from `Base64` string. Is it important?
+            -- ⚠️ Strips the metadata from `Base64` string. Is it important?
 
-                1. Convert uploaded image to a `base64` string with `File.toUrl`
-                2. Some APIs don't like the `data:` metadata prefix. Strip it
-                3. Split at the `,` then drop the metadata part
-            -}
+            -- 1. Convert uploaded image to a `base64` string with `File.toUrl`
+            -- 2. Some APIs don't like the `data:` metadata prefix. Strip it
+            -- 3. Split at the `,` then drop the metadata part
             chopBase64 = String.join "" (List.drop 1 (String.split "," base64))
         in
         ( { model | image = Just chopBase64 }
@@ -238,7 +249,7 @@ update msg model =
     for another "lifting" of the `Maybe` type. Just send it along! -}
     SendToServer base64 ->
         ( model
-        , postImage "600" "104e88f54082d98be7ac1d3649ba21d1" base64 )
+        , postImage "600" (Server.ApiKey "104e88f54082d98be7ac1d3649ba21d1") base64 )
 
     {- #! See the custom type for `imageUrl` -}
     SentImage payload ->
