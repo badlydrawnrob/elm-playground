@@ -40,6 +40,17 @@ After these two languages you'll have a decent grounding in Computer Science the
 6. Use Ai as a teacher and pair programming (with caution)
 7. Take a subset of CompSci[^3] and learn it thoroughly (e.g: web apps)
 
+**My personal coding style**
+
+1. Ai prototype design routes (but solidify by hand)
+2. Barely any state (Tesla 5 steps)
+3. Brutalist dependencies (what can be removed?)
+4. Cut code down (the web obesity crisis)
+5. Reduce complected code (see "Simple made easy")
+6. Remove complexity and simplify
+
+
+
 ### Basic commands
 
 ```terminal
@@ -77,7 +88,7 @@ elm diff elm/http 1.0.0 2.0.0
 
 #### Types and inference ...
 
-> Why do we need types? It's best illustrated by the old joke ...
+> **Why do we need types? It's best illustrated by the old joke ...**
 >
 > A programmer's wife told him "Go to the store and buy milk and if they have eggs, get a dozen." He came back a while later with 12 cartons of milk!
 
@@ -105,10 +116,9 @@ priceCheck item =
 
 #### ... But don't go crazy with them
 
-> When you first start using types it takes some getting used to.
-> Then you get a little advanced and you go a little types crazy!
+> Types take a while to get used to ... but don't go type crazy!
 
-A good rule of thumb is: unless there's a very good reason not to, stick with simple types! Start basic and gradually increase it's complexity as and when needed (see "Life of a file" below). The examples below show the evolution of an `Album`, but `Maybe` is not needed! You can use a simple `[]` empty list instead.
+There's a tendency when learning custom types to use them everywhere. Don't! Unless there's a very good reason not to, you can safely stick with basic types! As your program grows, you _might_ decide to group functions around a particular type, then you _may_ decide to gradually increase type complexity as and when it's needed (see "Life of a file" below). Here's an example of the evolution of a type `Album` ...
 
 ```elm
 -- Simple list of song titles
@@ -128,6 +138,8 @@ type alias Song
 type Album
   = Album (Maybe (List Song))
 ```
+
+It's worth nothing that `Maybe` is **not** needed here. Not at all! It complects things. We now have to "lift" the `List Song` to update it and "wrap" the value inside the `Maybe` type again. A lot of unnecessary work! Always, _always_, ask "how can my types be simplified?" for inputs, outputs, and everything in between.
 
 #### Beautiful error messages
 
@@ -158,24 +170,39 @@ run into unexpected values partway through a List.map, List.foldl, etc. Read
 Hint: Try using String.fromInt to convert it to a string?
 ```
 
+#### Other benefits
+
+> There's a lot to learn, but lots of upsides!
+
+1. Argument order (and types) can be enforced
+2. Built-in tooling and package management (no million things to install)
+3. Built-in type inference and nicer annotations (than Python)
+4. A style-guide to format your code (best practices and plugin)
+5. Fewer dependencies and longer-lasting packages (no constant updates)
+6. It becomes easier to read code by their signature
+7. Mixing of types isn't allowed (in certain data structures)
+8. Type signatures give rules for "what" (don't always need to know "how")
+9. No mutations make for safer programs (immutable data)
+
 #### Self-documenting code
 
 > You eventually get used to writing types, but also `elm-format`
 
+You eventually begin to read code by it's type-signatures only. Aliases and Types become self-explantory (less documentation) and act as style-guides (interfaces).
+
 - Here's [how packages are documented](https://package.elm-lang.org/help/documentation-format)
 - Elm package [design guidelines](https://package.elm-lang.org/help/design-guidelines)
+- Formatting your code [with `elm-format`](https://github.com/avh4/elm-format) (although inperfect)
 
 
 #### Dependencies, release cycle, testing
 
 > 😌 Piece of mind compared to other languages (like Python)
 
-
-
 1. Less unit testing (if it compiles it works)
 2. No dependency hell (versioning and rarely break)
-3. No runtime errors (here's looking at you, javascript)
-4. Speeds up development (as you're confident it's correct)
+3. No runtime errors (if it compiles it works, unlike javascript)
+4. Speeds up development (confident prototyping and correctness)
 5. Types are enforced (without having to write them)
 6. No `None`, `null`, or `undefined`!
 
