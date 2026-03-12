@@ -114,6 +114,8 @@ priceCheck item =
 [2.5, 1.5, 1.5] : List Float
 ```
 
+Types are checked at compile time by running `elm make`, so we can be confident our program works. The `.js` file Elm creates _does not_ contain types, but holds program logic with our values and functions. We don't really care what that javascript looks like, as it isn't meant to be read.
+
 #### ... But don't go crazy with them
 
 > Types take a while to get used to ... but don't go type crazy!
@@ -143,7 +145,7 @@ It's worth nothing that `Maybe` is **not** needed here. Not at all! It complects
 
 #### Beautiful error messages
 
-This is where Elm really shines, everything is easy to install and just works! The error messages are clear and helpful, guiding you towards a correct solution, and everything is built in (unlike Python with it's cryptic error messages, `None` values, and [many](https://typing.python.org/en/latest/#typing-related-tools) type checking packages).
+This is where Elm really shines, everything is easy to install and just works! The error messages are clear and helpful, guiding you towards a correct solution, and everything is built in (unlike Python with it's cryptic error messages, `None` values, and [many](https://typing.python.org/en/latest/#typing-related-tools) type checking packages). Errors such as bad types, reusing variables, missing branches, help a lot when refactoring code.
 
 ```elm
 checkout ["oat milk", 2, "marshmallows"]

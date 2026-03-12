@@ -6,16 +6,22 @@
 - Differences to [Elm](https://monkeyjunglejuice.github.io/blog/best-programming-language-for-beginner.essay.html#org1b145a8) and [Ocaml](https://gist.github.com/jplew/bbe5ce7f4f6f13bd8fb366e64341ac97)
 - Why [OCaml](https://www2.lib.uchicago.edu/keith/ocaml-class/why.html)?
 
-My main issue with a great number of programming literature is its academic nature and low-level of readability. Sometimes this is unavoidable, but I feel code doesn't need to be so hard to understand (classifications, terminology, cleverness). Some passages feel poorly written and not so clear as to what they're referring to.
+**A great number of programming literature has dense language and a low-level of readability.** This puts a lot of people off; I don't have time or inclination for deep academic theory! Don't bombard me with information that's above the level of required understanding. I don't need to know how your compiler works, or how recursion works[^1], to understand what a function does. Some passages feel poorly written and not so clear as to what they're referring to. Code doesn't need to be so hard to understand!
+
+- Structural and Nominal types -> Data types and custom types
+- Bindings and Declarations -> Variables (to give a value)
+- Interfaces -> type signatures (describe "what" is public)
+
+**So instead of classifications, terminology, and cleverness, just give me the thing to use!** Above examples give an idea of how a simpler language (Elm) makes it easier to learn. If you want to go deeper and enjoy that kind of thing, well, some concepts are just difficult (e.g: sum/union types); you'll have to put your 10,000 hours in. But for the rest of us, please just simplify it!
 
 ## Learning frame
 
-Type-driven design books are hard to come by, and most far too academic. The goal is to understand the difference between Elm and OCaml (ReasonML) and their similarities. I'm not concerned about "heavy lifting" programming tasks and am generally happy with Elm (client) and Python (server).
+Type-driven design books are hard to come by. The goal is to understand the difference between Elm and OCaml (ReasonML) and their similarities. I'm not concerned about "heavy lifting" programming tasks and am generally happy with Elm (client) and Python (server).
 
 1. I want to understand working with types better (and when to use them)
 2. I don't want to learn OCaml deeply (my focus is Elm applications)
 3. I'll replace OCaml-specific theory with Elm-compatible ones.
-4. If I _do_ decide to use OCaml in future, I'd keep code Elm-like.
+4. If I _do_ decide to use OCaml in future, prefer Elm-like code.
 
 To learn ReasonML or OCaml I espect to take weeks or months of time I don't have. ReasonML code examples from the book can be found [here](https://github.com/PacktPublishing/Learn-Type-Driven-Development). Here's some other things I avoid:
 
