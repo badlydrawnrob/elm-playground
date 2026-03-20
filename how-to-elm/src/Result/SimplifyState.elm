@@ -1,8 +1,37 @@
-module Result.FieldErrorRevisited exposing (..)
+module Result.SimplifyState exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    ✅ Field Error (revisited)
+    ❌ The "2:00" problem (using `Result`)
     ============================================================================
+    > The right idea but poorly executed. Use your learning and the docs for
+    > keeping code simple to improve it.
+
+    Paper prototyping should NOT do forms by hand until the user journey, API
+    data, and flow of data is clear. It's a waste of time and effort!
+
+    1. Don't store computed data!
+    2. Is tuple really the best format?
+    3. Reassess the guard functions
+        - Elm Spa blocks them with if/else inside case
+    4. Sentence method
+    5. Black box interfaces
+    6. and so on (look at the docs I'm building)
+
+    Simplifying state
+    -----------------
+    > The "2:00" problem holds far too many potential states!
+
+    Before you even touch a line of code, consider all the possible states your
+    user might give you. We're dealing with forms (not files) here, so you can
+    relieve yourself of A LOT of pain by simplifying the inputs!
+
+        "2" and "00"            -- simple inputs!
+        String.split ":" "2:00" -- a lot of pain!
+
+
+
+
+
 
     You need to SKETCH OUT THINGS better and show the flow of data.
 

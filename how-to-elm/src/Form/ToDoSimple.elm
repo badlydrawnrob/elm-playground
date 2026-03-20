@@ -1,11 +1,11 @@
 module Form.ToDoSimple exposing (..)
 
-{-| Following this tutorial:
+{-| ⚠️ Following this tutorial:
 
       @ https://dev.to/selbekk/creating-a-todo-app-in-elm-i3o
 
-    Bugs:
-    -----
+    ⚠️ Bugs:
+    -------
 
       You have 3 items. Go to "remaining items" and toggle off item #2.
       Now toggle item #3. Item #2 reappears, as if _that_ item had been

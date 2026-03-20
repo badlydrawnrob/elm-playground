@@ -3,8 +3,28 @@ module Result.FieldError exposing (..)
 {-| ----------------------------------------------------------------------------
     ⚠️ Field Error
     ============================================================================
-    > This file example is really quite hard to follow when it gets in to the
-    > error checking. I think this is a result of poor data choices up-front.
+    > This is a really awful example of checking a data type with guards. It's
+    > overly complex and considers too many state conditions.
+
+    A good example of really bad decisions about data structure and flow.
+    I hate writing text parsers!!! So don't do it. Keep your data dirt simple.
+
+    1. The less steps the better when converting one data structure to another
+    2. Overuse of `Maybe` types due to (1) makes for difficult reading
+    3. Start from the simplest data entry type possible and work up from there
+    4. Think about interfaces first, how is data passed around?
+
+    Use the sentence method, then black box thinking, consider routes. Why did
+    you choose that form structure? Why that computed data type? Why are we using
+    `Result` errors and not a `List String` of errors? Could we show ALL errors
+    at once to the user?
+
+    Once these questions are answered, you can start writing code.
+
+
+    ----------------------------------------------------------------------------
+    Original notes
+
 
     See below for why this example is flawed. You can see the Elm Guide on error
     handling here. `Result` is the main one we're concerned about:

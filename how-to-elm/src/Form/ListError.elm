@@ -1,8 +1,32 @@
-module Result.FieldMaybe exposing (..)
+module Form.ListError exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Ok with Maybe: what happens if our field is optional?
+    ❌ Form `List Error` (like Elm Spa Example)
     ============================================================================
+    This looks fine but simplify the comments and let the code do the talking.
+
+    1. This is not `Maybe` it's required and optional fields!
+    2. Cardinality may be useful to tidy up here as well
+        - But it may be out of place (not a union type)
+        - There's only two options: empty or not empty (string)
+        - There's two for empty: optional and required
+    3. Ask Ai to step you through Elm Spa's example 1,2,3.
+
+    Elm Spa's example is a little more complicated as it concerns itself with
+    both `String` errors (from form) and `Http` errors (from server), but the
+    principle is the same. It's very clever and avoids `Result` or `Maybe`.
+
+        @ https://tinyurl.com/elm-spa-example-list-error
+
+
+
+
+
+
+
+
+
+
     What about `Maybe` types? That could be an empty string, an optional number,
     etc. Our form inputs are generally strings however, but could also be an image
     a user hasn't uploaded, or an empty list of comments. Let's start with a VERY

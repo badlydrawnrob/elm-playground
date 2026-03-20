@@ -1,17 +1,21 @@
 module Message.Counter exposing (..)
 
-import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
-
-{-| Additions:
+{-| ----------------------------------------------------------------------------
+    A simple counter
+    ============================================================================
 
     1. Add a `Reset` button
     2. No negative numbers
 
-        - There may be better ways to do this, such as a Positive type:
-          @ http://tinyurl.com/elm-lang-positive-integer-type
+    There are better ways to code up positive numbers, such as:
+
+        @ http://tinyurl.com/elm-lang-positive-integer-type
 -}
+
+import Browser
+import Html exposing (Html, button, div, text)
+import Html.Events exposing (onClick)
+
 
 -- Main ------------------------------------------------------------------------
 

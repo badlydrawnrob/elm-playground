@@ -3,107 +3,81 @@ module Message.NarrowTypes exposing (..)
 {-| ----------------------------------------------------------------------------
     Narrowing types for messages
     ============================================================================
-    From @ https://programming-elm.com/ (the types have been changed).
-    See "FrontendMasters -> Advanced" for alternative "Opaque Types"!
+    > ⚠️ Nested messages add complexity and should rarely be used! Originally
+    > from @ https://programming-elm.com/ (types have been changed).
 
-    1. Nested records (state) is generally avoided
-    2. Don't optimise too early (do you really need an extensible record?)
-    3. Keep your components simple (reusable radio buttons look confusing)
-    4. Keep your types simple.
+    1. Avoid nested records wherever possible
+    2. Avoid nested messages wherever possible (see Elm Spa form)
+    3. Simplify components and types as much as possible
 
-    You should start with the simplest thing possible:
+    Sketch your routes and start with the simplest thing possible! You may wish
+    to split modules around narrowed types or patterns, but it's not necessary.
+    `Html.map` is used in Programming Elm but this is best avoided.
 
-        - A flat record
-        - A flat `Msg` type
+        - Flat record
+        - Flat `Msg` type
         - etc
 
-    And split out into modules and narrowed types when it becomes necessary, or
-    you see patterns emerge. Don't use functions like `Html.map` until they're
-    absolutely necessary.
+    As your file grows you may wish to split modules around narrowed types, or
+    when you see patterns emerge. `Html.map` should almost NEVER be used!
 
-    More about extensible records:
-    ------------------------------
-    > The extensible record must output the same record type, or one of it's
-    > fields. `SomeRecord a -> Model` will error, as it's not of the same type.
 
-        @ https://ellie-app.com/vsFPJKL8KHFa1 (a working and non-working example)
+    Reusable components
+    -------------------
+    > The Salad Builder example (Programming Elm, chapter 6) encourages reusable
+    > input functions, and Elm Land uses components.
+
+    These can be handy, but they aren't always easier to read. If you're only
+    dealing with a small number of inputs, just use plain old Html.
+
+
+    Alternative to extensible record alias
+    -------------------------------------
+    > An extensible record must output it's own type or a field value.
+
+    An extensible record in the type signature (without an alias) can work out
+    a little cleaner, as it makes the output type more obvious. Extensible records
+    allow you to group functions around a "slice" of your flat model, without the
+    need for nested records. Add minimum amount of fields for a working function.
+
+        function : { r | field : String } -> String
+        function { field } =
+            field
+
+    Some more examples ...
 
         @ https://tinyurl.com/adv-types-extensible-records (second-half only)
-        @ https://allanderek.prose.sh/extensible-records (a small warning)
+        @ https://allanderek.prose.sh/extensible-records   (a small warning)
 
-    Extensible records are helpful to group functions around a "slice" of your
-    larger, flatter, model WITHOUT the need for nested records. It's best to set
-    the extensible records to only the fields required for the function to work,
-    and unpack the fields:
-
-        type alias SomeRecord a =
-            { a | onlyNeedThisField : String }
-
-        function : SomeRecord a -> String
-        function { onlyNeedThisField } =
-            onlyNeedOneField
-
-
-    Nested records
-    --------------
-
-    The only other way to narrow types is with a nested `type alias Contact` as
-    a nested record. The downside of this is you need nested update functions
-    to handle it. This gets unwieldy with too many nested states, or something
-    crazy like `model.contact.email` records:
-
-        init =
-            { name = ""
-            , contact =
-                { email : ""
-                , phone : 0
-                }
-        }
 
     The `<<` operator
     -----------------
+    > A compose function similar to Haskell
 
-    You'll see in the `onInput` values that we're using the functional composition
-    operator `<<`. Why? `onInput supplies the `Msg` with a `String` so our narrow
-    type of `Email String` (our contact message) receives the string and passes
-    it on to `ContactMsg`. Parenthesis won't work here because our `String` is
-    sort of "silently" passed (not explicitly stated in the code). So ...
-    `(ContactMsg (Email ...))` wouldn't work! (radio buttons are different)
+    Sometimes you'll need "functional composition" where a pipe just wouldn't do.
+    This also helps to do point-free style functions, which should be used only
+    every so often, as it can lead to hard to read code.
 
-    Simple checkbox
-    ---------------
+    The `onInput` "silently" passes a string to one of the `ContactMsg` messages,
+    so we've got to use functional composition to pass it to the parent `Msg`.
 
-    See @ https://discourse.elm-lang.org/t/elm-radio-button/6608/2
-    See @ https://github.com/dwyl/learn-elm/blob/master/examples/checkboxes.elm
 
-    ⚠️ Reusable components
-    ----------------------
+    Input types
+    -----------
+    > Aim for minimal amount of HTML and CSS.
 
-    Programming Elm's "Salad Builder" (chapter 6) encourages reusing of Html
-    functions, such as `type_ "radio"`. I think these make things MORE complicated
-    as you end up with functions that take A LOT of arguments, you're abstracting
-    things in a way that can become MORE confusing.
+    A simple checkbox is straightforward.
 
-    Possibly better to just split out components as modules, but keep them simple
-    and only reuse where absolutely necessary. Keep Html as Html unless creating
-    reusable functions makes it _more_ simple to understand/read.
+        @ https://discourse.elm-lang.org/t/elm-radio-button/6608/2
+        @ https://github.com/dwyl/learn-elm/blob/master/examples/checkboxes.elm
 
-    Keep a form a form. Keep a radio button a radio button. etc.
-
-    ⚠️ Number inputs
-    ----------------
-
-    > the input value is not automatically validated to a particular format
-    > before the form can be submitted, because formats for telephone numbers
-    > vary so much around the world.
-
-    Even though `<input type="tel">` prevents submission if input isn't numbers
-    it STILL allows any old fucking character. So what's the bloody point?
+    Number inputs
 
         @ https://tinyurl.com/beware-input-type-numbers
 
-    Html and CSS sucks, so do the absolute simplest minimal thing possible.
-    Always validate with Elm.
+    Just because a number input is used does not mean there won't be bugs! Treat
+    everything as a string in general. For example, `type="tel"` will error if
+    input is not a number, but still allows characters.
 
 -}
 
@@ -174,8 +148,8 @@ view model =
 
 
 -- Update ----------------------------------------------------------------------
--- We've split out `ContactMsg` and we can use exstensible records.
 
+{- #! Merge into the main `Msg` type -}
 type ContactMsg
     = Email String
     | Phone String
@@ -183,7 +157,7 @@ type ContactMsg
 
 type Msg
     = UpdateName String
-    | ContactMsg ContactMsg
+    | ContactMsg ContactMsg -- #! This should be flattened
     | Send
 
 updateContact : ContactMsg -> Contact c -> Contact c

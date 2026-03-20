@@ -1,8 +1,16 @@
-module Result.FieldMapping exposing (..)
+module Result.InputMap exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Mapping: a few examples
+    ❌ Mapping: a few examples
     ============================================================================
+    Again a nice idea but DO NOT COMPUTE DATA IN THE MODEL!
+
+
+
+
+
+
+
     You're basically "lifting" the values over the "wall" of a `Result`, which
     will be `Err`or or `Ok value`. The the whole point of `mapN`, `andMap`,
     `andThen` is to do "error handling" and "exit" as soon as one is encountered!
@@ -37,11 +45,19 @@ validInputMins = Field "2" (Ok 2)
 validInputSecs : Field Int
 validInputSecs = Field "30" (Ok 30)
 
-{- Takes 3 arguments and ... -}
+
+
+
+
+{- Can these inputs be simplified? Takes 3 arguments and ... -}
 mapResult : Result String String ->
             Result String Int ->
             Result String Int -> Result String Song
 mapResult = Result.map3 (\title mins secs -> Song title (mins, secs))
+
+
+
+
 
 {- Succeeds with a `Song` ... -}
 workingResult : Result String Song
