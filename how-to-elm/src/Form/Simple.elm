@@ -15,7 +15,7 @@ module Form.Simple exposing (..)
     Sketch it out
     -------------
     > Previous version:
-    >
+    > @ https://tinyurl.com/how-to-elm-d7a09d5
 
     Always start with data. What's `Model's shape?
     Simplify your code to reduce user input state.
@@ -184,7 +184,7 @@ view model =
 {-| #! Solved the "too many arguments" problem!
 
 > Previous solution:
-> @
+> @ https://tinyurl.com/how-to-elm-d7a09d5-L102
 
 With a larger form however, input events could be different, so you might need
 `(a -> msg)` argument for flexibility.
