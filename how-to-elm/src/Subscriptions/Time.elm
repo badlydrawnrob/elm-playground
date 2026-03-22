@@ -137,8 +137,9 @@ subscriptions clock =
 
 
 -- View ------------------------------------------------------------------------
--- Not sure `viewHelper` makes it any easier to read, but it's shared now.
 
+
+{-| Doesn't necessarily make our code easier to read -}
 viewTime : (Time.Zone -> Time.Posix -> Int) -> Model -> String
 viewTime zoneFunc m =
     String.fromInt (zoneFunc m.zone m.time)

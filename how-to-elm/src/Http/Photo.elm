@@ -34,4 +34,21 @@ to handle that (how does Goodreads handle it?). See also ThingDB.
 
 > Re-watch "ThingDB" and normalisation for M2M
 
+
+--------------------------------------------------------------------------------
+API links
+
+https://github.com/rtfeldman/elm-spa-example/blob/master/src/Article.elm#L218
+https://github.com/rtfeldman/elm-spa-example/blob/master/src/Api.elm#L201
+https://github.com/rtfeldman/elm-spa-example/blob/master/src/Api/Endpoint.elm#L105
+
+-}
+
+
+{-| Use `Process.sleep` to check quality of mobile data connection
+
+> We want to display 1x images if the data connection is slow.
+> We also want to give the user a text-only mode if really bad.
+
+Do you have a single `LoadingSlowly` state or different ones for all `Status a`?
 -}
