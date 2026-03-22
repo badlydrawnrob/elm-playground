@@ -1,31 +1,104 @@
 module Form.Simple exposing (..)
 
-{-| A simple form
+{-| ----------------------------------------------------------------------------
+    A simple form
+    ============================================================================
+    > ⚠️ Forms are a LOT of work, even simple ones!
 
-    Always start with the `Model` — what shape will our data take?
-    Start with at least one field, then write the `view` and `update`
-    functions. Gradually refactor the design until you get there.
+    Prototype with Tally Forms as they're easy and quick, until:
 
-    1. Enter a name and a password
-    2. Validate passwords — do they match?
-    3. Add some more simple `Bool` validations
-       - Is not "" empty string
-       - Is at least 8 characters long
-    4. Convert 3 messages into ONE
-       - Record pattern matching
+        - You understand the customer and their journey
+        - You understand the API and it's data
+        - You are clear on what errors may occur
 
-    Obviously this is a fraction of the work needed to properly validate
-    a form — and it should also be validated server side for security reasons!!
 
-    NOTE:
+    Sketch it out
+    -------------
+    > Previous version:
+    >
 
-    It seems like efforts to make generic validation libraries have not been
-    too successful. I think the problem is that the checks are usually best
-    captured by normal Elm functions. Take some args, give back a Bool or Maybe.
-    E.g. Why use a library to check if two strings are equal? So as far as we
-    know, the simplest code comes from writing the logic for your particular
-    scenario without any special extras. So definitely give that a shot before
-    deciding you need something more complex!
+    Always start with data. What's `Model's shape?
+    Simplify your code to reduce user input state.
+    Simplify your code so it's easy to read (a single `Msg` isn't easier)
+    Use simple expressions rather than lots of helper functions
+
+    Make the customer journey easy to enter valid data, and clear when they've
+    made a mistake. This also reduces the complexity of validation checks. Always
+    validate your data on the server too!
+
+
+    Form data
+    ---------
+    1. What's the simplest form our user input can take?
+    2. What validations and guards do we need to put in place?
+    3. How do we want to display validation errors?
+    4. How do we want to display success?
+
+
+    User input
+    ----------
+    > Enter a name and a password
+
+    - Are any strings empty?
+    - Do the passwords match?
+    - Is the password at least 8 characters long?
+
+
+    Validation method
+    -----------------
+    > ⚠️ We're basically using chained `bool` statements here
+
+    For small error chains this might be ok, but at scale and with larger chains
+    this becomes unreadable! Check better methods, like `List.filter` or other.
+
+
+    Messages
+    --------
+    > Our messages are maybe more complicated than needed.
+
+    1. It can be easier to read with full Html
+    2. Individual field messages are fine for small forms
+
+    ```
+    type Msg
+        = Name String
+        | Password String
+        | PasswordAgain String
+    ```
+
+
+    Similar is not the same
+    -----------------------
+    > Catch-all frameworks don't exist!
+    > Rarely are two forms exactly the same.
+
+    @rtfeldman says treat forms like programs. Hold onto the user input strings,
+    use regular Elm functions to validate with `Bool`, `Maybe`, `Result`, or
+    `List Error` and minimise dependencies. As far as we know, the simplest code
+    comes from writing the logic for your particular scenario without any special
+    extras. Give that a shot before deciding you need something more complex!
+
+
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    > We're using some premature opimizations which may not be needed.
+    > Errors are also a tough cookie, so testing might be useful.
+
+    1. Simplify `Msg` so each field has its own message?
+    2. Simplify inputs by writing the Html out properly?
+    3. Error chaining is a bit hard to read. What's better?
+        - Would a `case` statement be better than nested `if`s?
+        - Could you supply a table of conditions and error messages?
+    4. Error messages aren't quite right
+        - Currently you must enter both password field before getting feedback
+          on the validity of the password.
+    5. Add some tests using a table of possible states
+        - "" "Abs0lute" ""
+        - "" "Abs0lute" "Abs0lute"
+        - And so on ...
+    6. Save valid data somehow (as a `model.save` or server post)
+
 -}
 
 import Browser
@@ -34,7 +107,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import String exposing (any)
 import Char exposing (isDigit, isLower, isUpper)
-import Debug
 
 
 -- Main ------------------------------------------------------------------------
@@ -49,8 +121,6 @@ main =
 
 -- Model -----------------------------------------------------------------------
 
--- #1: A type alias exposes a constructor function
-
 type alias Model =
   { name : String
   , password : String
@@ -62,29 +132,42 @@ init =
   Model "" "" ""  -- #1
 
 
+
 -- Update ----------------------------------------------------------------------
 
--- #1: You could also pattern match on a record here to avoid having so many
---     messages which are essentially CRUD expressions.alias
---
---     @ http://tinyurl.com/elm-lang-pattern-match-record
+type FieldType
+  = Name
+  | Password
+  | PasswordAgain
+
+fieldToString : FieldType -> String
+fieldToString field =
+  case field of
+      Name ->
+        "Name"
+
+      Password ->
+        "Password"
+
+      PasswordAgain ->
+        "Re-enter your password"
 
 type Msg
-  = Name String  -- #1
-  | Password String  -- #1
-  | PasswordAgain String  -- #1
+  = InputField FieldType String
 
+{-| #! Individual field messages may be easier to read -}
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-      Name name ->
-        { model | name = name }
+      InputField Name str ->
+        { model | name = str }
 
-      Password password ->
-        { model | password = password }
+      InputField Password str ->
+        { model | password = str }
 
-      PasswordAgain password ->
-        { model | passwordAgain = password }
+      InputField PasswordAgain str ->
+        { model | passwordAgain = str }
+
 
 
 -- View ------------------------------------------------------------------------
@@ -92,46 +175,68 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ viewInput "text" "Name" model.name Name
-    , viewInput "password" "Password" model.password Password
-    , viewInput "password" "Re-enter Password" model.passwordAgain PasswordAgain
-    , viewValidation model
+    [ viewInput Name "text" model.name
+    , viewInput Password "password" model.password
+    , viewInput PasswordAgain "password" model.passwordAgain
+    , viewValid model
     ]
 
-{- #! This might be reducing repetition, but it's not so readable? -}
-viewInput : String -> String -> String -> (String -> msg) -> Html msg
-viewInput t p v toMsg =
-  input [ type_ t, placeholder p, value v, onInput toMsg ] []
+{-| #! Solved the "too many arguments" problem!
 
-viewValidation : Model -> Html msg
-viewValidation model =
-  if (validatePassword model.password model.passwordAgain) then
-    div [ style "color" "green" ] [ text "OK" ]
-  else
-    div [ style "color" "red" ] [ text "Passwords do not match!" ]
+> Previous solution:
+> @
+
+With a larger form however, input events could be different, so you might need
+`(a -> msg)` argument for flexibility.
+-}
+viewInput : FieldType -> String -> String -> Html Msg
+viewInput field inputType model =
+  input
+    [ onInput (InputField field)
+    , type_ inputType
+    , placeholder (fieldToString field)
+    , value model ] []
 
 
-validatePassword : String -> String -> Bool
-validatePassword str1 str2 =
-  if (validateStringEquals str1 str2) then
-    validateStringCompare str1
-  else
-    False
+{-| Order here matters!
 
-validateStringEquals : String -> String -> Bool
-validateStringEquals str1 str2 =
-  Debug.log "validateStringEquals" (str1 == str2)
+> #! You don't see password validity until `PasswordAgain` is filled in!
 
-validateStringCompare : String -> Bool
-validateStringCompare str =
-  if (validateStringLength str) then
-    Debug.log "validateStringContains" (validateStringContains str)
-  else
-    False
+1. Check fields are filled
+2. Check password validity
+3. Check passwords match
 
-validateStringLength : String -> Bool
-validateStringLength str =
-  Debug.log "validateStringLength" (String.length str >= 8)
+You don't want to check if the passwords match before checking other conditions!
+-}
+viewValid : Model -> Html msg
+viewValid { name, password, passwordAgain } =
+    if (allFieldsFilled [name, password, passwordAgain]) then
+        if (validatePassword password) then
+            if password == passwordAgain then
+                div [ style "color" "green" ] [ text "OK" ]
+            else
+                div [ style "color" "red" ] [ text "Passwords do not match!" ]
+
+        else
+            div [ style "color" "red" ]
+                [ text
+                    """
+                    Password is invalid! Must be at least 8 characters long and
+                    contain a mix of uppercase, lowercase, and numeric characters.
+                    """
+                ]
+
+    else
+        div [ style "color" "red" ] [ text "Fields must not be empty!" ]
+
+{-| Way easier than my first attempt of `List.map String.isEmpty`! -}
+allFieldsFilled : List String -> Bool
+allFieldsFilled =
+    List.all (not << String.isEmpty)
+
+validatePassword : String -> Bool
+validatePassword str1 =
+  (String.length str1 >= 8) && (validateStringContains str1)
 
 validateStringContains : String -> Bool
 validateStringContains str =
