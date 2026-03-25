@@ -7,6 +7,7 @@ module Http.Loading exposing (..)
     > @rtfeldman's Elm Spa example.
 
         @ https://web.dev/explore/fast
+        @ https://www.browserstack.com/docs/live/network/network-simulation
 
     It's not enough to run `LoadingSlowly` with a sleep timer, as it doesn't
     guarantee that the server is actually slow. @rtfeldman's version also splits
@@ -76,14 +77,19 @@ module Http.Loading exposing (..)
     ----------------------------------------------------------------------------
     WISHLIST
     ----------------------------------------------------------------------------
-    1. Which method will accurately check connectivity?
+    > I feel the easiest way to check a slow connection is to (1) `Process.sleep`
+    > (maybe two of them) and (2) server-side timing metric response.
+
+    1. Test with BrowserStack or developer tools with throttling
+        - How realistic is the `sleepThreshold`? Too long? Too short?
+    2. Which method will accurately check connectivity?
         - Which parts of your app are potential bottlenecks?
         - Use feature detection for client and device capabilities
         - Use speed testing to check if connectivity is good
     2. Add `Progress` tracking to more accurately measure server response
         - @ https://package.elm-lang.org/packages/elm/http/latest/Http#track
         - @ https://package.elm-lang.org/packages/elm/http/latest/Http#fractionReceived
-    3. Add server side timing
+    3. Add a server-side "time to execute" metric in the json response
         - How long does the server take to process the request?
     4. Add `LoadingVerySlowly` for really poor connections?
         - Switch to `text-only` mode if this happens
@@ -207,6 +213,12 @@ sleepThreshold =
 2. Batch together the server request and the sleep timer
 3. If the sleep timer finishes before the server responds, we set `LoadingSlowly`
 4. If the server responds before the sleep timer, we set `Success` or `Failure
+
+Alternative method from Discourse:
+
+```elm
+Process.sleep 100 |> Task.perform (always (ChangeStyleSet "green"))
+```
 -}
 init : () -> ( Model, Cmd Msg )
 init _ =
