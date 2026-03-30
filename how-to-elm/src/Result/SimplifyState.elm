@@ -3,11 +3,12 @@ module Result.SimplifyState exposing (..)
 {-| ----------------------------------------------------------------------------
     ❌ The "2:00" problem (using `Result`)
     ============================================================================
-    > Simplify your state and don't store computed data!
+    > Simplify your state and don't store computed data! (311 loc -> 213 loc)
 
-    **TL;DR:** This example was reduced from ... lines of code to just ...!
-    If you ever find yourself battling with complexity and lots of functions, slow
-    down, sketch it out, and reassess your life choices! Simplify your types.
+    **TL;DR:** If you ever find yourself battling with complexity and lots of
+    functions, slow down, sketch it out, and reassess your life choices!
+
+    Simplify your types!
 
     1. Splitting the string `"2:00"` gives too many potential states!
     2. Aim to use a single `Result` and not for every validation
@@ -74,6 +75,7 @@ module Result.SimplifyState exposing (..)
 
         @ https://tinyurl.com/e0d9643 (attempt 1)
         @ https://tinyurl.com/how-to-elm-7526926 (attempt 2)
+        @ https://tinyurl.com/how-to-elm-6b10d6f (attempt 3)
 
 
     ----------------------------------------------------------------------------
