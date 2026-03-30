@@ -3,112 +3,87 @@ module Result.SimplifyState exposing (..)
 {-| ----------------------------------------------------------------------------
     ❌ The "2:00" problem (using `Result`)
     ============================================================================
-    > The right idea but poorly executed. Use your learning and the docs for
-    > keeping code simple to improve it.
+    > Simplify your state and don't store computed data!
 
-    Paper prototyping should NOT do forms by hand until the user journey, API
-    data, and flow of data is clear. It's a waste of time and effort!
+    **TL;DR:** This example was reduced from ... lines of code to just ...!
+    If you ever find yourself battling with complexity and lots of functions, slow
+    down, sketch it out, and reassess your life choices! Simplify your types.
 
-    1. Don't store computed data!
-    2. Is tuple really the best format?
-    3. Reassess the guard functions
-        - Elm Spa blocks them with if/else inside case
-    4. Sentence method
-    5. Black box interfaces
-    6. and so on (look at the docs I'm building)
+    1. Splitting the string `"2:00"` gives too many potential states!
+    2. Aim to use a single `Result` and not for every validation
+    3. Keep the user input as `String`s rather than Elm types
+    4. Needlessly using wrapped types can result in too much unpacking
+    5. Don't store computed data if you can avoid it!
 
-    Simplifying state
+    Use interfaces, black-box thinking, and paper prototyping to discover early
+    complexity and flows of data. Two integers are far easier to deal with than
+    splitting a string; creating Tuple stores of data leads to needless `Maybe`
+    types that must be dealt with.
+
+
+    The original code for this module was madness.
+    ----------------------------------------------
+
+        (a) Using a Tuple for user input
+        (b) Too many `Result`s for validation
+        (c) Too any `Maybe` types for validation
+
+
+    Tuple for user input
+    --------------------
+    > What was I thinking?!
+
+    It's a bad idea to store computed values if you don't need to! It's adding
+    complexity to your code. If the form is sent directly to the server, you'll
+    only need a decoder to retrieve a type from a successful form submission.
+
+    With this particular example I'm constantly having to `Tuple.first` and weird
+    fucking `Tuple.mapFirst (\_ -> str)` to wrestle raw user input into a type
+    I arbitrarily decided on saving in the model!
+
+
+    Too many `Result`s
+    ------------------
+    Ideally you'd have ONE and one only; a valid form or calculated type.
+
+
+    Too many `Maybe`s
     -----------------
-    > The "2:00" problem holds far too many potential states!
-
-    Before you even touch a line of code, consider all the possible states your
-    user might give you. We're dealing with forms (not files) here, so you can
-    relieve yourself of A LOT of pain by simplifying the inputs!
-
-        "2" and "00"            -- simple inputs!
-        String.split ":" "2:00" -- a lot of pain!
+    Stick to simpler `Bool`s or easier validation techniques such as @rtfeldman's
+    `List Problem` (see `Form.ListError`). If you absolutely MUST use `Maybe's
+    then lean on `Maybe.andThen` or `Maybe.map` before extracting the values all
+    over the place.
 
 
+    Cardinality
+    -----------
+    How many combinations of data is possible with your chosen types?
+
+        "2" "00" can be easily converted to `Int`s (limited combinations)
+        "2:00"   is a lot harder to deal with (infinity combinations)
+
+    Too many variations:
+
+        `Input String String` is too many
+        `Input Field String` is much better!
 
 
+    Original examples
+    -----------------
+    > These are obviously bad practice
+
+        @ https://tinyurl.com/e0d9643 (attempt 1)
+        @ https://tinyurl.com/how-to-elm-7526926 (attempt 2)
 
 
-    You need to SKETCH OUT THINGS better and show the flow of data.
-
-    All the original notes are in `FieldError.elm` and should be left in.
-    It's quite amazing how small decisions can make a massive difference to
-    the ease and comprehension of a code base. I want it as simple as possible,
-    full stop. I don't want to have to learn crazy amounts of code just for
-    incremental improvements.
-
-    It probably doesn't solve everything, but it's most the way there.
-
-
-    TO DO
-    -----
-    #! Add an error case for `String.toInt` `Nothing` (not a string)
-
-
-    Surprise!
-    --------
-
-    We _don't_ need a function like:
-
-        `unpackTuple : (String, String)`
-
-    we can use destructuring instead!
-
-        @ https://gist.github.com/yang-wei/4f563fbf81ff843e8b1e
-
-
-    Multiple inputs
-    ---------------
-    This is a little tricky, rather than having multiple `Msg` type for each
-    input, you can specify an ID (later you could use this in the field
-    record) and partially apply that function. See `Msg` for an example.
-
-        @ https://tinyurl.com/multiple-field-inputs-msg-01
-
-    Use Brave browser with "elm message input two arguments" for AI answer.
-
-
-    Using Tuples
-    ------------
-    > SIMPLIFY!
-
-    What seems easy to start may not be easy in the long run ... TUPLE makes it
-    more difficult than it needs to be here. A simple record field for each input
-    might be easier? Or a record type, and it'll probs be easier.
-
-    Leave as-is for now.
-
-
-    Append more than one `String`
-    -----------------------------
-
-    "this" ++ "that" you could wrap in parens
-    OR use String.concat ["list", "of", "strings"]
-
-
-    Errors
-    ------
-    #! Here I could probably be more efficient (we're converting `String.toInt`
-    in two places)
-
-
-    Learning from mistakes
-    ----------------------
-    Elm Lang compiler erros are FAR more helpful than the ones I've seen in
-    Purescript so far, when you're tired you make LOTS of silly mistakes. I'd
-    be pretty stuck without it.
-
-
-    At first I had the `checkAndSave` function using `Ok (f,s)` as if the
-    `Result` gave out a `Tuple String String`, but it DOESN'T, it gives
-    out a record! See this commit for some glaring errors:
-
-        @ https://tinyurl.com/e0d9643
-
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    1. When field empty only shows "not an integer" (not all errors)
+    2. Reduce the cardinality of input `Msg`s
+    3. Do something with a successful form submission
+        - See Elm Spa example and `Form.ListError` for ideas
+        - Will `Result.map` or `Result.andThen` be useful here?
 -}
 
 import Browser
@@ -116,188 +91,115 @@ import Html exposing (..)
 import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 
-{- No custom types, as it's not necessary and adds more code -}
-
-{- Error checks kept short and sweet, so no need for special header -}
-
-{-| Data is fucking EASY to understand what all the inputs might be.
-No Elm `Float` "zero decimal" errors. No multiple changing of data.
-Very few `Maybe` types.
-
-#! These still haven't been done yet!
--------------------------------------
-""  (invalid `Int`)
-"s" (invalid `Int`)
-
-Minutes
--------
-"2"  (valid minutes)
-"20" (invalid minutes)
-"0"  (invalid minutes)
-
-Seconds
--------
-"20" (valid seconds)
-"61" (invalid)
-"00" (valid)
-"0"  (invalid)           -- #! This is the only error not covered?
-
--}
-
--- #!
--- You can use this function for both minutes and seconds
--- You might still have to deal with `Maybe`, but I've left it out.
-checkErrors : Input -> Result String SongRunTime
-checkErrors tuple =
-    let
-        checkNumbers =
-            case tuple of
-                (f,s) ->
-                    (checkMinutes (String.toInt f))
-                        && (checkSeconds (String.toInt s))
-    in
-    case checkNumbers of
-        True  -> Ok (extractMinsAndSecs tuple)
-        False -> Err "The number is not in range"
-
--- I forgot to do this!
-extractMinsAndSecs : Input -> SongRunTime
-extractMinsAndSecs i =
-    { minutes = extractInt (Tuple.first i)
-    , seconds = extractInt (Tuple.second i)
-    }
-
-extractInt : String -> Int
-extractInt i =
-    case String.toInt i of
-        Nothing -> 100 -- #! What on earth do I put here? Make sure it fails.
-        Just int  -> int
-
--- #!
--- Now for our `Boolean` statements
--- (0, 10] or [0, 60] (intervals)
-checkMinutes : Maybe Int -> Bool
-checkMinutes minutes =
-    case minutes of
-        Nothing   -> False
-        Just mins -> mins <= 10 && mins > 0
-
-checkSeconds : Maybe Int -> Bool
-checkSeconds seconds =
-    case seconds of
-        Nothing  -> False
-        Just sec -> sec <= 60 && sec >= 0
 
 
--- Update ----------------------------------------------------------------------
+-- Types and init --------------------------------------------------------------
 
--- You could use a `Maybe Int` here if you wanted for `mins` and `seconds` but
--- I can't be bothered. They can default to zero for now.
+type alias Mins
+    = String
 
-type alias Input =
-    (String, String)
-
-type alias SongRunTime =
-    { minutes : Int
-    , seconds : Int
-    }
+type alias Secs
+    = String
 
 type alias Model =
-    { userInput : (String, String)
-    , fieldError : String
-    , savedInput : SongRunTime
+    { mins : Mins
+    , secs : Secs
+    , errors : List String
     }
 
 type Msg
-    = UpdateInput String String  -- An ID and the VALUE
+    = UpdateInput String String -- #! Reduce cardinality (see notes)
     | SaveInput
 
 initialModel =
-    { userInput = ("", "")
-    , fieldError = ""
-    , savedInput = { minutes = 0, seconds = 0} -- Could be `Maybe Int`
+    { mins = ""
+    , secs = ""
+    , errors = []
     }
 
 
 
 -- Update ----------------------------------------------------------------------
 
-{- We need to pass the info through to the model -}
+
+{-| #! TO DO: Do something with the valid form! -}
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        UpdateInput "minutes" str
-            -> { model | userInput = Tuple.mapFirst (\_ -> str) model.userInput }
+        UpdateInput "minutes" str ->
+            { model | mins = str }
 
-        UpdateInput "seconds" str
-            -> { model | userInput = Tuple.mapSecond (\_ -> str) model.userInput }
+        UpdateInput "seconds" str ->
+            { model | secs = str }
 
-        UpdateInput _ _ -> model
+        UpdateInput _ _ ->
+            model -- #! Too many variations (see Cardinality)
 
-        SaveInput
-            -> checkAndSave model
-
-checkAndSave : Model -> Model
-checkAndSave model =
-    let
-        errors = checkErrors model.userInput
-    in
-    case errors of
-        Err str  -> { model | fieldError = str }
-        Ok srt   -> { model
-                    | userInput = ("", "") -- reset
-                    , fieldError = ""       -- reset
-                    , savedInput = srt
+        SaveInput ->
+            case validate model.mins model.secs of
+                (Ok _) ->
+                    { model
+                        | mins = ""
+                        , secs = ""
+                        , errors = []
                     }
 
+
+                (Err lst) ->
+                    { model | errors = lst }
+
+
+{-| #! Only displays the first error message, not all of them -}
+validate : Mins -> Secs -> Result (List String) String
+validate mins secs =
+    case ((String.toInt mins), (String.toInt secs)) of
+        (Just num1, Just num2) ->
+            if (checkMins num1) && (checkSecs num2) then
+                (Ok "Valid form")
+            else
+                (Err ["somehow", "created", "error", "list"])
+
+        (_, _) ->
+            (Err ["not", "an", "integer!"]) -- #! Single error displayed
+
+checkMins : Int -> Bool
+checkMins mins =
+    mins > 0 && mins < 9
+
+checkSecs : Int -> Bool
+checkSecs secs =
+    secs > 0 && secs < 60
 
 
 -- View ------------------------------------------------------------------------
 
--- See `Form/SingleField.elm` for notes on this form!
--- #! Are there any ways to join two fields inputs easily? (to tuple)
--- #! How to handle multiple fields? Multiple messages?
 
+{-| See `Msg` for potential improvements -}
 view : Model -> Html Msg
 view model =
-    form [ class "float-input", onSubmit SaveInput ]            -- (a)
+    form [ class "float-input", onSubmit SaveInput ]
             [ input
                 [ type_ "text"
                 , placeholder "Please add minutes ..."
-                , value (Tuple.first model.userInput)           -- (b)
-                , onInput (UpdateInput "minutes")             -- (c)
+                , value model.mins
+                , onInput (UpdateInput "minutes")
                 ]
                 []
             , input
                 [ type_ "text"
                 , placeholder "Please add seconds ..."
-                , value (Tuple.second model.userInput)
+                , value model.secs
                 , onInput (UpdateInput "seconds")
                 ]
                 []
-            , p [ class "field-error" ]
-                [ text model.fieldError ]
             , button [] [ text "Save" ]
-            , div [ class "display-result" ]
-                [ p [] [
-                    strong [] [ text "Success: " ]
-                    , (grabMinutesAndSeconds model.savedInput)
-                    ]
-                ]
+            , div []
+                (List.map viewError model.errors)
             ]
 
--- createMinutesAndSecondsInput : String -> String -> Tuple String
--- createMinutesAndSecondsInput s1 s2 =
---     Tuple.pair s1 s2
-
-grabMinutesAndSeconds : SongRunTime -> Html Msg
-grabMinutesAndSeconds srt =
-    text (String.concat
-            [ (String.fromInt srt.minutes)
-            , "m"
-            , (String.fromInt srt.seconds)
-            , "s"
-            ])
+viewError : String -> Html msg
+viewError err =
+    Html.span [ class "field-error" ] [ text (err ++ " ") ]
 
 
 -- Main ------------------------------------------------------------------------
