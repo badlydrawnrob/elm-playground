@@ -28,7 +28,7 @@ Elm can later be used to code up an app properly, or outsourcing is an option. C
 
 ## Build
 
-> Working examples by running `elm reactor` or using `/build/..` files.
+> Working examples are in `/build/namespace-package.js` or run `elm reactor`.
 
 There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki programming flashcard](https://github.com/badlydrawnrob/anki) code examples before building your cards.
 
