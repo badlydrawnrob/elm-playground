@@ -1,47 +1,38 @@
 module Form.SingleField exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    ⚠️ A simple form that's validated with `Result`
+    ⚠️ Simple field without validation
     ============================================================================
+    > Simplify your types if they're not required!
 
-    This example is using the WRONG custom type format, and is no better
-    than using a `List` (or `Maybe List`) in it's current form. A preferred
-    way might be:
+    1. You might want extra hints to the user for accidental saves
+    2. `NoEntries` is equivalent to `[]` so stick with a simple list!
 
-        Entries = NoEntries | Entries Entry (List Entry)
+    This currently has no validations other than `""` and uses a more complex
+    type than is needed. Always look for a simpler option before a custom type.
+    Previously looked like this:
 
-    It's a subtle difference, but it accounts for only ONE list item. See
+    ```
+    type Entries =
+        | NoEntries
+        = Entries (List Entry)
+    ```
 
-
-    Questions to be answered
-    ------------------------
-
-    1. How might you add the validation errors in-place with the form field?
-    2. Is `Result` the best way to do this, or is there a better method?
-        - For instance, we could use a `List error` or something.
-    3. Is there an easier way to check `viewEntries` if empty and return
-       different if so? I have a feeling `Maybe Entries` and `Maybe.Default`
-       is an option here? Or `type Custom`?
-
-    Notes on the comments
-    ---------------------
-
-    I'm not sure I like the way the `{-|-}` comments look. I quite like having
-    things tidy — comments at the start of each section, with a number that
-    references the part of the code we're talking about.
-
-    The `{-|-}` method is quite useful when hovering over the function where it's
-    used to get a definition however.
-
-    The jury is out on that one!
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    1. Add validation errors (only ONE `Result` per form)
+    2. Add errors in-place below the field (as-you-type or submit?)
 
 -}
 
 import Browser
-import Html exposing (..)
+import Html exposing (Html)
 import Html.Attributes exposing (class, disabled, placeholder, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 
+
+{- `Id Int` may be preferable -}
 type alias Id =
     Int
 
@@ -50,9 +41,8 @@ type alias Entry =
     , text : String
     }
 
-type Entries
-    = NoEntries
-    | Entries (List Entry)
+type alias Entries
+    = List Entry
 
 type alias Model =
     { id : Id
@@ -63,8 +53,8 @@ type alias Model =
 initialModel : Model
 initialModel =
     { id = 0
-    , entries = NoEntries
     , currentEntry = ""
+    , entries = []
     }
 
 type Msg
@@ -75,88 +65,49 @@ type Msg
 -- View ------------------------------------------------------------------------
 
 
-{-| Pull in a record, output a `li` -}
 viewEntryItem : Entry -> Html Msg
-viewEntryItem entry =
-    li [ class (String.fromInt entry.id)] [ text entry.text ]
+viewEntryItem { id, text } =
+    Html.li [ class (String.fromInt id)] [ Html.text text ]
 
-{-| Our simple form field, which we'll have to validate before allowing the
-user to submit ... see `update` and our `FormValidate` module.
+{-| Form currently has no validation
 
-    (a) We run some checks `onSubmit` too
-    (b) This simply keeps the value updated with the user input (from our model)
-    (c) Handover to our `Msg` on `update`
-    (d) Run a check and disable the button if `String` is empty `""`!
+We're only checking if a field is empty or not. We do however disable the button
+to only be clickable if a non-empty string.
+
+Javascript can be hacked ... always double check values on the server!
 -}
 viewForm : String -> Html Msg
 viewForm currentEntry =
-    form [ class "new-entry", onSubmit SaveEntry ]          -- (a)
-            [ input
+    Html.form [ class "new-entry", onSubmit SaveEntry ]          -- (a)
+            [ Html.input
                 [ type_ "text"
                 , placeholder "Add your cool entry here ..."
                 , value currentEntry                        -- (b)
                 , onInput UpdateCurrentEntry                -- (c)
                 ]
                 []
-            , button
+            , Html.button
                 [ disabled (String.isEmpty currentEntry) ]  -- (d)
-                [ text "Save" ]
+                [ Html.text "Save" ]
             ]
 
 view : Model -> Html Msg
 view model =
         case model.entries of
-            NoEntries ->
-                div [] [
-                    div [] [ text "You need to add an entry first!" ]
-                    , viewForm model.currentEntry
-                ]
-            Entries listOfEntries ->
-                div [] [
-                    ul [ class "entry-list" ]
-                        (List.map viewEntryItem listOfEntries)
-                    , viewForm model.currentEntry
-                ]
+            [] ->
+                Html.div []
+                    [ Html.p [] [ Html.text "You need to add an entry first!" ]
+                    , viewForm model.currentEntry ]
+
+            entries ->
+                Html.div []
+                    [ Html.ul [ class "entry-list" ]
+                        (List.map viewEntryItem entries)
+                    , viewForm model.currentEntry ]
 
 
 
 -- Update ----------------------------------------------------------------------
-
-{-| Strip the front and back of `currentEntry`, and check if empty
-
-    (a) Return our state to an empty entry
-    (b) increment the model.id for our next entry
--}
-saveEntries : Model -> Model
-saveEntries model =
-    let
-        entry = String.trim model.currentEntry
-    in
-    case entry of
-        "" ->
-            model
-
-        _ ->
-            { model
-                | entries = updateEntriesList model.id entry model.entries
-                , currentEntry = ""  -- (a)
-                , id = model.id + 1  -- (b)
-            }
-
-{-| Because our `List Entry` are wrapped now in `Entries`, we've got
-to work some magic to add a new `comment` (as an `Entry`) to our list:
-
-1. If there's currently `NoEntries`, then create one ...
-2. If there's already `Entries`, add one to the list.
--}
-updateEntriesList : Id -> String -> Entries -> Entries
-updateEntriesList id currentEntry entries =
-    case entries of
-        NoEntries ->
-            Entries [Entry id currentEntry]
-
-        Entries list ->
-            Entries (list ++ [Entry id currentEntry])
 
 update : Msg -> Model -> Model
 update msg model =
@@ -164,8 +115,21 @@ update msg model =
         UpdateCurrentEntry entry ->
             { model | currentEntry = entry }
 
+        -- Strip trailing spaces, add to list, increment id
         SaveEntry ->
-            saveEntries model
+            let
+                entry = String.trim model.currentEntry
+            in
+            case entry of
+                "" ->
+                    model
+
+                _ ->
+                    { model
+                        | entries = model.entries ++ [ Entry model.id entry ]
+                        , currentEntry = ""
+                        , id = model.id + 1
+                    }
 
 
 -- Main ------------------------------------------------------------------------
