@@ -6,6 +6,7 @@ module Subscriptions.Time exposing (..)
     > For more about `Time` in programming, see `/words/time.md`.
 
         @ https://package.elm-lang.org/packages/elm/time/latest/
+        @ https://sporto.github.io/elm-workshop/05-effects/05-format-time.html
 
     Time in programming is quite complex. So far, I've only had to deal with a
     time that's AWARE (as in, using a timezone). The upside to doing everything
