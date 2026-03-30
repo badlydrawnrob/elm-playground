@@ -1,154 +1,145 @@
 module Form.ListError exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    ❌ Form `List Error` (like Elm Spa Example)
+    Form `List Error` (like Elm Spa Example)
     ============================================================================
-    This looks fine but simplify the comments and let the code do the talking.
+    > This feels the fastest way to work with forms while prototyping!
 
-    1. This is not `Maybe` it's required and optional fields!
-    2. Cardinality may be useful to tidy up here as well
-        - But it may be out of place (not a union type)
-        - There's only two options: empty or not empty (string)
-        - There's two for empty: optional and required
-    3. Ask Ai to step you through Elm Spa's example 1,2,3.
+    🤖 Ask Ai to step you through the original Elm Spa example.
 
-    Elm Spa's example is a little more complicated as it concerns itself with
-    both `String` errors (from form) and `Http` errors (from server), but the
-    principle is the same. It's very clever and avoids `Result` or `Maybe`.
+        "It's `List.map` and `List.concat` combined. A single operation
+        that clearly expresses 'apply this function to each item and flatten
+        the results' otherwise you'd have to collect `List Error` first."
 
-        @ https://tinyurl.com/elm-spa-example-list-error
+    Simplified version of the original! It's a very clever solution that results
+    in a single `Result` for the entire form (rather than each field validator).
+    You don't want to have lots of `Result`s or `Maybe`s to deal with!
 
-
-
-
-
-
-
-
-
-
-    What about `Maybe` types? That could be an empty string, an optional number,
-    etc. Our form inputs are generally strings however, but could also be an image
-    a user hasn't uploaded, or an empty list of comments. Let's start with a VERY
-    rudimentary example:
-
-    `String` isOptional
-    -------------------
-    It's important to notify your program that a field is OPTIONAL. If you process
-    inputs as simple `String`s, `""` empty would be ALLOWED if optional.
-
-        @ https://tinyurl.com/result-maybe-14ab857 (first attempt, crappy)
-        @ https://tinyurl.com/how-to-result-maybe-54a6474 (error checking with strings)
-        @ https://tinyurl.com/field-maybe-commit-f369c88 (`Result` output -vs- `List Problem`)
-
-
-    Examples in the wild
-    --------------------
-    @rtfeldman's Elm Spa example uses a `List Problem`, `ValidatedField`,
-    a `fieldsToValidate` function, and `List.concatMap` in an interesting way.
+    The original uses a second `List.map` to apply the `Problem` type to either
+    the `ValidatedField` or a server response error. All errors are then collected
+    into a `List Problem`. If you don't need a validator for a particular field,
+    you can leave it out.
 
         @ https://tinyurl.com/list-concat-map
+        @ https://tinyurl.com/elm-spa-example-list-error
         @ https://tinyurl.com/elm-spa-settings-page
         @ https://tinyurl.com/elm-spa-validate-field-func
 
-    Some fields in those examples seem to be ignored for validation, so he doesn't
-    seem to care if they're invalid. Those ones are either empty or not. He also
-    takes care to "trim" (remove whitespace) fields, and uses this type for valid:
-
-        type ValidForm
-            = Valid Form
-
-    In the above examples, he's only dealing with `String` types, and encodes
-    them ready for `json`. If `List Problem` is an `[]` empty list, it's POSTed.
+    You'd then encode these values to POST as json if `List Problem` is empty:
 
         @ https://tinyurl.com/elm-spa-encoded-updates
+        @ https://tinyurl.com/elm-spa-eg-save-new-article
 
-        ```
-        updates =
-            [ ( "username", Encode.string form.username )
-            , ( "email", Encode.string form.email )
-            , ( "bio", Encode.string form.bio )
-            , ( "image", encodedAvatar )
-            ]
-        ```
 
-    Other alternatives
-    ------------------
+    Downsides to this approach
+    --------------------------
+    > This method POSTs directly to the server! Other apps might want to store
+    > collections in the model, then send to the server in bulk.
 
-    1. Some people say you shouldn't store computed values in the `Model`, but
-       in one version, I'm using `{ input : String, valid: Result }` and updating
-       that on every key stroke:
+    `List.concatMap` approach sends directly to the server if valid. We needn't
+    convert `String`s to types on the client! We let the server handle that, as
+    we don't store computed values locally. Once Pydantic checks valid types, the
+    server response can be sent (or errors). Initially I had a `Person` type:
 
-       @ `CustomTypes.Songs`
+    ```
+    type alias Person =
+        { name : String
+        , age : Int
+        , employer : Maybe String
+        }
+    ```
 
-    2. A big fat function that returns `Ok (Just value)` or `Err String` for
-       each field. This is because `optional` fields require a `Nothing` if
-       they're `""` empty, because that's allowed. And, as every return value for
-       a function MUST be the same type, they're all `Result String (Maybe a)`
+    This is redundant! But we will need a `personDecoder` to convert server data
+    into proper Elm types for our page view. Other problems are:
 
-    3. Alternatively, you could have individual functions handle each field, like
-       I've done in (1), but NOT store them in the `Model`. You'd `Result.map`
-       them and return a valid record structure if no `Err`, for example.
+        (a) It doesn't show errors in real time as the user types
+        (b) It seems difficult to display all errors at the same time
+        (c) It doesn't show the error next to each field (this can be solved)
 
-    4. Take a look at packages and other options Elm programmers are using, but
-       as a rule, I prefer to keep things simple (and packages are a bit of a risk)
 
-    For each method, you could consider custom types for FIELD STATES and start
-    thinking about Cardinality for each, rather than combinations of `Boolean`
-    values:
+    Chaining conditions
+    -------------------
+    > Similar does not mean the same!
+
+    Black box thinking will reveal if conditional chains rely on a specific order.
+    You might also want to consider a better way for optional fields, such as using
+    the `||` or operator.
+
+
+    Previous attempts
+    -----------------
+    > Previously I tried to use `Result` or `Maybe`. For simple forms it's much
+    > easier to just return a `[]` or `["error"]` for each field.
+
+        @ https://tinyurl.com/result-maybe-14ab857 (crap)
+        @ https://tinyurl.com/how-to-result-maybe-54a6474 (result or `Err` string)
+        @ https://tinyurl.com/field-maybe-commit-f369c88 (comparison to `List Problem`)
+
+    @rtfeldman's example simplifies the form problem by treating all return values
+    as `List String` (full or empty) instead of different Result types. If your
+    form is complicated this could reduce the complexity of guards and calculated
+    data quite a lot.
+
+
+    Alternatives
+    ------------
+    > There's a great number of ways we could validate a form.
+
+    Whichever you choose @rtfeldman says to treat it like a basic program and
+    not get too fancy, or search for a package that solves every problem. Each
+    form is different and you've got to treat them so. We also don't store these
+    errors in the model, so they'll clear on the next form submit.
+
+    One other potential route is using tables to apply validation functions. You
+    could use an accumulator list to store the results of each type:
+
+    ```
+    case field of
+        Name -> [validateNameNotEmpty, validateNameLength]
+        ...
+    ```
+
+    Other packages use "parse, don't validate" or decoder-style approaches.
+
 
     Cardinality
     -----------
-    `optional` -> Empty? 2 -> Full? + Required? 4 (accounts for `True` and `False`)
-    `required` -> Empty? 2 -> Full? + Required? 4 (accounts for `True` and `False`)
+    > You could potentially consider the number of possible states
 
-    I _think_ there's really only 3 states we'd wish our simple field data to be,
-    if you remove the `Boolean` options down to Union types:
+    If you're using `Result`, there could be many states for each fields. The
+    cardinality of `List Problem` feels low, as there's:
 
-    type PossibleFieldStates
-        = Empty
-        | FullAndRequiredLength
-        | FullAndNotRequiredLength
+    - Empty or full input strings (optional? required?)
+    - Empty or full error list (and only as many as `ValidatedFields`)
+
+    Other validation methods might have a higher number of potential states.
 
 
     ----------------------------------------------------------------------------
     Wishlist
     ============================================================================
-    1. A standardised way to check for errors
-    2. Storing the `json` once form is validated:
-        - Store as simple strings in `json` and compute on `Http.get`?
-        - Store a successful `Form` within the `Model` as correct types,
-          Then `Http.post` that information as valid `json`, `Encoded` as
-          proper types (`List`, `Int`, etc, etc)
-    3. For (2) you'd need two steps for the end-user:
-        1. First the form "posts" to a valid `Model` (such as `Song`)
-        2. Next notify the user that `json` has been stored in the backend ...
-           Or have them SAVE AGAIN to store update the users `json` config file.
-    4. How about `String.concat` ALL the errors for a `Field` type, and then
-       `String.concatMap` them into a `InvalidEntry ValidatedField String` so it
-       contains EVERY error for that particular field?
-
+    1. `String.concat` every fields problems into `List Error`?
+        - Do we need a proper `List Problem` type for server errors?
+    2. Build the proper form and allow it to POST to an endpoint
+        - Validator returns `Result (List Error) TrimmedForm`
+    3. Deal with the server response with impossible states
+        - Do you have a single endpoint or `/new` and `/edit`?
 -}
 
 import Debug exposing (..)
 
-{- Employer might be better as a Union Type, but this will suffice -}
-type alias Person =
-    { name : String
-    , age : Int
-    , employer : Maybe String -- Perhaps they're unemployed?
-    }
+
 
 type alias Model =
-    { name : String
-    , age : String
-    , employer : String -- This is an optional field
+    { name : String     -- Required
+    , age : String      -- Required
+    , employer : String -- Optional
     }
 
 type ValidateFields
-    = Name
-    | Age
-    | Employer -- This one is optional!
+    = Name     -- Required
+    | Age      -- Required
+    | Employer -- Optional
 
 listOfValidateFields : List ValidateFields
 listOfValidateFields =
@@ -161,35 +152,12 @@ type Msg
     = EnteredName String
     | EnteredAge String
     | EnteredEmployer String
-    | FormSubmitted
+    | ClickedSave
 
 
 -- Validating and checking for errors ------------------------------------------
---
--- 1. We have 2 `optional` and 1 `required` fields,
--- 2. If `optional` is `""` empty, that's Ok!
--- 3. If `optional` has `"string"` run required length checks.
--- 4. All `required` fields only need required length checks.
---     - To keep the example simple and reduce cognitive load.
---
--- Cardinality
--- -----------
--- There's really only 2-3 options for `optional`: Empty? Full+Required?
--- There's really only 1 option for `required` : Full+Required?
---
--- `optional` -> Empty? 2 -> Full? + Required? 4 (accounting for `True` and `False`)
--- `required` -> Empty? 2 -> Full? + Required? 4 (accounting for `True` and `False`)
---
--- It could be better to have a `Type` for all possible options:
---
--- type PossibleStates
---     = Empty -- allowed if optional
---     | FullAndRequiredLength
---     | FullAndNotRequiredLength
 
-{- #! Remember: Each return value MUST be the same of type. As we have an
-`optional` field which needs to return `Nothing`, all our other branches here
-need to return a `Maybe a` -}
+{- #! Return values MUST be the same type -}
 simpleValidate : Model -> ValidateFields -> List String
 simpleValidate model field =
     case field of
@@ -211,22 +179,23 @@ simpleValidate model field =
 
 isRequiredLength : String -> Bool
 isRequiredLength =
-    (>=) 4 << String.length -- Function composition and point-free style
+    (>=) 4 << String.length
 
+{-| Optional field allows empty string -}
 isEmployerOk : String -> List String
 isEmployerOk s =
     if String.isEmpty s then
-        [] -- "" empty is allowed for an `optional` field
+        []
     else
         if isRequiredLength s then
             []
         else
-            -- if not "" then must be required length
             ["Employer field must be less than 4 characters"]
 
-{- Right now the `listOfValidateFields` is a little redundant, as we're not
-storing the `ValidateField` in the output ... it's a simplified version of
-@rtfeldman's Elm Spa form examples. -}
+{- Elm Spa returns `Result (List Problem) TrimmedForm`
+
+`Page.Article.Editor` cannot be viewed without `Cred` (be logged in); POSTing to
+the `/articles` endpoint won't work without a valid `TrimmedForm` and `Cred`. -}
 runValidationCheck : Model -> List String
 runValidationCheck model =
     List.concatMap (simpleValidate model) listOfValidateFields
@@ -243,11 +212,8 @@ update msg model =
         EnteredEmployer str ->
             { model | employer = str }
 
-        {- Here we have a `List ValidateFields` and a `isEmpty` function that we
-        want to run to validate our ACTUAL `List String` from each form field. It's
-        quite a clever method that @rtfeldman uses to mix a custom field type with
-        the actual user input. -}
-        FormSubmitted ->
-            Debug.todo "What happens when the form is submitted?"
+        {-| See Elm Spa example for solution -}
+        ClickedSave ->
+            Debug.todo "https://tinyurl.com/elm-spa-eg-save-new-article"
 
 
