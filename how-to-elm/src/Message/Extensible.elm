@@ -1,65 +1,59 @@
-module Message.NarrowTypes exposing (..)
+module Message.Extensible exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Narrowing types for messages
+    ⚠️ Extensible records (narrowing types for a flatter model)
     ============================================================================
-    > ⚠️ Nested messages add complexity and should rarely be used! Originally
-    > from @ https://programming-elm.com/ (types have been changed).
+    > Removed the need for nested messages with extensible records.
+
+    However:
+
+        (a) We're using nested messages which is hard to read
+        (b) We must use functional composition (harder for beginners)
+        (c) We don't need an extensibe record alias (use type signature)
+
+    Original code:
+
+        @ https://programming-elm.com/
+        @ https://tinyurl.com/adv-types-extensible-records (2nd half)
+        @ https://allanderek.prose.sh/extensible-records (warning)
+
+    We could do better by simplifying our components and using type signatures
+    `{ r | field : String } -> String` at the expense of slightly more verbose
+    code. If there's one field per component, definitely do that. If you've got lots
+    of fields to pass to a component, see Elm Land for ideas, use a type alias,
+    or it's one of the areas where a nested record might work best (see the `Form`
+    record in Elm Spa example).
 
     1. Avoid nested records wherever possible
     2. Avoid nested messages wherever possible (see Elm Spa form)
     3. Simplify components and types as much as possible
 
-    Sketch your routes and start with the simplest thing possible! You may wish
-    to split modules around narrowed types or patterns, but it's not necessary.
-    `Html.map` is used in Programming Elm but this is best avoided.
 
-        - Flat record
-        - Flat `Msg` type
-        - etc
+    Start simple
+    ------------
+    > Start with a single file until you can split around types.
 
-    As your file grows you may wish to split modules around narrowed types, or
-    when you see patterns emerge. `Html.map` should almost NEVER be used!
+    When you see patterns emerge, you can start to narrow types. When you see
+    a group of functions that could work around a type within it's own module,
+    start splitting them out. I don't think the Salad Builder in "Programming Elm"
+    is a particularly great example. See Elm Land for ideas.
 
-
-    Reusable components
-    -------------------
-    > The Salad Builder example (Programming Elm, chapter 6) encourages reusable
-    > input functions, and Elm Land uses components.
-
-    These can be handy, but they aren't always easier to read. If you're only
-    dealing with a small number of inputs, just use plain old Html.
+    Aim for the most simple (not easy) and readable solution.
 
 
-    Alternative to extensible record alias
-    -------------------------------------
-    > An extensible record must output it's own type or a field value.
-
-    An extensible record in the type signature (without an alias) can work out
-    a little cleaner, as it makes the output type more obvious. Extensible records
-    allow you to group functions around a "slice" of your flat model, without the
-    need for nested records. Add minimum amount of fields for a working function.
-
-        function : { r | field : String } -> String
-        function { field } =
-            field
-
-    Some more examples ...
-
-        @ https://tinyurl.com/adv-types-extensible-records (second-half only)
-        @ https://allanderek.prose.sh/extensible-records   (a small warning)
+    Html.map
+    --------
+    99% of the time you don't need it.
 
 
-    The `<<` operator
-    -----------------
-    > A compose function similar to Haskell
+    Functional composition (`<<`)
+    -----------------------------
+    > You don't need to know Haskell to use compose!
 
-    Sometimes you'll need "functional composition" where a pipe just wouldn't do.
-    This also helps to do point-free style functions, which should be used only
-    every so often, as it can lead to hard to read code.
-
-    The `onInput` "silently" passes a string to one of the `ContactMsg` messages,
-    so we've got to use functional composition to pass it to the parent `Msg`.
+    Where a pipe won't do this can be used for point-free style coding. Use
+    sparingly as it can make code harder to read. `onInput` silently passes a
+    `String` to one of the `ContactMsg` messages. We use `<<` to pass the whole
+    message to it's parent `Msg` type. Similar to wrapping in parens.
 
 
     Input types
@@ -75,10 +69,17 @@ module Message.NarrowTypes exposing (..)
 
         @ https://tinyurl.com/beware-input-type-numbers
 
-    Just because a number input is used does not mean there won't be bugs! Treat
-    everything as a string in general. For example, `type="tel"` will error if
-    input is not a number, but still allows characters.
+    Don't trust number inputs! It's best to still treat it as a `String` value.
+    Number inputs have a few bugs, such as `type="tel"` will error if input is
+    not a number, but still allows characters.
 
+
+    ----------------------------------------------------------------------------
+    WISHLIST
+    ----------------------------------------------------------------------------
+    1. Simplify the `Msg` types (no nested messages)
+    2. Remove the functional composition on `Msg`
+    3. Decide if extensible record type signatures are better than alias!
 -}
 
 import Browser
@@ -117,8 +118,8 @@ init =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Narrowing types with messages" ]
-        , form [ class "narrow-types", onSubmit Send ]
+        [ h1 [] [ text "Extensible records and nested messages" ]
+        , form [ class "extensible-records", onSubmit Send ]
             [ input
                 [ type_ "text"
                 , placeholder "Your name"
@@ -132,11 +133,11 @@ view model =
                 , onInput (ContactMsg << Email)
                 ] []
             , input
-                [ type_ "tel" -- Might be better as a string?
+                [ type_ "tel" -- Don't trust number inputs!
                 , placeholder "07953222894"
                 , value model.phone
-                , onInput (ContactMsg << Phone) -- returns a `String` even though
-                ] []                            -- it's verified as a number (Html)
+                , onInput (ContactMsg << Phone) -- Treat as a `String`
+                ] []
             , input
                 [ type_ "checkbox"
                 , checked model.notify
