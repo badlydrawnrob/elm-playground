@@ -45,10 +45,22 @@ https://github.com/rtfeldman/elm-spa-example/blob/master/src/Api/Endpoint.elm#L1
 -}
 
 
-{-| Use `Process.sleep` to check quality of mobile data connection
+{-| Our
+
+
+Use `Process.sleep` to check quality of mobile data connection
 
 > We want to display 1x images if the data connection is slow.
 > We also want to give the user a text-only mode if really bad.
 
 Do you have a single `LoadingSlowly` state or different ones for all `Status a`?
+
+
+Pictures
+--------
+I think you can use `<picture>` to automatically load the 1x, 2x, or 3x image
+based on the user's device. You can also use feature detection to check if the
+user's device supports 3x images.
+
+You'd still need to do a `text-only` mode for real bad connections.
 -}
