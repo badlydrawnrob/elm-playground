@@ -1,14 +1,17 @@
 module Result.SimplifyState exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    ❌ The "2:00" problem (using `Result`)
+    The "2:00" problem (using `Result`)
     ============================================================================
-    > Simplify your state and don't store computed data! (311 loc -> 213 loc)
+    > Simplify your state and don't store computed data!
 
-    **TL;DR:** If you ever find yourself battling with complexity and lots of
-    functions, slow down, sketch it out, and reassess your life choices!
+    Battling with complexity? Too many functions? Stop and slow down!
 
-    Simplify your types!
+        Sketch it out: sentence method, interfaces, black-box thinking.
+        Paper prototype: 247 loc with simple state and fewer functions.
+        Simplify your types! Reassess your life choices!
+
+    The following improvements are discovered:
 
     1. Splitting the string `"2:00"` gives too many potential states!
     2. Aim to use a single `Result` and not for every validation
@@ -16,18 +19,21 @@ module Result.SimplifyState exposing (..)
     4. Needlessly using wrapped types can result in too much unpacking
     5. Don't store computed data if you can avoid it!
 
-    Use interfaces, black-box thinking, and paper prototyping to discover early
-    complexity and flows of data. Two integers are far easier to deal with than
-    splitting a string; creating Tuple stores of data leads to needless `Maybe`
-    types that must be dealt with.
+    Use the sketch it out method to discover early complexity and flows of data,
+    without having to code it up first. If you need to use Ai to mock up a UI then
+    do that too. Avoid needless complicated types which need unpacking.
 
 
     The original code for this module was madness.
     ----------------------------------------------
+    > Guards are the only issue now; more complex than `String.isEmpty`.
 
-        (a) Using a Tuple for user input
-        (b) Too many `Result`s for validation
-        (c) Too any `Maybe` types for validation
+    Our initial attempts were a lot worse:
+
+        (a) "2:00" rather than "2" and "00"
+        (b) Using a Tuple for user input
+        (c) Too many `Result`s for validation
+        (d) Too any `Maybe` types for validation
 
 
     Tuple for user input
@@ -63,34 +69,37 @@ module Result.SimplifyState exposing (..)
         "2" "00" can be easily converted to `Int`s (limited combinations)
         "2:00"   is a lot harder to deal with (infinity combinations)
 
-    Too many variations:
-
-        `Input String String` is too many
-        `Input Field String` is much better!
+        `Input String String` has high cardinality
+        `Input Field String`  has low cardinality
 
 
     Original examples
     -----------------
-    > These are obviously bad practice
+    > These are obviously bad practice (attempts 1-3)
 
-        @ https://tinyurl.com/e0d9643 (attempt 1)
-        @ https://tinyurl.com/how-to-elm-7526926 (attempt 2)
-        @ https://tinyurl.com/how-to-elm-6b10d6f (attempt 3)
+        @ https://tinyurl.com/e0d9643
+        @ https://tinyurl.com/how-to-elm-7526926 (311 loc)
+        @ https://tinyurl.com/how-to-elm-6b10d6f (213 loc)
+
+    Our final example has slightly more lines of code than attempt 3, but it's
+    a lot more robust and still easy to read!
 
 
     ----------------------------------------------------------------------------
     WISHLIST
     ----------------------------------------------------------------------------
-    1. When field empty only shows "not an integer" (not all errors)
-    2. Reduce the cardinality of input `Msg`s
-    3. Do something with a successful form submission
+    1. Do not show all form errors at once!
+        - Move validation logic closer to the individual minute/second guards.
+        - Field is empty? Show only `["empty"]` error (for that field)
+        - Field is not empty? Show all other errors (for that field)
+    2. Do something with a successful form submission!
         - See Elm Spa example and `Form.ListError` for ideas
         - Will `Result.map` or `Result.andThen` be useful here?
 -}
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, placeholder, type_, value)
+import Html.Attributes exposing (class, placeholder, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 
 
@@ -103,6 +112,10 @@ type alias Mins
 type alias Secs
     = String
 
+type Field
+    = Minutes
+    | Seconds
+
 type alias Model =
     { mins : Mins
     , secs : Secs
@@ -110,7 +123,7 @@ type alias Model =
     }
 
 type Msg
-    = UpdateInput String String -- #! Reduce cardinality (see notes)
+    = UpdateInput Field String -- #! Lower cardinality
     | SaveInput
 
 initialModel =
@@ -124,18 +137,14 @@ initialModel =
 -- Update ----------------------------------------------------------------------
 
 
-{-| #! TO DO: Do something with the valid form! -}
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        UpdateInput "minutes" str ->
+        UpdateInput Minutes str ->
             { model | mins = str }
 
-        UpdateInput "seconds" str ->
+        UpdateInput Seconds str ->
             { model | secs = str }
-
-        UpdateInput _ _ ->
-            model -- #! Too many variations (see Cardinality)
 
         SaveInput ->
             case validate model.mins model.secs of
@@ -151,26 +160,51 @@ update msg model =
                     { model | errors = lst }
 
 
-{-| #! Only displays the first error message, not all of them -}
 validate : Mins -> Secs -> Result (List String) String
 validate mins secs =
-    case ((String.toInt mins), (String.toInt secs)) of
-        (Just num1, Just num2) ->
-            if (checkMins num1) && (checkSecs num2) then
-                (Ok "Valid form")
-            else
-                (Err ["somehow", "created", "error", "list"])
+    case buildErrorList mins secs of
+        [] ->
+            (Ok "Valid form")
 
-        (_, _) ->
-            (Err ["not", "an", "integer!"]) -- #! Single error displayed
+        lst ->
+            (Err lst)
 
-checkMins : Int -> Bool
+{-| Concatonate our error list
+
+> `Maybe.withDefault` only works as we're not allowing zero values.
+
+This is more elegant and closer to `Form.ListError`. An accumulator could've
+also been used to build the list; `String` return values instead of `List String`!
+-}
+buildErrorList : Mins -> Secs -> List String
+buildErrorList mins secs =
+    [ checkEmpty mins
+    , checkEmpty secs
+    , checkMins (String.toInt mins |> Maybe.withDefault 0) -- #!
+    , checkSecs (String.toInt secs |> Maybe.withDefault 0) -- #!
+    ]
+    |> List.concat
+
+checkEmpty : String -> List String
+checkEmpty field =
+    if String.isEmpty field then
+        ["field cannot be empty!"]
+    else
+        []
+
+checkMins : Int -> List String
 checkMins mins =
-    mins > 0 && mins < 9
+    if mins > 0 && mins < 9 then
+        []
+    else
+        ["minutes must be between 1 and 8!"]
 
-checkSecs : Int -> Bool
+checkSecs : Int -> List String
 checkSecs secs =
-    secs > 0 && secs < 60
+    if secs > 0 && secs < 60 then
+        []
+    else
+        ["seconds must be between 1 and 59!"]
 
 
 -- View ------------------------------------------------------------------------
@@ -184,14 +218,14 @@ view model =
                 [ type_ "text"
                 , placeholder "Please add minutes ..."
                 , value model.mins
-                , onInput (UpdateInput "minutes")
+                , onInput (UpdateInput Minutes)
                 ]
                 []
             , input
                 [ type_ "text"
                 , placeholder "Please add seconds ..."
                 , value model.secs
-                , onInput (UpdateInput "seconds")
+                , onInput (UpdateInput Seconds)
                 ]
                 []
             , button [] [ text "Save" ]
@@ -201,7 +235,10 @@ view model =
 
 viewError : String -> Html msg
 viewError err =
-    Html.span [ class "field-error" ] [ text (err ++ " ") ]
+    Html.span
+        [ class "field-error"
+        , style "color" "red"
+        ] [ text (err ++ " ") ]
 
 
 -- Main ------------------------------------------------------------------------

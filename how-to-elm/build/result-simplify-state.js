@@ -10574,61 +10574,80 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
+var $author$project$Result$SimplifyState$checkEmpty = function (field) {
+	return $elm$core$String$isEmpty(field) ? _List_fromArray(
+		['field cannot be empty!']) : _List_Nil;
+};
 var $author$project$Result$SimplifyState$checkMins = function (mins) {
-	return (mins > 0) && (mins < 9);
+	return ((mins > 0) && (mins < 9)) ? _List_Nil : _List_fromArray(
+		['minutes must be between 1 and 8!']);
 };
 var $author$project$Result$SimplifyState$checkSecs = function (secs) {
-	return (secs > 0) && (secs < 60);
+	return ((secs > 0) && (secs < 60)) ? _List_Nil : _List_fromArray(
+		['seconds must be between 1 and 59!']);
 };
+var $author$project$Result$SimplifyState$buildErrorList = F2(
+	function (mins, secs) {
+		return $elm$core$List$concat(
+			_List_fromArray(
+				[
+					$author$project$Result$SimplifyState$checkEmpty(mins),
+					$author$project$Result$SimplifyState$checkEmpty(secs),
+					$author$project$Result$SimplifyState$checkMins(
+					A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						$elm$core$String$toInt(mins))),
+					$author$project$Result$SimplifyState$checkSecs(
+					A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						$elm$core$String$toInt(secs)))
+				]));
+	});
 var $author$project$Result$SimplifyState$validate = F2(
 	function (mins, secs) {
-		var _v0 = _Utils_Tuple2(
-			$elm$core$String$toInt(mins),
-			$elm$core$String$toInt(secs));
-		if ((_v0.a.$ === 'Just') && (_v0.b.$ === 'Just')) {
-			var num1 = _v0.a.a;
-			var num2 = _v0.b.a;
-			return ($author$project$Result$SimplifyState$checkMins(num1) && $author$project$Result$SimplifyState$checkSecs(num2)) ? $elm$core$Result$Ok('Valid form') : $elm$core$Result$Err(
-				_List_fromArray(
-					['somehow', 'created', 'error', 'list']));
+		var _v0 = A2($author$project$Result$SimplifyState$buildErrorList, mins, secs);
+		if (!_v0.b) {
+			return $elm$core$Result$Ok('Valid form');
 		} else {
-			return $elm$core$Result$Err(
-				_List_fromArray(
-					['not', 'an', 'integer!']));
+			var lst = _v0;
+			return $elm$core$Result$Err(lst);
 		}
 	});
 var $author$project$Result$SimplifyState$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'UpdateInput') {
-			switch (msg.a) {
-				case 'minutes':
-					var str = msg.b;
-					return _Utils_update(
-						model,
-						{mins: str});
-				case 'seconds':
-					var str = msg.b;
-					return _Utils_update(
-						model,
-						{secs: str});
-				default:
-					return model;
+			if (msg.a.$ === 'Minutes') {
+				var _v1 = msg.a;
+				var str = msg.b;
+				return _Utils_update(
+					model,
+					{mins: str});
+			} else {
+				var _v2 = msg.a;
+				var str = msg.b;
+				return _Utils_update(
+					model,
+					{secs: str});
 			}
 		} else {
-			var _v1 = A2($author$project$Result$SimplifyState$validate, model.mins, model.secs);
-			if (_v1.$ === 'Ok') {
+			var _v3 = A2($author$project$Result$SimplifyState$validate, model.mins, model.secs);
+			if (_v3.$ === 'Ok') {
 				return _Utils_update(
 					model,
 					{errors: _List_Nil, mins: '', secs: ''});
 			} else {
-				var lst = _v1.a;
+				var lst = _v3.a;
 				return _Utils_update(
 					model,
 					{errors: lst});
 			}
 		}
 	});
+var $author$project$Result$SimplifyState$Minutes = {$: 'Minutes'};
 var $author$project$Result$SimplifyState$SaveInput = {$: 'SaveInput'};
+var $author$project$Result$SimplifyState$Seconds = {$: 'Seconds'};
 var $author$project$Result$SimplifyState$UpdateInput = F2(
 	function (a, b) {
 		return {$: 'UpdateInput', a: a, b: b};
@@ -10662,7 +10681,8 @@ var $author$project$Result$SimplifyState$viewError = function (err) {
 		$elm$html$Html$span,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('field-error')
+				$elm$html$Html$Attributes$class('field-error'),
+				A2($elm$html$Html$Attributes$style, 'color', 'red')
 			]),
 		_List_fromArray(
 			[
@@ -10687,7 +10707,7 @@ var $author$project$Result$SimplifyState$view = function (model) {
 						$elm$html$Html$Attributes$placeholder('Please add minutes ...'),
 						$elm$html$Html$Attributes$value(model.mins),
 						$elm$html$Html$Events$onInput(
-						$author$project$Result$SimplifyState$UpdateInput('minutes'))
+						$author$project$Result$SimplifyState$UpdateInput($author$project$Result$SimplifyState$Minutes))
 					]),
 				_List_Nil),
 				A2(
@@ -10698,7 +10718,7 @@ var $author$project$Result$SimplifyState$view = function (model) {
 						$elm$html$Html$Attributes$placeholder('Please add seconds ...'),
 						$elm$html$Html$Attributes$value(model.secs),
 						$elm$html$Html$Events$onInput(
-						$author$project$Result$SimplifyState$UpdateInput('seconds'))
+						$author$project$Result$SimplifyState$UpdateInput($author$project$Result$SimplifyState$Seconds))
 					]),
 				_List_Nil),
 				A2(
@@ -10717,4 +10737,4 @@ var $author$project$Result$SimplifyState$view = function (model) {
 var $author$project$Result$SimplifyState$main = $elm$browser$Browser$sandbox(
 	{init: $author$project$Result$SimplifyState$initialModel, update: $author$project$Result$SimplifyState$update, view: $author$project$Result$SimplifyState$view});
 _Platform_export({'Result':{'SimplifyState':{'init':$author$project$Result$SimplifyState$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Result.SimplifyState.Msg","aliases":{},"unions":{"Result.SimplifyState.Msg":{"args":[],"tags":{"UpdateInput":["String.String","String.String"],"SaveInput":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Result.SimplifyState.Msg","aliases":{},"unions":{"Result.SimplifyState.Msg":{"args":[],"tags":{"UpdateInput":["Result.SimplifyState.Field","String.String"],"SaveInput":[]}},"Result.SimplifyState.Field":{"args":[],"tags":{"Minutes":[],"Seconds":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}}});}(this));
