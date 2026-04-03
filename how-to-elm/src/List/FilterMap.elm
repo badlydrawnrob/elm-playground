@@ -14,10 +14,11 @@ module List.FilterMap exposing (..)
 
 -}
 
-import Html exposing (a)
 
--- Simple `a -> b` examples ----------------------------------------------------
 
+-- Simple ----------------------------------------------------------------------
+
+{-| Filters list using function that returns `Maybe` value -}
 filterBy : (a -> Maybe b) -> List a -> List b
 filterBy func list =
     List.filterMap func list
@@ -28,7 +29,11 @@ filterByInt = filterBy String.toInt ["this", "is", "1", "working"]
 filterByCons : List (Char, String)
 filterByCons = filterBy String.uncons ["", "abc", "123"]
 
--- More complex examples -------------------------------------------------------
+
+-- Complicated examples --------------------------------------------------------
+--
+-- ⚠️ A couple of these examples are overly complicated, `List.filter` would be
+-- enough without the `Maybe` type.
 
 filterByHead : List String
 filterByHead = List.filterMap List.head [[], ["these"], ["ones", "work"]]
@@ -41,7 +46,7 @@ filterByLambda = List.filterMap
                                 Nothing)
                     ["sad song", "happy song", "happy life"]
 
-{- Function is case-sensitive -}
+{-| Case-sensitive string filter -}
 filterByLambdaX2 : List String
 filterByLambdaX2 = List.filterMap
                     (\str -> if (String.startsWith "W" str) && (String.endsWith "s" str) then
