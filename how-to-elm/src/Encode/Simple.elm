@@ -61,10 +61,10 @@ import Json.Encode as E exposing (encode, int, list, object, string)
 type UUID
     = UUID Int
 
+{-| Deconstruction insted of `case u of` -}
 extractUUID : UUID -> Int
-extractUUID u =
-    case u of
-        UUID number -> number
+extractUUID (UUID id) =
+    id
 
 simpleList : E.Value
 simpleList =

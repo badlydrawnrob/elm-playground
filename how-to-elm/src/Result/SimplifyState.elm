@@ -79,7 +79,7 @@ module Result.SimplifyState exposing (..)
 
         @ https://tinyurl.com/e0d9643
         @ https://tinyurl.com/how-to-elm-7526926 (311 loc)
-        @ https://tinyurl.com/how-to-elm-6b10d6f (213 loc)
+        @ https://tinyurl.com/how-to-elm-6b10d6f (213 loc - multiple `Result`)
 
     Our final example has slightly more lines of code than attempt 3, but it's
     a lot more robust and still easy to read!
