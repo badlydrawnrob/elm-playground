@@ -1,5 +1,19 @@
 # README
 
+> Deviated from the book: just use Elm!
+
+The purpose of this chapter in the book is to integrate Elm with Javascript. This involves a ton of boilerplate and a difficult build process. The javascript code isn't particularly difficult, but it's not an easy read (compared to Elm). I managed to use [`esbuild`](https://esbuild.github.io) and `.jsx` files to compile the script, but javascript build tools are a drag to learn. For beginners it feels harder than it should be.
+
+At it's essence it's only:
+
+1. A simple form
+2. An image upload
+
+Which could be posted to a server someplace.
+
+
+-----
+
 > It might be wise to read a book like [Eloquent Javascript](https://eloquentjavascript.net), but I've been avoiding learning as it's so nasty to look at!
 
 Remember that using anything javascript is going to come with a heavy dose of pain ...
