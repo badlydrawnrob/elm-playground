@@ -9,17 +9,28 @@ module Http.Loading exposing (..)
         @ https://web.dev/explore/fast
         @ https://www.browserstack.com/docs/live/network/network-simulation
 
-    It's not enough to run `LoadingSlowly` with a sleep timer, as it doesn't
-    guarantee that the server is actually slow. @rtfeldman's version also splits
-    out files into `Api`, `Article`, `Loading` etc which is quite nice.
+    `LoadingSlowly` only checks a period of time has elapsed. It's not enough to
+    understand which part of the app is slow! @rtfeldman's version also splits out
+    files into `Api`, `Article`, `Loading` etc which is quite nice.
 
     1. `Process.sleep` is a `Task` that can never fail
-    2. `LoadingSlowly` occurs if server response is over threshold
-    3. `Progress` with `track` is needed to quantify:
-        - Server upload/download times (the server is at fault)
-        - Speed of connection to server (a shitty data connection)
+    2. `LoadingSlowly` occurs with no response after X seconds
 
-    If you don't understand the code, ask Ai to step you through it.
+    If you don't understand the code, ask Ai to step you through it!
+
+
+    A more precise calculation
+    --------------------------
+    > `Process.sleep` is a "dumb" timer that only checks time elapsed.
+
+    A better speed test for latency and execution time:
+
+    - [] Page load (load a small asset to detect speed?)
+    - ✅ Initial connection (time to first byte)
+    - [] Server upload time (for POST requests)
+    - ✅ Server processing time (for the endpoint)
+    - ✅ Size of response (larger responses take longer to download)
+    - [] Response download (`Progress, `track`, `fractionReceived`)
 
 
     API
@@ -29,9 +40,17 @@ module Http.Loading exposing (..)
     Uses a low-resource heavy API to grab some quotes.
 
 
-    Steps
-    -----
-    > Some of the ways a response can go wrong.
+    Threshold
+    ---------
+    > 0.5 seconds is not a lot of time! (500ms)
+
+    Using Brave Browser's network throttling (slow 4G) you'll get a brief flash
+    of `Loading` and `LoadingSlowly` before returning the quotes.
+
+
+    How can a response go wrong?
+    ----------------------------
+    > Here are potential problems with the server ...
 
     1. Poor data connection (wifi is off? poor 4G? Disconnected?)
     2. Server is down (not responding for some reason)
@@ -45,57 +64,66 @@ module Http.Loading exposing (..)
     For (6), it's probably easiest to just roll your own localhost API.
 
 
-    Slow data
-    ---------
-    > How do we check the problem is a slow connection?
+    How do we handle slow data?
+    ---------------------------
+    > What might happen with a slow connection in our app?
+    > Some of these suggestions require `model.mode` status.
 
-    `Process.sleep` is not a perfect way to check for slow connections. It may
-    be tricky to detect whether the server or the connection is the problem.
-    not guarantee that the server is actually Adding
-    a tracker to `Http.get` tells us how long the server takes to process the
-    request. We also might want to check 4G connectivity.
+    So we've discovered the perfect recipe to detect slow connections. We've
+    detected whether the problem is latency, slow 4G, server process time, and
+    so on. What could an app do to create a better user experience?
 
-    For images, you can use `<picture>` to load 1x, 2x, or 3x images based on
-    the user's device. Here's some potential ideas for slow connections:
+        (a) Automatically rejig the app depending on speed
+        (b) Prompt the user to select app mode (slow/fast)
 
-    - ✅ Load text-only as default (or minimal requested data)
-    - ✅ Add feature detection to a user's client (3x image, etc)
-    - ✅ Only include 3x images if `LoadingSlowly` is false (good connection)
-    - ✅ Use `Progress` and `track` to monitor the server download progress
-    - ✅ Set a timer on the backend server to time the query execution!
-    - ⁉️ Load a small asset on very first page load to test connection
+    Pictures
 
-    ❌ Sniffing the user's network to see what connection they're on is also
-    possible with `navigator.connection.effectiveType`, but it's not browser-safe.
-    `renderTime` to check how long an element takes to load is also possible in
-    the future.
+        @ https://www.dofactory.com/html/picture
+        @ https://www.dofactory.com/html/img/sizes
 
-        @ https://caniuse.com/?search=navigator.connection (Chrome only)
+        We already have `<picture>` or `<img>` element which can load 1x,
+        2x, 3x images based on the user's device. This goes by device
+        capability or viewport width (use `100vw` for width in `sizes`).
+
+    Text-only
+
+        You could automatically (or prompt the user to) switch to a
+        text-only mode if the connection is slow. This could also be
+        the default for mobile users (or 1x images).
+
+    Feature detection
+
         @ https://addyosmani.com/blog/adaptive-serving/
+        @ https://caniuse.com/?search=navigator.connection
+
+        Sniff the device to display certain features (like 3x image).
+        Some browsers use `navigator.connection.effectiveType` and the
+        `renderTime` but it's not browser-safe.
 
 
     ----------------------------------------------------------------------------
     WISHLIST
     ----------------------------------------------------------------------------
-    > I feel the easiest way to check a slow connection is to (1) `Process.sleep`
-    > (maybe two of them) and (2) server-side timing metric response.
+    > Easiest way to check for slow 4G connection seems to be calculate the
+    > server process time, minus the time to full response (of first byte).
 
-    1. Test with BrowserStack or developer tools with throttling
-        - How realistic is the `sleepThreshold`? Too long? Too short?
-    2. Which method will accurately check connectivity?
-        - Which parts of your app are potential bottlenecks?
-        - Use feature detection for client and device capabilities
-        - Use speed testing to check if connectivity is good
-    2. Add `Progress` tracking to more accurately measure server response
-        - @ https://package.elm-lang.org/packages/elm/http/latest/Http#track
-        - @ https://package.elm-lang.org/packages/elm/http/latest/Http#fractionReceived
-    3. Add a server-side "time to execute" metric in the json response
-        - How long does the server take to process the request?
-    4. Add `LoadingVerySlowly` for really poor connections?
-        - Switch to `text-only` mode if this happens
-    5. You may wish to have a `NoOp` or `NotAskedFor` state for `Status a`, if
-       the UI is a button to trigger the request.
-
+    1. Test on a live server with a few devices and connections.
+        - In the city centre with a bad connection
+        - BrowserStack with throttling on various devices
+    2. What's a realistic `sleepThreshold`? How long is too long?
+        - `Process.sleep` only checks a time period (not the response load)
+        - If quotes load after 0.5 seconds is a loading animation enough?
+        - Larger transfers can take 2-3 seconds to load (Building with FastApi)
+    3. See the module introduction for more precise calculations.
+        - Which methods are easiest or "good enough" to calculate?
+        - Will latency - server process time give accurate results?
+        - Are `Progress`/`track` necessary or is latency - process time enough?
+        - Feature detection for client and device capabilities are also possible
+    4. Which bottlenecks are most common and worth considering?
+        - Which endpoints are the biggest problems?
+        - Which parts of the client are a biggest user experience problem?
+        - Which endpoints might benefit from pagination (smaller packets)?
+    5. Do we need more than one `LoadingSlowly` status?
 -}
 
 import Browser
