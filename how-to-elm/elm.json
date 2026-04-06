@@ -21,7 +21,7 @@
             "elm-community/json-extra": "4.3.0",
             "elm-community/list-extra": "8.7.0",
             "elm-community/result-extra": "2.4.0",
-            "elm-explorations/markdown": "1.0.0",
+            "pablohirafuji/elm-markdown": "2.0.6",
             "rtfeldman/elm-iso8601-date-strings": "1.1.4"
         },
         "indirect": {
