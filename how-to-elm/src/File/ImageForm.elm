@@ -163,9 +163,12 @@ module File.ImageForm exposing (..)
         - A `List File` for multiple files?
         - A `List Base64` for multiple base64 strings?
     5. How might we deal with image limits? (lazy customers)
+        - @ https://www.dofactory.com/html/picture (image dimensions)
         - File size and compression (nobody will minimise iPhone uploads!)
         - Error handling (from server and client)
         - Unit testing for errors
+    6. Preview image before uploaded?
+        - @ https://stackoverflow.com/a/20756091
 -}
 
 import Browser
@@ -379,6 +382,7 @@ view model =
                             [ text "Upload Image to Server!"]
                         -- , Debug.todo
                         --     """
+                        --     ⚠️ TO-DO THROWS UNCATCHABLE ERROR
                         --     Server errors may need to be handled!
                         --     @rtfeldman used `List Problem` for form AND server errors!
                         --     """
