@@ -1,28 +1,119 @@
 module File.ImageForm exposing (..)
 
 {-| ----------------------------------------------------------------------------
-    Image POST `--form` to server: `base64` with MultiPart
+    Image file upload
     ============================================================================
-    ✏️ Improve the documentation of this file and it's example.
+    > Uses a `base64` string to upload form data
 
-    Poor UI and low-data are the fundamental things to improve, so focus on those
-    things first! Early prototypes can use Tally forms for paper prototyping the
-    `upload->convert->display` interface, and help shore up architecture and design
-    routes.
+    ⚠️ Security: browser only allows `File.select` with user action.
 
-    Remember, you've got to HOST these images; uploading is a small part! See
-    `src/ImageServer` for reliable image servers.  I tried and failed to get
-    @ http://freeimage.host working, so @ https://imgbb.com is fine for now.
+    Currently selects a single image. The method I've used is `Select.file` which
+    is a `Cmd` that opens the file explorer and allows the user to select a file.
+    This could be added to a `List Url` for multiple images.
+
+    One of the examples of where Elm is great for low dependencies, but not so hot
+    for developer convenience. With a javascript library you would avoid having to
+    research low-level detail like base64 encoding!
 
 
-    Learning
-    --------
-    > ⚠️ How is the user experience of uploading from an iPhone?
+    Multiple images (alternative)
+    -----------------------------
+    > An Elm example uses `multiple True` for file input
 
-    1. Try to avoid naming clashes with other Elm packages
-    2. Avoid large files and error check for a file size limit
-    3. Have a `LoadingSlowly` status for files `200kb`-`500kb`
-    4. Version your Javascript files to avoid Elm caching old versions
+    This stores files in array `event.target.files`, decoded into `List File`. Has
+    the downside of refreshing the list every time the upload button is clicked.
+
+        @ https://web.dev/articles/read-files
+        @ https://elm-lang.org/examples/upload
+
+
+    Previous version with `File`
+    ----------------------------
+    > You can't extract the name from Base64 string.
+
+    Previous version handled `File.url` and `File.name` directly in the update
+    function. Having showed it to other Elmers nobody said it was incorrect
+    other than lifting the `base64` value once. The `Model` was not the best
+    setup I think:
+
+        ```
+        ImageUrl = ImageNotAskedFor | Image (Result Http.Error String)
+
+        type alias Model =
+            { image : Maybe String
+            , imageName : String
+            , imageUrl : ImageUrl
+            }
+        ```
+
+    For the following reasons ...
+
+        (a) Don't store computed values in the model! (`Result`)
+        (b) It's possibly better storing `File` directly in the model
+        (c) As there's only a single image `Maybe File` is easier
+        (d) `Url` as a separate (simple) field
+
+
+    ⚠️ Impossible states
+    --------------------
+    > Have we handled impossible states correctly?
+
+    If we changed our `Msg` order, view or other parts of our program would the
+    impossible state be 100% handled correctly? The `Url` custom type could probably
+    be tightended up a little:
+
+        (a) `Base64` is an empty string (no file yet) ⚠️
+        (b) `Base64` is only created from `File`
+        (c) `Loaded` is only created from server response
+
+    We've also got `NoImage` state when the user has not yet selected a file. Are
+    there any ways our program could end up in an impossible state? Unfortunately
+    `File.toUrl` is a `Task` that needs to be performed (creating an extra `Msg`).
+
+    We must have the ability to retrieve info about the file, so we store it as
+    a seperate entry on `Model`. We could clear this after send to server.
+
+        States: no image, file, base64, image url
+
+
+    Prototyping
+    -----------
+    > Paper prototype your UI and shape your bet. Fat marker.
+
+    You've still got to handle the image compression etc! It might be easier
+    while prototyping to use a 3rd-party service, or Tally forms and handle the
+    conversions offline. Hosting and processing is the hard part!
+
+
+    The API
+    -------
+    > @ https://api.imgbb.com/ is used. I've tried `freeimage.host` but couldn't
+    > get it to work reliably. See `ImageServer` for other services.
+
+    ```
+    curl -X POST "https://api.imgbb.com/1/upload?expiration=600&key=<API_KEY>" \
+    -H "accept: application/json" \
+    -H "content-type: multipart/form-data" \
+    -F "image=@/path/to/image.jpg;type=image/jpeg"
+    ```
+
+
+    Sentence method
+    ---------------
+    > Upload -> Convert -> Display
+
+    What does the customer journey look like? Can it be simplified?
+
+    1. Button launches file explorer
+    2. Add single file with allowed MIME type(s)
+    3. Store the individual `File` to retrieve information about it
+        - For multiple images store as `List File`?
+    4. `File.toUrl` -> `Base64 String` with metadata
+    5. Strip metadata `data:[<mediatype>][;base64],` at comma
+        - Some servers may accept the metadata but ImgBB does not
+    6. Send `Base64 String` to the server
+        - You may need to use `--form` and url encoded `Base64 String`
+    7. Store server response as url and preview image
 
 
     What is `base64`?
@@ -32,22 +123,6 @@ module File.ImageForm exposing (..)
 
     Also see `elm/file` package and Elm guid for examples.
     Server must accept `base64` POST in the URL and allow CORS.
-
-
-    Sentence method
-    ---------------
-    > Paper prototype your UI and shape your bet. Fat marker.
-
-    1. Upload file with allowed `MIME` type(s)
-    2. Convert the file with `File.toUrl` function
-    3. Strip the metadata from `data:[<mediatype>][;base64],`
-    4. Store it either individually or as `List String`
-    5. Send to the server individually or as a group
-        - POST `--form` with `onClick` message
-        - URL encode `<data-string>`if needed with `Http.stringPart`
-    6. Server should respond with our `Just url` which ...
-        - We can use naked value and not unpack `Maybe` twice!
-        - We can guarantee that it's not `Nothing` at this point
 
 
     Tooling
@@ -70,42 +145,32 @@ module File.ImageForm exposing (..)
     ----------------------------------------------------------------------------
     WISHLIST
     ----------------------------------------------------------------------------
-    > ⚠️ Documentation and examples could be improved. Consider low-data 4g solutions
-    > like lazy-loading, 1x/2x/3x resolutions, multiple images, and so on.
+    > Currently does not consider any lazy-loading previews, conversion to
+    > different resolutions, or other optimizations.
 
-    1. Could we handle the `ImageUrl` and view model better?
-        - Is a `Maybe` type essential? (Or use `Maybe.map` in view)
-        - Could our data structures and flow be improved?
-    2. `ImageForm` component that can be run multiple times (at least 3 img)
-        - @ https://elm-lang.org/examples/upload (multiple files)
-        - `Task.sequence` may help to stack up the calls, if `Task` is successful,
-          user sees "Image Ready".
-        - Some kind of spinner would be required when uploading/sending
-        - How would the form need to look? `List String`?
-        - I think `.multipartBody` can send multiple files
-    3. Max file size and number of images will be necessary
-        - Check each file image size and error if too large
-        - Limits on number of images able to upload to server
-        - Error handling for failed uploads
-    4. Test a decent image server that allows for different resolutions
-        - And manipulating the images (direct upload from iPhone too large)
-        - Can the image be directly got and displayed? (It'll just be a URL)
-    5. Unit tests ...
-        - does `Msg` always receive a `Base64` string?
-    6. Try and prettify the code and HTML
-        - It looks like boilerplate right now
-
-    Questions
-    ---------
-    1. Why can `Task.perform` NEVER fail?
-
+    1. Is the `Url` impossible state correct?
+        - We create `Base64` from `File`
+        - We create `Loaded` from server response
+    2. Is there a way to remove the need for `Maybe` types?
+        - Or use `Maybe.map` in the view to avoid "lifting"?
+    3. What ways can we add multiple file upload?
+        - Ideally in a way that doesn't refresh the list every time
+        - `Task.sequence` may help to stack up the calls if `Task` successful
+    4. How can we convert this to a component for reuse?
+        - A `List Url` for multiple images?
+        - A `List File` for multiple files?
+        - A `List Base64` for multiple base64 strings?
+    5. How might we deal with image limits? (lazy customers)
+        - File size and compression (nobody will minimise iPhone uploads!)
+        - Error handling (from server and client)
+        - Unit testing for errors
 -}
 
 import Browser
 import File exposing (File)
 import File.Select as Select
-import Html exposing (Html, button, div, p, strong, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, button, div, h2, img, p, strong, text)
+import Html.Attributes exposing (class, src, alt)
 import Html.Events exposing (onClick)
 import Http exposing (..)
 import File.ImageServer as Server
@@ -116,32 +181,38 @@ import Url.Builder as UB
 
 -- Model -----------------------------------------------------------------------
 
-type ImageUrl
-    = ImageNotAskedFor
-    | Image (Result Http.Error String)
+{-| Url is one of:
 
-type alias Base64 =
-    String
+1. A trimmed `Base64` string without metadata prefix
+2. A loaded image url successfully returned from the server
+
+View lifts the `Base64 String` for the button click!
+-}
+type Url
+    = Base64 String
+    | Loaded String
 
 type Msg
   = ImageRequested
   | ImageSelected File
-  | ImageLoaded String
-  | SendToServer Base64
-  | SentImage (Result Http.Error String)
+  | ImageToUrl String
+  | SendToServer String -- #! See `Url` notes
+  | ImageServerResponse (Result Http.Error String)
 
+{-| Simplified model
+
+> ⚠️ May contain impossible state! See notes.
+
+Reduced the fields from previous versions.
+-}
 type alias Model =
-  { image : Maybe String
-  , imageName : String
-  , imageUrl : ImageUrl
+  { image : Maybe File
+  , url : Url
   }
-
-type alias ImageSize
-    = String
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model Nothing "" ImageNotAskedFor, Cmd.none )
+  ( Model Nothing (Base64 ""), Cmd.none )
 
 
 
@@ -173,7 +244,7 @@ buildUrl expiration key =
         , UB.string "key" key
         ]
 
-{-| ImgBB expects a `--form` POST request.
+{-| ImgBB expects a `--form` POST request!
 
 > We pass in a `base64` file string (not the file)
 
@@ -182,7 +253,7 @@ Some servers can use `Http.request` and `Http.fileBody` for the file itself. Eit
 way the `<data-string>` should be URL % encoded.
 
 You can send multiple files with `Http.multipartBody` (see docs)  -}
-postImage : String -> Server.ApiKey -> Base64 -> Cmd Msg
+postImage : String -> Server.ApiKey -> String -> Cmd Msg
 postImage expiration (Server.ApiKey str) file =
     Http.request
         { method = "POST"
@@ -191,7 +262,7 @@ postImage expiration (Server.ApiKey str) file =
         , body =
             Http.multipartBody
                 [ Http.stringPart "image" file ]
-        , expect = Http.expectJson SentImage decodeImage
+        , expect = Http.expectJson ImageServerResponse decodeImage
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -215,96 +286,110 @@ main =
 
 -- Update ----------------------------------------------------------------------
 
+{-| `File` to `Base64`
+
+> We hold on to `File` and convert to `Base64`
+
+This `base64` value must be stripped of it's metadata as the image API does
+not accept the prefix.
+-}
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
+  case Debug.log "Msg" msg of
     ImageRequested ->
         ( model
         , Select.file ["image/jpg", "image/png", "image/gif"] ImageSelected
         )
 
-    {- We need to do a few things to our `base64` string, but `Task` expects
-    a `Never` type, which only `File.toUrl` can give us ... -}
+    -- #! No longer has `Task.perform ImageLoaded (File.toUrl file)` step as we
+    --    store `File` in the model and only convert it on server upload click.
     ImageSelected file ->
-        -- Collect the file name to preview for our visitor!
-        ( { model | imageName = (File.name file) }
-        -- Convert file to a `base64` string (with metadata)
-        , Task.perform ImageLoaded (File.toUrl file)
+        ( { model
+            | image = Just file
+        }
+        , Task.perform ImageToUrl (File.toUrl file)
         )
 
-    ImageLoaded base64 ->
+    -- #! It may be better to store this as a separate value
+    ImageToUrl unTrimmedBase64 ->
         let
-            -- ⚠️ Strips the metadata from `Base64` string. Is it important?
-
-            -- 1. Convert uploaded image to a `base64` string with `File.toUrl`
-            -- 2. Some APIs don't like the `data:` metadata prefix. Strip it
-            -- 3. Split at the `,` then drop the metadata part
-            chopBase64 = String.join "" (List.drop 1 (String.split "," base64))
+            trimmedBase64 = (trimBase64 unTrimmedBase64)
         in
-        ( { model | image = Just chopBase64 }
+        ( { model
+            | url = trimmedBase64
+          }
         , Cmd.none
         )
 
-    {- #! We KNOW that `model.image` is not `Nothing` at this point. No need
-    for another "lifting" of the `Maybe` type. Just send it along! -}
     SendToServer base64 ->
         ( model
         , postImage "600" (Server.ApiKey "104e88f54082d98be7ac1d3649ba21d1") base64 )
 
     {- #! See the custom type for `imageUrl` -}
-    SentImage payload ->
-        ( { model | imageUrl = Image payload }
+    ImageServerResponse (Ok payload) ->
+        ( { model | url = Loaded payload }
         , Cmd.none
         )
 
+    ImageServerResponse (Err _) ->
+        ( model
+        , Debug.todo "Handle server errors here"
+        )
+
+{-| ImgBB doesn't like the prefix -}
+trimBase64 : String -> Url
+trimBase64 unTrimmedBase64 =
+    List.drop 1 (String.split "," unTrimmedBase64)
+        |> String.join ""
+        |> Base64
 
 
 -- View ------------------------------------------------------------------------
 
 
+{-| #! File view
+
+> We store the `File` to access it's information
+
+However, only certain functions are available directly in the `view`.
+Other functions, such as `File.toString` require a `Task` -> `Msg`.
+-}
 view : Model -> Html Msg
 view model =
-  case model.imageUrl of
-    ImageNotAskedFor ->
-        viewUploaded model
+  case model.image of
+    Nothing ->
+        button [ onClick ImageRequested ] [ text "Upload an image" ]
 
-    Image (Ok url) ->
+    Just file ->
         div [ class "wrapper" ]
-            [ p [] [ text ("image: " ++ url ++ " is ready to add to the form!") ] ]
-
-
-    Image (Err error) ->
-        case error of
-            BadUrl str ->
-                p [] [ text str ]
-
-            Timeout ->
-                p [] [ text "Oops! There's been a TIMEOUT. Start again?" ]
-
-            NetworkError ->
-                p [] [ text "Oops! There's been a NETWORK ERROR. Start again?" ]
-
-            BadStatus num ->
-                p [] [ text ("Oops! There's been a" ++ (String.fromInt num) ++ ". Start again?") ]
-
-            BadBody str ->
-                p [] [ text str ]
-
-viewUploaded : Model -> Html Msg
-viewUploaded model =
-    case model.image of
-        Nothing ->
-            button [ onClick ImageRequested ] [ text "Load Image" ]
-
-        {- #! Here it'd be helpful to use an existing URL for the image, too -}
-        Just url ->
-            div [ class "wrapper" ]
-                [ p [] [ strong [] [ text ("filename: " ++ model.imageName) ] ]
-                , p [] [ strong [] [ text " / url: "], text url ]
-                , button [ onClick (SendToServer url) ]
-                    [ text "Upload Image to Server!"]
+            [ p []
+                [ strong []
+                    [ text ("Upload " ++ (File.name file) ++ " to the server!") ]
                 ]
+            , p []
+                [ strong []
+                    [ text ("size: " ++ (String.fromInt (File.size file))) ]
+                ]
+            , case model.url of
+                Base64 str ->
+                    div []
+                        [ button [ onClick (SendToServer str) ]
+                            [ text "Upload Image to Server!"]
+                        -- , Debug.todo
+                        --     """
+                        --     Server errors may need to be handled!
+                        --     @rtfeldman used `List Problem` for form AND server errors!
+                        --     """
+                        ]
 
+                Loaded url ->
+                    div []
+                        [ h2 [] [ text "Image Uploaded! Here's the URL:" ]
+                        , img [ src url
+                            , alt "Uploaded image"
+                            ] []
+                        ]
+            ]
 
 
 -- Subscriptions ---------------------------------------------------------------
