@@ -9,7 +9,9 @@ module Http.Photo exposing (..)
 2. Our data might be slow so we account for that too
 3. Never nest models or messages if you can avoid it!
 4. When might we not need to worry about impossible states?
-5. @ elm-explorations/markdown / @ pablohirafuji/elm-markdown
+5. How might we integrate Markdown?
+    - @ elm-explorations/markdown
+    - @ pablohirafuji/elm-markdown
 
 How can Ai be used to speed up development?
 See the document on Photo and pinging the server.
@@ -58,6 +60,8 @@ Do you have a single `LoadingSlowly` state or different ones for all `Status a`?
 
 Pictures
 --------
+> @ https://www.dofactory.com/html/picture
+
 I think you can use `<picture>` to automatically load the 1x, 2x, or 3x image
 based on the user's device. You can also use feature detection to check if the
 user's device supports 3x images.
