@@ -1,6 +1,6 @@
 # README
 
-> All the good bits of Elm ... (without `elm-format`)
+> All the good bits of Elm ...
 
 It's better to practice a little and often, otherwise you'll get rusty.[^1]
 
@@ -8,21 +8,23 @@ It's better to practice a little and often, otherwise you'll get rusty.[^1]
 2. While prototyping routes see how much coding you can avoid doing
 3. Only code up forms if they're (a) simple (b) effective (c) fun
 
-Elm with Ai is very hit-and-miss at the moment, but (in my rules) I try to reduce coding for the idea validation period; brutalist, minimalist, zen design. The API and database seems fine by hand, but it would be remiss to avoid Ai, which is now quite capable of paper-prototyping a UI very quickly. This can be tested with live users.
+**Ai+Elm is hit-and-miss at the moment**, and on the few occassions I've used it you really have to be on the ball; it gives overly complex solutions and hallucinates.
 
-Elm can later be used to code up an app properly, or outsourcing is an option. Certain areas of Elm are not particularly well developed, such as [image uploads](src/File/ImageForm.elm). A [cheap image service](https://uploadcare.com/) can be used, but you'll not get the fancy UI (ports maybe).
+**Do you have customers yet? No? Then use Ai where possible!** Validate your idea quickly with brutalist, minimalist, zen code and ui. For paper prototyping try to reduce as much hand-coding as possible, and lean on 3rd party tooling. You're looking to do basic user testing before worrying about how code looks! Your API might be best hand-coded but strip everything back where possible. Ai is quite capable with regular frontend and css.
+
+**Coding with Elm really takes quite a lot of time.** For example, this [image upload](src/File/ImageForm.elm) program took a day to achieve. That's too long when prototyping! Elm can be used later to code your app properly, or outsource.
 
 
 ## Rules for myself
 
-> Set a learning frame and some rules for yourself
+> Set a learning frame and some rules for yourself!
 > What's in? What's out?[^2] How do I keep my programs simple?
 
 **Don't repeat yourself** (one is enough, no duplicate examples)
 
 1. Is this **best practice** to the best of my knowledge?
-2. Is this something **Ai could do better**? Why break my back?[^3]
-3. Is there a tool I can use to spead up validation?[^4]
+2. Is this something **Ai can do better?**? Quicker? [^3]
+3. Is there a tool I can use to speed up idea validation?[^4]
 4. Is this the [simplest](https://pragprog.com/titles/dtcode/simplicity/) program I could possibly make?
 
 
@@ -35,21 +37,22 @@ There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki p
 
 ## Improvements
 
-1. When using `port`s, it can be handy to have a cursory knowledge of javascript.
-    - In general I use as little javascript as possible: set it and forget it.
+1. Use `elm-format` on real projects with a team.
+2. Using `port`s, a little javascript knowledge can be handy.
+3. Hire other people to do the bits you don't enjoy (like javascript!)
 
 ## Tools and guides
 
-1. [Elm Watch](https://lydell.github.io/elm-watch/)[^5] (live reload your app)
-2. [Elm Patterns](https://sporto.github.io/elm-patterns/index.html) (common ways of Elm-ing)
-3. [Clear cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) in developer tools[^6]
+> See the main [`README.md`](../README.md) for help
+
+You may like to use [`elm-watch`](https://lydell.github.io/elm-watch/)[^5] to live-reload your app, and [clearing the cache](https://nicholasbering.ca/tools/2016/10/09/devtools-disable-caching/) can help when refreshing compiled javascript.[^6]
 
 
 [^1]: Coming back after 2-3 months off and I'm rusty as fuck!
 
 [^2]: Elm is generally my go-to language in terms of depth of learning. Python is extra. I'm more concerned with doing things the Elm way, but realise that as programs scale up they're generally a bit too complicated for me (a large Elm Spa, for example) ... so I keep learning light and aim for simplicity for prototyping. If it makes money, I can hire.
 
-[^3]: You can always "make it perfect" later, but time is of the essence. Can you mock it up? Iterate quicker without coding? Pair program with Ai or a professional programmer?
+[^3]: Why break my back when it takes a fraction of the time with Ai to prototype a program? Time is of the essence! Make it "perfect" later and mock it up quickly to validate. Pair-program with Ai and do it yourself later with a mentor (or hire).
 
 [^4]: Tally forms, for example, is really excellent and worth using if forms are in any way complex. There's no point in spending hours on a form if it doesn't convert. Once you've got a working formula, you can code it up proper.
 
