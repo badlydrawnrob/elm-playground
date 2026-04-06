@@ -29,7 +29,7 @@ module File.ImageForm exposing (..)
 
     Previous version with `File`
     ----------------------------
-    > You can't extract the name from Base64 string.
+    > Name can only be extracted from actual `File`.
 
     Previous version handled `File.url` and `File.name` directly in the update
     function. Having showed it to other Elmers nobody said it was incorrect
@@ -45,6 +45,8 @@ module File.ImageForm exposing (..)
             , imageUrl : ImageUrl
             }
         ```
+
+        @ https://tinyurl.com/how-to-elm-file-image-f2eac42
 
     For the following reasons ...
 
