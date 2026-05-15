@@ -61,6 +61,7 @@ Do you have a single `LoadingSlowly` state or different ones for all `Status a`?
 Pictures
 --------
 > @ https://www.dofactory.com/html/picture
+> @ https://package.elm-lang.org/packages/miniBill/elm-picture/latest/
 
 I think you can use `<picture>` to automatically load the 1x, 2x, or 3x image
 based on the user's device. You can also use feature detection to check if the
