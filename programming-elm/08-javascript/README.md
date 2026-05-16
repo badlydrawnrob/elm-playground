@@ -1,6 +1,23 @@
 # README
 
-> Deviated from the book: just use Elm!
+> 💩 Fuck javascript: just use Elm solo.
+
+- I've deviated from the book to only use Elm Lang packages
+- Add basic image preview and send our images anywhere ...
+
+Elm [examples](https://elm-lang.org/examples) don't _do_ anything with images, they simply upload to the javascript API by (a) multiple uploads with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications), or (b) drag and drop with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files). One downside is that `files` clears it's cache if more images are added.[^1]
+
+The book's example uses javascript to upload and store images in `localStorage`, then Elm's `port`s send them to `Model` as a `List Image` to preview. An uploaded image is simply a `base64` string! Unfortunately learning about the low-level detail of file formats and sending to the server is difficult (one of Elm's downfalls — no easy plugins!), but we can safely ignore sending to the server for now. Thankfully, you can view a `base64` string with `<img src="data:image/png;base64">`!
+
+1. [Convert](https://www.base64-image.de/) image to `base64`
+    - Or use the [example app code](https://github.com/badlydrawnrob/elm-playground/blob/1db43ce18833a6530e15cd12fe7b54852adcdf03/how-to-elm/build/file-upload-image-to-server.html) here
+2. Copy `base64` to clipboard and in terminal type:
+    - `pbpaste | base64 -d > image.jpg`
+
+<figure>
+    <figcaption>Beware of large file sizes, they'll be sluggish to upload and save!</figcaption>
+    <img src"">
+</figure>
 
 This chapter focused on Elm with Javascript. It involved a lot of boilerplate to run the server which I personally find [javascript syntax](https://eloquentjavascript.net) hard to read, even if the code isn't all that complicated. Beginners will find the build process daunting. After a lot of work I found [`esbuild`](https://esbuild.github.io) and `.jsx` files the easiest to manage, but my [initial attempt](https://github.com/badlydrawnrob/elm-playground/tree/9198e8a77ca557318d49c5e7dac6d15fa2f5fba1/programming-elm/08-javascript) wasn't well integrated with the script.
 
@@ -61,3 +78,5 @@ npx elm-watch make --optimize
 ```
 
 
+
+[^1]: [Tiny PNG](https://tinypng.com) automatically processes each image on drag. I'm not sure there's anyway around this behaviour.
