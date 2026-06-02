@@ -120,6 +120,14 @@ Elm.FolderName.FileName.init({
 <!/script>
 ```
 
+## Git commands
+
+```bash
+# Cleanup files not tracked in `.gitignore`
+# `-d` recursively, `-e` excluding, `-i` interactive mode
+git clean -dx -e .env -i
+```
+
 
 
 ## Lazy Loading notes to compile (and reduce)

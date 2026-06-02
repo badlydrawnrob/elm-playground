@@ -1,82 +1,66 @@
 # README
 
-> 💩 Fuck javascript: just use Elm solo.
+> Javascript = 💩.
+> Use Elm for ease.
 
-- I've deviated from the book to only use Elm Lang packages
-- Add basic image preview and send our images anywhere ...
+We're using Elm-only instead of the Book's guide. Javascript libraries may provide a nicer user experience, but it comes with a cost of readibility and mental load.
 
-Elm [examples](https://elm-lang.org/examples) don't _do_ anything with images, they simply upload to the javascript API by (a) multiple uploads with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications), or (b) drag and drop with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files). One downside is that `files` clears it's cache if more images are added.[^1]
+- A 3-field simple form
+- Elm-only UI for images
+- Image-preview only (ready for the server)
+- Storage with [`DataTransfer.files`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files) (not `localStorage`)[^1]
+- Read file information
 
-The book's example uses javascript to upload and store images in `localStorage`, then Elm's `port`s send them to `Model` as a `List Image` to preview. An uploaded image is simply a `base64` string! Unfortunately learning about the low-level detail of file formats and sending to the server is difficult (one of Elm's downfalls — no easy plugins!), but we can safely ignore sending to the server for now. Thankfully, you can view a `base64` string with `<img src="data:image/png;base64">`!
+
+## Quickstart
+
+```terminal
+npm install
+npx elm-watch init
+npx elm-watch hot
+
+## Optimise and release the app (no `Debug` allowed)
+npx elm-watch make --optimize
+```
+
+
+## Elm and images
+
+Elm [examples](https://elm-lang.org/examples) don't _do_ anything with images, they simply upload to the javascript API. One downside is that `files` clears it's cache if more images are added.[^1]
+
+- (a) Multiple uploads with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
+- (b) [Drag and drop](https://elm-lang.org/examples/image-previews) with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files).
+
+A `File` can be converted to a `base64` string for easier sending to some servers. The unfortunate aspect of Elm Lang is the need to learn low-level detail on file formats, sending to the server, etc. It can be difficult to wrap your head around. A `base64` image can be previewed with `<img src="data:image/png;base64">`. For this chapter we don't need to worry about sending to server!
+
+## Base64
 
 1. [Convert](https://www.base64-image.de/) image to `base64`
-    - Or use the [example app code](https://github.com/badlydrawnrob/elm-playground/blob/1db43ce18833a6530e15cd12fe7b54852adcdf03/how-to-elm/build/file-upload-image-to-server.html) here
+    - You can use [this tiny app](https://github.com/badlydrawnrob/elm-playground/blob/1db43ce18833a6530e15cd12fe7b54852adcdf03/how-to-elm/build/file-upload-image-to-server.html) also
 2. Copy `base64` to clipboard and in terminal type:
     - `pbpaste | base64 -d > image.jpg`
 
 <figure>
     <figcaption>Beware of large file sizes, they'll be sluggish to upload and save!</figcaption>
-    <img src"">
+    <img src"data:image
+/png;base64,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">
 </figure>
 
-This chapter focused on Elm with Javascript. It involved a lot of boilerplate to run the server which I personally find [javascript syntax](https://eloquentjavascript.net) hard to read, even if the code isn't all that complicated. Beginners will find the build process daunting. After a lot of work I found [`esbuild`](https://esbuild.github.io) and `.jsx` files the easiest to manage, but my [initial attempt](https://github.com/badlydrawnrob/elm-playground/tree/9198e8a77ca557318d49c5e7dac6d15fa2f5fba1/programming-elm/08-javascript) wasn't well integrated with the script.
 
-In essence all we have is:
+## Why I'm not using javascript
 
-1. A simple form with 3 fields
-2. An image upload (with preview)
-
-The original also sent data to `localStorage` which we can do if we wish.
-
-
-## Image upload
-
-You've got a couple ways to display the images. In order of ease:
-
-1. Upload to an image server with url (stores image)
-2. Convert image to `base64` and [preview](https://stackoverflow.com/questions/20756042/how-to-display-an-image-stored-as-byte-array-in-html-javascript) (does not store image)
-3. See Elm's other image versions:
-    - @ https://elm-lang.org/examples/drag-and-drop
-    - @ https://elm-lang.org/examples/image-previews
-
-For (2) the code is:
-
-```html
-<img id="ItemPreview" src="">
-```
-```js
-document.getElementById("ItemPreview").src = "data:image/png;base64," + yourByteArrayAsBase
-```
-
-
-## Why not javascript?
-
-> I find it hard to read and uncomfortable to work with.
+> The book's example uses javascript to upload and store images in `localStorage`, then Elm's `port`s send them to `Model` as a `List Image` to preview.
 
 1. Massive dependencies
 2. 124 vulnerabilities (20 critical)
 3. Outdated at the speed of light
-4. Syntax is not easy to read
+4. [Syntax](https://eloquentjavascript.net) is not easy to read
+5. Lots of boilerplate to run the server
+6. Build tools daunting for beginners (a lot of mental effort)
 
-
-## Setup
-
-```terminal
-npm install --save-dev elm-watch@beta
-npx elm-watch --help
-
-# Change `elm-watch.json` paths if needed
-npx elm-watch init
-
-npx elm-watch hot
-```
-
-When we eventually want to release our app, we can optimize the build and copy over the files to the server. Optimisation won't work unless `Debug` code in `Main.elm` is removed!
-
-```terminal
-npx elm-watch make --optimize
-```
+Eventually I found [`esbuild`](https://esbuild.github.io) and `.jsx` files the easiest to build, but [my attempt](https://github.com/badlydrawnrob/elm-playground/tree/9198e8a77ca557318d49c5e7dac6d15fa2f5fba1/programming-elm/08-javascript) wasn't well integrated. I did find a [nice way](https://stackoverflow.com/questions/20756042/how-to-display-an-image-stored-as-byte-array-in-html-javascript) to preview the images though.
 
 
 
-[^1]: [Tiny PNG](https://tinypng.com) automatically processes each image on drag. I'm not sure there's anyway around this behaviour.
+
+[^1]: Downside with this route is there's no way to add to `List File` with `event.datatransfer.files` without resetting the list. [Tiny PNG](https://tinypng.com) automatically processes each image on drag, forcing users to drag-and-drop more images if they want to upload them. There is an [`add`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItemList/add) function with `DataTransferItemList`, but working with `DataTransferItem` is harder (unlike our version it doesn't flatten the list if multiple directories added). When faced with decisions like this I generally prefer simpler, cleaner, easy-to-read code, over a fancy user experience.
