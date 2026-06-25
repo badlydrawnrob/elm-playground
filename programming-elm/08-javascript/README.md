@@ -16,6 +16,8 @@ Use Elm-only instead of the Book's guide. Javascript libraries may provide a nic
 - Images pulled from [`DataTransfer.files`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files) (not `localStorage`)[^1]
 - Basic error messages
 
+You might also want to research [progressive loading](https://jakearchibald.com/2025/present-and-future-of-progressive-image-rendering/) and [pixel ratio](https://docs.imgix.com/en-US/getting-started/tutorials/responsive-design/responsive-images-with-srcset) for low- and high-resolution screens.
+
 
 ## Quickstart
 

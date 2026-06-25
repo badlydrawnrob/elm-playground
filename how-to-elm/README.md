@@ -26,10 +26,12 @@ Avoid getting rusty by practicing little and often.[^1]
 
 ## Areas of improvement
 
-1. Use `elm-format` on real projects with a team.
-2. Using `port`s, a little javascript knowledge can be handy.
-3. Hire other people to do the bits you don't enjoy (like javascript!)
-4. Investigate [performant elm](https://juliu.is/performant-elm/)
+1. Mine useful examples in [this repo](https://github.com/dwyl/learn-elm/tree/master/examples)
+2. Use `elm-format` on real projects with a team.
+3. Using `port`s, a little javascript knowledge can be handy.
+4. Hire other people to do the bits you don't enjoy (like javascript!)
+5. Investigate [performant elm](https://juliu.is/performant-elm/)
+
 
 
 ## Rules for myself
