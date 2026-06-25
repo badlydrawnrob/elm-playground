@@ -4,6 +4,11 @@
 
 **It's super easy to forget so aim to practice once per week!** A little every day is even better This is the killer; if I step away from programming for a few weeks, you really feel the rust gathering. It doesn't take too long to learn Elm, but give yourself 6-12 months to learn it deeply and you'll be a better programmer for it. Then you can build bigger!
 
+```bash
+# Cleanup folder
+git clean -dx -e .env -i
+```
+
 ## An Elm playground
 
 **This is a testing ground for all things Elm; a great place to start learning.** I'm squarely focused on statically typed functional programming in this repo, which will shape you as a programmer, instilling good habits. Elm compiles to javascript, but there's no need to learn js to use it (although there's a [good guide](https://eloquentjavascript.net/) here).

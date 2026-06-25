@@ -4,9 +4,7 @@
   "description": "Integrate with javascript (without webpack)",
   "main": "index.js",
   "scripts": {
-    "build": "npm run css && npm run react",
-    "css": "npx lessc src/style/main.less ./public/main.css",
-    "react": "npx esbuild src/index.jsx --bundle --outfile=public/app.js"
+    "css": "npx lessc ./style/main.less ./build/style/main.css"
   },
   "repository": {
     "type": "git",
@@ -20,6 +18,7 @@
   "homepage": "https://github.com/jfairbank/programming-elm.com#readme",
   "devDependencies": {
     "elm-format": "^0.8.8",
-    "elm-watch": "^2.0.0-beta.7"
+    "elm-watch": "^2.0.0-beta.7",
+    "less": "^4.6.7"
   }
 }

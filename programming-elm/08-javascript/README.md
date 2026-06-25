@@ -3,16 +3,24 @@
 > Javascript = 💩.
 > Use Elm for ease.
 
-We're using Elm-only instead of the Book's guide. Javascript libraries may provide a nicer user experience, but it comes with a cost of readibility and mental load.
+Use Elm-only instead of the Book's guide. Javascript libraries may provide a nicer user experience, but it comes with a cost of readibility and mental load.
 
-- A 3-field simple form
-- Elm-only UI for images
-- Image-preview only (ready for the server)
-- Storage with [`DataTransfer.files`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files) (not `localStorage`)[^1]
-- Read file information
+
+## Sprint
+
+> A simple form with 3 fields.
+
+- UI built with elm only
+- Image preview ready for server upload
+- Images extracted for simple file information
+- Images pulled from [`DataTransfer.files`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files) (not `localStorage`)[^1]
+- Basic error messages
 
 
 ## Quickstart
+
+> Elm expects a regular `<script>` tag.
+> [ES modules](https://github.com/ChristophP/elm-esm) will need a build tool.
 
 ```terminal
 npm install
@@ -24,19 +32,23 @@ npx elm-watch make --optimize
 ```
 
 
-## Elm and images
+## Elm image upload
 
 Elm [examples](https://elm-lang.org/examples) don't _do_ anything with images, they simply upload to the javascript API. One downside is that `files` clears it's cache if more images are added.[^1]
 
-- (a) Multiple uploads with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
-- (b) [Drag and drop](https://elm-lang.org/examples/image-previews) with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files).
+### Upload methods
+
+1. TinyPNG has a [massive `input`](https://tinypng.com) which is clickable and draggable. Images are automatically uploaded.
+2. [Select multiple files](https://elm-lang.org/examples/upload) with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
+3. [Drag and drop](https://elm-lang.org/examples/image-previews) with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files).
+
+
+### Base64
 
 A `File` can be converted to a `base64` string for easier sending to some servers. The unfortunate aspect of Elm Lang is the need to learn low-level detail on file formats, sending to the server, etc. It can be difficult to wrap your head around. A `base64` image can be previewed with `<img src="data:image/png;base64">`. For this chapter we don't need to worry about sending to server!
 
-## Base64
-
 1. [Convert](https://www.base64-image.de/) image to `base64`
-    - You can use [this tiny app](https://github.com/badlydrawnrob/elm-playground/blob/1db43ce18833a6530e15cd12fe7b54852adcdf03/how-to-elm/build/file-upload-image-to-server.html) also
+    - You can use [this tiny app](https://github.com/badlydrawnrob/elm-playground/blob/1db43ce18833a6530e15cd12fe7b54852adcdf03/how-to-elm/build/file-upload-image-to-server.html) too
 2. Copy `base64` to clipboard and in terminal type:
     - `pbpaste | base64 -d > image.jpg`
 

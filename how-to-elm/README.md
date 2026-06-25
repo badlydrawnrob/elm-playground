@@ -2,44 +2,57 @@
 
 > All the good bits of Elm ...
 
-It's better to practice a little and often, otherwise you'll get rusty.[^1]
+Avoid getting rusty by practicing little and often.[^1]
 
-1. Elm can be quite low-level sometimes but it removes dependencies
-2. While prototyping routes see how much coding you can avoid doing
-3. Only code up forms if they're (a) simple (b) effective (c) fun
+1. Elm has fewer dependencies but can be low-level in detail
+2. Sketch out routes to limit coding and pick better ones. Never satisfice!
+3. Prototype with Ai and tooling to avoid timesinks! (E.g: forms)
+4. Keep only best practice versions (1 example to best of my knowledge)
 
-**Ai+Elm is hit-and-miss at the moment**, and on the few occassions I've used it you really have to be on the ball; it gives overly complex solutions and hallucinates.
+**Ai+Elm can be hit-and-miss at the moment** with complicated solutions, hallucinations, and chatbots varying from local results (that have access to code/compiler). You can [improve reliability](https://simonwillison.net/2025/Mar/11/using-llms-for-code/#context-is-king):
 
-**Do you have customers yet? No? Then use Ai where possible!** Validate your idea quickly with brutalist, minimalist, zen code and ui. For paper prototyping try to reduce as much hand-coding as possible, and lean on 3rd party tooling. You're looking to do basic user testing before worrying about how code looks! Your API might be best hand-coded but strip everything back where possible. Ai is quite capable with regular frontend and css.
+- Write some tests (or a rubric)
+- Feed it examples you like (e.g: `elm/parser`, ask it to write tests)
+- Ask it to read the entire library (or `docs.json` for smaller context window)
+- Ask it to step you through the code (ELi5, racket stepper)
+- Ask it to optimise the code (speed, ELi5, my stupid future self)
+- Give it access to the Elm compiler (and follow the errors)
+- Have it re-read it's code for errors (or use 2 LLMs)
+
+**Do you have customers yet? No? Then minimise your effort!** Validate your idea quickly with brutalist, minimalist, zen code and ui. For paper prototyping try to reduce as much hand-coding as possible, and lean on 3rd party tooling. You're looking to do basic user testing before worrying about how code looks! Your API might be best hand-coded but strip everything back where possible. Ai is quite capable with regular frontend and css.
 
 **Coding with Elm really takes quite a lot of time.** For example, this [image upload](src/File/ImageForm.elm) program took a day to achieve. That's too long when prototyping! Elm can be used later to code your app properly, or outsource.
 
 
-## Rules for myself
-
-> Set a learning frame and some rules for yourself!
-> What's in? What's out?[^2] How do I keep my programs simple?
-
-**Don't repeat yourself** (one is enough, no duplicate examples)
-
-1. Is this **best practice** to the best of my knowledge?
-2. Is this something **Ai can do better?**? Quicker? [^3]
-3. Is there a tool I can use to speed up idea validation?[^4]
-4. Is this the [simplest](https://pragprog.com/titles/dtcode/simplicity/) program I could possibly make?
-
-
-## Build
-
-> Working examples are in `/build/namespace-package.js` or run `elm reactor`.
-
-There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki programming flashcard](https://github.com/badlydrawnrob/anki) code examples before building your cards.
-
-
-## Improvements
+## Areas of improvement
 
 1. Use `elm-format` on real projects with a team.
 2. Using `port`s, a little javascript knowledge can be handy.
 3. Hire other people to do the bits you don't enjoy (like javascript!)
+4. Investigate [performant elm](https://juliu.is/performant-elm/)
+
+
+## Rules for myself
+
+> My learning frame. What's in? What's out?[^2]
+
+1. Keep your programs and state [simple](https://pragprog.com/titles/dtcode/simplicity/)
+2. Sketch out the routes before coding
+3. Ask Ai if you don't understand or quick fix[^3]
+4. Use tooling to speed up prototyping/validation[^4]
+5. Unless it's 10x better, stick to what you know
+6. Find a mentor for high risk code (like JWTs)
+
+
+
+## Build
+
+> Working examples are in `/build/namespace-package.js`.
+> Use `elm reactor` or `elm-watch` for a quick look at the package.
+
+There's also `src/Anki` and `00-anki-testing.html` files for testing out [Anki programming flashcard](https://github.com/badlydrawnrob/anki) code examples before building your cards.
+
+
 
 ## Tools and guides
 
