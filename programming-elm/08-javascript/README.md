@@ -42,6 +42,11 @@ Elm [examples](https://elm-lang.org/examples) don't _do_ anything with images, t
 2. [Select multiple files](https://elm-lang.org/examples/upload) with [`["target","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
 3. [Drag and drop](https://elm-lang.org/examples/image-previews) with [`["dataTransfer","files"]`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/files).
 
+### Servers
+
+> Image servers can get expensive.
+
+If you're wanting lots of fancy image compression, optimising, or live-editing, you're probably going to be paying a lot for it. [UploadCare](https://uploadcare.com/docs/compression/) is great but $66p/m. [Bunny](https://bunny.net/pricing/) seems more reasonable. There are other [cheap-ish](https://imagekit.io/plans/) options. You can [self-host](https://fastapi.tiangolo.com/tutorial/request-files/#multiple-file-uploads) and [optimise](https://pillow.readthedocs.io/en/latest/handbook/tutorial.html#reading-and-writing-images) on your own server if you wish.
 
 ### Base64
 
